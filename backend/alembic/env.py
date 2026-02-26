@@ -13,7 +13,7 @@ load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.database import Base  # noqa: E402
-import app.models.candidate  # noqa: F401 — enregistrer le modèle
+import app.models  # noqa: F401 — enregistre tous les modèles via __init__.py
 
 # Config Alembic
 config = context.config

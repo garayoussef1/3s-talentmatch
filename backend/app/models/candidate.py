@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, Text, DateTime, Integer, JSON
+from sqlalchemy import Column, String, Text, DateTime, JSON
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
 
@@ -34,6 +35,10 @@ class Candidate(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relations
+    cv_documents = relationship("CVDocument", back_populates="candidate", cascade="all, delete-orphan")
+    matches = relationship("Match", back_populates="candidate", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Candidate cv_id={self.cv_id} nom={self.nom}>"
