@@ -1,0 +1,250 @@
+\documentclass[12pt,a4paper]{report}
+
+% -------------------- Packages --------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+\titleformat{\chapter}{\bfseries\LARGE}{Chapitre \thechapter}{1em}{}
+
+% -------------------- TikZ styles pour l'architecture --------------------
+\tikzstyle{block} = [rectangle, rounded corners, minimum width=3cm,
+    minimum height=1cm, text centered, draw=black, fill=blue!15]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% ==================== DOCUMENT ====================
+\begin{document}
+
+% ==================== PAGE DE GARDE ====================
+\begin{titlepage}
+    \begin{center}
+        \begin{minipage}{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.8\textwidth]{esprit.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.4\textwidth}
+            \centering
+            \includegraphics[width=0.8\textwidth]{3S.jpg}
+        \end{minipage}
+
+        \vspace{2cm}
+        {\Large \textbf{Cahier des Charges Technique}}\\[0.5cm]
+        \rule{\textwidth}{0.4mm}\\[0.4cm]
+        {\LARGE \textbf{Conception et développement d'une application intelligente de parsing de CV}}\\[0.4cm]
+        \rule{\textwidth}{0.4mm}
+
+        \vspace{1.5cm}
+        \textbf{Réalisé par :}\\
+        Youssef Gara\\[0.5cm]
+        \textbf{Encadré par :}\\
+        Mme Sirine Nasri\\
+        Mme Loujein\\[1cm]
+        \textbf{Entreprise d'accueil :}\\
+        3S Group\\[1cm]
+        Année universitaire : 2025 -- 2026
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+\listoffigures
+\newpage
+
+% ==================== CHAPITRE 1 ====================
+\chapter{Contexte général du projet}
+
+Dans un environnement professionnel digitalisé, les entreprises font face à un flux massif de candidatures. Le traitement manuel des CV est chronophage et sujet aux erreurs. L'automatisation via l'intelligence artificielle (IA) et le traitement du langage naturel (NLP) est devenue une nécessité pour optimiser le recrutement.
+
+Le présent projet, réalisé au sein de \textbf{3S Group}, vise à concevoir une plateforme capable d'extraire, d'analyser et de structurer automatiquement les informations des CV afin de faciliter le matching candidat-offre.
+
+% ==================== CHAPITRE 2 ====================
+\chapter{Description fonctionnelle}
+
+\section{Utilisateurs cibles}
+\begin{itemize}
+    \item \textbf{Recruteur / Responsable RH} : Upload des CV, consultation des profils, utilisation du dashboard de matching.
+    \item \textbf{Administrateur} : Gestion des accès, maintenance du système et audit RGPD.
+\end{itemize}
+
+\section{Besoins fonctionnels}
+\begin{itemize}
+    \item Authentification sécurisée (JWT).
+    \item Chargement multi-format (PDF textuel, Image/Scan, Word).
+    \item Extraction intelligente et normalisation en JSON.
+    \item Analyse sémantique (NER) des compétences et expériences.
+    \item Scoring de matching entre CV et fiche de poste.
+    \item Dashboard analytique et export des rapports.
+\end{itemize}
+
+\section{Besoins non fonctionnels}
+\begin{itemize}
+    \item \textbf{Sécurité} : Confidentialité des données personnelles (RGPD).
+    \item \textbf{Ergonomie} : Interface réactive et intuitive sous React.
+    \item \textbf{Évolutivité} : Architecture permettant l'ajout de nouveaux modèles NLP.
+\end{itemize}
+
+% ==================== CHAPITRE 3 ====================
+\chapter{Problématique}
+
+Le parsing automatique de CV présente des défis techniques majeurs :
+\begin{itemize}
+    \item \textbf{Hétérogénéité des formats} : Nécessité de basculer entre lecture directe et OCR.
+    \item \textbf{Ambiguïté sémantique} : Difficulté de distinguer des entités similaires sans contexte.
+    \item \textbf{Structuration des données} : Transformation d'un texte non structuré en format JSON normalisé.
+    \item \textbf{Conformité légale} : Protection des données sensibles (RGPD).
+\end{itemize}
+
+% ==================== CHAPITRE 4 ====================
+\chapter{Architecture Technique et Workflow}
+
+\section{Workflow global}
+Le système suit une architecture modulaire basée sur le workflow suivant :
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.8cm]
+        \node (upload)  [block] {Upload CV (React)};
+        \node (extract) [block, below of=upload] {Extraction (PyMuPDF / python-docx / EasyOCR)};
+        \node (nlp)     [block, below of=extract] {Analyse NLP (spaCy + CamemBERT)};
+        \node (db)      [block, below of=nlp] {Stockage JSON (PostgreSQL)};
+        \node (match)   [block, below of=db] {Matching \& Score};
+        \node (dashboard) [block, below of=match] {Dashboard RH (React)};
+
+        \draw [arrow] (upload) -- (extract);
+        \draw [arrow] (extract) -- (nlp);
+        \draw [arrow] (nlp) -- (db);
+        \draw [arrow] (db) -- (match);
+        \draw [arrow] (match) -- (dashboard);
+    \end{tikzpicture}
+    \caption{Workflow complet du traitement des données}
+\end{figure}
+
+\section{Modèle de données (Principales tables)}
+\begin{itemize}
+    \item \textbf{Candidates} : Informations personnelles et profil extrait (nom, email, compétences, expériences).
+    \item \textbf{Job\_Offers} : Descriptions de postes et critères requis (titre, compétences attendues).
+    \item \textbf{Matches} : Scores de correspondance entre un candidat et une offre.
+    \item \textbf{Access\_Logs} : Journalisation pour conformité RGPD.
+\end{itemize}
+
+\section{Module Matching}
+
+Le module de matching calcule un score de correspondance entre un CV parsé et une fiche de poste selon deux critères :
+
+\begin{itemize}
+    \item \textbf{Matching par mots-clés} : comparaison directe des compétences extraites du CV avec les compétences requises dans l'offre. Un score de recouvrement est calculé (proportion de compétences communes).
+    \item \textbf{Matching sémantique} : utilisation des embeddings de phrases produits par CamemBERT (modèle pré-entraîné, inférence CPU) pour mesurer la similarité cosinus entre le résumé du profil candidat et la description du poste.
+\end{itemize}
+
+Le score final est une combinaison pondérée des deux critères. Aucun entraînement supplémentaire du modèle n'est requis pour cette étape.
+
+\section{Module Dashboard}
+
+Le Dashboard est une interface React accessible au recruteur. Il présente :
+\begin{itemize}
+    \item La liste des CV importés avec leur statut de traitement.
+    \item Le profil structuré de chaque candidat (compétences, formations, expériences).
+    \item Pour chaque offre d'emploi, la liste des candidats classés par score de matching décroissant.
+    \item Un filtre par compétence, niveau d'expérience ou score minimum.
+\end{itemize}
+
+% ==================== CHAPITRE 5 ====================
+\chapter{Justification des Choix Technologiques}
+
+\section{Extraction de texte et Backend}
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{llX}
+        \toprule
+        \textbf{Outil} & \textbf{Alternative} & \textbf{Justification Qualitative} \\
+        \midrule
+        \textbf{PyMuPDF} & PDFMiner & Plus rapide et meilleure gestion des ressources système. \\
+        \textbf{FastAPI} & Flask & Gestion asynchrone native et documentation automatique. \\
+        \textbf{EasyOCR} & Tesseract & Meilleure précision sur les documents bruités grâce au Deep Learning. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Justification des choix technologiques (Extraction \& Backend)}
+\end{table}
+
+\section{Partie IA : NLP et Sémantique}
+
+\subsection{Approche retenue}
+
+La stratégie NLP du projet repose sur deux outils complémentaires :
+
+\begin{itemize}
+    \item \textbf{spaCy (fr\_core\_news\_md)} : utilisé pour la reconnaissance d'entités nommées (NER) et l'extraction structurée des informations du CV (nom, organisations, dates). Ce modèle fonctionne entièrement en CPU et s'intègre directement dans le backend FastAPI.
+    \item \textbf{CamemBERT (camembert-base)} : modèle BERT pré-entraîné sur le français, utilisé en \textbf{inférence uniquement} pour générer des embeddings de phrases. Ces vecteurs permettent de mesurer la similarité sémantique entre un profil candidat et une fiche de poste. L'inférence s'exécute sur CPU sans nécessiter de ressources GPU.
+\end{itemize}
+
+\subsection{Pourquoi pas de fine-tuning ?}
+
+Dans le cadre de ce projet, le fine-tuning du modèle CamemBERT n'est pas réalisé pour les raisons suivantes :
+
+\begin{itemize}
+    \item Le volume de données annotées disponibles (CV du corpus interne) est insuffisant pour un fine-tuning fiable.
+    \item Le modèle pré-entraîné camembert-base fournit des représentations sémantiques de qualité suffisante pour le matching par similarité cosinus.
+    \item L'inférence CPU avec \texttt{sentence-transformers} (basé sur CamemBERT) est adaptée à l'échelle du projet et ne nécessite pas d'infrastructure spécialisée.
+\end{itemize}
+
+\subsection{Évaluation}
+
+La qualité du matching sera évaluée manuellement sur un ensemble de 20 paires CV / offre d'emploi avec annotation humaine, en calculant le \textbf{F1-Score} (Précision et Rappel) des résultats retournés par le système.
+
+% ==================== CHAPITRE 6 ====================
+\chapter{Conformité RGPD}
+\begin{itemize}
+    \item \textbf{Conservation limitée} : Les CV sont automatiquement supprimés après 2 ans d'inactivité du compte.
+    \item \textbf{Droit de suppression} : Un endpoint dédié permet la suppression immédiate et complète des données d'un candidat.
+    \item \textbf{Journalisation} : Chaque consultation de données personnelles est enregistrée dans la table \texttt{Access\_Logs}.
+    \item \textbf{Pseudonymisation} : Les données sensibles (nom, email) sont stockées séparément des données analytiques.
+    \item \textbf{Consentement} : L'upload d'un CV implique l'acceptation explicite des conditions de traitement des données.
+    \item \textbf{Accès restreint} : Les données candidats ne sont accessibles qu'aux recruteurs authentifiés via JWT.
+\end{itemize}
+
+% ==================== CHAPITRE 7 ====================
+\chapter{Conception UML}
+
+\section{Diagramme de cas d'utilisation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{diagrammeCas.png}
+    \caption{Interactions acteurs et système (incluant IA et RGPD)}
+\end{figure}
+
+% ==================== CHAPITRE 8 ====================
+\chapter{Planning prévisionnel}
+
+Le projet est organisé en cinq phases sur six mois :
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{clX}
+        \toprule
+        \textbf{Phase} & \textbf{Période} & \textbf{Objectifs} \\
+        \midrule
+        1 & Mois 1 & Mise en place de l'environnement, extraction multi-format (PDF, Word, OCR). \\
+        2 & Mois 2 & Pipeline NLP : parsing et structuration des CV en JSON. \\
+        3 & Mois 3 & Backend FastAPI, base de données PostgreSQL, API REST. \\
+        4 & Mois 4 & Module Matching (mots-clés + similarité sémantique CamemBERT). \\
+        5 & Mois 5--6 & Frontend React (Dashboard RH), tests, déploiement et rédaction rapport. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Planning prévisionnel du projet}
+\end{table}
+
+\end{document}

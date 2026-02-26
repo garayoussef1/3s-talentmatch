@@ -1,0 +1,561 @@
+﻿\documentclass[12pt,a4paper]{report}
+
+% ==================== PACKAGES ====================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+\usepackage{colortbl}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{verbatim}
+\usepackage{multirow}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+% ==================== COULEURS ====================
+\definecolor{bleu3S}{RGB}{37, 99, 235}
+\definecolor{rouge}{RGB}{220, 38, 38}
+\definecolor{orangecol}{RGB}{249, 115, 22}
+\definecolor{vertcol}{RGB}{34, 197, 94}
+\definecolor{grisleger}{RGB}{243, 244, 246}
+
+% ==================== EN-TETE/PIED DE PAGE ====================
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{bleu3S}{\textbf{Sprint 1}}}
+\lhead{Backlog \& User Stories}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ==================== TITRES ====================
+\titleformat{\chapter}[block]
+  {\bfseries\LARGE\color{bleu3S}}
+  {}{0em}{}
+  [\vspace{0.2em}\titlerule]
+
+\titleformat{\section}{\bfseries\large\color{bleu3S}}{\thesection}{1em}{}
+
+% ==================== HYPERREF ====================
+\hypersetup{colorlinks=true, linkcolor=bleu3S, urlcolor=bleu3S}
+
+% ==================== DEBUT DOCUMENT ====================
+\begin{document}
+
+% ==================== PAGE DE GARDE ====================
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+        \textcolor{bleu3S}{\Large \textbf{Methodologie Agile Scrum}}\\[0.5cm]
+        \rule{\textwidth}{0.4mm}\\[0.4cm]
+        {\LARGE \textbf{Backlog Initial et User Stories}}\\[0.2cm]
+        {\large \textbf{Sprint 1 -- Semaines 1 a 4}}\\[0.4cm]
+        \rule{\textwidth}{0.4mm}
+        \vspace{1.5cm}
+        {\large \textbf{Projet :}}\\[0.2cm]
+        {\Large 3S TalentMatch}\\
+        {\large Plateforme Intelligente de Parsing de CVs}
+        \vspace{2cm}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \textbf{Realise par :}\\[0.2cm]
+            Youssef Gara\\
+            Etudiant Ingenieur\\
+            ESPRIT
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \textbf{Encadre par :}\\[0.2cm]
+            Mme Sirine Nasri\\
+            Mme Loujein\\[0.3cm]
+            3S Group
+        \end{minipage}
+        \vspace{2cm}
+        \textbf{Duree Sprint 1 :} 4 semaines (28 jours)\\
+        \textbf{Date :} Fevrier 2026
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ==================== INTRODUCTION ====================
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+Ce document presente le backlog initial et les user stories detaillees du \textbf{Sprint 1} du projet 3S TalentMatch, conformement aux directives de l'encadrante.
+
+\subsection*{Objectifs du Sprint 1}
+\begin{enumerate}
+    \item Finaliser et valider le cahier des charges
+    \item Concevoir les diagrammes UML (cas d'utilisation, classes, sequence)
+    \item Mettre en place l'environnement de developpement
+    \item Implementer le MVP : Upload CV + Extraction texte (PDF/DOCX)
+\end{enumerate}
+
+\subsection*{Livrables Attendus}
+\begin{itemize}
+    \item Cahier des charges valide
+    \item 3 diagrammes UML complets
+    \item Backend FastAPI + PostgreSQL + Frontend React fonctionnels
+    \item Demo operationnelle : Upload CV $\rightarrow$ Extraction $\rightarrow$ Affichage
+\end{itemize}
+
+% ==================== CHAPITRE 1 ====================
+\chapter{Backlog Initial Priorise}
+
+\section{Vue d'Ensemble}
+
+Le backlog du Sprint 1 comprend \textbf{32 user stories} reparties en \textbf{6 epics}, pour un total de \textbf{113 story points}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{5cm}|p{2.5cm}|p{2cm}|p{3cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{Epic} & \textbf{Story Points} & \textbf{Priorite} & \textbf{Semaine} \\
+\hline
+Conception et Documentation & 19 & \textcolor{rouge}{\textbf{P0}} & Semaine 1 \\
+\hline
+Setup Environnement & 17 & \textcolor{rouge}{\textbf{P0}} & Semaines 1--2 \\
+\hline
+Backend Extraction CVs & 26 & \textcolor{rouge}{\textbf{P0}} & Semaines 2--3 \\
+\hline
+Base de Donnees & 19 & \textcolor{orangecol}{\textbf{P1}} & Semaines 2--3 \\
+\hline
+Frontend Upload Interface & 20 & \textcolor{orangecol}{\textbf{P1}} & Semaines 3--4 \\
+\hline
+Documentation et Tests & 12 & \textcolor{vertcol}{\textbf{P2}} & Semaine 4 \\
+\hline
+\rowcolor{grisleger}
+\textbf{TOTAL} & \textbf{113} & -- & \textbf{4 semaines} \\
+\hline
+\end{tabular}
+\caption{Resume des epics du Sprint 1}
+\end{table}
+
+\textbf{Legende :} \textcolor{rouge}{\textbf{P0}} Critique \quad \textcolor{orangecol}{\textbf{P1}} Important \quad \textcolor{vertcol}{\textbf{P2}} Souhaitable
+
+\section{Epic 1 : Conception et Documentation}
+
+\begin{longtable}{|p{1.5cm}|p{7cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\
+\hline
+\endfirsthead
+\hline \rowcolor{bleu3S!20} \textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\ \hline
+\endhead
+US-001 & Finalisation cahier des charges & 5 & P0 \\ \hline
+US-002 & Diagramme de cas d'utilisation & 3 & P0 \\ \hline
+US-003 & Diagramme de classes & 5 & P0 \\ \hline
+US-004 & Diagramme de sequence (Upload CV) & 3 & P0 \\ \hline
+US-005 & Documentation architecture technique & 3 & P1 \\ \hline
+\rowcolor{grisleger} \textbf{Total Epic 1} & & \textbf{19} & \\ \hline
+\caption{User Stories -- Epic 1}
+\end{longtable}
+
+\section{Epic 2 : Setup Environnement}
+
+\begin{longtable}{|p{1.5cm}|p{7cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\
+\hline
+\endfirsthead
+\hline \rowcolor{bleu3S!20} \textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\ \hline
+\endhead
+US-006 & Configuration environnement Python (venv) & 2 & P0 \\ \hline
+US-007 & Installation FastAPI + dependances & 2 & P0 \\ \hline
+US-008 & Configuration PostgreSQL local & 3 & P0 \\ \hline
+US-009 & Setup projet React avec Vite & 3 & P1 \\ \hline
+US-010 & Configuration Git + GitHub repository & 2 & P1 \\ \hline
+US-011 & Docker Compose (backend + BDD) & 5 & P2 \\ \hline
+\rowcolor{grisleger} \textbf{Total Epic 2} & & \textbf{17} & \\ \hline
+\caption{User Stories -- Epic 2}
+\end{longtable}
+
+\section{Epic 3 : Backend -- Upload et Extraction CVs}
+
+\begin{longtable}{|p{1.5cm}|p{7cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\
+\hline
+\endfirsthead
+\hline \rowcolor{bleu3S!20} \textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\ \hline
+\endhead
+US-012 & API endpoint POST /upload-cv & 5 & P0 \\ \hline
+US-013 & Extraction texte PDF avec PyPDF2 & 5 & P0 \\ \hline
+US-014 & Extraction texte DOCX avec python-docx & 3 & P0 \\ \hline
+US-015 & Detection automatique type fichier & 3 & P0 \\ \hline
+US-016 & Validation format fichier (taille, type) & 2 & P1 \\ \hline
+US-017 & Gestion erreurs extraction & 3 & P1 \\ \hline
+US-018 & Tests unitaires extraction (Pytest) & 5 & P1 \\ \hline
+\rowcolor{grisleger} \textbf{Total Epic 3} & & \textbf{26} & \\ \hline
+\caption{User Stories -- Epic 3}
+\end{longtable}
+
+\section{Epic 4 : Base de Donnees}
+
+\begin{longtable}{|p{1.5cm}|p{7cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\
+\hline
+\endfirsthead
+\hline \rowcolor{bleu3S!20} \textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\ \hline
+\endhead
+US-019 & Creation schema BDD (tables initiales) & 5 & P0 \\ \hline
+US-020 & Table users (authentification) & 3 & P1 \\ \hline
+US-021 & Table candidates (infos candidats) & 3 & P1 \\ \hline
+US-022 & Table cv\_documents (metadonnees CVs) & 3 & P1 \\ \hline
+US-023 & SQLAlchemy models + migrations Alembic & 5 & P1 \\ \hline
+\rowcolor{grisleger} \textbf{Total Epic 4} & & \textbf{19} & \\ \hline
+\caption{User Stories -- Epic 4}
+\end{longtable}
+
+\section{Epic 5 : Frontend -- Interface Upload}
+
+\begin{longtable}{|p{1.5cm}|p{7cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\
+\hline
+\endfirsthead
+\hline \rowcolor{bleu3S!20} \textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\ \hline
+\endhead
+US-024 & Page upload avec drag \& drop & 8 & P0 \\ \hline
+US-025 & Affichage texte extrait & 3 & P0 \\ \hline
+US-026 & Gestion etats chargement (loading) & 2 & P1 \\ \hline
+US-027 & Affichage erreurs utilisateur & 2 & P1 \\ \hline
+US-028 & Design responsive (mobile/desktop) & 5 & P2 \\ \hline
+\rowcolor{grisleger} \textbf{Total Epic 5} & & \textbf{20} & \\ \hline
+\caption{User Stories -- Epic 5}
+\end{longtable}
+
+\section{Epic 6 : Documentation et Tests}
+
+\begin{longtable}{|p{1.5cm}|p{7cm}|p{2cm}|p{2cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\
+\hline
+\endfirsthead
+\hline \rowcolor{bleu3S!20} \textbf{ID} & \textbf{User Story} & \textbf{Points} & \textbf{Priorite} \\ \hline
+\endhead
+US-029 & README backend avec instructions & 3 & P1 \\ \hline
+US-030 & README frontend avec instructions & 2 & P1 \\ \hline
+US-031 & Documentation API (Swagger) & 2 & P2 \\ \hline
+US-032 & Tests E2E (upload vers extraction) & 5 & P2 \\ \hline
+\rowcolor{grisleger} \textbf{Total Epic 6} & & \textbf{12} & \\ \hline
+\caption{User Stories -- Epic 6}
+\end{longtable}
+
+% ==================== CHAPITRE 2 ====================
+\chapter{User Stories Detaillees}
+
+\section{Format Standard}
+
+\begin{mdframed}[backgroundcolor=grisleger!50,linecolor=bleu3S,linewidth=1pt]
+\textbf{En tant que} [acteur] \\
+\textbf{Je veux} [fonctionnalite] \\
+\textbf{Afin de} [benefice/objectif]
+\end{mdframed}
+
+\section{US-001 : Finalisation Cahier des Charges}
+
+\textbf{En tant que} etudiant ---
+\textbf{Je veux} finaliser et faire valider le CDC ---
+\textbf{Afin de} avoir une reference documentaire complete
+
+\subsection*{Criteres d'Acceptation}
+\begin{itemize}
+    \item[\checkmark] Toutes sections obligatoires presentes (contexte, fonctionnel, architecture, IA, RGPD, UML, planning)
+    \item[\checkmark] Section IA : approche CPU, inférence CamemBERT, pas de GPU ni fine-tuning
+    \item[\checkmark] Document compile en PDF sans erreur LaTeX
+    \item[\checkmark] Valide par Mme Nasri avant la fin de la Semaine 1
+\end{itemize}
+
+\textbf{Story Points : 5} \hfill \textbf{Priorite : P0}
+
+\section{US-002 : Diagramme de Cas d'Utilisation}
+
+\textbf{En tant que} chef de projet ---
+\textbf{Je veux} creer un diagramme de cas d'utilisation ---
+\textbf{Afin de} identifier tous les acteurs et leurs interactions
+
+\subsection*{Criteres d'Acceptation}
+\begin{itemize}
+    \item[\checkmark] 3 acteurs identifies : Candidat, Recruteur RH, Administrateur
+    \item[\checkmark] Minimum 13 cas d'utilisation (voir liste ci-dessous)
+    \item[\checkmark] Diagramme cree avec Draw.io ou StarUML
+    \item[\checkmark] Exporte en PNG et integre au CDC
+\end{itemize}
+
+\subsection*{Cas d'Utilisation}
+\begin{multicols}{2}
+\begin{enumerate}
+    \item Creer compte
+    \item Se connecter
+    \item Uploader CV
+    \item Consulter profil extrait
+    \item Modifier donnees
+    \item Creer offre emploi
+    \item Consulter candidatures
+    \item Lancer matching CV-Offre
+    \item Consulter dashboard
+    \item Exporter rapport
+    \item Gerer utilisateurs
+    \item Consulter logs RGPD
+    \item Supprimer donnees
+\end{enumerate}
+\end{multicols}
+
+\textbf{Story Points : 3} \hfill \textbf{Priorite : P0}
+
+\section{US-003 : Diagramme de Classes}
+
+\textbf{En tant que} developpeur backend ---
+\textbf{Je veux} concevoir un diagramme de classes ---
+\textbf{Afin de} definir le modele de donnees
+
+\subsection*{Classes Principales}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{3cm}|p{10cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{Classe} & \textbf{Attributs et Methodes} \\
+\hline
+User & \texttt{user\_id, email, password\_hash, role} / \texttt{authenticate()} \\
+\hline
+Candidat & \texttt{candidat\_id, nom, email, telephone} / \texttt{upload\_cv()} \\
+\hline
+CVDocument & \texttt{cv\_id, file\_path, extracted\_text, created\_at} \\
+\hline
+CVData & \texttt{structured\_data, competences, experiences} / \texttt{to\_json()} \\
+\hline
+Offre & \texttt{offre\_id, titre, competences\_requises} / \texttt{match\_candidats()} \\
+\hline
+Matching & \texttt{matching\_id, score} / \texttt{calculate()} \\
+\hline
+AccessLog & \texttt{log\_id, user\_id, action, timestamp} / \texttt{log()} \\
+\hline
+Consentement & \texttt{consent\_id, stockage, analyse\_ia} / \texttt{revoke()} \\
+\hline
+\end{tabular}
+\caption{Classes principales du systeme}
+\end{table}
+
+\textbf{Story Points : 5} \hfill \textbf{Priorite : P0}
+
+\section{US-012 : API Endpoint POST /upload-cv}
+
+\textbf{En tant que} developpeur backend ---
+\textbf{Je veux} creer un endpoint d'upload de CV ---
+\textbf{Afin de} recevoir des fichiers depuis le frontend
+
+\subsection*{Criteres d'Acceptation}
+\begin{itemize}
+    \item[\checkmark] \texttt{POST /api/upload-cv} accepte multipart/form-data
+    \item[\checkmark] Validation : taille max 10 MB, formats PDF/DOCX uniquement
+    \item[\checkmark] Retourne JSON avec \texttt{cv\_id}, \texttt{message}, \texttt{success}
+    \item[\checkmark] Gestion erreurs HTTP 400, 413, 500
+    \item[\checkmark] Documentation Swagger generee sur \texttt{/docs}
+\end{itemize}
+
+\subsection*{Exemple de Code}
+\begin{verbatim}
+from fastapi import APIRouter, UploadFile, File, HTTPException
+import uuid
+
+router = APIRouter(prefix="/api")
+
+@router.post("/upload-cv")
+async def upload_cv(file: UploadFile = File(...)):
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(413, "Fichier trop volumineux")
+    cv_id = str(uuid.uuid4())
+    return {"success": True, "cv_id": cv_id}
+\end{verbatim}
+
+\textbf{Story Points : 5} \hfill \textbf{Priorite : P0}
+
+\section{US-013 : Extraction Texte PDF}
+
+\textbf{En tant que} systeme ---
+\textbf{Je veux} extraire le texte d'un PDF textuel ---
+\textbf{Afin de} l'envoyer au pipeline NLP
+
+\subsection*{Exemple de Code}
+\begin{verbatim}
+from pypdf import PdfReader
+
+def extract_text_from_pdf(file_path: str) -> dict:
+    reader = PdfReader(file_path)
+    text = "\n\n".join(
+        p.extract_text() for p in reader.pages
+        if p.extract_text()
+    )
+    if len(text.strip()) < 100:
+        return {"success": False,
+                "error": "PDF scanne, OCR necessaire"}
+    return {"success": True, "text": text}
+\end{verbatim}
+
+\textbf{Story Points : 5} \hfill \textbf{Priorite : P0}
+
+\section{US-024 : Page Upload avec Drag \& Drop}
+
+\textbf{En tant que} recruteur ---
+\textbf{Je veux} uploader un CV par drag \& drop ---
+\textbf{Afin de} soumettre facilement un CV
+
+\subsection*{Criteres d'Acceptation}
+\begin{itemize}
+    \item[\checkmark] Zone drag \& drop avec feedback visuel au survol
+    \item[\checkmark] Bouton ``Parcourir'' alternatif
+    \item[\checkmark] Loading spinner pendant upload
+    \item[\checkmark] Message succes ou erreur apres upload
+    \item[\checkmark] Affichage du texte extrait dans l'interface
+\end{itemize}
+
+\textbf{Story Points : 8} \hfill \textbf{Priorite : P0}
+
+% ==================== CHAPITRE 3 ====================
+\chapter{Planning Sprint 1}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{1.5cm}|p{2cm}|p{2cm}|p{4cm}|p{4cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{Sem.} & \textbf{Jour} & \textbf{US} & \textbf{Activites} & \textbf{Livrable} \\
+\hline
+\multirow{5}{*}{\textbf{S1}} & Lundi & US-001, 002 & CDC + Diag. cas utilisation & CDC PDF \\
+\cline{2-5}
+ & Mardi & US-003 & Diagramme de classes & Classes PNG \\
+\cline{2-5}
+ & Mercredi & US-004, 005 & Diag. sequence + Doc archi & Diagrammes \\
+\cline{2-5}
+ & Jeudi & US-006, 007 & Setup Python + FastAPI & Backend init \\
+\cline{2-5}
+ & Vendredi & US-008, 010 & PostgreSQL + Git & BDD + repo \\
+\hline
+\multirow{5}{*}{\textbf{S2}} & Lundi & US-012 & Endpoint /upload-cv & API upload \\
+\cline{2-5}
+ & Mardi & US-013 & Extraction PDF & pdf\_extractor.py \\
+\cline{2-5}
+ & Mercredi & US-014, 015 & Extraction DOCX + detection & docx\_extractor.py \\
+\cline{2-5}
+ & Jeudi & US-019, 021 & Schema BDD + Table candidates & Migration Alembic \\
+\cline{2-5}
+ & Vendredi & US-023 & SQLAlchemy models & models.py \\
+\hline
+\multirow{5}{*}{\textbf{S3}} & Lundi & US-016, 017 & Validations + erreurs & Handlers \\
+\cline{2-5}
+ & Mardi & US-018 & Tests unitaires Pytest & test\_*.py \\
+\cline{2-5}
+ & Mercredi & -- & Buffer / Debugging & -- \\
+\cline{2-5}
+ & Jeudi & US-009 & Setup React + Vite & Frontend init \\
+\cline{2-5}
+ & Vendredi & US-024 debut & Page upload structure & UploadPage.tsx \\
+\hline
+\multirow{5}{*}{\textbf{S4}} & Lundi & US-024 suite & Drag \& drop + upload & Component complet \\
+\cline{2-5}
+ & Mardi & US-025, 026 & Affichage resultat + loading & UI resultats \\
+\cline{2-5}
+ & Mercredi & US-027, 028 & Erreurs + responsive & UI finalisee \\
+\cline{2-5}
+ & Jeudi & US-029, 030 & READMEs & Documentation \\
+\cline{2-5}
+ & Vendredi & US-032 + Demo & Test E2E + Demo encadrantes & Demo Sprint 1 \\
+\hline
+\end{tabular}
+\caption{Planning jour par jour du Sprint 1}
+\end{table}
+
+% ==================== CHAPITRE 4 ====================
+\chapter{Definition de Termine et Metriques}
+
+\section{Definition de ``Fini'' (DoD)}
+
+\begin{itemize}
+    \item[\checkmark] Code ecrit, fonctionne et commente
+    \item[\checkmark] Tests unitaires passes (couverture > 70\% modules critiques)
+    \item[\checkmark] Tests manuels valides
+    \item[\checkmark] Code merge dans la branche \texttt{develop} sur GitHub
+    \item[\checkmark] Criteres d'acceptation de la US valides
+    \item[\checkmark] Demo possible aux encadrantes si applicable
+\end{itemize}
+
+\section{Velocite et Risques}
+
+\textbf{Capacite Sprint 1 :} 80--100 points (etudiant solo). Total backlog : 113 points.\\
+\textbf{Strategie :} Prioriser P0 et P1, reporter les US P2 au Sprint 2 si retard.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{2cm}|p{2cm}|p{5cm}|}
+\hline
+\rowcolor{bleu3S!20}
+\textbf{Risque} & \textbf{Proba.} & \textbf{Impact} & \textbf{Mitigation} \\
+\hline
+Retard validation CDC & Moyenne & Eleve & Envoyer semaine 1 \\
+\hline
+Surcharge story points & Elevee & Moyen & Reporter P2 au Sprint 2 \\
+\hline
+Blocage technique & Faible & Moyen & Docs officielles + encadrantes \\
+\hline
+PostgreSQL local & Faible & Moyen & Docker Compose en backup \\
+\hline
+\end{tabular}
+\caption{Matrice des risques}
+\end{table}
+
+% ==================== CONCLUSION ====================
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+\begin{itemize}
+    \item \textbf{32 user stories} detaillees avec criteres d'acceptation
+    \item \textbf{113 story points} sur 4 semaines
+    \item \textbf{6 epics} priorises (P0/P1/P2)
+    \item \textbf{Planning jour par jour} sur 4 semaines
+    \item \textbf{Definition de ``Fini''} claire et applicable
+\end{itemize}
+
+\subsection*{Prochaines Etapes}
+\begin{enumerate}
+    \item Validation de ce backlog par les encadrantes
+    \item Creation du board Trello (voir guide)
+    \item Demarrage Sprint 1 Semaine 1
+    \item Daily standup auto-suivi chaque matin
+    \item Revue de sprint fin de Semaine 4
+\end{enumerate}
+
+\vspace{2cm}
+\begin{center}
+Youssef Gara --- Fevrier 2026
+\end{center}
+
+\end{document}
