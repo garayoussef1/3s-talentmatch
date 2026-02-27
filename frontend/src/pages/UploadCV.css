@@ -94,6 +94,43 @@
   overflow-y: auto;
 }
 
+/* ── Spinner animé ─────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinner-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 640px) {
+  .upload-page { padding: 0 0.5rem; }
+  .upload-page h1 { font-size: 1.4rem; }
+  .drop-zone { padding: 1.5rem 1rem; }
+  .result-grid { grid-template-columns: 1fr; }
+  .btn-upload { font-size: 0.95rem; padding: 0.75rem; }
+}
+
+@media (max-width: 768px) {
+  .upload-page { max-width: 100%; }
+  .result-grid { grid-template-columns: 1fr 1fr; }
+}
+
 .candidates-page h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
 
 .empty-state {

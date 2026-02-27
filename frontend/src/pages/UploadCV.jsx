@@ -83,7 +83,12 @@ function UploadCV() {
         </div>
 
         <button type="submit" className="btn-upload" disabled={!file || loading}>
-          {loading ? '⏳ Traitement...' : '🚀 Envoyer le CV'}
+          {loading ? (
+            <span className="spinner-wrapper">
+              <span className="spinner"></span>
+              Traitement en cours...
+            </span>
+          ) : '🚀 Envoyer le CV'}
         </button>
       </form>
 
