@@ -1,0 +1,87 @@
+.candidates-page { padding: 1rem 0; }
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.page-header h1 { font-size: 1.8rem; font-weight: 800; }
+
+.badge {
+  background: #e0e7ff;
+  color: #4f46e5;
+  padding: 0.2rem 0.8rem;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.subtitle { color: #6b7280; margin-bottom: 1.5rem; }
+
+.loading { text-align: center; padding: 3rem; color: #6b7280; }
+
+.alert.error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 0.9rem 1.2rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.candidates-table-wrap {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.candidates-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.candidates-table th {
+  background: #f9fafb;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.candidates-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+.candidates-table tr:last-child td { border-bottom: none; }
+.candidates-table tr:hover td { background: #f9fafb; }
+
+.filename { font-weight: 500; }
+.empty { color: #d1d5db; }
+.date { color: #9ca3af; font-size: 0.88rem; }
+
+.method-badge {
+  background: #f0fdf4;
+  color: #16a34a;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #9ca3af;
+}
+
+.empty-state span { font-size: 3rem; display: block; margin-bottom: 1rem; }

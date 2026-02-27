@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 import './Home.css'
 
 function Home() {
+  const [stats, setStats] = useState({ cvs: '…', offres: '—', matchings: '—' })
+
+  useEffect(() => {
+    axios.get('/api/candidates')
+      .then(res => setStats(s => ({ ...s, cvs: res.data.total })))
+      .catch(() => setStats(s => ({ ...s, cvs: '?' })))
+  }, [])
+
   return (
     <div className="home-page">
       <div className="hero">
@@ -13,17 +23,17 @@ function Home() {
         <div className="stat-card">
           <span className="stat-icon">📄</span>
           <h3>CVs uploadés</h3>
-          <p className="stat-value">—</p>
+          <p className="stat-value">{stats.cvs}</p>
         </div>
         <div className="stat-card">
           <span className="stat-icon">💼</span>
           <h3>Offres actives</h3>
-          <p className="stat-value">—</p>
+          <p className="stat-value">{stats.offres}</p>
         </div>
         <div className="stat-card">
           <span className="stat-icon">🎯</span>
           <h3>Matchings</h3>
-          <p className="stat-value">—</p>
+          <p className="stat-value">{stats.matchings}</p>
         </div>
       </div>
 
