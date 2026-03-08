@@ -5,17 +5,29 @@ import tempfile
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 
 from app.services.extraction.cv_extractor import CVExtractor
+from app.services.nlp.nlp_parser import NLPParser
 from app.database import get_db
 from app.models.candidate import Candidate
 
 router = APIRouter()
 
-ALLOWED_EXTENSIONS = {".pdf", ".docx"}
+ALLOWED_EXTENSIONS = {".pdf", ".docx", ".png", ".jpg", ".jpeg"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+
+# Singleton NLP parser (chargé une s eule fois)
+_nlp_parser: Optional[NLPParser] = None
+
+
+def _get_nlp_parser() -> NLPParser:
+    """Lazy singleton pour éviter de recharger spaCy à chaque requête."""
+    global _nlp_parser
+    if _nlp_parser is None:
+        _nlp_parser = NLPParser()
+    return _nlp_parser
 
 
 # ── Schémas de réponse Swagger ──────────────────────────────────────────
@@ -25,6 +37,7 @@ class CVUploadResponse(BaseModel):
     filename: str
     method: str
     text_preview: str
+    parsed_data: Optional[Dict[str, Any]] = None
     message: str
 
     model_config = {
@@ -35,7 +48,13 @@ class CVUploadResponse(BaseModel):
                 "filename": "mon_cv.pdf",
                 "method": "pypdf",
                 "text_preview": "Jean Dupont\nDéveloppeur Full Stack\nParis, France...",
-                "message": "CV reçu, texte extrait et candidat sauvegardé.",
+                "parsed_data": {
+                    "identite": {"nom_complet": "Jean Dupont"},
+                    "competences": [{"name": "Python", "category": "langages"}],
+                    "formations": [{"diplome": "Ingénieur", "etablissement": "ESPRIT"}],
+                    "experiences": [{"poste": "Développeur", "entreprise": "TechCorp"}],
+                },
+                "message": "CV reçu, texte extrait, NLP parsing effectué.",
             }
         }
     }
@@ -74,29 +93,30 @@ class CandidatesListResponse(BaseModel):
 @router.post(
     "/upload-cv",
     response_model=CVUploadResponse,
-    summary="Uploader un CV (PDF ou DOCX)",
+    summary="Uploader un CV (PDF, DOCX ou Image)",
     description=(
-        "Reçoit un fichier CV au format **PDF** ou **DOCX** (taille max\u00a010\u00a0Mo).\n\n"
+        "Reçoit un fichier CV au format **PDF**, **DOCX** ou **Image** (PNG/JPG) — taille max 10\u00a0Mo.\n\n"
         "Le fichier est automatiquement analysé :\n"
         "- PDF textuel → extraction via **PyPDF**\n"
         "- PDF scanné → extraction via **EasyOCR**\n"
-        "- DOCX → extraction via **python-docx**\n\n"
+        "- DOCX → extraction via **python-docx**\n"
+        "- Image (PNG/JPG) → extraction via **EasyOCR**\n\n"
         "Le candidat est ensuite persisté en base de données PostgreSQL."
     ),
     responses={
         200: {"description": "CV traité avec succès", "model": CVUploadResponse},
-        400: {"description": "Format de fichier non supporté (accepte .pdf et .docx uniquement)"},
+        400: {"description": "Format de fichier non supporté (accepte .pdf, .docx, .png, .jpg)"},
         413: {"description": "Fichier trop volumineux (max 10\u00a0Mo)"},
         500: {"description": "Erreur interne lors de l'extraction"},
     },
 )
-async def upload_cv(file: UploadFile = File(..., description="Fichier CV au format PDF ou DOCX (max 10 Mo)"), db: Session = Depends(get_db)):
+async def upload_cv(file: UploadFile = File(..., description="Fichier CV au format PDF, DOCX, PNG ou JPG (max 10 Mo)"), db: Session = Depends(get_db)):
     # Validation extension
     _, ext = os.path.splitext(file.filename.lower())
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"Format '{ext}' non supporté. Formats acceptés : PDF, DOCX.",
+            detail=f"Format '{ext}' non supporté. Formats acceptés : PDF, DOCX, PNG, JPG.",
         )
 
     # Lecture et validation taille
@@ -126,12 +146,44 @@ async def upload_cv(file: UploadFile = File(..., description="Fichier CV au form
     raw_text = result.get("text", "")
     method = result.get("method", "unknown")
 
+    # ── NLP Parsing complet ──────────────────────────────────────
+    parsed_data = None
+    nom_extrait = None
+    email_extrait = None
+    telephone_extrait = None
+    linkedin_extrait = None
+    github_extrait = None
+
+    if raw_text and len(raw_text.strip()) >= 50:
+        try:
+            parser = _get_nlp_parser()
+            nlp_result = parser.parse(raw_text, cv_id=cv_id)
+            if nlp_result.get("success"):
+                parsed_data = nlp_result["parsed_data"]
+                identite = parsed_data.get("identite", {})
+                contacts = parsed_data.get("contacts", {})
+                nom_extrait = identite.get("nom_complet")
+                email_extrait = contacts.get("email")
+                telephone_extrait = contacts.get("telephone")
+                linkedin_extrait = contacts.get("linkedin")
+                github_extrait = contacts.get("github")
+        except Exception as e:
+            # Le parsing NLP ne doit pas bloquer l'upload
+            import logging
+            logging.getLogger(__name__).warning(f"NLP parsing failed: {e}")
+
     # Sauvegarde en base de données
     candidate = Candidate(
         cv_id=cv_id,
         filename=file.filename,
         raw_text=raw_text,
         extraction_method=method,
+        nom=nom_extrait,
+        email=email_extrait,
+        telephone=telephone_extrait,
+        linkedin=linkedin_extrait,
+        github=github_extrait,
+        parsed_data=parsed_data,
     )
     db.add(candidate)
     db.commit()
@@ -143,7 +195,8 @@ async def upload_cv(file: UploadFile = File(..., description="Fichier CV au form
         "filename": file.filename,
         "method": method,
         "text_preview": raw_text[:300],
-        "message": "CV reçu, texte extrait et candidat sauvegardé.",
+        "parsed_data": parsed_data,
+        "message": "CV reçu, texte extrait et parsing NLP effectué." if parsed_data else "CV reçu, texte extrait (parsing NLP non disponible).",
     }
 
 
@@ -174,9 +227,40 @@ def get_candidates(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)
                 "filename": c.filename,
                 "nom": c.nom,
                 "email": c.email,
+                "telephone": c.telephone,
+                "linkedin": c.linkedin,
+                "github": c.github,
                 "extraction_method": c.extraction_method,
                 "created_at": c.created_at.isoformat() if c.created_at else None,
             }
             for c in candidates
         ],
+    }
+
+
+@router.get(
+    "/candidates/{cv_id}",
+    summary="Détail d'un candidat avec données parsées",
+    description="Retourne toutes les données extraites par le pipeline NLP pour un CV donné.",
+    responses={
+        200: {"description": "Données complètes du candidat"},
+        404: {"description": "Candidat non trouvé"},
+    },
+)
+def get_candidate_detail(cv_id: str, db: Session = Depends(get_db)):
+    """Retourne le détail complet d'un candidat (infos parsées incluses)."""
+    candidate = db.query(Candidate).filter(Candidate.cv_id == cv_id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidat non trouvé")
+    return {
+        "cv_id": candidate.cv_id,
+        "filename": candidate.filename,
+        "nom": candidate.nom,
+        "email": candidate.email,
+        "telephone": candidate.telephone,
+        "linkedin": candidate.linkedin,
+        "github": candidate.github,
+        "extraction_method": candidate.extraction_method,
+        "parsed_data": candidate.parsed_data,
+        "created_at": candidate.created_at.isoformat() if candidate.created_at else None,
     }

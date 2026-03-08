@@ -1,5 +1,6 @@
 # Environnements Python
 .venv/
+.venv-10/
 venv/
 __pycache__/
 *.pyc

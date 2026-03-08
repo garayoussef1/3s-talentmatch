@@ -1,0 +1,400 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║         3S TalentMatch — Pipeline NLP : Explication Complète         ║
+║                     Sprint 2 — Mars 2026                             ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+
+══════════════════════════════════════════════════════════════════════
+1. VUE D'ENSEMBLE : QU'EST-CE QUI SE PASSE QUAND ON UPLOAD UN CV ?
+══════════════════════════════════════════════════════════════════════
+
+Le flux complet est le suivant :
+
+  Utilisateur (Frontend React)
+       │
+       ▼
+  POST /api/upload-cv  (fichier PDF ou DOCX)
+       │
+       ▼
+  ┌─────────────────────────────────────────┐
+  │  ÉTAPE 1 : Extraction du texte brut     │
+  │  (cv_extractor.py)                      │
+  │                                         │
+  │  PDF textuel → PyPDF (rapide)           │
+  │  PDF scanné  → EasyOCR (plus lent)      │
+  │  DOCX        → python-docx              │
+  └─────────────────────────────────────────┘
+       │
+       ▼  texte brut (string)
+  ┌─────────────────────────────────────────┐
+  │  ÉTAPE 2 : Parsing NLP                  │
+  │  (nlp_parser.py)                        │
+  │                                         │
+  │  Appelle 5 extracteurs en séquence :    │
+  │  1. ContactExtractor  → email, tél      │
+  │  2. EntityExtractor   → nom complet     │
+  │  3. SkillsExtractor   → compétences     │
+  │  4. FormationExtractor → formations     │
+  │  5. ExperienceExtractor → expériences   │
+  │  + extraction langues (regex simple)    │
+  └─────────────────────────────────────────┘
+       │
+       ▼  JSON structuré (parsed_data)
+  ┌─────────────────────────────────────────┐
+  │  ÉTAPE 3 : Stockage en BDD              │
+  │  (PostgreSQL, table "candidates")       │
+  │                                         │
+  │  - raw_text : texte brut complet        │
+  │  - parsed_data : JSON avec tout le      │
+  │    résultat structuré                   │
+  │  - nom, email, telephone : champs       │
+  │    extraits pour recherche rapide       │
+  └─────────────────────────────────────────┘
+       │
+       ▼
+  Réponse JSON au Frontend → Affichage avec onglets
+
+
+══════════════════════════════════════════════════════════════════════
+2. COMMENT FONCTIONNE CHAQUE EXTRACTEUR
+══════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────
+2.1 ContactExtractor (contact_extractor.py)
+────────────────────────────────────────
+
+  MÉTHODE : Regex (expressions régulières)
+
+  Ce qu'il détecte :
+  - Emails     → regex classique (nom@domaine.ext)
+  - Téléphones → patterns FR (+33), TN (+216), international
+  - LinkedIn   → détecte les URLs linkedin.com/in/...
+  - GitHub     → détecte les URLs github.com/...
+
+  LIMITES ACTUELLES :
+  ✗ Ne détecte pas les numéros sans indicatif (ex: "22 333 444")
+  ✗ Ne détecte pas les emails écrits "youssef [at] gmail [dot] com"
+  ✗ Les CVs scannés avec OCR peuvent avoir des erreurs dans les
+    chiffres (ex: "O" au lieu de "0")
+
+
+────────────────────────────────────────
+2.2 EntityExtractor (entity_extractor.py)
+────────────────────────────────────────
+
+  MÉTHODE : spaCy NER (Named Entity Recognition)
+  MODÈLE : fr_core_news_md (modèle français moyen)
+
+  Ce qu'il fait :
+  - Cherche les entités de type PERSON dans le texte
+  - Prend la première entité PERSON trouvée comme nom du candidat
+
+  LIMITES ACTUELLES :
+  ✗ spaCy ne reconnaît pas tous les noms (surtout arabes/tunisiens)
+  ✗ Si le nom est en majuscules "YOUSSEF GARA", spaCy peut ne pas
+    le reconnaître comme un nom de personne
+  ✗ Pas de fallback : si spaCy échoue, le nom reste vide
+  
+  AMÉLIORATIONS POSSIBLES :
+  → Ajouter un fallback regex : chercher le nom en haut du CV
+    (première ligne non-vide qui n'est pas un email/téléphone)
+  → Utiliser le modèle spaCy large (fr_core_news_lg) pour
+    meilleure précision NER
+  → Entraîner un modèle spaCy personnalisé sur des CVs tunisiens
+
+
+────────────────────────────────────────
+2.3 SkillsExtractor (skills_extractor.py)
+────────────────────────────────────────
+
+  MÉTHODE : Matching par dictionnaire (300+ compétences)
+
+  Comment ça marche :
+  1. On a une base de données de 300+ noms de technologies/skills
+     classées en catégories (langages, frameworks, BDD, DevOps, etc.)
+  2. On a une table de synonymes (ex: "JS" → "JavaScript")
+  3. Pour chaque skill de la base, on cherche si elle apparaît dans
+     le texte du CV (case-insensitive, avec word boundaries)
+  4. On cherche aussi les années d'expérience associées
+     (ex: "Python (5 ans)" → years=5)
+  5. On infère le niveau : 0-2 ans=Débutant, 3-5=Intermédiaire, etc.
+
+  LIMITES ACTUELLES :
+  ✗ Cherche dans TOUT le texte, pas seulement la section Compétences
+    → Peut détecter "Java" dans "JavaScript" (faux positif)
+    → Peut détecter "C" quand c'est juste la lettre "C" dans du texte
+  ✗ Ne détecte que les skills présentes dans le dictionnaire
+    → Si le candidat écrit "FastApi" au lieu de "FastAPI", pas détecté
+  ✗ Les années d'expérience ne sont détectées que si écrites
+    explicitement (rare dans les CVs)
+  ✗ Pas de pondération : une skill mentionnée 10 fois a le même
+    poids qu'une mentionnée 1 fois
+
+  AMÉLIORATIONS POSSIBLES :
+  → Isoler la section "Compétences" d'abord (comme on fait pour
+    formations/expériences) pour réduire les faux positifs
+  → Ajouter du fuzzy matching (ex: "FastApi" → "FastAPI")
+  → Compter les occurrences pour pondérer l'importance
+  → Inférer les skills depuis les expériences (si le candidat a
+    travaillé avec "Django", c'est une compétence même si pas
+    listée dans la section Compétences)
+
+
+────────────────────────────────────────
+2.4 FormationExtractor (formation_extractor.py)
+────────────────────────────────────────
+
+  MÉTHODE : Approche par blocs (section → blocs → extraction)
+
+  Comment ça marche :
+  1. ISOLER LA SECTION : Cherche le titre de section "Formation",
+     "Education", "Estudios", "Ausbildung" etc. (international)
+  2. DÉCOUPER EN BLOCS : Chaque formation = un bloc de texte
+     (séparé par lignes vides ou patterns de diplôme)
+  3. PAR BLOC, EXTRAIRE :
+     - Diplôme (Ingénieur, Master, Licence, etc.) + niveau Bac+X
+     - Spécialité ("Génie Logiciel", "Informatique", etc.)
+     - Établissement (ESPRIT, Polytechnique, MIT, etc.)
+       → 17 patterns d'établissements couvrant 7 pays
+     - Année (regex sur 4 chiffres entre 1970-2030)
+     - Mention (Très Bien, Bien, etc.)
+     - En cours ? (si pas d'année de fin ou "en cours"/"present")
+
+  LIMITES ACTUELLES :
+  ✗ Dépend de la détection de la section "Formation"
+    → Si le CV n'a pas de titre de section clair, rien n'est extrait
+  ✗ L'établissement est détecté par regex sur des noms connus
+    → Un établissement inconnu ne sera pas détecté
+  ✗ La spécialité est extraite par heuristique (mots-clés)
+    → Peut être imprécise ou manquante
+
+  AMÉLIORATIONS POSSIBLES :
+  → Enrichir la base d'établissements (ajouter toutes les facs
+    tunisiennes : INSAT, FST, ENSI, ISI, etc.)
+  → Mieux gérer les CVs sans sections claires (détection par
+    contexte plutôt que par titre)
+  → Ajouter la détection de certifications (AWS, CISCO, etc.)
+
+
+────────────────────────────────────────
+2.5 ExperienceExtractor (experience_extractor.py)
+────────────────────────────────────────
+
+  MÉTHODE : Approche par blocs (comme formations)
+
+  Comment ça marche :
+  1. ISOLER LA SECTION : Cherche "Expériences", "Work Experience",
+     "Berufserfahrung" etc.
+  2. DÉCOUPER EN BLOCS : Chaque expérience = un bloc
+  3. PAR BLOC, EXTRAIRE :
+     - Poste : matching sur 55+ patterns de titres
+       (Développeur, Ingénieur, Stagiaire, Data Scientist, etc.)
+     - Entreprise : 3 passes :
+       Pass 1 : Cherche après "chez", "at", "@", "au sein de"
+       Pass 2 : spaCy NER (entités ORG)
+       Pass 3 : Heuristique tiret/pipe (ex: "Dev - TechCorp")
+     - Dates : Regex sur "Janvier 2023 - Présent", "2022-2023",
+       "01/2023 - 07/2023", "depuis 2024", etc.
+     - Durée : Calculée automatiquement (date fin - date début)
+     - Lieu : Matching sur 60+ villes (Paris, Tunis, Berlin, etc.)
+     - Missions : Lignes commençant par "- ", "• ", "* ", etc.
+     - En cours : "Présent", "Present", "Aujourd'hui", "Actuel"
+
+  LIMITES ACTUELLES :
+  ✗ Si le poste n'est pas dans les 55 patterns connus, il n'est
+    pas détecté (ex: "Product Owner", "UX Researcher")
+  ✗ L'entreprise peut être mal détectée si pas de séparateur clair
+    → "Développeur Full Stack, TechCorp" peut rater TechCorp si
+      pas de "chez" ou "@"
+  ✗ Les dates textuelles sans accents posent problème
+    → "Fevrier" au lieu de "Février" n'est pas reconnu
+  ✗ Quand 2 expériences sont collées sans ligne vide, elles
+    peuvent être fusionnées en une seule
+  ✗ Le lieu est détecté uniquement si dans la liste des 60 villes
+    → Sousse, Sfax, Monastir ne sont pas dans la liste
+
+  AMÉLIORATIONS POSSIBLES :
+  → Ajouter plus de patterns de postes (Product Owner, UX Designer,
+    Scrum Master, QA Engineer, etc.)
+  → Gérer les mois sans accents : "Fevrier" → "Février"
+  → Ajouter plus de villes tunisiennes (Sousse, Sfax, Monastir,
+    Nabeul, Bizerte, Gabès, Kairouan, etc.)
+  → Utiliser le contexte : si une ligne a une date, c'est
+    probablement le début d'une expérience
+  → Mieux gérer les CVs tabulaires (2 colonnes)
+
+
+══════════════════════════════════════════════════════════════════════
+3. PROBLÈMES CONNUS ET AXES D'AMÉLIORATION PRIORITAIRES
+══════════════════════════════════════════════════════════════════════
+
+┌───┬─────────────────────────────────────────┬──────────┬──────────┐
+│ # │ Problème                                │ Impact   │ Priorité │
+├───┼─────────────────────────────────────────┼──────────┼──────────┤
+│ 1 │ Nom non détecté (surtout noms arabes)   │ Élevé    │ P1       │
+│ 2 │ Faux positifs skills ("C", "R" dans     │ Moyen    │ P1       │
+│   │ du texte normal)                        │          │          │
+│ 3 │ Expérience : "Fevrier" sans accent      │ Moyen    │ P1       │
+│   │ pas reconnu comme mois                  │          │          │
+│ 4 │ Villes tunisiennes manquantes           │ Moyen    │ P2       │
+│ 5 │ Postes non standards pas détectés       │ Moyen    │ P2       │
+│ 6 │ CVs sans sections claires : extraction  │ Élevé    │ P2       │
+│   │ échoue silencieusement                  │          │          │
+│ 7 │ CVs scannés : qualité OCR dégrade       │ Élevé    │ P3       │
+│   │ toute la chaîne                         │          │          │
+│ 8 │ Langues : extraction basique (regex)    │ Faible   │ P3       │
+│ 9 │ Pas de détection de certifications      │ Faible   │ P3       │
+│10 │ CVs avec 2 colonnes (mise en page       │ Élevé    │ P3       │
+│   │ complexe) : texte mélangé               │          │          │
+└───┴─────────────────────────────────────────┴──────────┴──────────┘
+
+
+══════════════════════════════════════════════════════════════════════
+4. ARCHITECTURE DES FICHIERS
+══════════════════════════════════════════════════════════════════════
+
+backend/
+  app/
+    main.py                    ← FastAPI, CORS, routes
+    database.py                ← Connexion PostgreSQL
+    routes/
+      cv.py                    ← POST /upload-cv, GET /candidates
+    models/
+      candidate.py             ← Modèle SQLAlchemy (table BDD)
+    schemas/
+      cv_data.py               ← Schéma Pydantic (validation JSON)
+    services/
+      extraction/
+        cv_extractor.py        ← Routeur PDF/DOCX/OCR
+        ocr_extractor.py       ← EasyOCR pour PDFs scannés
+      nlp/
+        nlp_parser.py          ← CHEF D'ORCHESTRE - appelle tous
+                                  les extracteurs et assemble le JSON
+        contact_extractor.py   ← Email, téléphone, LinkedIn
+        entity_extractor.py    ← Nom (spaCy NER)
+        skills_extractor.py    ← 300+ compétences par dictionnaire
+        formation_extractor.py ← Diplômes, établissements
+        experience_extractor.py← Postes, entreprises, missions
+
+frontend/
+  src/
+    pages/
+      UploadCV.jsx             ← Page upload avec onglets résultats
+      Candidates.jsx           ← Liste des candidats
+    components/
+      Navbar.jsx               ← Navigation
+
+
+══════════════════════════════════════════════════════════════════════
+5. COMMENT LA BASE DE DONNÉES STOCKE LES RÉSULTATS
+══════════════════════════════════════════════════════════════════════
+
+Table "candidates" dans PostgreSQL :
+
+  ┌───────────────────┬──────────────┬────────────────────────────┐
+  │ Colonne           │ Type         │ Description                │
+  ├───────────────────┼──────────────┼────────────────────────────┤
+  │ id                │ UUID         │ Clé primaire               │
+  │ cv_id             │ String(36)   │ Identifiant unique du CV   │
+  │ filename          │ String(255)  │ Nom du fichier uploadé     │
+  │ nom               │ String(255)  │ Nom extrait                │
+  │ email             │ String(255)  │ Email extrait              │
+  │ telephone         │ String(50)   │ Téléphone extrait          │
+  │ raw_text          │ Text         │ Texte brut complet         │
+  │ parsed_data       │ JSON         │ ← TOUT le résultat NLP     │
+  │ extraction_method │ String(50)   │ pypdf / ocr / docx         │
+  │ created_at        │ DateTime     │ Date d'upload              │
+  └───────────────────┴──────────────┴────────────────────────────┘
+
+  La colonne "parsed_data" contient un JSON avec :
+  {
+    "identite": { "nom_complet": "..." },
+    "contacts": { "email": "...", "telephone": "..." },
+    "competences": [ { "name": "Python", "category": "langages", ... } ],
+    "formations": [ { "diplome": "...", "etablissement": "...", ... } ],
+    "experiences": [ { "poste": "...", "entreprise": "...", ... } ],
+    "langues": [ { "langue": "Français", "niveau": "Courant" } ],
+    "metadata": {
+      "confidence_score": 0.85,
+      "annees_experience_totales": 3.8,
+      "niveau_seniorite": "Confirmé",
+      ...
+    }
+  }
+
+
+══════════════════════════════════════════════════════════════════════
+6. CE QU'ON PEUT AMÉLIORER ENSEMBLE (PROPOSITIONS)
+══════════════════════════════════════════════════════════════════════
+
+PRIORITÉ 1 (Impact élevé, faisable rapidement) :
+
+  [A] Meilleure détection du nom
+      → Fallback regex : prendre la 1ère ligne du CV qui n'est pas
+        un email/téléphone/titre de section
+      → Aide à 90% des cas où spaCy échoue
+
+  [B] Correction des faux positifs skills
+      → Isoler la section "Compétences" et chercher d'abord là-dedans
+      → Les skills trouvées HORS section compétences ont un poids
+        plus faible
+
+  [C] Mois sans accents dans les dates
+      → Ajouter "Fevrier", "Decembre", "Aout" aux patterns de mois
+      → Simple à faire, gros impact sur CVs sans accents
+
+  [D] Villes tunisiennes
+      → Ajouter : Sousse, Sfax, Monastir, Nabeul, Bizerte, Gabès,
+        Kairouan, Médenine, Tozeur, Gafsa, Béja, Jendouba, Siliana,
+        Le Kef, La Manouba, Ben Arous, Ariana, Manouba
+
+PRIORITÉ 2 (Important mais plus complexe) :
+
+  [E] Plus de patterns de postes
+      → Product Owner, Scrum Master, QA Engineer, UX Designer,
+        Data Analyst, Business Analyst, Tech Lead, CTO, COO, etc.
+
+  [F] Détection de certifications
+      → AWS Certified, CISCO CCNA, PMP, Scrum Master Certified,
+        Google Cloud, Azure, ISTQB, etc.
+
+  [G] Meilleure extraction sans sections claires
+      → Utiliser des heuristiques de contexte plutôt que
+        uniquement les titres de section
+
+PRIORITÉ 3 (Améliorations futures / avancées) :
+
+  [H] Qualité OCR
+      → Preprocessing image (binarisation, déskew, denoising)
+        avant l'OCR pour améliorer la qualité du texte extrait
+
+  [I] CVs multi-colonnes
+      → Détection de layout avec une approche basée sur les
+        coordonnées des blocs de texte OCR
+
+  [J] Modèle ML personnalisé
+      → Entraîner un classifieur de sections de CV
+      → Entraîner un NER spécifique aux CVs (postes, entreprises)
+
+
+══════════════════════════════════════════════════════════════════════
+7. RÉSUMÉ
+══════════════════════════════════════════════════════════════════════
+
+CE QUI MARCHE BIEN :
+  ✓ Extraction de texte (PDF textuel, DOCX, PDF scanné)
+  ✓ Détection des compétences (300+ skills avec catégories)
+  ✓ Extraction des formations (diplôme, établissement, année)
+  ✓ Extraction des expériences (poste, entreprise, dates, missions)
+  ✓ Pipeline complet upload → parsing → stockage → affichage
+  ✓ Support international (FR, EN, DE, ES, RU)
+
+CE QUI PEUT ÊTRE AMÉLIORÉ :
+  ✗ Détection du nom (surtout noms arabes/tunisiens)
+  ✗ Faux positifs dans les skills
+  ✗ Mois sans accents non reconnus
+  ✗ Villes tunisiennes manquantes
+  ✗ CVs sans structure claire
+  ✗ CVs avec mise en page complexe (2 colonnes)
+
+Dis-moi sur quels points tu veux qu'on travaille en priorité !

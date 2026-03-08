@@ -42,11 +42,12 @@ class TestFormatValidation:
         response = client.post("/api/upload-cv", files=files)
         assert response.status_code == 400
 
-    def test_jpg_file_returns_400(self):
-        """Un fichier .jpg doit être rejeté avec 400."""
+    def test_jpg_file_returns_200_or_500(self):
+        """Un fichier .jpg est maintenant accepté (OCR EasyOCR)."""
         files = {"file": ("cv.jpg", io.BytesIO(b"\xff\xd8\xff"), "image/jpeg")}
         response = client.post("/api/upload-cv", files=files)
-        assert response.status_code == 400
+        # 200 si OCR réussit, 500 si contenu invalide — mais PAS 400
+        assert response.status_code != 400
 
     def test_xlsx_file_returns_400(self):
         """Un fichier .xlsx doit être rejeté avec 400."""

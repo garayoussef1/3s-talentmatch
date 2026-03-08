@@ -23,7 +23,7 @@ class Candidate(Base):
     linkedin = Column(String(255), nullable=True)
     github = Column(String(255), nullable=True)
 
-    # Données structurées complètes (JSON brut du parser NLP)
+    # Données structurées complètes (JSON brut du parser)
     parsed_data = Column(JSON, nullable=True)
 
     # Texte brut extrait

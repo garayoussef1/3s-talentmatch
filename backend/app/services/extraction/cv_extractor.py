@@ -81,7 +81,7 @@ class CVExtractor:
             if result.get('needs_ocr'):
                 logger.info("PDF scanné détecté → basculement sur OCR")
                 result = self._ocr_extractor.extract(file_path)
-                result['method'] = 'pypdf+easyocr'
+                result['method'] = 'pypdf+ocr'
 
         # Ajouter le format détecté dans le résultat
         result['format'] = suffix

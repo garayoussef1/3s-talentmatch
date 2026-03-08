@@ -7,7 +7,7 @@ from app.routes import cv
 tags_metadata = [
     {
         "name": "CV",
-        "description": "Upload de CVs (PDF/DOCX), extraction de texte et consultation des candidats.",
+        "description": "Upload de CVs (PDF/DOCX/PNG/JPG), extraction de texte et consultation des candidats.",
     },
     {
         "name": "Sant\u00e9",
@@ -20,7 +20,7 @@ app = FastAPI(
     description=(
         "## Plateforme intelligente de matching CV / offres d'emploi\n\n"
         "Cette API permet de :\n"
-        "- **Uploader** des CVs au format PDF ou DOCX (max 10\u00a0Mo)\n"
+        "- **Uploader** des CVs au format PDF, DOCX ou Image PNG/JPG (max 10\u00a0Mo)\n"
         "- **Extraire** automatiquement le texte brut (PDF textuel, DOCX, PDF scann\u00e9 via OCR)\n"
         "- **Stocker** les candidats en base PostgreSQL\n"
         "- **Consulter** la liste des candidats enregistr\u00e9s\n\n"
