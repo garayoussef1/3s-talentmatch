@@ -32,6 +32,17 @@ _NOT_NAME_WORDS = {
     "stagiaire", "intern", "junior", "senior", "lead", "chef",
     "data", "scientist", "architect", "devops", "fullstack", "full-stack",
     "recherche", "développement", "intelligence", "artificielle",
+    # Métiers non-IT (marketing, santé, compta, manuels)
+    "digital", "marketing", "comptable", "expert-comptable",
+    "électricien", "electricien", "plombier", "maçon", "macon",
+    "menuisier", "mécanicien", "mecanicien", "soudeur",
+    "infirmière", "infirmiere", "infirmier",
+    "aide-soignant", "aide-soignante",
+    "médecin", "medecin", "pharmacien", "pharmacienne",
+    "responsable", "directeur", "directrice", "coordinateur",
+    "gestionnaire", "technicien", "technicienne",
+    "spécialiste", "specialiste", "specialist", "expert",
+    "head", "bâtiment", "batiment", "industriel",
     # Mots génériques / labels
     "monsieur", "madame", "mr", "mrs", "ms", "dr", "prof",
     "email", "mail", "téléphone", "telephone", "phone", "tel",
@@ -94,13 +105,35 @@ class EntityExtractor:
     def __init__(self, nlp_model):
         self._nlp = nlp_model
 
+    # Titres métiers/postes à supprimer APRES extraction du nom
+    _JOB_TITLE_PATTERN = re.compile(
+        r"\b(?:"
+        r"Digital\s+Marketing|Marketing\s+Digital|Marketing|Manager|Engineer"
+        r"|Developer|D[ée]veloppeur|Ing[ée]nieur"
+        r"|Électricien|Electricien|Plombier|Ma[\u00e7c]on|Menuisier"
+        r"|M[ée]canicien|Soudeur"
+        r"|Infirmi[\u00e8e]re?|Aide[\-\s]Soignante?"
+        r"|M[ée]decin|Pharmacien(?:ne)?"
+        r"|Comptable|Expert[\-\s]?Comptable"
+        r"|Chef\s+de|Responsable|Charg[ée]e?(?:\s+de?)?"
+        r"|Directeur(?:rice)?|Consultant(?:e)?"
+        r"|Technicien(?:ne)?|Sp[ée]cialiste|Specialist"
+        r"|Coordinat(?:eur|rice)|Gestionnaire"
+        r"|Head\s+of|Senior|Junior|Lead|Expert"
+        r"|B[\u00e2a]timent|Industriel(?:le)?"
+        r")\b",
+        re.IGNORECASE,
+    )
+
     @staticmethod
     def _clean_name(value: str) -> str:
         """Nettoie un nom extrait : supprime les mots parasites, emails, symboles."""
-        cleaned = " ".join((value or "").split()).strip("-: ")
-        # Supprimer tout ce qui contient @ (email collé au nom)
+        # 1. Supprimer décorations
+        cleaned = re.sub(r'[\u2551\u25ba\u25aa\u25cf\u25c6\u2192\u2022\u2550\u2554\u2557\u255a\u255d\u2560\u2563\u256c]', '', value or '')
+        cleaned = " ".join(cleaned.split()).strip("-: ")
+        # 2. Supprimer tout ce qui contient @ (email collé au nom)
         words = [w for w in cleaned.split(" ") if w and "@" not in w]
-        # Supprimer les mots parasites connus
+        # 3. Supprimer les mots parasites connus
         filtered = []
         for w in words:
             wl = w.lower().rstrip(".,;:")
@@ -262,6 +295,15 @@ class EntityExtractor:
                 return ' '.join(words)
         return None
 
+    def _strip_job_title(self, name: str) -> str:
+        """Supprime les titres de métier/poste collés au nom."""
+        cleaned = self._JOB_TITLE_PATTERN.sub("", name)
+        cleaned = " ".join(cleaned.split()).strip()
+        # Si tout a été supprimé, garder l'original
+        if len(cleaned.split()) < 2:
+            return name
+        return cleaned
+
     def extract_full_name(self, text: str) -> Optional[str]:
         """
         Extrait le nom complet du candidat.
@@ -282,29 +324,30 @@ class EntityExtractor:
             # Pass 1a : Préfixe explicite ("Nom :", "Name :", etc.)
             from_prefix = self._extract_name_from_prefix(text)
             if from_prefix:
-                result = self._normalize_case(from_prefix)
+                result = self._strip_job_title(self._normalize_case(from_prefix))
                 logger.info("Nom trouvé par préfixe : %s", result)
                 return result
 
             # Pass 1b : Titre honorifique (Dr. AMIRA JEBALI, M. Dupont)
             from_honorific = self._extract_name_from_honorific(text)
             if from_honorific:
-                result = self._normalize_case(from_honorific)
+                result = self._strip_job_title(self._normalize_case(from_honorific))
                 logger.info("Nom trouvé par honorifique : %s", result)
                 return result
 
             # Pass 1c : CamelCase (SarahJohnson → Sarah Johnson)
             from_camel = self._extract_name_from_camelcase(text)
             if from_camel:
-                logger.info("Nom trouvé par CamelCase : %s", from_camel)
-                return from_camel
+                result = self._strip_job_title(from_camel)
+                logger.info("Nom trouvé par CamelCase : %s", result)
+                return result
 
             # Pass 2 : spaCy NER
             from_ner = self._extract_name_from_person_entities(text)
             if from_ner:
                 from_ner = self._strip_location_words(from_ner)
                 if len(from_ner.split()) >= 2:
-                    result = self._normalize_case(from_ner)
+                    result = self._strip_job_title(self._normalize_case(from_ner))
                     logger.info("Nom trouvé par spaCy NER : %s", result)
                     return result
                 logger.debug("NER a retourné '%s' mais insuffisant après nettoyage", from_ner)
@@ -312,7 +355,7 @@ class EntityExtractor:
             # Pass 3 : Première ligne du CV (avec nettoyage décorations)
             from_first_line = self._extract_name_from_first_lines(text)
             if from_first_line:
-                result = self._normalize_case(from_first_line)
+                result = self._strip_job_title(self._normalize_case(from_first_line))
                 logger.info("Nom trouvé par première ligne : %s", result)
                 return result
 

@@ -145,13 +145,23 @@ class NLPParser:
         )
         text = section_pattern.sub(r"\n\n\1\n", text)
 
+        # ── 1b. Nettoyer décorations et symboles (box-drawing, bullets déco) ──
+        text = re.sub(r'[║╔╗╚╝═╠╣╬►▪◆→]', '', text)
+        text = re.sub(r'[^\S\n]{2,}', ' ', text)  # collapse espaces horizontaux seulement
+
         # ── 2. Inject \n AVANT les titres de postes (pour CV compacts inline) ──
         # Permet de séparer "...WebAgency 2023 - Présent Développeur Junior..."
         text = re.sub(
             r"(?<!\n)\s+(?="
             r"(?:DRH|Responsable|Charg[ée]e?|Assistant(?:e)?|Ing[ée]nieur"
             r"|D[ée]veloppeur|Consultant|Manager|Directeur|Chef\s+de"
-            r"|Analyste|Coordinateur|Gestionnaire|Technicien)\b"
+            r"|Analyste|Coordinateur|Gestionnaire|Technicien"
+            r"|Électricien|Electricien|Plombier|Ma[çc]on|Menuisier"
+            r"|M[ée]canicien|Soudeur|Peintre"
+            r"|Infirmi[èe]re?|Aide[\-\s]Soignant"
+            r"|Expert[\-\s]?Comptable|Comptable|Auditeur|Auditrice"
+            r"|Pharmacien|M[ée]decin|Sage[\-\s]Femme"
+            r"|Community\s+Manager|Digital\s+Marketing|Social\s+Media|Growth\s+Hacker)\b"
             r")",
             r"\n",
             text,

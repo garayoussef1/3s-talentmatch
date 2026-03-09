@@ -173,33 +173,43 @@ def _parse_date_token(token: str) -> Tuple[Optional[int], Optional[int]]:
     if _is_ongoing(token) or _is_ongoing(token_norm):
         return None, None
 
+    _max_year = date.today().year + 2
+
     # « mois année » : janvier 2020 / Jan 2020
     for month_name, month_num in MONTHS_MAP_NORMALIZED.items():
         pat = re.compile(rf"^{re.escape(month_name)}\s*\.?\s*(\d{{4}})$", re.I)
         m = pat.match(token_norm)
         if m:
-            return int(m.group(1)), month_num
+            year = int(m.group(1))
+            if year < 1950 or year > _max_year:
+                return None, None
+            return year, month_num
 
     # « MM/YYYY » ou « MM-YYYY » ou « MM.YYYY »
     m = re.match(r"^(\d{1,2})[/\-\.](\d{4})$", token_norm)
     if m:
         month = int(m.group(1))
-        if 1 <= month <= 12:
-            return int(m.group(2)), month
+        year = int(m.group(2))
+        if 1 <= month <= 12 and 1950 <= year <= _max_year:
+            return year, month
         return None, None
 
     # « YYYY-MM » (ISO)
     m = re.match(r"^(\d{4})[/\-\.](\d{1,2})$", token_norm)
     if m:
+        year = int(m.group(1))
         month = int(m.group(2))
-        if 1 <= month <= 12:
-            return int(m.group(1)), month
+        if 1 <= month <= 12 and 1950 <= year <= _max_year:
+            return year, month
         return None, None
 
     # « YYYY » seul
     m = re.match(r"^(\d{4})$", token_norm)
     if m:
-        return int(m.group(1)), 1
+        year = int(m.group(1))
+        if year < 1950 or year > date.today().year + 2:
+            return None, None
+        return year, 1
 
     return None, None
 
@@ -214,12 +224,14 @@ def _compute_duration_months(
     end_year: Optional[int], end_month: Optional[int],
 ) -> int:
     """Calcule la durée en mois entre deux dates."""
-    if end_year is None:
-        today = date.today()
+    today = date.today()
+    if end_year is None or end_year > today.year + 1:
         end_year = today.year
         end_month = today.month
     if end_month is None:
         end_month = 1
+    if start_year > today.year + 1:
+        return 0
     return max(0, (end_year - start_year) * 12 + (end_month - start_month))
 
 
@@ -336,6 +348,45 @@ _TITRES_FR_COMPOSES = [
     r"directeur\s+commercial",
     r"directeur\s+marketing",
     r"directeur\s+de\s+projet",
+    # Marketing / Communication
+    r"head\s+of\s+digital\s+marketing",
+    r"digital\s+marketing\s+(?:manager|specialist|expert)",
+    r"social\s+media\s+(?:manager|specialist)",
+    r"responsable\s+marketing\s+digital",
+    r"charg[ée]e?\s+de\s+communication\s+digitale?",
+    r"growth\s+hacker",
+    r"content\s+(?:manager|strategist)",
+    r"community\s+manager",
+    r"traffic\s+manager",
+    r"seo\s+(?:manager|specialist|expert)",
+    # Comptabilité / Finance
+    r"expert(?:e)?\s*[\-\s]?comptable",
+    r"expert(?:e)?\s+comptable\s+associ[ée]e?",
+    r"chef\s+comptable",
+    r"responsable\s+comptable",
+    r"auditeur(?:\s+junior)?",
+    r"auditrice(?:\s+junior(?:e)?)?",
+    r"commissaire\s+aux\s+comptes",
+    r"contr[ôo]leur\s+de\s+gestion",
+    r"analyste\s+financier",
+    # Santé / Médical
+    r"infirmi[èe]re?(?:\s+en\s+r[ée]animation)?",
+    r"infirmi[èe]re?(?:\s+service\s+urgences)?",
+    r"infirmi[èe]re?(?:\s+polyvalente?)?",
+    r"aide[\-\s]soignant(?:e)?",
+    r"m[ée]decin(?:\s+g[ée]n[ée]raliste)?",
+    r"pharmacien(?:ne)?",
+    r"sage[\-\s]femme",
+    # Métiers manuels
+    r"[ée]lectricien(?:\s+b[âa]timent)?",
+    r"[ée]lectricien(?:\s+industriel)?",
+    r"plombier(?:\s+chauffagiste)?",
+    r"ma[çc]on",
+    r"menuisier",
+    r"m[ée]canicien(?:\s+auto)?",
+    r"soudeur",
+    r"peintre\s+en\s+b[âa]timent",
+    r"charpentier",
 ]
 
 _TITRES_FR = [
@@ -543,7 +594,7 @@ class ExperienceExtractor:
                 continue
             has_date_range = bool(re.search(r'(?<!\()\b(19|20)\d{2}\s*[-\u2013\u2014]\s*(?:19|20)?\d{2}\b(?!\))', line))
             has_year = bool(re.search(r'\b(19|20)\d{2}\b', line))
-            has_title = bool(re.search(r'\b(?:Stage|Stagiaire|DRH|Responsable|Charg[ée]e?|Assistant(?:e)?|Ing[ée]nieur|D[ée]veloppeur|Consultant|Manager|Directeur|Chef|Analyste|Coordinateur|Gestionnaire)\b', line, re.I))
+            has_title = bool(re.search(r'\b(?:Stage|Stagiaire|DRH|Responsable|Charg[ée]e?|Assistant(?:e)?|Ing[ée]nieur|D[ée]veloppeur|Consultant|Manager|Directeur|Chef|Analyste|Coordinateur|Gestionnaire|Électricien|Electricien|Plombier|Ma[çc]on|Menuisier|Mécanicien|Mecanicien|Soudeur|Infirmi[èe]re?|Aide[\-\s]Soignant|Expert[\-\s]?Comptable|Comptable|Auditeur|Pharmacien|Médecin|Medecin|Community\s+Manager|Digital\s+Marketing|Social\s+Media)\b', line, re.I))
             is_new_experience = has_date_range or (has_year and has_title)
             if current and is_new_experience:
                 blocks.append('\n'.join(current))
