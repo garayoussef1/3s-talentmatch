@@ -26,12 +26,14 @@ _NOT_NAME_WORDS = {
     "compétences", "competences", "skills", "formation", "education",
     "expérience", "experience", "langues", "languages", "contact",
     "références", "references", "projets", "projects", "certifications",
-    # Postes courants (pas un nom)
+    # Postes courants IT
     "développeur", "developpeur", "ingénieur", "ingenieur", "engineer",
     "developer", "manager", "consultant", "analyst", "designer",
     "stagiaire", "intern", "junior", "senior", "lead", "chef",
     "data", "scientist", "architect", "devops", "fullstack", "full-stack",
     "recherche", "développement", "intelligence", "artificielle",
+    # Postes UX / Design
+    "ux", "ui", "ux/ui", "product", "graphic",
     # Métiers non-IT (marketing, santé, compta, manuels)
     "digital", "marketing", "comptable", "expert-comptable",
     "électricien", "electricien", "plombier", "maçon", "macon",
@@ -43,6 +45,23 @@ _NOT_NAME_WORDS = {
     "gestionnaire", "technicien", "technicienne",
     "spécialiste", "specialiste", "specialist", "expert",
     "head", "bâtiment", "batiment", "industriel",
+    # Architecture / BTP
+    "architecte", "urbaniste", "dplg", "d.p.l.g", "d.p.l.g.",
+    # Commerce / Vente
+    "vendeur", "vendeuse", "commercial", "commerciale",
+    "automobile", "terrain",
+    # Audit / Finance
+    "auditeur", "auditrice", "financier", "financière", "financiere",
+    "associé", "associée", "associee",
+    # Lieu de travail parasite
+    "cabinet", "garage", "clinique", "hôpital", "hopital",
+    "agence", "bureau", "studio", "atelier", "laboratoire",
+    # Mots de CV/admin
+    "etat", "état", "civil", "parcours", "historique",
+    "publications", "publication", "divers",
+    # Data / ML / AI (souvent collé au nom)
+    "machine", "learning", "deep", "science", "scientist",
+    "analytics", "analyst", "analysis",
     # Mots génériques / labels
     "monsieur", "madame", "mr", "mrs", "ms", "dr", "prof",
     "email", "mail", "téléphone", "telephone", "phone", "tel",
@@ -66,8 +85,14 @@ _LOCATION_WORDS = {
     # France
     "paris", "lyon", "marseille", "toulouse", "nantes", "bordeaux",
     "lille", "nice", "strasbourg", "montpellier", "france",
-    # Autres
+    # Maroc
+    "casablanca", "rabat", "fès", "fes", "marrakech", "tanger",
+    "agadir", "oujda", "kénitra", "kenitra", "tétouan", "tetouan",
+    # International
     "canada", "maroc", "algérie", "algerie", "morocco", "algeria",
+    "dubai", "dubaï", "remote", "émirats", "emirats",
+    "belgique", "suisse", "allemagne", "espagne", "italie",
+    "london", "londres", "bruxelles", "genève", "geneve",
 }
 
 # Pattern pour vérifier qu'un mot ressemble à un prénom/nom
@@ -114,13 +139,25 @@ class EntityExtractor:
         r"|M[ée]canicien|Soudeur"
         r"|Infirmi[\u00e8e]re?|Aide[\-\s]Soignante?"
         r"|M[ée]decin|Pharmacien(?:ne)?"
-        r"|Comptable|Expert[\-\s]?Comptable"
+        r"|Comptable|Expert(?:e)?[\-\s]?Comptable"
         r"|Chef\s+de|Responsable|Charg[ée]e?(?:\s+de?)?"
         r"|Directeur(?:rice)?|Consultant(?:e)?"
         r"|Technicien(?:ne)?|Sp[ée]cialiste|Specialist"
         r"|Coordinat(?:eur|rice)|Gestionnaire"
         r"|Head\s+of|Senior|Junior|Lead|Expert"
         r"|B[\u00e2a]timent|Industriel(?:le)?"
+        # Architecture / BTP
+        r"|Architecte(?:\s+D\.?P\.?L\.?G\.?)?|Urbaniste|D\.?P\.?L\.?G\.?"
+        # UX / Design
+        r"|UX/?UI|UX|UI|Product\s+Designer|Graphic\s+Designer"
+        # Data / ML / AI
+        r"|Data\s+Scientist|Machine\s+Learning(?:\s+Engineer)?"
+        r"|Deep\s+Learning|Data\s+Analyst|Data\s+Engineer"
+        r"|Business\s+Analyst|Business\s+Intelligence"
+        # Commerce / Vente
+        r"|Vendeur(?:se)?(?:\s+automobile)?|Commercial(?:e)?(?:\s+terrain)?"
+        # Audit / Finance
+        r"|Audit(?:eur|rice)(?:\s+Financi[eè]re?)?"
         r")\b",
         re.IGNORECASE,
     )
@@ -263,42 +300,95 @@ class EntityExtractor:
         return None
 
     def _extract_name_from_first_lines(self, text: str) -> Optional[str]:
+        """Pass 3: Extraction intelligente depuis les premières lignes.
+
+        Stratégie :
+        1. Prend les 10 premières lignes
+        2. Pour chaque ligne, découpe aux séparateurs (|, –, —, email, tél)
+           et teste le premier fragment
+        3. Nettoie les mots parasites puis vérifie la plausibilité
+        """
         lines = (text or "").split('\n')[:10]
         for line in lines:
             line = line.strip()
-            if not line or len(line) > 60:
+            if not line:
                 continue
-            line = re.sub(r'[|¦•●►║═]', '', line).strip()
-            words = line.split()
-            if len(words) < 2 or len(words) > 4:
+
+            # Découper la ligne aux séparateurs courants dans les CVs
+            # |, –, —, email, phone, urls  →  prendre le premier fragment
+            fragment = re.split(
+                r'\s*[|¦║]\s*'               # pipe / box-drawing
+                r'|\s+[-–—]\s+'              # tiret entouré d'espaces
+                r'|\s+\d{2,4}[\s./\-]'       # début numéro de téléphone
+                r'|\s+\+\d'                   # +216, +33, +212...
+                r'|\s+\S+@\S+'               # email
+                r'|\s+https?://'              # url
+                r'|\s+linkedin'              # linkedin
+                r'|\s+www\.',                # website
+                line, maxsplit=1
+            )[0].strip()
+
+            # Supprimer décorations résiduelles
+            fragment = re.sub(r'[•●►▪◆★☆/⌢⌣]', ' ', fragment)
+            fragment = " ".join(fragment.split()).strip()
+
+            if not fragment or len(fragment) > 80:
                 continue
-            if re.search(r'\d', line):
-                continue
-            if ':' in line:
-                continue
-            section_keywords = ['curriculum', 'vitae', 'cv', 'resume', 'profil',
-                               'profile', 'contact', 'information', 'expérience',
-                               'compétences', 'competences', 'skills', 'formation',
-                               'langues', 'langue']
-            if any(kw in line.lower() for kw in section_keywords):
-                continue
-            valid = True
+
+            # Nettoyer les titres de métier du fragment
+            cleaned = self._JOB_TITLE_PATTERN.sub("", fragment)
+            cleaned = " ".join(cleaned.split()).strip("- ,;:")
+
+            # Nettoyer les mots parasites
+            words = cleaned.split()
+            filtered = []
             for w in words:
+                wl = w.lower().rstrip(".,;:-()")
+                if wl in _NOT_NAME_WORDS or wl in _LOCATION_WORDS:
+                    continue
+                if len(wl) < 2:
+                    continue
+                # Ignorer les abréviations type D.P.L.G
+                if re.match(r'^[A-Z]\.([A-Z]\.)+$', w):
+                    continue
+                filtered.append(w)
+
+            if len(filtered) < 2 or len(filtered) > 4:
+                continue
+            candidate = " ".join(filtered)
+
+            # Vérifier : pas de chiffres, pas de :, pas de @, pas de virgule
+            if re.search(r'\d', candidate) or ':' in candidate or '@' in candidate:
+                continue
+            if ',' in candidate:
+                continue
+
+            # Rejeter si ça contient des mots techniques / langages / termes non-nom
+            _TECH_WORDS = {"python", "java", "javascript", "react", "angular",
+                           "vue", "django", "flask", "node", "docker", "sql",
+                           "html", "css", "excel", "word", "powerpoint",
+                           "spring", "laravel", "php", "ruby", "swift", "kotlin"}
+            if any(w.lower().rstrip(".,;:") in _TECH_WORDS for w in filtered):
+                continue
+
+            # Chaque mot doit commencer par une majuscule (ou tout en majuscule)
+            valid = True
+            for w in filtered:
                 w_clean = w.strip('.,;:')
-                if len(w_clean) < 2:
-                    valid = False
-                    break
                 if not (w_clean[0].isupper() or w_clean.isupper()):
                     valid = False
                     break
             if valid:
-                return ' '.join(words)
+                return candidate
         return None
 
     def _strip_job_title(self, name: str) -> str:
         """Supprime les titres de métier/poste collés au nom."""
         cleaned = self._JOB_TITLE_PATTERN.sub("", name)
-        cleaned = " ".join(cleaned.split()).strip()
+        # Supprimer connecteurs orphelins (& et -)
+        cleaned = re.sub(r'\s*[&]\s*', ' ', cleaned)
+        cleaned = re.sub(r'(?:^|\s)-+(?:\s|$)', ' ', cleaned)
+        cleaned = " ".join(cleaned.split()).strip("- ,;:.")
         # Si tout a été supprimé, garder l'original
         if len(cleaned.split()) < 2:
             return name
@@ -342,7 +432,14 @@ class EntityExtractor:
                 logger.info("Nom trouvé par CamelCase : %s", result)
                 return result
 
-            # Pass 2 : spaCy NER
+            # Pass 2 : Première ligne du CV (avec découpage intelligent)
+            from_first_line = self._extract_name_from_first_lines(text)
+            if from_first_line:
+                result = self._strip_job_title(self._normalize_case(from_first_line))
+                logger.info("Nom trouvé par première ligne : %s", result)
+                return result
+
+            # Pass 3 : spaCy NER
             from_ner = self._extract_name_from_person_entities(text)
             if from_ner:
                 from_ner = self._strip_location_words(from_ner)
@@ -351,13 +448,6 @@ class EntityExtractor:
                     logger.info("Nom trouvé par spaCy NER : %s", result)
                     return result
                 logger.debug("NER a retourné '%s' mais insuffisant après nettoyage", from_ner)
-
-            # Pass 3 : Première ligne du CV (avec nettoyage décorations)
-            from_first_line = self._extract_name_from_first_lines(text)
-            if from_first_line:
-                result = self._strip_job_title(self._normalize_case(from_first_line))
-                logger.info("Nom trouvé par première ligne : %s", result)
-                return result
 
             logger.warning("Aucun nom détecté par les 5 passes")
             return None
