@@ -2,9 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from app.routes import cv
+from app.routes import cv, auth
 
 tags_metadata = [
+    {
+        "name": "Auth",
+        "description": "Inscription, connexion (email/password), OAuth Google et LinkedIn.",
+    },
     {
         "name": "CV",
         "description": "Upload de CVs (PDF/DOCX/PNG/JPG), extraction de texte et consultation des candidats.",
@@ -25,7 +29,7 @@ app = FastAPI(
         "- **Stocker** les candidats en base PostgreSQL\n"
         "- **Consulter** la liste des candidats enregistr\u00e9s\n\n"
         "### Authentification\n"
-        "Aucune authentification requise pour le Sprint\u00a01 (en cours d'impl\u00e9mentation).\n"
+        "JWT Bearer token. Inscription / connexion via email ou OAuth (Google, LinkedIn).\n"
     ),
     version="1.0.0",
     contact={
@@ -43,13 +47,14 @@ app = FastAPI(
 # --- CORS (autorise le frontend React sur localhost:3000) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # --- Routes ---
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(cv.router, prefix="/api", tags=["CV"])
 
 
