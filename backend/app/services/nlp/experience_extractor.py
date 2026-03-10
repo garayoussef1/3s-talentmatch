@@ -88,6 +88,7 @@ for _i, (_full, *_abbrs) in enumerate([
 ], start=1):
     for _name in (_full, *_abbrs):
         MONTHS_MAP[_name] = _i
+        MONTHS_MAP_NORMALIZED[_normalize_date_text(_name)] = _i
 
 
 # ================================================================
@@ -391,8 +392,8 @@ _TITRES_FR_COMPOSES = [
 
 _TITRES_FR = [
     # Informatique & Tech
-    r"d[ée]veloppeur(?:\s+(?:web|mobile|full[\s\-]?stack|front[\s\-]?end|back[\s\-]?end|logiciel|java|python|\.net|php|c\+\+))?",
-    r"ing[ée]nieur(?:\s+(?:logiciel|d[ée]veloppement|syst[eèé]mes?|r[ée]seaux?|devops|cloud|data|ia|s[ée]curit[ée]|test|qualit[ée]|informatique|[ée]tudes?))?",
+    r"d[ée]veloppeu(?:r|se)(?:\s+(?:web|mobile|full[\s\-]?stack|front[\s\-]?end|back[\s\-]?end|logiciel|java|python|\.net|php|c\+\+))?",
+    r"ing[ée]nieu(?:r|re)(?:\s+(?:logiciel|d[ée]veloppement|syst[eèé]mes?|r[ée]seaux?|devops|cloud|data|ia|s[ée]curit[ée]|test|qualit[ée]|informatique|[ée]tudes?))?",
     r"architecte(?:\s+(?:logiciel|solutions?|technique|cloud|syst[eèé]me|s[ée]curit[ée]))?",
     r"chef\s+de\s+projet(?:\s+(?:informatique|technique|digital|web|it))?",
     r"responsable(?:\s+(?:technique|informatique|it|d[ée]veloppement|infrastructure|s[ée]curit[ée]|data|digital))?",
@@ -407,9 +408,11 @@ _TITRES_FR = [
     r"devops(?:\s+engineer)?",
     r"lead\s+(?:d[ée]veloppeur|technique|developer|tech)",
     # Stages & alternance
-    r"stagiaire(?:\s+[\w\s]{3,30})?",
+    r"stagiaire(?:\s+[^\n,;]{3,30})?",
     r"alternant(?:e)?(?:\s+[\w\s]{3,30})?",
     r"apprenti(?:e)?(?:\s+[\w\s]{3,20})?",
+    # Assistant(e) générique
+    r"assistant(?:e)?(?:\s+[\w\s]{2,25})?",
     # Business / Gestion
     r"chef\s+d[''']?[ée]quipe",
     r"manager(?:\s+[\w\s]{3,20})?",
@@ -419,7 +422,7 @@ _TITRES_FR = [
 ]
 
 _TITRES_EN = [
-    r"(?:senior|junior|lead|principal|staff)\s+(?:software\s+)?(?:engineer|developer)",
+    r"(?:senior|junior|lead|principal|staff)\s+(?:software\s+|data\s+)?(?:engineer|developer|analyst|scientist)",
     r"software\s+(?:engineer|developer|architect)",
     r"(?:front[\s\-]?end|back[\s\-]?end|full[\s\-]?stack)\s+(?:developer|engineer)",
     r"(?:web|mobile|ios|android|cloud|platform|site\s+reliability)\s+(?:developer|engineer)",
@@ -436,7 +439,7 @@ _TITRES_EN = [
     r"agile\s+coach",
     r"scrum\s+master",
     r"product\s+owner",
-    r"(?:intern|trainee|apprentice)(?:\s+[\w\s]{3,20})?",
+    r"(?:intern|trainee|apprentice)(?:\s+(?!(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|janv|f[ée]v|mars|avr|mai|juin|juil|ao[ûu]|sept|d[ée]c)\b)[\w\s]{3,20})?",
     r"(?:research|teaching)\s+(?:assistant|associate)",
     r"professor(?:\s+[\w\s]{3,20})?",
     r"freelanc(?:e|er)",
@@ -548,18 +551,18 @@ class ExperienceExtractor:
             r"\n\s*(?:dipl[ôo]mes?\s*(?:&\s*[ée]tudes)?"
             r"|formation[s]?\s*(?:acad[ée]mique[s]?)?"
             r"|[ée]ducation|education"
-            r"|academic\s+background"
+            r"|academic\s+(?:background|projects?)"
             r"|comp[ée]tences?\s*(?:techniques?|professionnelles?|cl[ée]s?)?"
-            r"|skills?"
-            r"|langues?\s*(?:parl[ée]es?)?|languages?"
+            r"|skills?\b(?!\s*:)"
+            r"|langues?\s*(?:parl[ée]es?)?|languages?\b(?!\s*:)"
             r"|ma[îi]trise\s+des\s+langues"
-            r"|savoir[\s\-]faire|connaissances?|technologies?|stack\s+technique|outils?"
+            r"|savoir[\s\-]faire|connaissances?|technologies?\b(?!\s*:)|stack\s+technique|outils?"
             r"|projets?\s*(?:personnels?|acad[ée]miques?)?"
             r"|certifications?\s*(?:professionnelles?)?"
             r"|publications?|loisirs?|passions?|hobbies?"
             r"|engagements?|activit[ée]s?"
             r"|divers|r[ée]f[ée]rences?"
-            r"|profil|summary|objective"
+            r"|profil|summary|objective|qualifications?"
             r"|ausbildung|formaci[oó]n"
             r"|образование"
             r")[^\n]*\n",
@@ -580,12 +583,23 @@ class ExperienceExtractor:
             return []
         # Em dash (U+2014) → séparateur de blocs pour CV compacts inline
         section = re.sub(r'\s+\u2014\s+', '\n', section)
-        # Marqueurs visuels → newline ; | gardé (format "titre | société | dates")
-        section = re.sub(r'[¦•●►]', '\n', section)
+        # Marqueurs visuels → newline (absorber whitespace autour pour éviter \n\n)
+        section = re.sub(r'\s*[¦•●►]\s*', '\n', section)
+        # Cercles et puces spéciales → newline (○ utilisé par certains PDFs)
+        section = re.sub(r'\s*[○◯◦▸▹‣⁃∙]\s*', '\n', section)
+        # Recoller saison + année séparés par un saut de ligne
+        # "Summer\n2016" → "Summer 2016", "Été\n2022" → "Été 2022"
+        section = re.sub(
+            r'\b(Summer|Winter|Spring|Fall|Autumn|[ÉE]t[ée]|Printemps|Automne|Hiver)\s*\n\s*(\d{4})\b',
+            r'\1 \2',
+            section,
+            flags=re.IGNORECASE,
+        )
+
         lines = section.split('\n')
         blocks: List[str] = []
         current: List[str] = []
-        for line in lines:
+        for idx, line in enumerate(lines):
             line = line.strip()
             if not line:
                 if current:
@@ -593,9 +607,39 @@ class ExperienceExtractor:
                     current = []
                 continue
             has_date_range = bool(re.search(r'(?<!\()\b(19|20)\d{2}\s*[-\u2013\u2014]\s*(?:19|20)?\d{2}\b(?!\))', line))
+            has_ongoing_range = bool(re.search(
+                r'\b(19|20)\d{2}\s*[-\u2013\u2014]\s*(?:present|pr[\u00e9e]sent|actuel|en\s+cours)\b',
+                line, re.I))
             has_year = bool(re.search(r'\b(19|20)\d{2}\b', line))
-            has_title = bool(re.search(r'\b(?:Stage|Stagiaire|DRH|Responsable|Charg[ée]e?|Assistant(?:e)?|Ing[ée]nieur|D[ée]veloppeur|Consultant|Manager|Directeur|Chef|Analyste|Coordinateur|Gestionnaire|Électricien|Electricien|Plombier|Ma[çc]on|Menuisier|Mécanicien|Mecanicien|Soudeur|Infirmi[èe]re?|Aide[\-\s]Soignant|Expert[\-\s]?Comptable|Comptable|Auditeur|Pharmacien|Médecin|Medecin|Community\s+Manager|Digital\s+Marketing|Social\s+Media)\b', line, re.I))
-            is_new_experience = has_date_range or (has_year and has_title)
+            has_title = bool(re.search(
+                r'\b(?:Stage|Stagiaire|DRH|Responsable|Charg[éè]e?|Assistant(?:e)?|Ing[ée]nieur'
+                r'|D[ée]veloppeu(?:r|se)|Consultant|Manager|Directeur|Chef|Analyste'
+                r'|Coordinateur|Gestionnaire|Électricien|Electricien|Plombier|Ma[çc]on'
+                r'|Menuisier|Mécanicien|Mecanicien|Soudeur|Infirmi[èe]re?|Aide[\-\s]Soignant'
+                r'|Expert[\-\s]?Comptable|Comptable|Auditeur|Pharmacien|Médecin|Medecin'
+                r'|Community\s+Manager|Digital\s+Marketing|Social\s+Media'
+                # EN titles for block splitting
+                r'|(?:Senior|Junior|Lead|Staff)\s+(?:Software\s+|Data\s+)?(?:Engineer|Developer|Analyst|Scientist)'
+                r'|Software\s+(?:Engineer|Developer|Architect)'
+                r'|(?:Front[\s\-]?end|Back[\s\-]?end|Full[\s\-]?Stack)\s+(?:Developer|Engineer)'
+                r'|Data\s+(?:Scientist|Analyst|Engineer)'
+                r'|Project\s+Manager|Product\s+Manager|Program\s+Manager'
+                r'|(?:QA|Test)\s+(?:Engineer|Analyst)'
+                r'|(?:DevOps|SRE)\s+Engineer'
+                r'|Intern(?:\s+[\-\u2013])?|Trainee|Apprentice|Freelanc(?:e|er))\b',
+                line, re.I))
+            has_season = bool(re.search(
+                r'\b(?:Summer|Winter|Spring|Fall|Autumn|[\u00c9E]t[\u00e9e])\s+\d{4}\b',
+                line, re.I))
+            # Look-ahead : ligne titre suivie d'une ligne avec date → nouveau poste
+            next_has_date = False
+            if idx + 1 < len(lines):
+                nxt = lines[idx + 1].strip()
+                next_has_date = bool(re.search(r'\b(?:19|20)\d{2}\b', nxt))
+            is_new_experience = (has_date_range or has_ongoing_range
+                                 or has_season
+                                 or (has_year and has_title)
+                                 or (has_title and next_has_date))
             if current and is_new_experience:
                 blocks.append('\n'.join(current))
                 current = [line]
@@ -603,7 +647,24 @@ class ExperienceExtractor:
             current.append(line)
         if current:
             blocks.append('\n'.join(current))
-        return [b for b in blocks if len(b.strip()) > 10]
+
+        # ── Post-traitement : fusionner les blocs « date seule » avec le suivant ──
+        merged: List[str] = []
+        i = 0
+        while i < len(blocks):
+            block = blocks[i]
+            # Bloc très court sans titre → probablement juste une date
+            if (i + 1 < len(blocks)
+                    and len(block.strip()) < 60
+                    and not _TITRE_PATTERN.search(block)
+                    and re.search(r'\b(19|20)\d{2}\b', block)):
+                merged.append(block + '\n' + blocks[i + 1])
+                i += 2
+                continue
+            merged.append(block)
+            i += 1
+
+        return [b for b in merged if len(b.strip()) > 10]
 
     # ────────────────────────────────────────────────────────────
     # Date parsing
@@ -662,6 +723,30 @@ class ExperienceExtractor:
                 result["duree_mois"] = 1
                 return result
 
+            # 1 quater. « Summer 2016 » / « Été 2023 » (saison + année)
+            _SEASON_MAP = {
+                'summer': 6, 'été': 6, 'ete': 6,
+                'spring': 3, 'printemps': 3,
+                'fall': 9, 'autumn': 9, 'automne': 9,
+                'winter': 12, 'hiver': 12,
+            }
+            season_m = re.search(
+                r'\b(Summer|Winter|Spring|Fall|Autumn|[\u00c9E]t[ée]|Printemps|Automne|Hiver)\s+(\d{4})\b',
+                text, re.I,
+            )
+            if season_m:
+                s_word = season_m.group(1).lower()
+                s_word = _normalize_date_text(s_word)
+                s_month = _SEASON_MAP.get(s_word, 6)
+                s_year = int(season_m.group(2))
+                if 1950 <= s_year <= date.today().year + 2:
+                    result["date_debut"] = f"{s_year}-{str(s_month).zfill(2)}"
+                    e_month = min(s_month + 2, 12)
+                    result["date_fin"] = f"{s_year}-{str(e_month).zfill(2)}"
+                    result["en_cours"] = False
+                    result["duree_mois"] = 3
+                    return result
+
             # Aucune date → pas une vraie expérience
             return result
 
@@ -710,8 +795,72 @@ class ExperienceExtractor:
             if company and len(company) >= 2:
                 return company
 
-        # Passe 1 bis : séparateurs forts de type "--", "|", en-dash (–), em-dash (—)
-        # Priorité : si en-dash ou em-dash unique → nom de société très probable
+        # Passe 1 bis : format « YYYY Entreprise, Ville » (EN CVs)
+        # Ex: "June – August 2025 Feki Développement Startup, Tunisia"
+        # Priorité haute car sans ambiguïté (année + nom capitalisé + délimiteur)
+        header_lines = block.split("\n")[:4]
+        for hdr_line in header_lines:
+            m = re.search(
+                r'\b(?:19|20)\d{2}\s+([A-ZÀ-Ö][\w\s\-&\u00e0-\u00ff]{2,40})(?:\s*[\(,]|\s*$)',
+                hdr_line,
+            )
+            if m:
+                candidate = self._clean_company(m.group(1).strip())
+                if (candidate and len(candidate) >= 2
+                        and not _TITRE_PATTERN.search(candidate)
+                        and not _EN_COURS.search(candidate)):
+                    return candidate
+        # Variante cross-line : année en fin de ligne, entreprise sur la suivante
+        header_text = "\n".join(header_lines)
+        m_cross = re.search(
+            r'\b(?:19|20)\d{2}\s*\n\s*([A-ZÀ-Ö][\w\s\-&\u00e0-\u00ff]{2,40})(?:\s*[\(,]|\s*$)',
+            header_text,
+        )
+        if m_cross:
+            candidate = self._clean_company(m_cross.group(1).strip())
+            if (candidate and len(candidate) >= 2
+                    and not _TITRE_PATTERN.search(candidate)
+                    and not _EN_COURS.search(candidate)):
+                return candidate
+
+        # Passe 1 bis-b : ligne dédiée « Entreprise, Ville » / « Entreprise (Info) » (lignes 2–4)
+        for hdr_line in header_lines[1:]:
+            hdr_line = hdr_line.strip()
+            if not hdr_line or len(hdr_line) < 3:
+                continue
+            # Ignorer ligne de date pure
+            if re.match(r'^[\d\s\-\u2013\u2014/,\.]+(?:present|pr[\u00e9e]sent|actuel|en\s+cours)?$', hdr_line, re.I):
+                continue
+            # Ignorer ligne commençant en minuscule (description)
+            if hdr_line[0].islower():
+                continue
+            # Ignorer ligne de date avec mois ("Juin – Août 2025", "February – May 2024")
+            if re.match(r'^[A-ZÀ-Öa-zà-ö]+\s*[\-–—]\s*[A-ZÀ-Öa-zà-ö]*\s*\d{4}', hdr_line):
+                continue
+            # 1) Avec virgule/parenthèse
+            m_cl = re.match(r'([A-ZÀ-Ö][\w\s\-&\u00e0-\u00ff\']{1,40})(?:\s*[\(,])', hdr_line)
+            if m_cl:
+                candidate = self._clean_company(m_cl.group(1).strip())
+                if (candidate and len(candidate) >= 2
+                        and not _TITRE_PATTERN.search(candidate)
+                        and not _EN_COURS.search(candidate)
+                        and not re.match(r'\d', candidate)):
+                    return candidate
+            # 2) Sans virgule : ligne courte de type nom propre (Company Name)
+            #    Toutes les lettres initiales majuscules, ≥2 mots, ≤4 mots, pas de titre
+            words_cl = [w for w in hdr_line.split() if w]
+            if (2 <= len(words_cl) <= 4
+                    and len(hdr_line) <= 50
+                    and all(w[0].isupper() for w in words_cl)):
+                candidate = self._clean_company(hdr_line)
+                if (candidate and len(candidate) >= 2
+                        and len(candidate.split()) >= 2
+                        and not _TITRE_PATTERN.search(candidate)
+                        and not _EN_COURS.search(candidate)
+                        and not re.match(r'[\d\-\u2013\u2014]', candidate)):
+                    return candidate
+
+        # Passe 1 ter : séparateurs forts de type en-dash (–), em-dash (—)
         en_dash_parts = re.split(r"\s*[\u2013\u2014]\s*", first_line)  # – ou —
         if len(en_dash_parts) >= 2:
             for part in en_dash_parts[1:]:
@@ -724,10 +873,12 @@ class ExperienceExtractor:
                 if len(part) > 40 or len(part.split()) > 5:
                     continue
                 company = self._clean_company(part)
-                if company and len(company) >= 2 and not _TITRE_PATTERN.search(company):
+                if (company and len(company) >= 2
+                        and not _TITRE_PATTERN.search(company)
+                        and not _EN_COURS.search(company)):
                     return company
 
-        # Passe 1 ter : séparateurs forts de type "--" ou "|"
+        # Passe 1 quater : séparateurs forts de type "--" ou "|"
         strong_parts = re.split(r"\s*(?:\|+|[-]{2,})\s*", first_line)
         if len(strong_parts) >= 2:
             for part in strong_parts[1:]:
@@ -739,10 +890,27 @@ class ExperienceExtractor:
                     if not _TITRE_PATTERN.search(company):
                         return company
 
+        # Passe 1 quinquies : format virgule « Titre,Entreprise,Ville » (EN CVs)
+        # ou « Titre (info),Entreprise,Ville »
+        for hdr_line in block.split("\n")[:4]:
+            title_m = _TITRE_PATTERN.search(hdr_line)
+            if title_m:
+                after_title = hdr_line[title_m.end():]
+                # Supprimer les parenthèses entre le titre et la virgule
+                # "Développeur (Stage),Startup" → ",Startup"
+                after_title = re.sub(r'^\s*\([^)]*\)\s*', '', after_title)
+                comma_m = re.match(r'\s*,\s*([^,\n]{2,40})(?:\s*,|\s*$)', after_title)
+                if comma_m:
+                    candidate = self._clean_company(comma_m.group(1).strip())
+                    if (candidate and len(candidate) >= 2
+                            and not _TITRE_PATTERN.search(candidate)
+                            and not _EN_COURS.search(candidate)):
+                        return candidate
+
         # Passe 2 : spaCy NER (ORG)
         if self._nlp:
-            # Limiter à la première ligne uniquement pour éviter de capturer des missions
-            header = block.split("\n")[0]
+            # Limiter aux 3 premières lignes pour capturer le header
+            header = "\n".join(block.split("\n")[:3])
             doc = self._nlp(header)
             for ent in doc.ents:
                 if ent.label_ == "ORG":
@@ -751,6 +919,9 @@ class ExperienceExtractor:
                         continue
                     # Rejeter si commence par un article/préposition français
                     if re.match(r'^(?:une?|des?|le|la|les|du|pour|avec|de|au|en)\b', name, re.I):
+                        continue
+                    # Rejeter si c'est un titre de poste détecté comme ORG
+                    if _TITRE_PATTERN.search(name):
                         continue
                     return name
 
@@ -805,28 +976,43 @@ class ExperienceExtractor:
     # ────────────────────────────────────────────────────────────
 
     def _extract_job_title(self, block: str) -> Optional[str]:
+        """Extrait l'intitulé du poste (FR + EN).
+
+        Stratégie multi-lignes :
+        1. Chercher _TITRE_PATTERN dans les 3 premières lignes
+        2. Fallback : texte avant séparateur (chez/at/@)
+        """
         lines = block.split('\n')
+        # Passe 1 : chercher un titre connu dans les 3 premières lignes
+        for line in lines[:3]:
+            # Nettoyer : retirer dates, contenu après séparateur entreprise
+            clean = re.split(
+                r'\s*(?:--|@|\bchez\b|\bat\b|\bau\s+sein\s+de\b)',
+                line, maxsplit=1, flags=re.I,
+            )[0]
+            clean = re.split(
+                r'\s*(?:\|+|[\u2013\u2014]|\-{2,})\s*',
+                clean, maxsplit=1,
+            )[0]
+            clean = re.sub(r'\s+\d{4}.*$', '', clean).strip()
+            # Couper au premier ',' (souvent société après virgule)
+            if ',' in clean:
+                clean = clean.split(',')[0].strip()
+            m = _TITRE_PATTERN.search(clean)
+            if m:
+                title = m.group(0).strip()
+                if len(title) >= 3:
+                    return self._capitalize_title(title)
+
+        # Passe 2 : texte avant séparateur (chez / at / @)
         first_line = lines[0] if lines else ""
-        # Isoler la partie titre avant séparateur d'entreprise ou année
-        clean = re.split(r'\s*(?:--|@|\bchez\b|\bau\s+sein\s+de\b)', first_line, maxsplit=1, flags=re.I)[0]
-        # Séparer sur | , double tiret, en-dash (–) ou em-dash (—) — séparateurs titre/société
-        clean = re.split(r'\s*(?:\|+|[\u2013\u2014]|\-{2,})\s*', clean, maxsplit=1)[0]
-        clean = re.sub(r'\s+\d{4}.*$', '', clean).strip()
-        for pattern in re.finditer(
-            r'\b(?:Stage|Stagiaire|DRH|Responsable|Charg[\u00e9e]e?|Assistant(?:e)?|Ing[\u00e9e]nieur|D[\u00e9e]veloppeur'
-            r'|Consultant|Manager|Directeur|Chef|Analyste|Coordinateur|Gestionnaire)[^\n]{3,80}',
-            clean, re.I,
-        ):
-            title = pattern.group(0).strip()
-            if len(title) >= 3:
-                return title.title()
         for sep_pat in [r'\bchez\b', r'\bat\b', '@', r'\bau\s+sein\s+de\b', r'\bpour\b']:
             m = re.search(sep_pat, first_line, re.I)
             if m:
                 before = first_line[:m.start()].strip()
                 before = re.sub(r'[-\u2013\u2014|].*$', '', before).strip()
                 if before and len(before) >= 3:
-                    return before.title()
+                    return self._capitalize_title(before)
         return None
 
     @staticmethod
@@ -851,8 +1037,8 @@ class ExperienceExtractor:
         missions: List[str] = []
         for line in block.split("\n"):
             stripped = line.strip()
-            if stripped and stripped[0] in "-•–*→▪►●◆":
-                mission = stripped.lstrip("-•–*→▪►●◆ ").strip()
+            if stripped and stripped[0] in "-•–*→▪►●◆○◯◦":
+                mission = stripped.lstrip("-•–*→▪►●◆○◯◦ ").strip()
                 if mission and len(mission) >= 10:
                     missions.append(mission)
         return missions

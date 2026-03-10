@@ -27,10 +27,13 @@ _NOT_NAME_WORDS = {
     "expérience", "experience", "langues", "languages", "contact",
     "références", "references", "projets", "projects", "certifications",
     # Postes courants IT
-    "développeur", "developpeur", "ingénieur", "ingenieur", "engineer",
+    "développeur", "developpeur", "développeuse", "developpeuse",
+    "ingénieur", "ingenieur", "ingénieure", "ingenieure",
+    "engineer",
     "developer", "manager", "consultant", "analyst", "designer",
     "stagiaire", "intern", "junior", "senior", "lead", "chef",
-    "data", "scientist", "architect", "devops", "fullstack", "full-stack",
+    "data", "scientist", "architect", "devops",
+    "fullstack", "full-stack", "full", "stack", "frontend", "backend",
     "recherche", "développement", "intelligence", "artificielle",
     # Postes UX / Design
     "ux", "ui", "ux/ui", "product", "graphic",
@@ -70,9 +73,51 @@ _NOT_NAME_WORDS = {
     "bilingue", "anglais", "français", "francais", "arabe", "espagnol",
     "allemand", "natif", "courant", "maternelle", "intermédiaire",
     "fluent", "native", "bilingual", "intermediate", "advanced",
+    # Termes de poste anglais/français courants sur les CVs
+    "student", "étudiant", "étudiante", "apprenti", "apprentie",
+    "computer", "engineering", "development", "management",
+    "consulting", "chief", "officer", "associate",
+    "assistant", "assistante", "nurse", "accountant", "auditor",
+    "sales", "business", "specialization", "spécialisation",
+    "professional", "professionnel", "professionnelle",
+    "project", "coordinator", "profil", "summary",
+    # Domaines d'études / spécialités (souvent collés au nom)
+    "génie", "genie", "informatique", "gestion", "communication",
+    "technologies", "technologie", "information", "télécommunications",
+    "telecommunications", "électronique", "electronique", "mécanique",
+    "mecanique", "multimédia", "multimedia", "numérique", "numerique",
+    "logiciel", "réseau", "reseaux", "réseaux", "système", "systeme",
+    "systèmes", "systemes", "sécurité", "securite", "économie",
+    "economie", "comptabilité", "comptabilite", "médecine", "medecine",
+    "pharmacie", "biologie", "chimie", "mathématiques", "mathematiques",
+    "physique", "droit", "industriel", "industrielle",
+    "technology", "systems", "network", "security", "software",
+    "hardware", "electronics", "economics", "finance",
+    "accounting", "law", "medicine", "pharmacy",
+    "spécialité", "specialite", "filière", "filiere", "option",
+    # Mois FR/EN (souvent collés au nom dans les PDFs)
+    "janvier", "février", "fevrier", "mars", "avril", "mai", "juin",
+    "juillet", "août", "aout", "septembre", "octobre", "novembre", "décembre", "decembre",
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december",
     # Caractères spéciaux / icônes PDF corrompues
     "●", "●●", "●●●", "●●●●", "●●●●●",
     "★", "☆", "◆", "►", "▪",
+    # Stopwords / prépositions FR & EN (parasites entre prénom-nom)
+    "de", "du", "des", "le", "la", "les", "un", "une",
+    "et", "en", "ou", "au", "aux", "par", "pour", "avec",
+    "dans", "sur", "sous", "entre", "vers", "chez",
+    "the", "and", "for", "with", "from", "into",
+    "of", "in", "at", "on", "to", "by", "as", "is", "an", "or",
+    "cycle", "année", "préparatoire", "études", "institut", "école", "ecole",
+    "supérieur", "superieur", "supérieure", "superieure", "privé", "privée",
+    "ingénieurs", "ingenieurs",
+    # Mots d'identité / civil (souvent sur la même ligne que le nom)
+    "lieu", "naissance", "nationalité", "nationalite", "date",
+    "célibataire", "celibataire", "marié", "marie", "mariée",
+    "permis", "conduire", "véhiculé", "vehicule",
+    "disponible", "immédiatement", "années", "ans",
+    "tunisienne", "tunisien", "français", "française", "marocain", "marocaine",
 }
 
 # Villes / pays / lieux souvent captés par NER comme PERSON
@@ -93,6 +138,35 @@ _LOCATION_WORDS = {
     "dubai", "dubaï", "remote", "émirats", "emirats",
     "belgique", "suisse", "allemagne", "espagne", "italie",
     "london", "londres", "bruxelles", "genève", "geneve",
+}
+
+# Mots-clés métier utilisés par Pass 0 pour rejeter les lignes
+# contenant des titres de poste (même capitalisés)
+_PASS0_JOB_KEYWORDS = {
+    "engineer", "engineering", "developer", "development",
+    "manager", "management", "director", "chief",
+    "student", "stagiaire", "intern", "apprenti",
+    "consultant", "consulting", "specialist", "expert",
+    "marketing", "commercial", "sales", "business",
+    "comptable", "accountant", "auditeur", "auditor",
+    "infirmier", "infirmière", "nurse",
+    "électricien", "plombier", "maçon", "menuisier",
+    "responsable", "chargé", "chef", "lead",
+    "senior", "junior", "assistant", "associate",
+    "computer", "science", "intelligence", "specialization",
+    "spécialisation", "digital", "architect", "architecte",
+    "designer", "analyst", "data", "web", "fullstack",
+    "full-stack", "frontend", "backend", "devops",
+    "technicien", "technician", "coordinateur", "coordinator",
+    "gestionnaire", "officer", "professionnel", "professional",
+    "étudiant", "étudiante", "ingénieur", "développeur",
+    "développeuse", "developpeuse", "ingénieure",
+    "stack", "full",
+    # Mois courants (souvent collés dans les PDFs)
+    "janvier", "février", "mars", "avril", "mai", "juin",
+    "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december",
 }
 
 # Pattern pour vérifier qu'un mot ressemble à un prénom/nom
@@ -134,7 +208,8 @@ class EntityExtractor:
     _JOB_TITLE_PATTERN = re.compile(
         r"\b(?:"
         r"Digital\s+Marketing|Marketing\s+Digital|Marketing|Manager|Engineer"
-        r"|Developer|D[ée]veloppeur|Ing[ée]nieur"
+        r"|Developer|D[ée]veloppeu(?:r|se)|Ing[ée]nieu(?:r|re)"
+        r"|Full[\-\s]?Stack(?:e)?"
         r"|Électricien|Electricien|Plombier|Ma[\u00e7c]on|Menuisier"
         r"|M[ée]canicien|Soudeur"
         r"|Infirmi[\u00e8e]re?|Aide[\-\s]Soignante?"
@@ -165,8 +240,10 @@ class EntityExtractor:
     @staticmethod
     def _clean_name(value: str) -> str:
         """Nettoie un nom extrait : supprime les mots parasites, emails, symboles."""
+        # 0. Séparer les mots collés CamelCase (ex: "Full-StackJuin" → "Full-Stack Juin")
+        cleaned = re.sub(r'([a-zà-öø-ÿ])([A-ZÀ-ÖØ-Þ])', r'\1 \2', value or '')
         # 1. Supprimer décorations
-        cleaned = re.sub(r'[\u2551\u25ba\u25aa\u25cf\u25c6\u2192\u2022\u2550\u2554\u2557\u255a\u255d\u2560\u2563\u256c]', '', value or '')
+        cleaned = re.sub(r'[\u2551\u25ba\u25aa\u25cf\u25c6\u2192\u2022\u2550\u2554\u2557\u255a\u255d\u2560\u2563\u256c]', '', cleaned)
         cleaned = " ".join(cleaned.split()).strip("-: ")
         # 2. Supprimer tout ce qui contient @ (email collé au nom)
         words = [w for w in cleaned.split(" ") if w and "@" not in w]
@@ -274,6 +351,56 @@ class EntityExtractor:
         cleaned = _DECORATIVE_CHARS.sub(" ", line)
         return " ".join(cleaned.split()).strip()
 
+    def _extract_name_pass0(self, text: str) -> Optional[str]:
+        """Pass 0 : Extraction simple depuis les 3 premières lignes non-vides.
+
+        Vérifie si une ligne contient exactement 2-4 mots commençant par
+        une majuscule, sans aucun mot-clé métier. Taux de confiance très élevé.
+        """
+        lines = (text or "").split('\n')
+        count = 0
+        for line in lines:
+            if count >= 3:
+                break
+            # Nettoyer décorations (box-drawing, puces, etc.)
+            cleaned = _DECORATIVE_CHARS.sub(' ', line)
+            cleaned = " ".join(cleaned.split()).strip()
+            if not cleaned:
+                continue
+            count += 1
+
+            words = cleaned.split()
+            if len(words) < 2 or len(words) > 4:
+                continue
+
+            # Chaque mot doit commencer par une majuscule
+            if not all(w[0].isupper() for w in words if w):
+                continue
+
+            # Aucun mot ne doit être un keyword métier
+            if any(w.lower().rstrip('.,;:') in _PASS0_JOB_KEYWORDS for w in words):
+                continue
+
+            # Aucun mot interdit ou lieu
+            if any(
+                w.lower().rstrip('.,;:') in _NOT_NAME_WORDS
+                or w.lower().rstrip('.,;:') in _LOCATION_WORDS
+                for w in words
+            ):
+                continue
+
+            # Pas de chiffres
+            if any(c.isdigit() for c in cleaned):
+                continue
+
+            # Pas de @ : www
+            if '@' in cleaned or ':' in cleaned or 'www.' in cleaned.lower():
+                continue
+
+            return cleaned
+
+        return None
+
     def _extract_name_from_honorific(self, text: str) -> Optional[str]:
         """Pass 1b : Détecte Dr. / M. / Mme suivi d'un nom propre."""
         m = self.HONORIFIC_PATTERN.search((text or "")[:500])
@@ -328,8 +455,15 @@ class EntityExtractor:
                 line, maxsplit=1
             )[0].strip()
 
+            # Si le fragment contient ':', découper aussi sur ':'
+            # Ex: "Othmen ZID Lieu de naissance: Ghazala" → "Othmen ZID Lieu de naissance"
+            if ':' in fragment:
+                fragment = fragment.split(':')[0].strip()
+
             # Supprimer décorations résiduelles
             fragment = re.sub(r'[•●►▪◆★☆/⌢⌣]', ' ', fragment)
+            # Séparer les mots collés CamelCase (ex: "StackJuin" → "Stack Juin")
+            fragment = re.sub(r'([a-zà-öø-ÿ])([A-ZÀ-ÖØ-Þ])', r'\1 \2', fragment)
             fragment = " ".join(fragment.split()).strip()
 
             if not fragment or len(fragment) > 80:
@@ -346,10 +480,23 @@ class EntityExtractor:
                 wl = w.lower().rstrip(".,;:-()")
                 if wl in _NOT_NAME_WORDS or wl in _LOCATION_WORDS:
                     continue
+                # Gérer préfixes d'/l'/s'/n'/qu' (ex: "D'Ingénieurs" → check "ingénieurs")
+                apo_m = re.match(r"^(?:d|l|s|n|qu|j)['''](.+)$", wl, re.I)
+                if apo_m:
+                    suffix = apo_m.group(1)
+                    if suffix in _NOT_NAME_WORDS or suffix in _LOCATION_WORDS:
+                        continue
+                    # Aussi vérifier le singulier (ingénieurs → ingénieur)
+                    if suffix.endswith('s') and suffix[:-1] in _NOT_NAME_WORDS:
+                        continue
                 if len(wl) < 2:
                     continue
                 # Ignorer les abréviations type D.P.L.G
                 if re.match(r'^[A-Z]\.([A-Z]\.)+$', w):
+                    continue
+                # Ignorer les acronymes >= 4 lettres tout en majuscules (noms d'écoles, etc.)
+                w_clean = w.strip(".,;:-()")
+                if len(w_clean) >= 4 and w_clean.isupper() and w_clean.isalpha():
                     continue
                 filtered.append(w)
 
@@ -398,12 +545,13 @@ class EntityExtractor:
         """
         Extrait le nom complet du candidat.
         
-        Priorité (5 passes) :
+        Priorité (6 passes) :
+        0.  Ligne simple : 2-4 mots capitalisés sans mot-clé métier
         1a. Ligne préfixée "Nom :" / "Name :"
         1b. Titre honorifique "Dr. NOM" / "M. NOM" / "Mme NOM"
         1c. CamelCase PyPDF ("SarahJohnson" → "Sarah Johnson")
-        2.  Entité NER PERSON/PER (spaCy)
-        3.  Fallback : 1ère ligne qui ressemble à un nom
+        2.  Fallback : 1ère ligne qui ressemble à un nom (découpage intelligent)
+        3.  Entité NER PERSON/PER (spaCy)
         
         Returns:
             Nom complet en Title Case, ou None.
@@ -411,6 +559,13 @@ class EntityExtractor:
         logger.info("Extraction nom commencée (%d chars)", len(text or ""))
 
         try:
+            # Pass 0 : Première ligne simple (2-4 mots capitalisés, aucun mot-clé métier)
+            from_pass0 = self._extract_name_pass0(text)
+            if from_pass0:
+                result = self._normalize_case(from_pass0)
+                logger.info("Nom trouvé par Pass 0 (ligne simple) : %s", result)
+                return result
+
             # Pass 1a : Préfixe explicite ("Nom :", "Name :", etc.)
             from_prefix = self._extract_name_from_prefix(text)
             if from_prefix:

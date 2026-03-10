@@ -65,6 +65,9 @@ DIPLOMA_PATTERNS: List[Dict] = [
      "level": 5, "diploma": "Diplôme d'Ingénieur"},
     {"pattern": re.compile(r"\bingenieur\b", re.I),
      "level": 5, "diploma": "Diplôme d'Ingénieur"},
+    # EN : "Engineering in [specialty]" (Tunisian 5-yr programme)
+    {"pattern": re.compile(r"\bengineering\s+in\s+[\w\s]{3,40}", re.I),
+     "level": 5, "diploma": "Diplôme d'Ingénieur"},
     {"pattern": re.compile(r"\bmba\b", re.I),
      "level": 5, "diploma": "MBA"},
     {"pattern": re.compile(r"\bbac\s*\+\s*5\b", re.I),
@@ -125,7 +128,7 @@ DIPLOMA_PATTERNS: List[Dict] = [
      "level": 2, "diploma": "Diploma"},
 
     # ══════════════ Bac+0 ══════════════
-    {"pattern": re.compile(r"\bbaccalaur[ée]at\b", re.I),
+    {"pattern": re.compile(r"\bbaccalaur[ée]at[e]?\b", re.I),
      "level": 0, "diploma": "Baccalauréat"},
     {"pattern": re.compile(r"\bbac\b(?!\s*\+)", re.I),
      "level": 0, "diploma": "Baccalauréat"},
@@ -655,8 +658,10 @@ class FormationExtractor:
         section = re.sub(r'[|¦•●►]', '\n', section)
         # Normalisation texte compact : injecter \n avant mots-clés de diplôme
         section = re.sub(
-            r'(?<!\n)\s+(?=(?:master(?:\s*[12])?|ma[iî]trise|licence|baccalaur[ée]at'
-            r'|doctorat|dipl[ôo]me|ing[ée]nieur)\b)',
+            r'(?<!\n)\s+(?=(?:master(?:\s*[12])?|ma[iî]trise|licence|baccalaur[ée]at[e]?'
+            r'|doctorat|dipl[ôo]me|ing[ée]nieur'
+            r'|engineering\s+in|bachelor|high\s+school|diploma\s+in'
+            r')\b)',
             '\n',
             section,
             flags=re.IGNORECASE,
