@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import './UploadCV.css'
 
 function UploadCV() {
@@ -39,7 +39,7 @@ function UploadCV() {
     formData.append('file', file)
 
     try {
-      const response = await axios.post('/api/upload-cv', formData, {
+      const response = await api.post('/upload-cv', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       setResult(response.data)

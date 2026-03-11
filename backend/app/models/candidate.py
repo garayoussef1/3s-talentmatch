@@ -1,10 +1,17 @@
-from sqlalchemy import Column, String, Text, DateTime, JSON
+from sqlalchemy import Column, String, Text, DateTime, JSON, ForeignKey, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
+import enum
 
 from app.database import Base
+
+
+class CandidatureStatus(str, enum.Enum):
+    en_attente = "en_attente"
+    accepte = "accepte"
+    refuse = "refuse"
 
 
 class Candidate(Base):
@@ -15,6 +22,16 @@ class Candidate(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     cv_id = Column(String(36), unique=True, nullable=False, index=True)
     filename = Column(String(255), nullable=False)
+
+    # Lien vers le user (candidat) qui a uploadé ce CV — nullable pour les anciens enregistrements
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+
+    # Statut de la candidature
+    candidature_status = Column(
+        SAEnum(CandidatureStatus, name="candidaturestatus", create_constraint=False),
+        default=CandidatureStatus.en_attente,
+        nullable=False,
+    )
 
     # Informations personnelles extraites
     nom = Column(String(255), nullable=True)
@@ -37,6 +54,7 @@ class Candidate(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relations
+    user = relationship("User", backref="candidates", foreign_keys=[user_id])
     cv_documents = relationship("CVDocument", back_populates="candidate", cascade="all, delete-orphan")
     matches = relationship("Match", back_populates="candidate", cascade="all, delete-orphan")
 

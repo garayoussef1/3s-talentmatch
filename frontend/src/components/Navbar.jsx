@@ -32,11 +32,22 @@ function Navbar() {
                 Uploader un CV
               </Link>
             </li>
-            <li>
-              <Link to="/candidates" className={location.pathname === '/candidates' ? 'active' : ''}>
-                Candidats
-              </Link>
-            </li>
+            {/* Candidats et extractions : recruteur/admin uniquement */}
+            {user?.role !== 'candidat' && (
+              <li>
+                <Link to="/candidates" className={location.pathname === '/candidates' ? 'active' : ''}>
+                  Candidats
+                </Link>
+              </li>
+            )}
+            {/* Mes candidatures : candidat uniquement */}
+            {user?.role === 'candidat' && (
+              <li>
+                <Link to="/my-applications" className={location.pathname === '/my-applications' ? 'active' : ''}>
+                  Mes Candidatures
+                </Link>
+              </li>
+            )}
           </>
         ) : null}
       </ul>

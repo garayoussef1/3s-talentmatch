@@ -11,7 +11,9 @@ from pydantic import BaseModel
 from app.services.extraction.cv_extractor import CVExtractor
 from app.services.nlp.nlp_parser import NLPParser
 from app.database import get_db
-from app.models.candidate import Candidate
+from app.models.candidate import Candidate, CandidatureStatus
+from app.models.user import User
+from app.dependencies import get_current_user, get_current_recruteur_or_admin, get_current_admin
 
 router = APIRouter()
 
@@ -110,7 +112,7 @@ class CandidatesListResponse(BaseModel):
         500: {"description": "Erreur interne lors de l'extraction"},
     },
 )
-async def upload_cv(file: UploadFile = File(..., description="Fichier CV au format PDF, DOCX, PNG ou JPG (max 10 Mo)"), db: Session = Depends(get_db)):
+async def upload_cv(file: UploadFile = File(..., description="Fichier CV au format PDF, DOCX, PNG ou JPG (max 10 Mo)"), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # Validation extension
     _, ext = os.path.splitext(file.filename.lower())
     if ext not in ALLOWED_EXTENSIONS:
@@ -184,6 +186,8 @@ async def upload_cv(file: UploadFile = File(..., description="Fichier CV au form
         linkedin=linkedin_extrait,
         github=github_extrait,
         parsed_data=parsed_data,
+        user_id=current_user.id,
+        candidature_status=CandidatureStatus.en_attente,
     )
     db.add(candidate)
     db.commit()
@@ -203,19 +207,21 @@ async def upload_cv(file: UploadFile = File(..., description="Fichier CV au form
 @router.get(
     "/candidates",
     response_model=CandidatesListResponse,
-    summary="Lister les candidats",
+    summary="Lister les candidats (recruteur/admin uniquement)",
     description=(
         "Retourne la liste paginée des candidats enregistrés en base de données,\n"
         "triés par date d'upload décroissante.\n\n"
+        "**Accès : recruteur ou admin uniquement.**\n\n"
         "Paramètres de pagination :\n"
         "- **skip** : nombre d'enregistrements à ignorer (défaut 0)\n"
         "- **limit** : nombre maximum de résultats (défaut 20)"
     ),
     responses={
         200: {"description": "Liste des candidats", "model": CandidatesListResponse},
+        403: {"description": "Accès interdit (candidat)"},
     },
 )
-def get_candidates(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+def get_candidates(skip: int = 0, limit: int = 20, db: Session = Depends(get_db), current_user: User = Depends(get_current_recruteur_or_admin)):
     """Retourne la liste des candidats enregistrés en BDD."""
     candidates = db.query(Candidate).order_by(Candidate.created_at.desc()).offset(skip).limit(limit).all()
     total = db.query(Candidate).count()
@@ -231,6 +237,7 @@ def get_candidates(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)
                 "linkedin": c.linkedin,
                 "github": c.github,
                 "extraction_method": c.extraction_method,
+                "candidature_status": c.candidature_status.value if c.candidature_status else "en_attente",
                 "created_at": c.created_at.isoformat() if c.created_at else None,
             }
             for c in candidates
@@ -240,14 +247,15 @@ def get_candidates(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)
 
 @router.get(
     "/candidates/{cv_id}",
-    summary="Détail d'un candidat avec données parsées",
+    summary="Détail d'un candidat (recruteur/admin)",
     description="Retourne toutes les données extraites par le pipeline NLP pour un CV donné.",
     responses={
         200: {"description": "Données complètes du candidat"},
+        403: {"description": "Accès interdit"},
         404: {"description": "Candidat non trouvé"},
     },
 )
-def get_candidate_detail(cv_id: str, db: Session = Depends(get_db)):
+def get_candidate_detail(cv_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_recruteur_or_admin)):
     """Retourne le détail complet d'un candidat (infos parsées incluses)."""
     candidate = db.query(Candidate).filter(Candidate.cv_id == cv_id).first()
     if not candidate:
@@ -262,5 +270,115 @@ def get_candidate_detail(cv_id: str, db: Session = Depends(get_db)):
         "github": candidate.github,
         "extraction_method": candidate.extraction_method,
         "parsed_data": candidate.parsed_data,
+        "candidature_status": candidate.candidature_status.value if candidate.candidature_status else "en_attente",
         "created_at": candidate.created_at.isoformat() if candidate.created_at else None,
+    }
+
+
+@router.patch(
+    "/candidates/{cv_id}/status",
+    summary="Modifier le statut d'une candidature (recruteur/admin)",
+    description="Met à jour le statut : en_attente, accepte, refuse.",
+    responses={
+        200: {"description": "Statut mis à jour"},
+        403: {"description": "Accès interdit"},
+        404: {"description": "Candidat non trouvé"},
+    },
+)
+def update_candidature_status(
+    cv_id: str,
+    status: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    """Met à jour le statut de candidature d'un candidat."""
+    candidate = db.query(Candidate).filter(Candidate.cv_id == cv_id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidat non trouvé")
+
+    valid_statuses = [s.value for s in CandidatureStatus]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Statut invalide. Valeurs possibles : {valid_statuses}")
+
+    candidate.candidature_status = CandidatureStatus(status)
+    db.commit()
+    db.refresh(candidate)
+    return {
+        "success": True,
+        "cv_id": cv_id,
+        "candidature_status": candidate.candidature_status.value,
+        "message": f"Statut mis à jour : {status}",
+    }
+
+
+@router.delete(
+    "/candidates/{cv_id}",
+    summary="Supprimer un candidat (recruteur/admin)",
+    description="Supprime un candidat et toutes ses données de la base.",
+    responses={
+        200: {"description": "Candidat supprimé"},
+        403: {"description": "Accès interdit"},
+        404: {"description": "Candidat non trouvé"},
+    },
+)
+def delete_candidate(cv_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_recruteur_or_admin)):
+    """Supprime un candidat par son cv_id."""
+    candidate = db.query(Candidate).filter(Candidate.cv_id == cv_id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidat non trouvé")
+    db.delete(candidate)
+    db.commit()
+    return {"success": True, "message": f"Candidat {cv_id} supprimé."}
+
+
+@router.delete(
+    "/candidates",
+    summary="Supprimer tous les candidats (admin uniquement)",
+    description="Supprime tous les candidats de la base de données. Action irréversible.",
+    responses={
+        200: {"description": "Tous les candidats supprimés"},
+        403: {"description": "Accès interdit"},
+    },
+)
+def delete_all_candidates(db: Session = Depends(get_db), current_user: User = Depends(get_current_admin)):
+    """Supprime tous les candidats."""
+    count = db.query(Candidate).count()
+    db.query(Candidate).delete()
+    db.commit()
+    return {"success": True, "deleted": count, "message": f"{count} candidat(s) supprimé(s)."}
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# Routes spécifiques au candidat — « Mon espace »
+# ══════════════════════════════════════════════════════════════════════════
+
+@router.get(
+    "/my-applications",
+    summary="Mes candidatures (candidat)",
+    description="Le candidat connecté voit la liste de ses CVs uploadés avec leur statut.",
+    responses={
+        200: {"description": "Liste des candidatures du candidat connecté"},
+    },
+)
+def get_my_applications(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Retourne les candidatures (CVs) du candidat connecté."""
+    candidates = (
+        db.query(Candidate)
+        .filter(Candidate.user_id == current_user.id)
+        .order_by(Candidate.created_at.desc())
+        .all()
+    )
+    return {
+        "total": len(candidates),
+        "applications": [
+            {
+                "cv_id": c.cv_id,
+                "filename": c.filename,
+                "nom": c.nom,
+                "email": c.email,
+                "candidature_status": c.candidature_status.value if c.candidature_status else "en_attente",
+                "created_at": c.created_at.isoformat() if c.created_at else None,
+            }
+            for c in candidates
+        ],
     }

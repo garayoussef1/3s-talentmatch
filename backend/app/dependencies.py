@@ -44,3 +44,13 @@ async def get_current_admin(user: User = Depends(get_current_user)) -> User:
             detail="Accès réservé aux administrateurs",
         )
     return user
+
+
+async def get_current_recruteur_or_admin(user: User = Depends(get_current_user)) -> User:
+    """Vérifie que l'utilisateur courant est recruteur ou admin (pas candidat)."""
+    if user.role.value not in ("recruteur", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux recruteurs et administrateurs",
+        )
+    return user

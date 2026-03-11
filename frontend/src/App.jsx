@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import UploadCV from './pages/UploadCV'
 import Candidates from './pages/Candidates'
+import MyApplications from './pages/MyApplications'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import OAuthCallback from './pages/OAuthCallback'
@@ -23,10 +24,15 @@ function App() {
             <Route path="/auth/callback/google" element={<OAuthCallback provider="google" />} />
             <Route path="/auth/callback/linkedin" element={<OAuthCallback provider="linkedin" />} />
 
-            {/* Protected */}
+            {/* Protected — tous les rôles */}
             <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
             <Route path="/upload" element={<ProtectedRoute><UploadCV /></ProtectedRoute>} />
-            <Route path="/candidates" element={<ProtectedRoute><Candidates /></ProtectedRoute>} />
+
+            {/* Recruteur / Admin uniquement */}
+            <Route path="/candidates" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><Candidates /></ProtectedRoute>} />
+
+            {/* Candidat uniquement */}
+            <Route path="/my-applications" element={<ProtectedRoute allowedRoles={["candidat"]}><MyApplications /></ProtectedRoute>} />
           </Routes>
         </main>
       </div>

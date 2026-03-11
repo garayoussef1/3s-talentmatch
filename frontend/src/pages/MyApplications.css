@@ -1,0 +1,127 @@
+/* ── Mes Candidatures ───────────────────────────── */
+
+.my-applications-page { padding: 1rem 0; }
+
+.my-applications-page .page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.my-applications-page .page-header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.my-applications-page .badge {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 0.25rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.my-applications-page .subtitle {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Grid cards ── */
+.applications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.2rem;
+}
+
+.application-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.card-top .file-icon {
+  font-size: 2rem;
+}
+
+.card-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.card-date {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.card-nom {
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+/* ── Status badge ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-accepted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ── Empty state ── */
+.my-applications-page .empty-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: #6b7280;
+}
+
+.my-applications-page .empty-state span {
+  font-size: 3rem;
+}
+
+.my-applications-page .empty-state a {
+  color: #4f46e5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.my-applications-page .empty-state a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .applications-grid {
+    grid-template-columns: 1fr;
+  }
+}
