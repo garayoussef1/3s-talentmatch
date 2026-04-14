@@ -40,7 +40,9 @@ function UploadCV() {
 
     try {
       const response = await api.post('/upload-cv', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        // L'extraction (OCR/NLP) peut prendre > 8s. On évite un faux échec client.
+        timeout: 120000,
       })
       setResult(response.data)
       setActiveTab('resume')

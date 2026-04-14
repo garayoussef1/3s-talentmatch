@@ -117,6 +117,20 @@ proxy: {
 }
 ```
 
+### OAuth (Google / LinkedIn)
+
+Le bouton "Continuer avec Google" utilise un `client_id` **public** côté frontend.
+
+- Créer `frontend/.env` (ou `frontend/.env.local`) à partir de `frontend/.env.example`
+- Renseigner :
+  - `VITE_GOOGLE_CLIENT_ID`
+  - `VITE_LINKEDIN_CLIENT_ID` (optionnel)
+- Redémarrer `npm run dev`
+
+Redirect URIs à déclarer côté providers (dev) :
+- Google: `http://localhost:3000/auth/callback/google`
+- LinkedIn: `http://localhost:3000/auth/callback/linkedin`
+
 ---
 
 ## Dépendances principales

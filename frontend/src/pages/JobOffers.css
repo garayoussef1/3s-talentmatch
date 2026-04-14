@@ -1,0 +1,53 @@
+.offers-page { padding: 24px; }
+.offers-header h1 { margin: 0; font-size: 1.6rem; }
+.offers-header p { color: #6b7280; margin-top: 6px; }
+.offers-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; margin-top: 16px; }
+.offers-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.offers-form input, .offers-form textarea, .offers-form select { padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e7eb; }
+.offers-form textarea { grid-column: 1 / -1; min-height: 90px; }
+.offers-list { display: grid; gap: 12px; }
+.offer-item { display: flex; flex-direction: column; gap: 12px; padding: 12px; border: 1px solid #f3f4f6; border-radius: 12px; }
+.offer-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.offer-actions select { padding: 6px 10px; border-radius: 8px; }
+.offer-actions .danger { border: 1px solid #fecaca; background: #fff; color: #b91c1c; padding: 6px 10px; border-radius: 8px; }
+.offer-actions .btn-light { border: 1px solid #e5e7eb; background: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+.offer-actions .btn-light:hover { background: #f9fafb; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip { background: #e0e7ff; color: #4338ca; padding: 4px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+.muted { color: #6b7280; }
+
+.offer-applications {
+	margin-top: 12px;
+	border-top: 1px solid #f1f1f1;
+	padding-top: 12px;
+	width: 100%;
+}
+
+.applications-list { display: grid; gap: 10px; }
+
+.application-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	border: 1px solid #f3f4f6;
+	border-radius: 10px;
+	padding: 10px 12px;
+	background: #fff;
+}
+
+.app-name { font-weight: 600; }
+.app-email { color: #6b7280; font-size: 0.85rem; }
+
+.app-actions { display: flex; align-items: center; gap: 8px; }
+.app-actions select { padding: 6px 10px; border-radius: 8px; }
+.app-actions .btn-light {
+	border: 1px solid #e5e7eb;
+	background: #fff;
+	padding: 6px 10px;
+	border-radius: 8px;
+	cursor: pointer;
+	text-decoration: none;
+	color: inherit;
+}
+.app-actions .btn-light:hover { background: #f9fafb; }

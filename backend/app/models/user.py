@@ -33,6 +33,15 @@ class User(Base):
                   default=UserRole.recruteur, nullable=False)
     is_active = Column(Boolean, default=True)
 
+    # Vérification email
+    is_email_verified = Column(Boolean, default=False)
+    verification_code = Column(String(10), nullable=True)
+    verification_code_expires = Column(DateTime(timezone=True), nullable=True)
+
+    # Reset mot de passe
+    reset_code = Column(String(10), nullable=True)
+    reset_code_expires = Column(DateTime(timezone=True), nullable=True)
+
     # OAuth
     auth_provider = Column(
         SAEnum(AuthProvider, name="authprovider", create_constraint=False),

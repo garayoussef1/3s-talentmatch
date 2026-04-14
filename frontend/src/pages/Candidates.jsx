@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import api from '../services/api'
 import './Candidates.css'
 
-const STATUS_OPTIONS = [
-  { value: 'en_attente', label: 'En attente', icon: '⏳' },
-  { value: 'accepte', label: 'Accepté', icon: '✅' },
-  { value: 'refuse', label: 'Refusé', icon: '❌' },
-]
+const STATUS_LABELS = {
+  en_attente: { label: 'En attente', icon: '⏳' },
+  accepte: { label: 'Accepté', icon: '✅' },
+  refuse: { label: 'Refusé', icon: '❌' },
+}
 
 function Candidates() {
   const [candidates, setCandidates] = useState([])
@@ -17,6 +18,7 @@ function Candidates() {
 
   const fetchCandidates = () => {
     setLoading(true)
+    setError(null)
     api.get('/candidates')
       .then(res => {
         setCandidates(res.data.candidates)
@@ -26,7 +28,21 @@ function Candidates() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { fetchCandidates() }, [])
+  useEffect(() => {
+    fetchCandidates()
+
+    const onFocus = () => fetchCandidates()
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') fetchCandidates()
+    }
+
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [])
 
   const handleDelete = (cvId) => {
     if (!window.confirm('Supprimer ce candidat ?')) return
@@ -46,14 +62,12 @@ function Candidates() {
       .finally(() => setDeleting(null))
   }
 
-  const handleStatusChange = (cvId, newStatus) => {
-    api.patch(`/candidates/${cvId}/status?status=${newStatus}`)
-      .then(() => {
-        setCandidates(prev =>
-          prev.map(c => c.cv_id === cvId ? { ...c, candidature_status: newStatus } : c)
-        )
-      })
-      .catch(() => setError('Erreur lors de la mise à jour du statut.'))
+  const renderStatus = (statusValue) => {
+    const normalized = statusValue || 'en_attente'
+    const meta = STATUS_LABELS[normalized] || STATUS_LABELS.en_attente
+    return (
+      <span className={`status-badge status-${normalized}`}>{meta.icon} {meta.label}</span>
+    )
   }
 
   return (
@@ -91,6 +105,7 @@ function Candidates() {
                 <th>Fichier</th>
                 <th>Nom</th>
                 <th>Email</th>
+                <th>Offre</th>
                 <th>Méthode</th>
                 <th>Statut</th>
                 <th>Date</th>
@@ -103,20 +118,32 @@ function Candidates() {
                   <td className="filename">📄 {c.filename}</td>
                   <td>{c.nom || <span className="empty">—</span>}</td>
                   <td>{c.email || <span className="empty">—</span>}</td>
+                  <td>
+                    {c.offer_titles?.length ? (
+                      <div className="offer-badges">
+                        {c.offer_titles.map((title, idx) => (
+                          <span key={`${c.cv_id}-${idx}`} className="offer-badge">
+                            {title}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="empty">—</span>
+                    )}
+                  </td>
                   <td><span className="method-badge">{c.extraction_method}</span></td>
                   <td>
-                    <select
-                      className={`status-select status-${c.candidature_status || 'en_attente'}`}
-                      value={c.candidature_status || 'en_attente'}
-                      onChange={(e) => handleStatusChange(c.cv_id, e.target.value)}
-                    >
-                      {STATUS_OPTIONS.map(s => (
-                        <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
-                      ))}
-                    </select>
+                    {renderStatus(c.candidature_status)}
                   </td>
                   <td className="date">{c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR') : '—'}</td>
                   <td>
+                    <Link
+                      className="btn-view"
+                      to={`/candidates/${c.cv_id}`}
+                      title="Voir les extractions"
+                    >
+                      👁
+                    </Link>
                     <button
                       className="btn-delete"
                       onClick={() => handleDelete(c.cv_id)}

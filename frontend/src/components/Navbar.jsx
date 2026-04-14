@@ -6,6 +6,7 @@ function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuth()
+  const role = (user?.role ?? '').toString().trim().toLowerCase()
 
   const handleLogout = () => {
     logout()
@@ -28,20 +29,43 @@ function Navbar() {
               </Link>
             </li>
             <li>
-              <Link to="/upload" className={location.pathname === '/upload' ? 'active' : ''}>
-                Uploader un CV
-              </Link>
+              {role !== 'candidat' && (
+                <Link to="/upload" className={location.pathname === '/upload' ? 'active' : ''}>
+                  Uploader un CV
+                </Link>
+              )}
             </li>
             {/* Candidats et extractions : recruteur/admin uniquement */}
-            {user?.role !== 'candidat' && (
+            {role !== 'candidat' && (
               <li>
                 <Link to="/candidates" className={location.pathname === '/candidates' ? 'active' : ''}>
                   Candidats
                 </Link>
               </li>
             )}
+            {role !== 'candidat' && (
+              <li>
+                <Link to="/offers" className={location.pathname === '/offers' ? 'active' : ''}>
+                  Offres
+                </Link>
+              </li>
+            )}
+            {role === 'admin' && (
+              <li>
+                <Link to="/admin/users" className={location.pathname === '/admin/users' ? 'active' : ''}>
+                  Admin
+                </Link>
+              </li>
+            )}
             {/* Mes candidatures : candidat uniquement */}
-            {user?.role === 'candidat' && (
+            {role === 'candidat' && (
+              <li>
+                <Link to="/jobs" className={location.pathname === '/jobs' ? 'active' : ''}>
+                  Offres
+                </Link>
+              </li>
+            )}
+            {role === 'candidat' && (
               <li>
                 <Link to="/my-applications" className={location.pathname === '/my-applications' ? 'active' : ''}>
                   Mes Candidatures

@@ -5,8 +5,7 @@ Centralise les patterns, listes de référence et constantes
 utilisés par les différents extracteurs (formation, expérience,
 compétences, contact, entité).
 
-Auteur  : Youssef Gara
-Projet  : 3S TalentMatch — PFE ESPRIT 2025-2026
+
 """
 
 from __future__ import annotations

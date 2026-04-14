@@ -1,5 +1,5 @@
 """
-Service d'authentification — hashing, JWT, OAuth Google/LinkedIn.
+Service d'authentification — hashing, JWT, OAuth Google/LinkedIn, vérification email.
 """
 
 import os
@@ -14,6 +14,10 @@ from sqlalchemy.orm import Session
 import httpx
 
 from app.models.user import User, UserRole, AuthProvider
+from app.services.email_service import (
+    generate_otp, send_verification_email, send_password_reset_email,
+    VERIFICATION_CODE_EXPIRE_MINUTES,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -119,8 +123,84 @@ def user_to_token_response(user: User) -> dict:
             "auth_provider": user.auth_provider.value if user.auth_provider else "local",
             "avatar_url": user.avatar_url,
             "is_active": user.is_active,
+            "is_email_verified": user.is_email_verified,
         },
     }
+
+
+# ── Vérification email ──────────────────────────────────────
+def send_verification_code(db: Session, user: User) -> bool:
+    """Génère un code OTP et l'envoie par email. Retourne True si envoyé."""
+    code = generate_otp()
+    user.verification_code = code
+    user.verification_code_expires = datetime.now(timezone.utc) + timedelta(
+        minutes=VERIFICATION_CODE_EXPIRE_MINUTES
+    )
+    db.commit()
+    logger.info("Code de vérification généré pour %s : %s", user.email, code)
+    sent = send_verification_email(user.email, user.prenom, code)
+    if not sent:
+        # Fallback : le code est quand même en BDD, on le log pour le dev
+        logger.warning(
+            "Email non envoyé — code de vérification pour %s : %s (vérifiez SMTP_PASSWORD)",
+            user.email, code,
+        )
+    return sent
+
+
+def verify_email_code(db: Session, user: User, code: str) -> bool:
+    """Vérifie le code OTP. Retourne True si le code est valide."""
+    if not user.verification_code or not user.verification_code_expires:
+        return False
+    if datetime.now(timezone.utc) > user.verification_code_expires:
+        return False
+    if user.verification_code != code:
+        return False
+    # Succès → marquer comme vérifié
+    user.is_email_verified = True
+    user.verification_code = None
+    user.verification_code_expires = None
+    db.commit()
+    logger.info("Email vérifié avec succès pour %s", user.email)
+    return True
+
+
+# ── Reset mot de passe ───────────────────────────────────────
+def send_reset_code(db: Session, user: User) -> bool:
+    """Génère un code de reset et l'envoie par email."""
+    code = generate_otp()
+    user.reset_code = code
+    user.reset_code_expires = datetime.now(timezone.utc) + timedelta(
+        minutes=VERIFICATION_CODE_EXPIRE_MINUTES
+    )
+    db.commit()
+    logger.info("Code de reset généré pour %s : %s", user.email, code)
+    sent = send_password_reset_email(user.email, user.prenom, code)
+    if not sent:
+        logger.warning(
+            "Email non envoyé — code de reset pour %s : %s (vérifiez SMTP_PASSWORD)",
+            user.email, code,
+        )
+    return sent
+
+
+def verify_reset_code_and_change_password(
+    db: Session, user: User, code: str, new_password: str
+) -> bool:
+    """Vérifie le code de reset et change le mot de passe. Retourne True si OK."""
+    if not user.reset_code or not user.reset_code_expires:
+        return False
+    if datetime.now(timezone.utc) > user.reset_code_expires:
+        return False
+    if user.reset_code != code:
+        return False
+    # Succès → changer le mot de passe
+    user.hashed_password = hash_password(new_password)
+    user.reset_code = None
+    user.reset_code_expires = None
+    db.commit()
+    logger.info("Mot de passe réinitialisé pour %s", user.email)
+    return True
 
 
 # ── OAuth Google ─────────────────────────────────────────────
@@ -165,11 +245,16 @@ async def google_oauth_callback(code: str, redirect_uri: str, db: Session) -> di
             oauth_id=profile.get("id", ""),
             avatar_url=profile.get("picture", ""),
         )
+        # OAuth = email déjà vérifié par Google
+        user.is_email_verified = True
+        db.commit()
     else:
         # Mettre à jour l'avatar si nécessaire
         if profile.get("picture") and not user.avatar_url:
             user.avatar_url = profile["picture"]
-            db.commit()
+        if not user.is_email_verified:
+            user.is_email_verified = True
+        db.commit()
 
     return user_to_token_response(user)
 
@@ -216,9 +301,14 @@ async def linkedin_oauth_callback(code: str, redirect_uri: str, db: Session) -> 
             oauth_id=profile.get("sub", ""),
             avatar_url=profile.get("picture", ""),
         )
+        # OAuth = email déjà vérifié par LinkedIn
+        user.is_email_verified = True
+        db.commit()
     else:
         if profile.get("picture") and not user.avatar_url:
             user.avatar_url = profile["picture"]
-            db.commit()
+        if not user.is_email_verified:
+            user.is_email_verified = True
+        db.commit()
 
     return user_to_token_response(user)

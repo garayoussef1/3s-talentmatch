@@ -25,6 +25,7 @@ data/cvs_processed/
 
 # Logs
 *.log
+logs/.dev-pids.json
 
 # VS Code
 .vscode/

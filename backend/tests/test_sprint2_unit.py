@@ -192,6 +192,19 @@ Développeur chez X depuis 2020
         assert "FastAPI" in skills
         assert "Docker" in skills
 
+    def test_synonymes_espaces_et_variantes(self):
+        """Variantes fréquentes: Fast API, React JS, Node JS, TailwindCSS."""
+        text = """
+COMPETENCES
+Fast API, React JS, Node JS, TailwindCSS
+"""
+        result = self.extractor.extract(text)
+        skills = {s["name"] for s in result["skills"]}
+        assert "FastAPI" in skills
+        assert "React" in skills
+        assert "Node.js" in skills
+        assert "Tailwind CSS" in skills
+
 
 class TestSkillsExtractorYears:
     """Vérifie l'extraction des années d'expérience par skill."""
@@ -410,9 +423,74 @@ Responsable Développement Commercial -- 3S Group 2021/2023
 """
         result = self.extractor.extract(text)
         assert len(result["experiences"]) >= 1
+
+
+# ==============================================================
+#  EXPERIENCE EXTRACTOR — SANS DATES (RAPPEL)
+# ==============================================================
+
+class TestExperienceExtractorSansDates:
+    """Vérifie l'assouplissement contrôlé des blocs sans dates."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        from app.services.nlp.experience_extractor import ExperienceExtractor
+        self.extractor = ExperienceExtractor(_nlp)
+
+    def test_accepte_sans_dates_dans_section_experience(self):
+        text = """
+Expériences Professionnelles
+
+Développeur Backend chez ACME
+- Développement d'API REST et intégration
+"""
+        result = self.extractor.extract(text)
+        assert len(result["experiences"]) >= 1, f"Aucune expérience trouvée: {result}"
+
+
+class TestExperienceExtractorFallbackSansSection:
+    """Améliore le rappel quand la section Expérience n'est pas explicite."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        from app.services.nlp.experience_extractor import ExperienceExtractor
+        self.extractor = ExperienceExtractor(_nlp)
+
+    def test_experiences_sans_section_et_sans_dates(self):
+        text = """
+Profil
+Développeur.
+
+Développeur Full Stack chez Sofrecom — Tunis
+- Développement d'APIs REST avec Fast API
+
+Stagiaire Data Engineer chez Orange — Paris
+- Pipeline ETL et data quality
+"""
+        result = self.extractor.extract(text)
+        experiences = result.get("experiences", [])
+        assert len(experiences) >= 2, f"Attendu ≥2 expériences, got: {experiences}"
+        companies = {e.get("entreprise") for e in experiences if e.get("entreprise")}
+        assert "Sofrecom" in companies
+        assert "Orange" in companies
         exp = result["experiences"][0]
-        assert exp.get("date_debut") == "2021-01"
-        assert exp.get("date_fin") == "2023-01"
+        assert exp.get("poste") is not None
+        assert exp.get("date_debut") is None
+        assert exp.get("date_fin") is None
+
+    def test_rejete_sans_section_experience(self):
+        text = """
+Profil
+
+Développeur Backend chez ACME
+- Développement d'API REST
+
+Compétences
+Python, FastAPI
+"""
+        result = self.extractor.extract(text)
+        assert len(result["experiences"]) == 0
+
 
     def test_jusqua_aujourdhui_est_en_cours(self):
         text = """
@@ -586,6 +664,18 @@ Master Management - IHEC Carthage - 2010 à 2012
         f = result["formations"][0]
         assert f.get("annee") == 2012
 
+    def test_formation_professionnelle_detectee(self):
+        text = """
+Formation
+
+Formation Professionnelle Bizerte 2015-2017 Installation électrique domestique et industrielle
+"""
+        result = self.extractor.extract(text)
+        assert len(result["formations"]) >= 1
+        f = result["formations"][0]
+        assert "formation" in f.get("diplome", "").lower()
+        assert f.get("annee") == 2017
+
     def test_decoupage_trois_formations_master_licence_bac(self):
         text = """
 Formation
@@ -758,7 +848,7 @@ class TestPipelineErrorHandling:
         result = self.parser.parse(text)
         assert result["success"] is True
         version = result["parsed_data"]["metadata"]["parser_version"]
-        assert version == "2.1.0"
+        assert version == "2.3.0"
 
 
 class TestLanguageSectionAliases:

@@ -17,6 +17,11 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 
+def _normalize_letters(value: str) -> str:
+    """Normalise une chaîne en ne gardant que les lettres (pour détecter des mots OCR cassés)."""
+    return re.sub(r"[^a-zà-öø-ÿ]+", "", (value or "").lower())
+
+
 # Mots qui ne sont PAS des noms de personne (filtrage fallback)
 _NOT_NAME_WORDS = {
     # Titres de CV
@@ -114,7 +119,7 @@ _NOT_NAME_WORDS = {
     "ingénieurs", "ingenieurs",
     # Mots d'identité / civil (souvent sur la même ligne que le nom)
     "lieu", "naissance", "nationalité", "nationalite", "date",
-    "célibataire", "celibataire", "marié", "marie", "mariée",
+    "célibataire", "celibataire", "marié", "mariée", "mariee",
     "permis", "conduire", "véhiculé", "vehicule",
     "disponible", "immédiatement", "années", "ans",
     "tunisienne", "tunisien", "français", "française", "marocain", "marocaine",
@@ -156,7 +161,7 @@ _PASS0_JOB_KEYWORDS = {
     "computer", "science", "intelligence", "specialization",
     "spécialisation", "digital", "architect", "architecte",
     "designer", "analyst", "data", "web", "fullstack",
-    "full-stack", "frontend", "backend", "devops",
+    "full-stack", "frontend", "backend", "devops", "dev", "ops",
     "technicien", "technician", "coordinateur", "coordinator",
     "gestionnaire", "officer", "professionnel", "professional",
     "étudiant", "étudiante", "ingénieur", "développeur",
@@ -201,7 +206,7 @@ class EntityExtractor:
         r"^([A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ]{2,15})([A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ]{2,15})"
     )
 
-    def __init__(self, nlp_model):
+    def __init__(self, nlp_model=None):
         self._nlp = nlp_model
 
     # Titres métiers/postes à supprimer APRES extraction du nom
@@ -278,10 +283,52 @@ class EntityExtractor:
         words = text.strip().split()
         if len(words) < 2 or len(words) > 5:
             return False
+
+        # Détecter les faux positifs fréquents quand l'OCR/PDF "casse" un mot
+        # (ex: "Form ation" → "formation", "Dev Ops" → "devops").
+        joined = "".join(_normalize_letters(w) for w in words)
+        blocked_joined = {
+            "formation",
+            "competences",
+            "compétences",
+            "experience",
+            "expérience",
+            "experiences",
+            "expériences",
+            "experienceprofessionnelle",
+            "experienceprofessionnelles",
+            "experiencesprofessionnelle",
+            "experiencesprofessionnelles",
+            "profil",
+            "contact",
+            "langues",
+            "languages",
+            "skills",
+            "education",
+            "projects",
+            "projets",
+            "certifications",
+            "references",
+            "références",
+            "objectif",
+            "objective",
+            "resume",
+            "résumé",
+            "curriculumvitae",
+            "devops",
+            "fullstack",
+        }
+        blocked_norm = {_normalize_letters(x) for x in blocked_joined}
+        joined_norm = _normalize_letters(joined)
+        if joined_norm in blocked_norm:
+            return False
+
         # Aucun mot ne doit être un mot interdit
         for w in words:
             wl = w.lower().rstrip(".,;:")
             if wl in _NOT_NAME_WORDS or wl in _LOCATION_WORDS:
+                return False
+            if _normalize_letters(w) in blocked_norm:
                 return False
         # Au moins 2 mots doivent ressembler à des noms propres
         name_words = sum(1 for w in words if _NAME_WORD.match(w.rstrip(".,;:")))
@@ -311,6 +358,8 @@ class EntityExtractor:
         return candidate
 
     def _extract_name_from_person_entities(self, text: str) -> Optional[str]:
+        if not self._nlp:
+            return None
         # Limiter spaCy aux 2000 premiers caractères (le nom est toujours en haut du CV)
         header_text = (text or "")[:2000]
         doc = self._nlp(header_text)
@@ -502,6 +551,17 @@ class EntityExtractor:
 
             if len(filtered) < 2 or len(filtered) > 4:
                 continue
+
+            # Rejeter explicitement les titres de poste/keywords métier
+            # (ex: "Dev Ops", "Data Engineer", "Full Stack")
+            filtered_job_tokens = set()
+            for w in filtered:
+                wl = w.lower().rstrip(".,;:-()")
+                parts = [p for p in re.split(r"[^a-zà-öø-ÿ]+", wl) if p]
+                filtered_job_tokens.update(parts or [wl])
+            if any(tok in _PASS0_JOB_KEYWORDS for tok in filtered_job_tokens):
+                continue
+
             candidate = " ".join(filtered)
 
             # Vérifier : pas de chiffres, pas de :, pas de @, pas de virgule
@@ -525,8 +585,14 @@ class EntityExtractor:
                 if not (w_clean[0].isupper() or w_clean.isupper()):
                     valid = False
                     break
-            if valid:
-                return candidate
+            if not valid:
+                continue
+
+            # Validation finale (inclut la détection de mots OCR cassés type "Form ation")
+            if not self._is_plausible_name(candidate):
+                continue
+
+            return candidate
         return None
 
     def _strip_job_title(self, name: str) -> str:
@@ -541,11 +607,134 @@ class EntityExtractor:
             return name
         return cleaned
 
+    def _extract_name_from_linkedin(self, text: str) -> Optional[str]:
+        """Pass 4 : Extraire le nom depuis une URL LinkedIn.
+
+        Exemples :
+          linkedin.com/in/ines-bensaad     → Ines Ben Saad
+          linkedin.com/in/marie-martin     → Marie Martin
+          www.linkedin.com/ines-bensaad    → Ines Ben Saad  (sans /in/)
+        """
+        # Chercher une URL LinkedIn dans les 500 premiers caractères
+        header = (text or "")[:500]
+        linkedin_re = re.compile(
+            r"linkedin\.com(?:/in)?/([A-Za-z][A-Za-z0-9\-]{2,})",
+            re.IGNORECASE,
+        )
+        match = linkedin_re.search(header)
+        if not match:
+            return None
+
+        slug = match.group(1)  # ex: "ines-bensaad" ou "ines-bensaad-123abc"
+        # Supprimer suffixe numérique LinkedIn (ex: -123abc à la fin)
+        slug = re.sub(r"-[a-z0-9]{4,}$", "", slug)
+        parts = [p for p in slug.split("-") if p and not p.isdigit()]
+
+        # Doit avoir au moins prénom + nom (2 parties)
+        if len(parts) < 2:
+            return None
+
+        # Chaque partie doit ressembler à un mot de nom (lettres seulement)
+        if not all(re.match(r"^[a-zA-Zà-öø-ÿÀ-Þ]+$", p) for p in parts):
+            return None
+
+        candidate = " ".join(p.capitalize() for p in parts)
+
+        # Validation : pas un titre de métier, pas un mot de section
+        if not self._is_plausible_name(candidate):
+            return None
+
+        return candidate
+
+    def _extract_name_from_email(self, text: str) -> Optional[str]:
+        """Pass 5 : Extraire un nom depuis la partie locale d'un email.
+
+        Exemples :
+          inesbensaad95@gmail.com  → tente de décomposer "inesbensaad" en prénom+nom
+          jean.dupont@example.com  → Jean Dupont
+        """
+        header = (text or "")[:500]
+        email_re = re.compile(r"\b([A-Za-z][A-Za-z0-9._+-]{2,})@[A-Za-z0-9.-]+\.[a-z]{2,}", re.IGNORECASE)
+        match = email_re.search(header)
+        if not match:
+            return None
+
+        local = match.group(1)
+        # Cas 1 : séparé par point ou underscore (jean.dupont / jean_dupont)
+        if "." in local or "_" in local:
+            parts = re.split(r"[._]", local)
+            parts = [re.sub(r"[0-9]+$", "", p) for p in parts]  # retirer chiffres finaux
+            parts = [p for p in parts if len(p) >= 2 and p.isalpha()]
+            if len(parts) >= 2:
+                candidate = " ".join(p.capitalize() for p in parts)
+                if self._is_plausible_name(candidate):
+                    return candidate
+
+        # Cas 2 : tout collé (inesbensaad95) → retirer chiffres, puis CamelCase split
+        clean = re.sub(r"[0-9]+", "", local)
+        if len(clean) < 4:
+            return None
+
+        # Chercher si on peut deviner deux segments (prénom 3-8 lettres + nom restant)
+        # Heuristique : essayer toutes les coupures prénom de 3 à 7 caractères
+        for cut in range(3, min(8, len(clean) - 2)):
+            first = clean[:cut].capitalize()
+            last = clean[cut:].capitalize()
+            candidate = f"{first} {last}"
+            if self._is_plausible_name(candidate):
+                return candidate
+
+        return None
+
+    def _extract_name_allcaps_anywhere(self, text: str) -> Optional[str]:
+        """Pass 3b : cherche un nom en MAJUSCULES n'importe où dans le texte.
+
+        Utile pour les CVs 2 colonnes où le nom apparaît dans la colonne droite
+        (ex: Ines ben Saad → "INES BEN SAAD" en milieu de texte extrait).
+        """
+        # Pattern : 2-4 mots tous en MAJUSCULES, sur une ligne seule ou après \n
+        # On exclut les sections connues (EDUCATION, SKILLS, etc.)
+        _SECTION_CAPS = re.compile(
+            r"^(?:EDUCATION|SKILLS|EXPERIENCE|FORMATION|COMPETENCES|LANGUES|LANGUAGES"
+            r"|CERTIFICATIONS|PROJECTS|SUMMARY|OBJECTIVE|CONTACT|PROFIL|WORK"
+            r"|TECHNICAL|PROFESSIONAL|ACADEMIC|ACTIVITIES|EXTRA)\b",
+            re.IGNORECASE,
+        )
+        for line in text.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            words = line.split()
+            if len(words) < 2 or len(words) > 4:
+                continue
+            # Tous les mots en majuscules, ≥2 lettres chacun
+            if not all(w.isupper() and len(w) >= 2 and w.isalpha() for w in words):
+                continue
+            if _SECTION_CAPS.match(line):
+                continue
+            # Pas de mots interdits
+            if any(w.lower() in _NOT_NAME_WORDS for w in words):
+                continue
+            # Plausibilité du nom
+            candidate = " ".join(w.capitalize() for w in words)
+            if self._is_plausible_name(candidate):
+                return candidate
+        return None
+
     def extract_full_name(self, text: str) -> Optional[str]:
         """
         Extrait le nom complet du candidat.
-        
-        Priorité (6 passes) :
+
+        Priorité (7 passes) :
+        0.  Ligne simple : 2-4 mots capitalisés sans mot-clé métier
+        1a. Ligne préfixée "Nom :" / "Name :"
+        1b. Titre honorifique "Dr. NOM" / "M. NOM" / "Mme NOM"
+        1c. CamelCase PyPDF ("SarahJohnson" → "Sarah Johnson")
+        2.  Fallback : 1ère ligne qui ressemble à un nom (découpage intelligent)
+        3.  Entité NER PERSON/PER (spaCy)
+        4.  URL LinkedIn (linkedin.com/in/prenom-nom → Prenom Nom)
+        5.  Email local part (prenom.nom@ ou prenomnom@)
+
         0.  Ligne simple : 2-4 mots capitalisés sans mot-clé métier
         1a. Ligne préfixée "Nom :" / "Name :"
         1b. Titre honorifique "Dr. NOM" / "M. NOM" / "Mme NOM"
@@ -604,7 +793,27 @@ class EntityExtractor:
                     return result
                 logger.debug("NER a retourné '%s' mais insuffisant après nettoyage", from_ner)
 
-            logger.warning("Aucun nom détecté par les 5 passes")
+            # Pass 3b : ALL_CAPS name anywhere in text (2-column PDFs where name is in right col)
+            # Ex: "INES BEN SAAD" appears mid-text after all left-column content
+            from_allcaps = self._extract_name_allcaps_anywhere(text)
+            if from_allcaps:
+                result = self._strip_job_title(self._normalize_case(from_allcaps))
+                logger.info("Nom trouvé par ALL_CAPS anywhere : %s", result)
+                return result
+
+            # Pass 4 : LinkedIn URL (ex: linkedin.com/in/ines-bensaad → Ines Ben Saad)
+            from_linkedin = self._extract_name_from_linkedin(text)
+            if from_linkedin:
+                logger.info("Nom trouvé par LinkedIn URL : %s", from_linkedin)
+                return from_linkedin
+
+            # Pass 5 : Email local part (ex: inesbensaad95@gmail.com → Ines Ben Saad)
+            from_email = self._extract_name_from_email(text)
+            if from_email:
+                logger.info("Nom trouvé par email : %s", from_email)
+                return from_email
+
+            logger.warning("Aucun nom détecté par les 7 passes")
             return None
 
         except Exception as e:

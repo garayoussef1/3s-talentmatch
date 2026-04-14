@@ -1,0 +1,306 @@
+% ============================================================
+% Diagramme de Classes — 3S TalentMatch
+% À compiler seul (standalone) ou à inclure dans le cahier
+% ============================================================
+\documentclass[border=10pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{tikz}
+\usetikzlibrary{shapes.multipart, arrows.meta, positioning, calc, backgrounds}
+
+% ── Styles ──────────────────────────────────────────────────
+\tikzset{
+    % Classe UML (3 compartiments)
+    umlclass/.style={
+        rectangle split,
+        rectangle split parts=3,
+        rectangle split part fill={blue!20, white, white},
+        draw=black,
+        thick,
+        rounded corners=2pt,
+        font=\small,
+        text width=5.5cm,
+        minimum width=5.8cm,
+        inner sep=6pt,
+        anchor=north,
+    },
+    % Énumération UML
+    umlenum/.style={
+        rectangle split,
+        rectangle split parts=2,
+        rectangle split part fill={yellow!20, white},
+        draw=black,
+        thick,
+        rounded corners=2pt,
+        font=\small,
+        text width=3.2cm,
+        minimum width=3.5cm,
+        inner sep=6pt,
+        anchor=north,
+    },
+    % Flèche association
+    assoc/.style={
+        -,
+        thick,
+    },
+    % Flèche composition (losange plein)
+    compo/.style={
+        -{Diamond[fill=black, length=8pt, width=6pt]},
+        thick,
+    },
+    % Flèche agrégation (losange vide)
+    aggre/.style={
+        -{Diamond[open, length=8pt, width=6pt]},
+        thick,
+    },
+    % Héritage
+    inherit/.style={
+        ->,
+        thick,
+        >={Triangle[open, length=8pt, width=8pt]},
+    },
+    % Cardinalité
+    card/.style={
+        font=\scriptsize\bfseries,
+        fill=white,
+        inner sep=1pt,
+    },
+}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+    % ── Titre ───────────────────────
+    \node[font=\Large\bfseries, anchor=south] at (7, 18)
+        {Diagramme de Classes -- 3S TalentMatch};
+
+    % ══════════════════════════════════════════════════════
+    % CLASSE : User
+    % ══════════════════════════════════════════════════════
+    \node[umlclass] (user) at (0, 17) {
+        \textbf{User}
+        \nodepart{second}
+        \texttt{- id : UUID \{PK\}}\\
+        \texttt{- nom : String(100)}\\
+        \texttt{- prenom : String(100)}\\
+        \texttt{- email : String(255) \{unique\}}\\
+        \texttt{- hashed\_password : String}\\
+        \texttt{- role : UserRole}\\
+        \texttt{- is\_active : Boolean}\\
+        \texttt{- is\_email\_verified : Boolean}\\
+        \texttt{- verification\_code : String}\\
+        \texttt{- verification\_code\_expires : DateTime}\\
+        \texttt{- reset\_code : String}\\
+        \texttt{- reset\_code\_expires : DateTime}\\
+        \texttt{- auth\_provider : AuthProvider}\\
+        \texttt{- oauth\_id : String}\\
+        \texttt{- avatar\_url : String}\\
+        \texttt{- created\_at : DateTime}\\
+        \texttt{- updated\_at : DateTime}
+        \nodepart{third}
+        \texttt{+ register() : TokenResponse}\\
+        \texttt{+ login() : TokenResponse}\\
+        \texttt{+ verifyEmail(code) : Boolean}\\
+        \texttt{+ resetPassword(code) : Boolean}\\
+        \texttt{+ oauthCallback() : TokenResponse}
+    };
+
+    % ══════════════════════════════════════════════════════
+    % CLASSE : Candidate
+    % ══════════════════════════════════════════════════════
+    \node[umlclass] (candidate) at (0, 4.5) {
+        \textbf{Candidate}
+        \nodepart{second}
+        \texttt{- id : UUID \{PK\}}\\
+        \texttt{- cv\_id : String \{unique\}}\\
+        \texttt{- filename : String(255)}\\
+        \texttt{- user\_id : UUID \{FK\}}\\
+        \texttt{- candidature\_status : CandidatureStatus}\\
+        \texttt{- nom : String}\\
+        \texttt{- email : String}\\
+        \texttt{- telephone : String}\\
+        \texttt{- linkedin : String}\\
+        \texttt{- github : String}\\
+        \texttt{- parsed\_data : JSON}\\
+        \texttt{- raw\_text : Text}\\
+        \texttt{- extraction\_method : String}\\
+        \texttt{- created\_at : DateTime}\\
+        \texttt{- updated\_at : DateTime}
+        \nodepart{third}
+        \texttt{+ uploadCV(file) : CVResponse}\\
+        \texttt{+ getMyApplications() : List}
+    };
+
+    % ══════════════════════════════════════════════════════
+    % CLASSE : CVDocument
+    % ══════════════════════════════════════════════════════
+    \node[umlclass, text width=4.8cm, minimum width=5.1cm] (cvdoc) at (0, -4.5) {
+        \textbf{CVDocument}
+        \nodepart{second}
+        \texttt{- id : UUID \{PK\}}\\
+        \texttt{- candidate\_id : UUID \{FK\}}\\
+        \texttt{- filename : String(255)}\\
+        \texttt{- file\_type : String}\\
+        \texttt{- extraction\_method : String}\\
+        \texttt{- raw\_text : Text}\\
+        \texttt{- status : CVStatus}\\
+        \texttt{- uploaded\_at : DateTime}
+        \nodepart{third}
+        \texttt{+ extract() : String}\\
+        \texttt{+ parseNLP() : JSON}
+    };
+
+    % ══════════════════════════════════════════════════════
+    % CLASSE : JobOffer
+    % ══════════════════════════════════════════════════════
+    \node[umlclass] (joboffer) at (14, 17) {
+        \textbf{JobOffer}
+        \nodepart{second}
+        \texttt{- id : UUID \{PK\}}\\
+        \texttt{- recruiter\_id : UUID \{FK\}}\\
+        \texttt{- titre : String(255)}\\
+        \texttt{- description : Text}\\
+        \texttt{- competences\_requises : JSON}\\
+        \texttt{- localisation : String}\\
+        \texttt{- type\_contrat : String}\\
+        \texttt{- status : JobStatus}\\
+        \texttt{- created\_at : DateTime}\\
+        \texttt{- updated\_at : DateTime}
+        \nodepart{third}
+        \texttt{+ create() : JobOffer}\\
+        \texttt{+ update() : JobOffer}\\
+        \texttt{+ close() : void}
+    };
+
+    % ══════════════════════════════════════════════════════
+    % CLASSE : Match
+    % ══════════════════════════════════════════════════════
+    \node[umlclass, text width=4.8cm, minimum width=5.1cm] (match) at (14, 8.5) {
+        \textbf{Match}
+        \nodepart{second}
+        \texttt{- id : UUID \{PK\}}\\
+        \texttt{- candidate\_id : UUID \{FK\}}\\
+        \texttt{- job\_offer\_id : UUID \{FK\}}\\
+        \texttt{- score : Float [0.0--1.0]}\\
+        \texttt{- details : Text}\\
+        \texttt{- status : MatchStatus}\\
+        \texttt{- created\_at : DateTime}
+        \nodepart{third}
+        \texttt{+ calculateScore() : Float}\\
+        \texttt{+ accept() : void}\\
+        \texttt{+ reject() : void}
+    };
+
+    % ══════════════════════════════════════════════════════
+    % ÉNUMÉRATIONS
+    % ══════════════════════════════════════════════════════
+
+    % UserRole
+    \node[umlenum] (userrole) at (8, 17) {
+        \textbf{$\ll$enum$\gg$}\\
+        \textbf{UserRole}
+        \nodepart{second}
+        \texttt{recruteur}\\
+        \texttt{admin}\\
+        \texttt{candidat}
+    };
+
+    % AuthProvider
+    \node[umlenum] (authprov) at (8, 14) {
+        \textbf{$\ll$enum$\gg$}\\
+        \textbf{AuthProvider}
+        \nodepart{second}
+        \texttt{local}\\
+        \texttt{google}\\
+        \texttt{linkedin}
+    };
+
+    % CandidatureStatus
+    \node[umlenum] (candstatus) at (8, 11.2) {
+        \textbf{$\ll$enum$\gg$}\\
+        \textbf{CandidatureStatus}
+        \nodepart{second}
+        \texttt{en\_attente}\\
+        \texttt{accepte}\\
+        \texttt{refuse}
+    };
+
+    % CVStatus
+    \node[umlenum] (cvstatus) at (8, 8.3) {
+        \textbf{$\ll$enum$\gg$}\\
+        \textbf{CVStatus}
+        \nodepart{second}
+        \texttt{uploaded}\\
+        \texttt{extracted}\\
+        \texttt{parsed}\\
+        \texttt{error}
+    };
+
+    % JobStatus
+    \node[umlenum] (jobstatus) at (8, 5.3) {
+        \textbf{$\ll$enum$\gg$}\\
+        \textbf{JobStatus}
+        \nodepart{second}
+        \texttt{active}\\
+        \texttt{closed}\\
+        \texttt{draft}
+    };
+
+    % MatchStatus
+    \node[umlenum] (matchstatus) at (8, 2.3) {
+        \textbf{$\ll$enum$\gg$}\\
+        \textbf{MatchStatus}
+        \nodepart{second}
+        \texttt{pending}\\
+        \texttt{reviewed}\\
+        \texttt{accepted}\\
+        \texttt{rejected}
+    };
+
+    % ══════════════════════════════════════════════════════
+    % RELATIONS
+    % ══════════════════════════════════════════════════════
+
+    % User 1 ──── 0..* Candidate (un user peut avoir plusieurs candidatures)
+    \draw[assoc] (user.south) -- (candidate.north)
+        node[card, pos=0.05, left] {1}
+        node[card, pos=0.95, left] {0..*}
+        node[fill=white, font=\scriptsize, pos=0.5, right=2pt] {possède};
+
+    % Candidate 1 ──── 0..* CVDocument (composition)
+    \draw[compo] (cvdoc.north) -- (candidate.south)
+        node[card, pos=0.05, left] {0..*}
+        node[card, pos=0.95, left] {1}
+        node[fill=white, font=\scriptsize, pos=0.5, right=2pt] {contient};
+
+    % User 1 ──── 0..* JobOffer (un recruteur crée des offres)
+    \draw[assoc] (user.east) -- ++(2, 0) |- (joboffer.west)
+        node[card, pos=0.02, above] {1}
+        node[card, pos=0.95, above] {0..*}
+        node[fill=white, font=\scriptsize, pos=0.5, above=2pt] {publie};
+
+    % JobOffer 1 ──── 0..* Match
+    \draw[assoc] (joboffer.south) -- (match.north)
+        node[card, pos=0.05, left] {1}
+        node[card, pos=0.95, left] {0..*}
+        node[fill=white, font=\scriptsize, pos=0.5, right=2pt] {génère};
+
+    % Candidate 0..* ──── 0..* Match (association via Match)
+    \draw[assoc] (candidate.east) -- ++(3, 0) |- (match.west)
+        node[card, pos=0.02, above] {1}
+        node[card, pos=0.95, above] {0..*}
+        node[fill=white, font=\scriptsize, pos=0.5, above=2pt] {évalué par};
+
+    % ── Relations vers les énumérations (pointillés) ──────
+    \draw[dashed, thin, gray] (user.east) ++(0, -0.5) -- (userrole.west);
+    \draw[dashed, thin, gray] (user.east) ++(0, -2)   -- (authprov.west);
+    \draw[dashed, thin, gray] (candidate.east) ++(0, 0.5) -- (candstatus.west);
+    \draw[dashed, thin, gray] (cvdoc.east) ++(0, 0.5) -- (cvstatus.west);
+    \draw[dashed, thin, gray] (joboffer.west) ++(-0.5, -1) -- (jobstatus.east);
+    \draw[dashed, thin, gray] (match.west) ++(0, -0.5) -- (matchstatus.east);
+
+\end{tikzpicture}
+
+\end{document}

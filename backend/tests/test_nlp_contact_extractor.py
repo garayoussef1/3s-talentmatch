@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.services.nlp.contact_extractor import ContactExtractor
@@ -40,10 +42,26 @@ class TestContactExtractor:
         assert any("216" in phone or "22" in phone for phone in result["phones"])
         assert all(len("".join(ch for ch in phone if ch.isdigit())) >= 8 for phone in result["phones"])
 
+    def test_extract_linkedin_profile_without_in_segment(self):
+        text = "Email: inesbensaad95@gmail.com | www.linkedin.com/ines-bensaad"
+
+        extractor = ContactExtractor()
+        result = extractor.extract(text)
+
+        assert result["linkedin"] == "https://linkedin.com/in/ines-bensaad"
+
 
 class TestNLPParserContactIntegration:
     def test_parse_populates_personal_info_contact_fields(self):
         parser = NLPParser()
+
+        # Ce test dépend de spaCy + du modèle fr_core_news_md.
+        # En environnement dev/CI partiel, on le skip proprement.
+        try:
+            parser._load_model()
+        except Exception as e:
+            pytest.skip(f"spaCy/modèle indisponible: {e}")
+
         text = """
         CURRICULUM VITAE
         Nom: Youssef Test

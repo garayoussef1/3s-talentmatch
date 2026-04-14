@@ -7,6 +7,19 @@ import "./Login.css";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 const LINKEDIN_CLIENT_ID = import.meta.env.VITE_LINKEDIN_CLIENT_ID || "";
 
+function generateOAuthState() {
+  try {
+    if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+    const bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+    return Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  } catch {
+    return String(Date.now());
+  }
+}
+
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -39,11 +52,14 @@ function Login() {
       return;
     }
     const redirect = `${window.location.origin}/auth/callback/google`;
+    const state = generateOAuthState();
+    sessionStorage.setItem("oauth_state_google", state);
     const url =
       `https://accounts.google.com/o/oauth2/v2/auth?` +
       `client_id=${GOOGLE_CLIENT_ID}` +
       `&redirect_uri=${encodeURIComponent(redirect)}` +
       `&response_type=code&scope=openid%20email%20profile` +
+      `&state=${encodeURIComponent(state)}` +
       `&access_type=offline&prompt=consent`;
     window.location.href = url;
   };
@@ -54,11 +70,14 @@ function Login() {
       return;
     }
     const redirect = `${window.location.origin}/auth/callback/linkedin`;
+    const state = generateOAuthState();
+    sessionStorage.setItem("oauth_state_linkedin", state);
     const url =
       `https://www.linkedin.com/oauth/v2/authorization?` +
       `response_type=code` +
       `&client_id=${LINKEDIN_CLIENT_ID}` +
       `&redirect_uri=${encodeURIComponent(redirect)}` +
+      `&state=${encodeURIComponent(state)}` +
       `&scope=openid%20profile%20email`;
     window.location.href = url;
   };
@@ -142,6 +161,9 @@ function Login() {
         <p className="auth-footer">
           Pas encore de compte ?{" "}
           <Link to="/register">Créer un compte</Link>
+        </p>
+        <p className="auth-footer">
+          <Link to="/forgot-password">Mot de passe oublié ?</Link>
         </p>
       </div>
     </div>

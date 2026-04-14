@@ -6,6 +6,8 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "/api",
   headers: { "Content-Type": "application/json" },
+  // Évite les requêtes qui pendent (API down, proxy bloqué) → UX "page blanche".
+  timeout: 8000,
 });
 
 // Intercepteur : ajoute le Bearer token à chaque requête

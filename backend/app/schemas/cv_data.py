@@ -10,7 +10,7 @@ Classes : Identite, Contacts, Competence, Formation, Experience, Langue,
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -90,6 +90,50 @@ class Metadata(BaseModel):
     parser_version: str = "2.0.0"
     confidence_score: float = Field(0.0, ge=0.0, le=1.0)
     parsed_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+    # Traces runtime (debug/qualité) — optionnelles pour rester rétro-compatibles
+    spacy_model: Optional[str] = Field(None, description="Nom du modèle spaCy chargé")
+    spacy_version: Optional[str] = Field(None, description="Version de spaCy")
+    spacy_has_ner: Optional[bool] = Field(None, description="Indique si le pipeline spaCy contient le composant NER")
+    spacy_fallback: Optional[bool] = Field(None, description="True si fallback vers spacy.blank('fr') a été utilisé")
+    spacy_pipes: List[str] = Field(default_factory=list, description="Liste des composants du pipeline spaCy")
+
+    # Trace "nom" (debug/qualité)
+    name_source: Optional[str] = Field(
+        None,
+        description="Source du nom final (ex: entity_extractor, hf_camembert, email, etc.)",
+    )
+    name_candidates: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Candidats de nom proposés par chaque méthode (debug)",
+    )
+    name_conflict: Optional[bool] = Field(
+        None,
+        description="True si conflit entre sources de nom (ex: entity vs hf)",
+    )
+
+    # Trace CamemBERT (HF) — optionnel
+    hf_camembert_enabled: Optional[bool] = Field(
+        None,
+        description="True si CamemBERT est activé par config (HF_TOKEN/HF_ENABLE_CAMEMBERT_NAME)",
+    )
+    hf_camembert_attempted: Optional[bool] = Field(
+        None,
+        description="True si une requête CamemBERT a été tentée pendant ce parsing",
+    )
+    hf_camembert_used: Optional[bool] = Field(
+        None,
+        description="True si la sortie CamemBERT a été retenue comme nom final",
+    )
+    hf_camembert_model: Optional[str] = Field(
+        None,
+        description="Nom du modèle HF utilisé (ex: Jean-Baptiste/camembert-ner)",
+    )
+    hf_camembert_timeout_seconds: Optional[float] = Field(
+        None,
+        description="Timeout (secondes) configuré pour l'appel HF",
+    )
+
     annees_experience_totales: float = 0.0
     niveau_formation_max: int = 0
     niveau_seniorite: str = "Non déterminé"

@@ -24,6 +24,12 @@ class ContactExtractor:
         r"(?<![a-zA-Z])[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"
     )
 
+    # Variante OCR: espaces autour de @ et des points (ex: "prenom.nom @ gmail . com")
+    EMAIL_OCR_SPACED_PATTERN = re.compile(
+        r"(?<![a-zA-Z])"
+        r"[a-zA-Z0-9._%+-]+\s*@\s*[a-zA-Z0-9.-]+(?:\s*\.\s*[a-zA-Z]{2,})+\b"
+    )
+
     # Pattern email avec label (Email: ..., E-mail: ..., Mail: ...)
     EMAIL_LABEL_PATTERN = re.compile(
         r"(?:e[\-\s]?mail|courriel)\s*[:\-–—|.]\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})",
@@ -58,13 +64,20 @@ class ContactExtractor:
 
     # ── LinkedIn ─────────────────────────────────────────────────
     # Détecte : URL complète, ou "linkedin.com/in/xxx", ou "LinkedIn : xxx"
+    # Note: certains CV contiennent des URLs de profil au format
+    #   linkedin.com/<slug> (sans /in/). On gère les deux formes.
     LINKEDIN_URL_PATTERN = re.compile(
         r"(?:https?://)?(?:www\.)?linkedin\.com/in/([a-zA-Z0-9\-_.%]+)/?",
         re.IGNORECASE,
     )
+    LINKEDIN_ANY_URL_PATTERN = re.compile(
+        r"(?:https?://)?(?:www\.)?linkedin\.com/(?P<path>[^\s,;\)\]]+)",
+        re.IGNORECASE,
+    )
     LINKEDIN_LABEL_PATTERN = re.compile(
         r"(?:linkedin|linked\s*in)\s*[:\-–—|/]\s*"
-        r"(?:(?:https?://)?(?:www\.)?linkedin\.com/in/)?"
+        r"(?:(?:https?://)?(?:www\.)?linkedin\.com/)?"
+        r"(?:(?:in|pub)/)?"
         r"([a-zA-Z0-9\-_./%]+)",
         re.IGNORECASE,
     )
@@ -117,6 +130,102 @@ class ContactExtractor:
         phone = " ".join(value.split())
         return phone.strip("- .")
 
+    @staticmethod
+    def _normalize_email_candidate(value: str) -> Optional[str]:
+        """Normalise un candidat email issu d'OCR et valide le format final."""
+        if not value:
+            return None
+        email = value.strip()
+        # Remplacer les formes masquées courantes (sans être trop agressif)
+        email = re.sub(r"\s*(\(|\[|\{)\s*at\s*(\)|\]|\})\s*", "@", email, flags=re.IGNORECASE)
+        email = re.sub(r"\s*(\(|\[|\{)\s*dot\s*(\)|\]|\})\s*", ".", email, flags=re.IGNORECASE)
+        # Supprimer les espaces autour des séparateurs
+        email = re.sub(r"\s*@\s*", "@", email)
+        email = re.sub(r"\s*\.\s*", ".", email)
+
+        # Heuristiques OCR : parfois le domaine/TLD est séparé par des espaces ("hotmail fr")
+        # ou carrément collé ("hotmailfr"). On corrige AVANT de retirer tous les espaces.
+        if "@" in email:
+            local_part, domain_part = email.split("@", 1)
+            local_part = re.sub(r"\s+", "", local_part)
+
+            domain_part = domain_part.strip()
+            if " " in domain_part:
+                if "." in domain_part:
+                    domain_part = domain_part.replace(" ", "")
+                else:
+                    domain_part = re.sub(r"\s+", ".", domain_part)
+            else:
+                # Exemple OCR: hotmailfr, gmailcom, outlooktn
+                m = re.fullmatch(
+                    r"([a-zA-Z0-9\-]{2,})(fr|tn|com|net|org|io|edu|gov|info|me)",
+                    domain_part,
+                    flags=re.IGNORECASE,
+                )
+                if m:
+                    domain_part = f"{m.group(1)}.{m.group(2)}"
+
+            email = f"{local_part}@{domain_part}"
+
+        # Un email ne contient pas d'espaces
+        email = re.sub(r"\s+", "", email)
+
+        if ContactExtractor.EMAIL_PATTERN.fullmatch(email):
+            return email
+        return None
+
+    @staticmethod
+    def _email_candidates_from_at_context(text: str, window: int = 80) -> List[str]:
+        """Extrait des candidats email en prenant un contexte autour de chaque '@'.
+
+        Utile pour les sorties OCR tokenisées du style:
+          "alexandre rozand@hotmail fr"
+        """
+        if not text or "@" not in text:
+            return []
+
+        allowed = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._%+-@ ")
+        candidates: List[str] = []
+
+        for m in re.finditer(r"@", text):
+            i = m.start()
+            left = max(0, i - window)
+            right = min(len(text), i + window)
+            chunk = text[left:right]
+
+            # Étendre dans le chunk pour ne garder que les caractères "email-ish" contigus
+            at_in_chunk = i - left
+            start = at_in_chunk
+            while start > 0 and chunk[start - 1] in allowed:
+                start -= 1
+            end = at_in_chunk
+            while end < len(chunk) and chunk[end] in allowed:
+                end += 1
+
+            cand = chunk[start:end].strip()
+            if cand and "@" in cand:
+                candidates.append(cand)
+
+        # Dédupliquer grossièrement (insensible à la casse)
+        seen = set()
+        uniq: List[str] = []
+        for c in candidates:
+            k = c.lower()
+            if k not in seen:
+                seen.add(k)
+                uniq.append(c)
+        return uniq
+
+    def _strip_pdf_email_artifacts(self, email: str) -> str:
+        """Supprime les artefacts PDF en début de local-part (pe/velope/...)."""
+        if not email or "@" not in email:
+            return email
+        local_part, domain_part = email.split("@", 1)
+        cleaned_local = self._PDF_EMAIL_ARTIFACTS.sub("", local_part)
+        if cleaned_local != local_part:
+            return f"{cleaned_local}@{domain_part}"
+        return email
+
     def extract_emails(self, text: str) -> List[str]:
         unique = []
         seen = set()
@@ -124,6 +233,31 @@ class ContactExtractor:
         # Priorité 1 : emails avec label (Email: xxx@yyy.com) → toujours fiables
         for m in self.EMAIL_LABEL_PATTERN.finditer(text or ""):
             email = m.group(1).strip()
+            normalized = self._normalize_email_candidate(email) or email
+            email = self._strip_pdf_email_artifacts(normalized)
+            low = email.lower()
+            if low not in seen:
+                seen.add(low)
+                unique.append(email)
+
+        # Priorité 1.5 : OCR avec espaces autour de @ et .
+        for m in self.EMAIL_OCR_SPACED_PATTERN.finditer(text or ""):
+            raw = m.group(0)
+            email = self._normalize_email_candidate(raw)
+            if not email:
+                continue
+            email = self._strip_pdf_email_artifacts(email)
+            low = email.lower()
+            if low not in seen:
+                seen.add(low)
+                unique.append(email)
+
+        # Priorité 1.75 : candidats OCR autour de '@' (ex: "prenom nom@domaine tld")
+        for raw in self._email_candidates_from_at_context(text or ""):
+            email = self._normalize_email_candidate(raw)
+            if not email:
+                continue
+            email = self._strip_pdf_email_artifacts(email)
             low = email.lower()
             if low not in seen:
                 seen.add(low)
@@ -138,6 +272,8 @@ class ContactExtractor:
             cleaned_local = self._PDF_EMAIL_ARTIFACTS.sub("", local_part)
             if cleaned_local != local_part:
                 email = f"{cleaned_local}@{domain_part}"
+            normalized = self._normalize_email_candidate(email) or email
+            email = self._strip_pdf_email_artifacts(normalized)
             low = email.lower()
             if low not in seen:
                 seen.add(low)
@@ -190,10 +326,57 @@ class ContactExtractor:
 
     def extract_linkedin(self, text: str) -> Optional[str]:
         """Extrait le profil LinkedIn (retourne l'URL complète)."""
-        # Chercher d'abord une URL complète
+        # Chercher d'abord une URL complète (forme canonique /in/)
         m = self.LINKEDIN_URL_PATTERN.search(text or "")
         if m:
             username = m.group(1).strip("/").rstrip(".")
+            return f"https://linkedin.com/in/{username}"
+
+        # Fallback : URL de profil sans /in/ (ex: linkedin.com/ines-bensaad)
+        # On évite les segments non-profil (company, jobs, feed, ...).
+        reserved = {
+            "company",
+            "jobs",
+            "feed",
+            "learning",
+            "school",
+            "posts",
+            "groups",
+            "events",
+            "help",
+            "pulse",
+            "mwlite",
+        }
+        for m in self.LINKEDIN_ANY_URL_PATTERN.finditer(text or ""):
+            raw = (m.group("path") or "").strip().rstrip(".,;)]\"")
+            raw = raw.split("?", 1)[0].split("#", 1)[0]
+            path = raw.strip("/")
+            if not path:
+                continue
+
+            segments = [s for s in path.split("/") if s]
+            if not segments:
+                continue
+
+            head = segments[0].lower()
+            if head in reserved:
+                continue
+
+            username = None
+            if head in {"in", "pub"}:
+                if len(segments) >= 2:
+                    username = segments[1]
+            else:
+                username = segments[0]
+
+            if not username:
+                continue
+            username = username.strip("/").rstrip(".")
+            if len(username) < 2:
+                continue
+            if username.lower() in reserved:
+                continue
+
             return f"https://linkedin.com/in/{username}"
 
         # Sinon chercher un label "LinkedIn : ..."

@@ -9,7 +9,14 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
+    if (!saved) return null;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      // Évite écran blanc si le storage est corrompu (ex: 'undefined')
+      localStorage.removeItem("user");
+      return null;
+    }
   });
   const [loading, setLoading] = useState(true);
 
@@ -17,18 +24,35 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      let timedOut = false;
+      const timeoutId = window.setTimeout(() => {
+        timedOut = true;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setUser(null);
+        setLoading(false);
+      }, 8000);
+
       api
         .get("/auth/me")
         .then((res) => {
+          if (timedOut) return;
           setUser(res.data);
           localStorage.setItem("user", JSON.stringify(res.data));
         })
         .catch(() => {
+          if (timedOut) return;
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           setUser(null);
         })
-        .finally(() => setLoading(false));
+        .finally(() => {
+          if (timedOut) return;
+          window.clearTimeout(timeoutId);
+          setLoading(false);
+        });
+
+      return () => window.clearTimeout(timeoutId);
     } else {
       setLoading(false);
     }
@@ -47,7 +71,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin";
+  const normalizedRole = (user?.role ?? "").toString().trim().toLowerCase();
+  const isAdmin = normalizedRole === "admin";
 
   return (
     <AuthContext.Provider

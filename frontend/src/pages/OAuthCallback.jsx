@@ -15,11 +15,26 @@ function OAuthCallback({ provider }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const providerError = searchParams.get("error");
+    if (providerError) {
+      setError(`OAuth refusé: ${providerError}`);
+      return;
+    }
+
     const code = searchParams.get("code");
     if (!code) {
       setError("Code d'autorisation manquant");
       return;
     }
+
+    const returnedState = searchParams.get("state");
+    const expectedState = sessionStorage.getItem(`oauth_state_${provider}`);
+    // Si on a un state attendu, il doit matcher.
+    if (expectedState && returnedState !== expectedState) {
+      setError("OAuth state invalide (sécurité). Réessayez la connexion.");
+      return;
+    }
+    sessionStorage.removeItem(`oauth_state_${provider}`);
 
     const redirect_uri = `${window.location.origin}/auth/callback/${provider}`;
 

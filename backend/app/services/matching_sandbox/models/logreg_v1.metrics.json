@@ -1,0 +1,25 @@
+{
+  "auc": 1.0,
+  "average_precision": 1.0,
+  "train_size": 6,
+  "val_size": 6,
+  "split_mode": "train_equals_val_small_dataset",
+  "class_counts": {
+    "1": 1,
+    "0": 5
+  },
+  "features": [
+    "score_skills",
+    "score_experience",
+    "score_education",
+    "score_location",
+    "score_semantic",
+    "candidate_years",
+    "candidate_education_level",
+    "candidate_total_skills",
+    "required_skills_count",
+    "offer_title_len",
+    "offer_desc_len",
+    "candidate_text_len"
+  ]
+}

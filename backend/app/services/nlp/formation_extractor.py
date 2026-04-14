@@ -41,7 +41,8 @@ logger = logging.getLogger(__name__)
 DIPLOMA_PATTERNS: List[Dict] = [
     # ══════════════ Bac+8 ══════════════
     {"pattern": re.compile(
-        r"\b(?:doctorat|phd|ph\.d|th[èeé]se(?:\s+de\s+doctorat)?)\b", re.I),
+        r"\b(?:doctorat|phd|ph\.d\.?|d\.?phil\.?|doctorate|doctoral\s+degree"
+        r"|th[èeé]se(?:\s+de\s+doctorat)?)\b", re.I),
      "level": 8, "diploma": "Doctorat"},
 
     # ══════════════ Bac+6 ══════════════
@@ -59,17 +60,36 @@ DIPLOMA_PATTERNS: List[Dict] = [
     {"pattern": re.compile(r"\b(?:ma[iî]trise)\b", re.I),
      "level": 4, "diploma": "Maîtrise"},
     {"pattern": re.compile(
-        r"\b(?:dipl[ôo]me\s*d[\u0027\u2018\u2019`]?\s*ing[ée]nieur"
+        r"\b(?:dipl.?me\s*d[\u0027\u2018\u2019`]?\s*ing[ée]nieur"
         r"|cycle\s+(?:d[\u0027\u2018\u2019`]\s*)?ing[ée]nieur"
         r"|ing[ée]nieur\s*d[\u0027\u2018\u2019`]?[ée]tat)\b", re.I),
      "level": 5, "diploma": "Diplôme d'Ingénieur"},
+    {"pattern": re.compile(
+        r"\bdipl[oô]me\s+national\s+d[\u0027\u2018\u2019`]?architecture\b", re.I),
+     "level": 5, "diploma": "Diplôme National d'Architecture"},
     {"pattern": re.compile(r"\bingenieur\b", re.I),
      "level": 5, "diploma": "Diplôme d'Ingénieur"},
     # EN : "Engineering in [specialty]" (Tunisian 5-yr programme)
     {"pattern": re.compile(r"\bengineering\s+in\s+[\w\s]{3,40}", re.I),
      "level": 5, "diploma": "Diplôme d'Ingénieur"},
+    # EN : "Engineering degree" / "Degree in engineering"
+    {"pattern": re.compile(r"\b(?:engineering\s+degree|degree\s+in\s+engineering)\b", re.I),
+     "level": 5, "diploma": "Diplôme d'Ingénieur"},
     {"pattern": re.compile(r"\bmba\b", re.I),
      "level": 5, "diploma": "MBA"},
+    # EN Bac+5 : MEng, MPhil, MRes, MArch, LLM
+    {"pattern": re.compile(
+        r"\b(?:m\.?eng\.?|m\.?phil\.?|m\.?res\.?|m\.?arch\.?|llm)\b", re.I),
+     "level": 5, "diploma": "Master"},
+    # EN : Master of Science / Arts / Engineering / Business / Computer Science ...
+    {"pattern": re.compile(
+        r"\bmaster(?:'s)?\s+(?:of\s+)?(?:science|arts|engineering|technology|business"
+        r"|computer\s+science|information|administration|management|education|law)\b", re.I),
+     "level": 5, "diploma": "Master"},
+    # EN : Postgraduate Diploma / Postgrad
+    {"pattern": re.compile(
+        r"\b(?:postgraduate\s+(?:diploma|certificate|degree)|pgdip|pgcert)\b", re.I),
+     "level": 5, "diploma": "Master"},
     {"pattern": re.compile(r"\bbac\s*\+\s*5\b", re.I),
      "level": 5, "diploma": "Bac+5"},
 
@@ -78,7 +98,7 @@ DIPLOMA_PATTERNS: List[Dict] = [
      "level": 3, "diploma": "Licence Professionnelle"},
     {"pattern": re.compile(r"\blicence(?:\s+(?:fondamentale|appliqu[ée]e))?\b", re.I),
      "level": 3, "diploma": "Licence"},
-    {"pattern": re.compile(r"\b(?:bachelor|bsc|b\.sc|b\.eng)\b", re.I),
+    {"pattern": re.compile(r"\b(?:bachelor|bsc|b\.sc|b\.eng|bba|b\.b\.a)\b", re.I),
      "level": 3, "diploma": "Bachelor"},
     {"pattern": re.compile(r"\b(?:l3|l2|l1)\b", re.I),
      "level": 3, "diploma": "Licence"},
@@ -123,9 +143,60 @@ DIPLOMA_PATTERNS: List[Dict] = [
     # Diploma / Certificat professionnel
     {"pattern": re.compile(
         r"\b(?:diploma\s+(?:in|of)\s+[\w\s]{3,30}"
-        r"|dipl[oô]me\s+(?:universitaire|professionnel))"
+        r"|dipl.?me\s+(?:universitaire|professionnel))"
         r"\b", re.I),
      "level": 2, "diploma": "Diploma"},
+
+    # Certifications (si un titre est présent)
+    {"pattern": re.compile(
+        r"\bcertification(?:s)?\s+[A-Za-zÀ-ÖØ-öø-ÿ0-9'\-]{2,}", re.I),
+     "level": 0, "diploma": "Certification"},
+
+    # Formation professionnelle / qualifiante (CVs métiers)
+    {"pattern": re.compile(
+        r"\b(?:formation\s+professionnelle(?:s)?"
+        r"|formation\s+qualifiante(?:s)?"
+        r"|certificat(?:ion)?\s+professionnel(?:le)?(?:s)?)\b",
+        re.I,
+    ),
+     "level": 0, "diploma": "Formation Professionnelle"},
+
+    # ══════════════ Bac+4 ══════════════
+    # DEA (ancien système français, avant LMD)
+    {"pattern": re.compile(r"\b(?:dea|diplôme\s+d[\u0027\u2018\u2019`]?\s*[ée]tudes\s+approfondies)\b", re.I),
+     "level": 4, "diploma": "DEA"},
+    # DESS (Diplôme d'Études Supérieures Spécialisées)
+    {"pattern": re.compile(r"\b(?:dess|diplôme\s+d[\u0027\u2018\u2019`]?\s*[ée]tudes\s+sup[ée]rieures\s+sp[ée]cialis[ée]es?)\b", re.I),
+     "level": 4, "diploma": "DESS"},
+
+    # ══════════════ Bac+3 (médical/paramédical) ══════════════
+    # Diplôme d'État infirmier, kiné, sage-femme, etc.
+    {"pattern": re.compile(
+        r"\b(?:dipl[ôo]me\s+d[\u0027\u2018\u2019`]?\s*[ée]tat"
+        r"(?:\s+d[\u0027\u2018\u2019`]?\s*(?:infirmier(?:e)?|sage[\-\s]femme"
+        r"|kin[ée]sith[ée]rapeute|ergoth[ée]rapeute|orthophoniste"
+        r"|podologue|psychomotricien(?:ne)?|manipulateur"
+        r"|technicien\s+de\s+laboratoire))?"
+        r"|de\s+infirmier(?:e)?|d[\u0027\u2018\u2019`]?\s*infirmier(?:e)?"
+        r")\b", re.I),
+     "level": 3, "diploma": "Diplôme d'État"},
+    # DES (Diplôme d'Études Spécialisées — médecine)
+    # Pas de re.I : on veut matcher "DES" en majuscules uniquement, pas le mot français "des"
+    {"pattern": re.compile(r"\bDES\b|dipl[oô]me\s+d[''\u2018\u2019`]?\s*[eé]tudes\s+sp[eé]cialis[eé]es?"),
+     "level": 6, "diploma": "DES (Spécialité médicale)"},
+
+    # ══════════════ Bac+2 (vocational) ══════════════
+    # BEP (Brevet d'Études Professionnelles)
+    {"pattern": re.compile(r"\b(?:bep|brevet\s+d[\u0027\u2018\u2019`]?\s*[ée]tudes?\s+professionnelles?)\b", re.I),
+     "level": 1, "diploma": "BEP"},
+
+    # ══════════════ Bac+0 (vocational) ══════════════
+    # CAP (Certificat d'Aptitude Professionnelle)
+    {"pattern": re.compile(r"\b(?:cap|certificat\s+d[\u0027\u2018\u2019`]?\s*aptitude\s+professionnelle)\b", re.I),
+     "level": 0, "diploma": "CAP"},
+    # MC (Mention Complémentaire)
+    {"pattern": re.compile(r"\b(?:mention\s+compl[ée]mentaire|MC\b)", re.I),
+     "level": 0, "diploma": "Mention Complémentaire"},
 
     # ══════════════ Bac+0 ══════════════
     {"pattern": re.compile(r"\bbaccalaur[ée]at[e]?\b", re.I),
@@ -150,11 +221,15 @@ FORMATION_SECTION_KEYWORDS = re.compile(
     r"|dipl[ôo]mes?"
     r"|cursus"
     r"|parcours\s*(?:acad[ée]mique|universitaire|scolaire)?"
-    r"|academic\s+background"
-    r"|education"
+    r"|academic\s+(?:background|history|profile)"
+    r"|education(?:al)?\s*(?:background|history)?"
     r"|qualifications?"
     r"|background\s+acad[ée]mique"
     r"|formation"
+    r"|degrees?\s+(?:and|&)\s+certifications?"
+    r"|academic\s+credentials?"
+    r"|scholastic\s+record"
+    r"|university\s+education"
     r")\s*[:\-\u2013\u2014]?\s*(?:\n|$)",
     re.IGNORECASE,
 )
@@ -162,7 +237,7 @@ FORMATION_SECTION_KEYWORDS = re.compile(
 # Année réaliste (1980-2035)
 YEAR_PATTERN = re.compile(r"\b(19[89]\d|20[0-3]\d)\b")
 YEAR_RANGE_PATTERN = re.compile(
-    r"\b(19[89]\d|20[0-3]\d)\s*(?:[-–—]|[àa]|to)\s*(19[89]\d|20[0-3]\d)\b",
+    r"\b(19[89]\d|20[0-3]\d)\s*(?:[\-\u2010\u2011\u2012\u2013\u2014]|[àa]|to)\s*(19[89]\d|20[0-3]\d)\b",
     re.IGNORECASE,
 )
 
@@ -181,10 +256,18 @@ DIPLOMA_SPECIALTY_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Détection « en cours » / « présent »
+# Détection « en cours » — signaux textuels uniquement (pas de comparaison de dates)
 EN_COURS_PATTERN = re.compile(
-    r"\b(?:en\s*cours|pr[ée]sent|actuel(?:lement)?|current|ongoing|aujourd[''']?hui)\b",
-    re.IGNORECASE,
+    r"\b(?:en\s*cours|pr[ée]sent|actuel(?:lement)?|current|ongoing|aujourd[''']?hui)\b"
+    # Plage ouverte : "2022 - présent", "2022 → ..."
+    r"|(?:20\d{2})\s*[-–—/]\s*(?:pr[ée]sent|actuel|en\s*cours|now|current|\.\.\.|…)"
+    # Plage sans fin : "2022 -" suivi de rien (fin de ligne)
+    r"|(?:20\d{2})\s*[-–—]\s*$"
+    # Prévu / attendu : "prévu en 2027", "expected 2027"
+    r"|\b(?:pr[ée]vu(?:e)?|attendu(?:e)?|expected|anticipated)\s+(?:en\s+)?20\d{2}"
+    # Promo : "Promo 2027", "Promotion 2027"
+    r"|\b(?:promo(?:tion)?)\s*:?\s*20\d{2}",
+    re.IGNORECASE | re.MULTILINE,
 )
 
 # Mentions académiques (FR + EN + Latin)
@@ -301,7 +384,14 @@ class FormationExtractor:
             )
             if not inline:
                 return text
-            start = inline.end()
+            # Si le mot-clé est inline ET suivi d'une année proche,
+            # il fait souvent partie de la 1ère entrée (ex: "Formation Professionnelle 2015-2017 ...")
+            # → ne pas tronquer le libellé.
+            window = text[inline.start(): inline.start() + 140]
+            if re.search(r"\b(19[89]\d|20[0-3]\d)\b", window):
+                start = inline.start()
+            else:
+                start = inline.end()
         else:
             start = match.end()
 
@@ -339,10 +429,17 @@ class FormationExtractor:
             "arts", "business", "computing", "management",
             "applied", "education", "medicine", "nursing",
             "of", "in", "and", "the", "de", "du", "des", "en",
+            # Mots de diplômes (EN) qui précèdent parfois le nom d'établissement
+            "degree", "bachelor", "master", "diploma", "certificate",
+            "graduate", "undergraduate", "postgraduate", "doctorate",
+            "honours", "honors", "advanced",
         }
 
         def _add(name: str) -> None:
             name = " ".join(name.split()).strip(" ,-;:")
+            # Supprimer les années (ex: "FST Sousse 2021" → "FST Sousse")
+            name = re.sub(r"\b(19[5-9]\d|20[0-4]\d)\b", "", name).strip(" ,-;:")
+            name = " ".join(name.split())  # normaliser les espaces multiples
             # Nettoyer les mots de champs en début de nom
             # Ex: "Engineering Massachusetts Institute" → "Massachusetts Institute"
             words = name.split()
@@ -570,42 +667,98 @@ class FormationExtractor:
                 found.append(val)
         return found
 
-    def _pick_best_establishment(self, candidates: List[str]) -> Optional[str]:
+    # Établissements tunisiens/français connus — boost fort
+    _ETAB_CONNUS = frozenset({
+        "esprit", "insat", "enit", "ensi", "isi", "iset", "fst", "fsb",
+        "istic", "ihec", "isg", "essect", "supcom", "ensit", "eniso",
+        "ensa", "isims", "issat", "issig", "polytechnique",
+        "centrale", "hec", "essec", "edhec", "insa", "utc", "utbm",
+        "utt", "ensimag", "mit", "stanford", "oxford", "cambridge",
+    })
+
+    def _score_establishment(self, name: str) -> int:
+        """Calcule un score de plausibilité pour un nom d'établissement."""
+        name_lower = name.lower()
+        s = 0
+
+        has_institution_kw = any(
+            kw in name_lower
+            for kw in (
+                'université', 'university', 'école', 'ecole', 'institut',
+                'institute', 'faculté', 'faculty', 'college', 'school'
+            )
+        )
+
+        # Signal fort : mot institution explicite
+        for kw in ('université', 'university', 'école', 'ecole', 'institut',
+                   'institute', 'faculté', 'faculty', 'college', 'school'):
+            if kw in name_lower:
+                s += 4
+                break
+
+        # Signal fort : établissement connu
+        for tok in re.split(r'\W+', name_lower):
+            if tok in self._ETAB_CONNUS:
+                s += 5
+                break
+
+        # Signal moyen : sigle capitalisé court (ESPRIT, INSAT, FST…)
+        if re.match(r'^[A-Z]{2,8}$', name.split()[0] if name.split() else ''):
+            s += 2
+
+        # Longueur cohérente
+        if 4 <= len(name) <= 60:
+            s += 1
+
+        # Pénalités
+        bad = ('master', 'licence', 'doctorat', 'phd', 'bachelor',
+               'ingénieur', 'informatique', 'mathématiques', 'gestion',
+               'management', 'commerce', 'marketing', 'finance', 'data science')
+        for b in bad:
+            if b in name_lower and len(name) < 40:
+                # Éviter de pénaliser les vrais établissements contenant une spécialité
+                # (ex: "Institut Supérieur d'Informatique", "Data Science Institute").
+                if has_institution_kw:
+                    continue
+                s -= 3
+
+        # Cas fréquent : spécialité prise pour établissement ("Data Science")
+        # On pénalise fortement si ce n'est pas accompagné d'un signal institutionnel.
+        if "data science" in name_lower:
+            if not has_institution_kw and len(name_lower.split()) <= 3:
+                s -= 6
+
+        if re.search(r'\d', name):
+            s -= 1
+        if name and not name[0].isupper():
+            s -= 1
+
+        return s
+
+    def _pick_best_establishment(
+        self, candidates: List[str]
+    ) -> Optional[str]:
         """Choisit l'établissement le plus plausible parmi les candidats."""
         if not candidates:
             return None
-
-        good_indicators = [
-            'université', 'university', 'école', 'ecole', 'institut',
-            'institute', 'faculté', 'faculty', 'college', 'school',
-            'polytechnique', 'centrale', 'ens', 'sup', 'esprit', 'insat',
-            'enit', 'ensi', 'ihec', 'isg', 'fst', 'eniso', 'supcom',
-        ]
-        bad_indicators = [
-            'master', 'licence', 'doctorat', 'phd', 'bachelor', 'ingénieur',
-            'informatique', 'mathématiques', 'physique', 'chimie', 'biologie',
-            'gestion', 'management', 'commerce', 'marketing', 'finance',
-        ]
-
-        def score(name: str) -> int:
-            name_lower = name.lower()
-            s = 0
-            for indicator in good_indicators:
-                if indicator in name_lower:
-                    s += 3
-            for indicator in bad_indicators:
-                if indicator in name_lower and len(name) < 40:
-                    s -= 2
-            if name[0].isupper():
-                s += 1
-            if re.search(r'\d', name):
-                s -= 1
-            return s
-
-        valid_candidates = [c for c in candidates if len(c) >= 4]
-        if not valid_candidates:
+        valid = [c for c in candidates if len(c) >= 4]
+        if not valid:
             return None
-        return max(valid_candidates, key=score)
+        best = max(valid, key=self._score_establishment)
+        # Rejeter si le meilleur score est négatif (spécialité prise pour établissement)
+        if self._score_establishment(best) < 0:
+            return None
+        return best
+
+    def _rank_establishments(
+        self, candidates: List[str]
+    ) -> List[Dict]:
+        """Retourne tous les candidats triés par score décroissant (pour ia_candidats)."""
+        scored = [
+            {"valeur": c, "score": self._score_establishment(c)}
+            for c in candidates if len(c) >= 4
+        ]
+        return sorted(scored, key=lambda x: x["score"], reverse=True)
 
     def _extract_mention(self, text: str) -> Optional[str]:
         """Détecte une mention académique dans le contexte."""
@@ -645,8 +798,18 @@ class FormationExtractor:
             return "Красный Диплом"
         return raw.title()
 
-    def _is_en_cours(self, text: str) -> bool:
-        """Vérifie si le contexte mentionne que la formation est en cours."""
+    def _is_en_cours(self, text: str, annee: int = None) -> bool:
+        """Vérifie si la formation est en cours.
+
+        Deux signaux complémentaires :
+        1. Mot-clé textuels : "en cours", "présent", "actuel", "Promo 2027"…
+        2. Année future : si annee > année courante du serveur → formation non encore obtenue.
+           datetime.now().year est dynamique : en 2027 il retourne 2027, en 2030 il retourne 2030.
+           Aucun changement de code nécessaire d'une année à l'autre.
+        """
+        from datetime import datetime
+        if annee is not None and annee > datetime.now().year:
+            return True
         return bool(EN_COURS_PATTERN.search(text))
 
     @staticmethod
@@ -691,7 +854,111 @@ class FormationExtractor:
             current_block.append(content)
         if current_block:
             blocks.append('\n'.join(current_block))
-        return [b for b in blocks if len(b.strip()) > 10]
+
+        # ── Post-traitement : fusionner "diplôme" puis "années" sur ligne suivante ──
+        # Certains PDFs donnent:
+        #   "Formation Professionnelle Bizerte"\n"2015-2017 ..."
+        # On veut un bloc unique pour que l'année soit extraite.
+        _org_hint_re = re.compile(
+            r"\b(?:universit[ée]|[ée]cole|ecole|institut|school|college|"
+            r"ihec|esprit|insi?t|ensi|enit|iset|fst|isg|essect|supcom|"
+            r"private\s+higher|higher\s+school)\b",
+            re.IGNORECASE,
+        )
+        merged: List[str] = []
+        i = 0
+        while i < len(blocks):
+            b = blocks[i]
+            if i + 1 < len(blocks):
+                n = blocks[i + 1]
+                b_has_year = bool(re.search(r"\b(19[89]\d|20[0-3]\d)\b", b))
+                n_has_year = bool(re.search(r"\b(19[89]\d|20[0-3]\d)\b", n))
+                b_has_diploma = any(dp["pattern"].search(b) for dp in DIPLOMA_PATTERNS)
+                n_has_diploma = any(dp["pattern"].search(n) for dp in DIPLOMA_PATTERNS)
+                next_starts_with_year = bool(re.match(r"^\s*(?:19[89]\d|20[0-3]\d)\b", n))
+                # Cas : établissement seul (pas diplôme, pas année) suivi d'une ligne diplôme
+                # Ex: "ESPRIT – Private Higher School..." + "Engineering Degree in CS..."
+                if (not b_has_diploma) and (not b_has_year) and n_has_diploma and "\n" not in b:
+                    if _org_hint_re.search(b):
+                        merged.append(b + "\n" + n)
+                        i += 2
+                        continue
+                if b_has_diploma and (not b_has_year) and n_has_year and (not n_has_diploma) and next_starts_with_year:
+                    merged.append(b + "\n" + n)
+                    i += 2
+                    continue
+                # Variante: la ligne suivante est une continuation (minuscule, parenthèse, ou année)
+                # Ex: "Diplôme ... École Nationale" + "d'Architecture de Tunis (2010-2015)"
+                if b_has_diploma and (not b_has_year) and (not n_has_diploma):
+                    n_strip = n.strip()
+                    if n_has_year or n_strip.startswith("(") or (n_strip and n_strip[0].islower()):
+                        merged.append(b + "\n" + n)
+                        i += 2
+                        continue
+            merged.append(b)
+            i += 1
+
+        return [b for b in merged if len(b.strip()) > 10]
+
+    # Villes connues pour extraction du lieu (Tunisie, France, Maghreb, International)
+    _VILLES_CONNUES = re.compile(
+        r"\b(?:"
+        # Tunisie
+        r"Tunis|Sousse|Sfax|Monastir|Bizerte|Kairouan|Gab[eè]s|Nabeul|Hammamet"
+        r"|Manouba|Ariana|Ben\s+Arous|La\s+Marsa|Carthage|Djerba|M[eé]denine"
+        r"|Zaghouan|Siliana|Kasserine|Sidi\s+Bouzid|Jendouba|Beja|Le\s+Kef"
+        r"|Gafsa|Tozeur|Tataouine|K[eé]libia"
+        # France
+        r"|Paris|Lyon|Marseille|Toulouse|Nice|Nantes|Strasbourg|Bordeaux|Lille"
+        r"|Montpellier|Rennes|Reims|Saint[\s\-]Etienne|Toulon|Grenoble|Dijon"
+        r"|Angers|Le\s+Mans|Nimes|Clermont[\s\-]Ferrand|Aix[\s\-]en[\s\-]Provence"
+        # Maghreb
+        r"|Alger|Oran|Constantine|Casablanca|Rabat|Marrakech|Fes|Tanger|Agadir"
+        # International fréquent
+        r"|Londres?|London|Berlin|Madrid|Rome|Geneve|Zurich|Montreal|Quebec"
+        r"|New\s+York|San\s+Francisco|Toronto|Dubai|Riyad|Doha|Beyrouth"
+        r")\b",
+        re.IGNORECASE,
+    )
+
+    def _extract_lieu(self, block: str, etablissement: Optional[str]) -> Optional[str]:
+        """Extrait la ville/lieu depuis le bloc ou depuis le nom de l'établissement.
+
+        Stratégie :
+        1. Ville après virgule, pipe ou parenthèse dans le bloc
+        2. Ville connue dans le nom de l'établissement (ex: FST Sousse → Sousse)
+        3. spaCy LOC/GPE sur le bloc
+        """
+        # Passe 1 : ville après séparateur explicite (ex: "ESPRIT, Tunis" ou "ESPRIT | Tunis")
+        sep_pattern = re.compile(
+            r"(?:[,|/]\s*|[\(\[]\s*)"
+            r"(" + self._VILLES_CONNUES.pattern + r")"
+            r"(?:\s*[\)\]])?",
+            re.IGNORECASE,
+        )
+        m = sep_pattern.search(block)
+        if m:
+            return m.group(1).strip()
+
+        # Passe 2 : ville dans le nom de l'établissement (ex: "FST Sousse")
+        if etablissement:
+            mv = self._VILLES_CONNUES.search(etablissement)
+            if mv:
+                return mv.group(0).strip()
+
+        # Passe 3 : ville connue n'importe où dans le bloc
+        mv = self._VILLES_CONNUES.search(block)
+        if mv:
+            return mv.group(0).strip()
+
+        # Passe 4 : spaCy LOC/GPE
+        if self._nlp:
+            doc = self._nlp(block[:300])
+            for ent in doc.ents:
+                if ent.label_ in ("LOC", "GPE"):
+                    return ent.text.strip()
+
+        return None
 
     def _extract_formation_from_block(self, block: str) -> Optional[Dict]:
         """Analyse un bloc de texte individuel pour en extraire UNE formation.
@@ -717,8 +984,8 @@ class FormationExtractor:
                 years = self._extract_years(block)
                 annee = years[-1] if years else None
 
-            # En cours ?
-            en_cours = self._is_en_cours(block)
+            # En cours ? (mot-clé OU année future automatique)
+            en_cours = self._is_en_cours(block, annee=annee)
 
             # Mention
             mention = self._extract_mention(block)
@@ -738,18 +1005,22 @@ class FormationExtractor:
                 specialties = self._extract_specialties(block)
                 specialty = specialties[0] if specialties else None
 
-            # Établissement
+            # Établissement + lieu
             establishments = self._extract_establishments(block)
             establishment = self._pick_best_establishment(establishments)
+            lieu = self._extract_lieu(block, establishment)
+            ia_candidats_etab = self._rank_establishments(establishments)
 
             return {
                 "diplome": diploma,
                 "specialite": specialty,
                 "etablissement": establishment,
+                "lieu": lieu,
                 "annee": annee,
                 "en_cours": en_cours,
                 "mention": mention,
                 "niveau_bac_plus": level,
+                "ia_candidats_etablissement": ia_candidats_etab,
             }
 
         return None

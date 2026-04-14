@@ -1,0 +1,480 @@
+================================================================================
+  3S TALENTMATCH — CONTEXTE COMPLET DU PROJET
+  Dernière mise à jour : 02 avril 2026
+  Auteur : Youssef Gara | Projet académique 3S
+================================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. DESCRIPTION DU PROJET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3S TalentMatch est une plateforme web intelligente de matching CV / offres d'emploi.
+Elle permet a des candidats d'uploader leurs CVs, qui sont automatiquement analyses
+par un pipeline NLP, puis mis en relation avec des offres d'emploi par des recruteurs.
+
+ETAT ACTUEL : Sprint 2 termine (NLP complet), Sprint 3 en cours (matching).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. STACK TECHNIQUE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BACKEND
+  - Python 3.11
+  - FastAPI 0.133 (API REST + documentation Swagger auto sur /docs)
+  - SQLAlchemy 2.0 (ORM)
+  - PostgreSQL (port 5433, base : talentmatch)
+  - Alembic (migrations de base de donnees)
+  - spaCy fr_core_news_md (NLP principal — 100% local, sans internet)
+  - EasyOCR (OCR pour PDFs scannes et images)
+  - PyMuPDF / pypdf (extraction PDF)
+  - python-docx (extraction DOCX)
+  - python-jose + passlib (JWT + bcrypt)
+  - httpx (client HTTP pour OAuth)
+  - uvicorn (serveur ASGI)
+
+FRONTEND
+  - React 18 + Vite (port 3000)
+  - React Router v6
+  - Axios (appels API avec intercepteur JWT)
+  - CSS custom (pas de framework UI)
+
+ENVIRONNEMENT
+  - Virtualenv : .venv-10/
+  - Fichier config : backend/.env
+  - Lancer les serveurs : .\dev.ps1 (depuis la racine du projet)
+  - Arreter les serveurs : .\stop-dev.ps1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. STRUCTURE DES FICHIERS — BACKEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+backend/
+  .env                    -> Variables d'environnement (DB, JWT, SMTP, OAuth)
+  .env.example            -> Modele sans secrets (pour GitHub)
+  requirements.txt        -> Dependances Python
+  alembic.ini             -> Config migrations Alembic
+  pytest.ini              -> Config tests pytest
+
+  alembic/versions/       -> Migrations de base de donnees
+    87ddcf8e3163_create_candidates_table.py
+    50b7de3c8c50_add_auth_fields_to_users.py
+    0d5acab76a9e_add_user_id_and_candidature_status.py
+    ee370044acc8_add_users_cv_documents_job_offers.py
+    6c59815ab5f0_add_email_verification_and_password.py
+
+  app/
+    main.py             -> Point d'entree FastAPI, routes montees, CORS
+    database.py         -> Connexion PostgreSQL (SQLAlchemy engine + session)
+    dependencies.py     -> get_current_user, get_current_admin, get_current_recruteur_or_admin
+
+    models/             -> Tables SQLAlchemy (ORM)
+      user.py           -> User (id, nom, prenom, email, role, auth_provider, OAuth)
+      candidate.py      -> Candidate (cv_id, nom, email, parsed_data JSON, user_id FK)
+      cv_document.py    -> CVDocument (fichier lie a un candidat)
+      job_offer.py      -> JobOffer (titre, description, competences requises)
+      match.py          -> Match (candidat <-> offre, score, statut)
+
+    schemas/            -> Schemas Pydantic (validation requetes/reponses)
+      auth.py           -> RegisterRequest, LoginRequest, TokenResponse, UserResponse
+      cv.py             -> CVUploadResponse, CandidateResponse
+      cv_data.py        -> ParsedCVData (structure complete JSON du CV parse)
+      job_offers.py     -> JobOfferCreate, JobOfferResponse
+      admin.py          -> AdminCreateRecruiterRequest
+
+    routes/             -> Endpoints API
+      auth.py           -> /api/auth/register, /login, /me, /verify-email,
+                           /forgot-password, /reset-password,
+                           /oauth/google, /oauth/linkedin
+      cv.py             -> /api/upload-cv, /api/candidates, /api/candidates/{id},
+                           /api/candidates/{id}/status, /api/my-applications
+      job_offers.py     -> /api/job-offers (CRUD offres d'emploi)
+      admin.py          -> /api/admin/users (gestion utilisateurs par admin)
+
+    services/
+      auth_service.py   -> Logique JWT, bcrypt, OAuth Google/LinkedIn, envoi codes
+      email_service.py  -> Envoi emails (mode smtp ou log selon EMAIL_MODE)
+
+      extraction/       -> Extraction texte brut des CVs
+        cv_extractor.py       -> Orchestrateur : detecte le format, appelle le bon extracteur
+        pdf_extractor.py      -> PyMuPDF + pypdf (PDFs textuels + colonnes)
+        ocr_extractor.py      -> EasyOCR (PDFs scannes, images PNG/JPG)
+        word_extractor.py     -> python-docx (fichiers .docx)
+
+      nlp/              -> Pipeline NLP (analyse et structuration du texte)
+        nlp_parser.py          -> ORCHESTRATEUR PRINCIPAL — appelle tout le pipeline
+        entity_extractor.py    -> Extraction nom/prenom (5 passes heuristiques + spaCy)
+        contact_extractor.py   -> Email, telephone, LinkedIn, GitHub (regex)
+        skills_extractor.py    -> 300+ competences, 23 categories + NER dynamique
+        formation_extractor.py -> Diplomes, ecoles, annees (7 pays + international)
+        experience_extractor.py-> Experiences pro (poste, entreprise, dates, missions)
+        sector_classifier.py   -> Classification sectorielle (15 secteurs)
+        hf_camembert.py        -> Client HuggingFace CamemBERT (DESACTIVE par defaut)
+        config.py              -> Configuration NLP (seuils, listes)
+        utils.py               -> Fonctions utilitaires NLP
+
+tests/
+  conftest.py                -> Fixtures pytest (DB, client FastAPI)
+  test_sprint2_unit.py       -> 110 tests unitaires (NLP complet) <- TEST PRINCIPAL
+  test_api_endpoints.py      -> Tests routes FastAPI
+  test_cv_extractor.py       -> Tests extraction PDF/DOCX/OCR
+  test_extraction_quality.py -> Tests qualite extraction
+  test_pipeline_full.py      -> Tests pipeline bout en bout
+  test_nlp_entity_extractor.py
+  test_nlp_contact_extractor.py
+  test_ocr_extractor_pipeline.py
+  ... (autres tests specialises)
+
+scripts/
+  seed_dev_admin.py          -> Cree un compte admin en BDD (pour dev)
+  seed_dev_recruteur.py      -> Cree un compte recruteur en BDD (pour dev)
+  reset_db_and_seed_admin.py -> Recree la DB + insere admin (reset complet)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. STRUCTURE DES FICHIERS — FRONTEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+frontend/src/
+  main.jsx                 -> Point d'entree React
+  App.jsx                  -> Router principal avec guards par role (allowedRoles)
+
+  context/
+    AuthContext.jsx         -> Provider global : token JWT, user, login/logout
+
+  components/
+    Navbar.jsx              -> Barre nav (liens differents selon role)
+    ProtectedRoute.jsx      -> Redirige si non connecte ou mauvais role
+
+  pages/
+    Home.jsx                -> Dashboard personnalise par role
+    Login.jsx               -> Connexion email + boutons OAuth Google/LinkedIn
+    Register.jsx            -> Inscription (role candidat force cote backend)
+    UploadCV.jsx            -> Upload CV (candidat) -> appelle /api/upload-cv
+    Candidates.jsx          -> Liste candidats (recruteur/admin) + changement statut
+    CandidateDetail.jsx     -> Detail d'un candidat + donnees NLP extraites
+    MyApplications.jsx      -> Mes candidatures (candidat) avec statut
+    JobOffers.jsx           -> Liste des offres d'emploi
+    CandidateOffers.jsx     -> Offres disponibles pour un candidat
+    AdminUsers.jsx          -> Gestion utilisateurs (admin uniquement)
+    ForgotPassword.jsx      -> Demande reset mot de passe
+    VerifyEmail.jsx         -> Saisie code verification email
+    OAuthCallback.jsx       -> Reception token apres OAuth Google/LinkedIn
+
+  services/
+    api.js                  -> Instance Axios + intercepteur JWT Bearer token
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. BASE DE DONNEES — TABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TABLE users
+  id UUID PK | nom | prenom | email (unique) | hashed_password
+  role : candidat / recruteur / admin
+  is_email_verified | verification_code | verification_code_expires
+  reset_code | reset_code_expires
+  auth_provider : local / google / linkedin
+  oauth_id | avatar_url | created_at | updated_at
+
+TABLE candidates
+  id UUID PK | cv_id (unique) | filename
+  user_id FK->users (candidat qui a uploade)
+  candidature_status : en_attente / accepte / refuse
+  nom | email | telephone | linkedin | github
+  parsed_data (JSON complet du pipeline NLP)
+  raw_text (texte brut extrait) | extraction_method
+  created_at | updated_at
+
+TABLE cv_documents
+  Lie a un candidat -> stocke les fichiers CV
+
+TABLE job_offers
+  Offres d'emploi creees par recruteurs
+  titre | description | competences requises | statut
+
+TABLE matches
+  Candidat <-> Offre | score de matching | statut
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. ROLES ET ACCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CANDIDAT
+  - Peut s'inscrire lui-meme via /register
+  - Upload son propre CV
+  - Voit ses candidatures + statut (en_attente / accepte / refuse)
+  - Voit les offres disponibles
+
+RECRUTEUR
+  - Cree par un admin (ne peut pas s'inscrire tout seul)
+  - Voit tous les candidats + leurs donnees NLP
+  - Change le statut des candidatures
+  - Cree/gere les offres d'emploi
+
+ADMIN
+  - Acces complet (gestion users, candidats, offres)
+  - Peut supprimer tous les candidats
+  - Peut creer des comptes recruteurs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. PIPELINE NLP — FONCTIONNEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quand un CV est uploade -> le fichier passe par ce pipeline :
+
+ETAPE 1 — EXTRACTION TEXTE (services/extraction/)
+  PDF texte    -> PyMuPDF (detection colonnes) + pypdf fallback
+  PDF scanne   -> EasyOCR (detection auto si texte < 100 caracteres)
+  DOCX         -> python-docx
+  PNG/JPG      -> EasyOCR direct
+
+ETAPE 2 — PIPELINE NLP (services/nlp/nlp_parser.py)
+  1. ContactExtractor     -> email (regex), telephone (regex filtre), LinkedIn, GitHub
+  2. EntityExtractor      -> nom/prenom (5 passes : prefixe "Nom:", honorifiques,
+                            CamelCase split, spaCy NER PERSON, 1ere ligne)
+  3. SkillsExtractor      -> 300+ competences (23 categories) + NER dynamique spaCy
+  4. FormationExtractor   -> diplomes, ecoles, annees, en_cours (comparaison date courante)
+  5. ExperienceExtractor  -> postes, entreprises, dates debut/fin, missions
+  6. SectorClassifier     -> classification parmi 15 secteurs (IT, Finance, BTP, etc.)
+  7. HFCamembertNameExtractor -> DESACTIVE (HF_ENABLE_CAMEMBERT_NAME=0 dans .env)
+
+SORTIE — JSON structure stocke dans candidates.parsed_data :
+{
+  "nom": "Haythem Djebbi",
+  "email": "haythem@email.com",
+  "telephone": "+216 XX XXX XXX",
+  "linkedin": "linkedin.com/in/...",
+  "competences": {
+    "langages": ["Python", "Java"],
+    "frameworks": ["FastAPI", "React"],
+    ...
+  },
+  "formations": [
+    {"diplome": "Ingenieur", "ecole": "ESPRIT", "annee": 2027, "en_cours": true}
+  ],
+  "experiences": [
+    {"poste": "Dev Backend", "entreprise": "...", "debut": "2023", "fin": "2024"}
+  ],
+  "langues": ["Francais", "Anglais", "Arabe"],
+  "secteur_detecte": "it_dev",
+  "ia_analyse": {
+    "classification_sectorielle": {...},
+    "competences_decouvertes_ner": [...]
+  },
+  "parser_version": "2.3.0"
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. AUTHENTIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- JWT (python-jose) : token Bearer dans Authorization header
+- Duree : 1440 min (24h), configurable via ACCESS_TOKEN_EXPIRE_MINUTES dans .env
+- Mot de passe : bcrypt (passlib)
+- Verification email : code 6 chiffres envoye par email (mode log en dev)
+- Reset mot de passe : code 6 chiffres par email
+- OAuth Google  : /api/auth/oauth/google (requiert GOOGLE_CLIENT_ID dans .env)
+- OAuth LinkedIn: /api/auth/oauth/linkedin (requiert LINKEDIN_CLIENT_ID dans .env)
+
+Email en dev : EMAIL_MODE=log
+  -> Le code de verification est ecrit dans logs/backend.out.log
+  -> Pas besoin de vrai compte Gmail en developpement
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. TOUTES LES COMMANDES DU PROJET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  IMPORTANT : toutes les commandes Python utilisent ..\.venv-10\Scripts\python.exe
+  car le virtualenv du projet est dans le dossier .venv-10/ a la racine.
+
+──────────────────────────────────────────────────────────────────────────────
+A. LANCER ET ARRETER LE PROJET
+──────────────────────────────────────────────────────────────────────────────
+
+  .\dev.ps1
+    - Lance backend (port 8000) + frontend (port 3000) en meme temps en arriere-plan
+    - Fichier gere : dev.ps1 (racine)
+    - Logs crees dans : logs/backend.out.log + logs/frontend.out.log
+    - Sauvegarde les PIDs dans logs/.dev-pids.json pour pouvoir les arreter
+
+  .\stop-dev.ps1
+    - Arrete proprement backend + frontend
+    - Fichier gere : stop-dev.ps1 (racine)
+    - Lit les PIDs depuis logs/.dev-pids.json
+
+──────────────────────────────────────────────────────────────────────────────
+B. LANCER BACKEND OU FRONTEND SEPAREMENT (mode manuel)
+──────────────────────────────────────────────────────────────────────────────
+
+  cd backend
+  ..\.venv-10\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+    - Lance uniquement FastAPI sur http://localhost:8000
+    - --reload = redemarrage auto quand tu modifies un fichier Python
+    - Fichier gere : backend/app/main.py
+
+  cd frontend
+  npm run dev
+    - Lance uniquement Vite sur http://localhost:3000
+    - Fichier gere : frontend/vite.config.js
+
+──────────────────────────────────────────────────────────────────────────────
+C. BASE DE DONNEES — MIGRATIONS ALEMBIC
+──────────────────────────────────────────────────────────────────────────────
+
+  cd backend
+  ..\.venv-10\Scripts\python.exe -m alembic upgrade head
+    - Applique toutes les migrations en attente sur la base PostgreSQL
+    - A lancer apres chaque modification d'un fichier dans backend/app/models/
+    - Fichiers geres : backend/alembic/versions/*.py
+
+  ..\.venv-10\Scripts\python.exe -m alembic revision --autogenerate -m "description"
+    - Cree une nouvelle migration automatiquement d'apres les changements des modeles
+    - Cree un nouveau fichier dans backend/alembic/versions/
+    - Fichiers geres : backend/app/models/*.py -> genere backend/alembic/versions/xxxxx.py
+
+  ..\.venv-10\Scripts\python.exe -m alembic downgrade -1
+    - Annule la derniere migration (revenir en arriere d'une etape)
+
+  ..\.venv-10\Scripts\python.exe -m alembic current
+    - Affiche la version de migration actuelle de la base
+
+──────────────────────────────────────────────────────────────────────────────
+D. CREER DES COMPTES EN BASE DE DONNEES
+──────────────────────────────────────────────────────────────────────────────
+
+  cd backend
+  ..\.venv-10\Scripts\python.exe scripts/seed_dev_admin.py
+    - Cree un compte admin dans la BDD (a faire une seule fois au debut)
+    - Fichier gere : backend/scripts/seed_dev_admin.py
+
+  ..\.venv-10\Scripts\python.exe scripts/seed_dev_recruteur.py
+    - Cree un compte recruteur dans la BDD
+    - Fichier gere : backend/scripts/seed_dev_recruteur.py
+
+  ..\.venv-10\Scripts\python.exe scripts/reset_db_and_seed_admin.py
+    - ATTENTION : supprime et recrée toutes les tables + insere un admin
+    - A utiliser uniquement si tu veux tout remettre a zero
+    - Fichier gere : backend/scripts/reset_db_and_seed_admin.py
+
+──────────────────────────────────────────────────────────────────────────────
+E. TESTS
+──────────────────────────────────────────────────────────────────────────────
+
+  cd backend
+  ..\.venv-10\Scripts\python.exe -m pytest tests/test_sprint2_unit.py -v
+    - Lance les 110 tests unitaires NLP (TEST PRINCIPAL du Sprint 2)
+    - Fichier gere : backend/tests/test_sprint2_unit.py
+    - -v = affiche le nom de chaque test (verbose)
+
+  ..\.venv-10\Scripts\python.exe -m pytest -v
+    - Lance TOUS les tests du projet
+    - Fichier gere : tous les fichiers tests/ + backend/pytest.ini (config)
+
+  ..\.venv-10\Scripts\python.exe -m pytest -q
+    - Lance tous les tests avec affichage court (sans details)
+
+  ..\.venv-10\Scripts\python.exe -m pytest tests/test_api_endpoints.py -v
+    - Lance uniquement les tests des routes API
+    - Meme principe pour n'importe quel autre fichier de test
+
+──────────────────────────────────────────────────────────────────────────────
+F. VOIR LES LOGS EN DIRECT
+──────────────────────────────────────────────────────────────────────────────
+
+  Get-Content logs\backend.out.log -Wait -Tail 50
+    - Affiche les 50 dernieres lignes du log backend en temps reel
+    - IMPORTANT : les codes de verification email (EMAIL_MODE=log) apparaissent ici
+    - Fichier gere : logs/backend.out.log
+
+  Get-Content logs\frontend.out.log -Wait -Tail 50
+    - Affiche les logs Vite en temps reel
+    - Fichier gere : logs/frontend.out.log
+
+──────────────────────────────────────────────────────────────────────────────
+G. VERIFIER L'ETAT DU SERVEUR (dans le navigateur)
+──────────────────────────────────────────────────────────────────────────────
+
+  http://localhost:8000/health
+    -> Repond {"status": "ok"} si le backend tourne
+
+  http://localhost:8000/api/nlp/status
+    -> Repond avec l'etat de spaCy (charge ou non) + CamemBERT (desactive)
+    -> Utile pour verifier que fr_core_news_md est bien charge
+
+  http://localhost:8000/docs
+    -> Documentation Swagger complete (tester les endpoints directement)
+
+  http://localhost:8000/redoc
+    -> Documentation ReDoc (lecture seule, plus lisible)
+
+  http://localhost:3000
+    -> Frontend React
+
+──────────────────────────────────────────────────────────────────────────────
+H. INSTALLER LES DEPENDANCES (si environnement pas encore pret)
+──────────────────────────────────────────────────────────────────────────────
+
+  cd backend
+  ..\.venv-10\Scripts\pip install -r requirements.txt
+    - Installe toutes les dependances Python
+    - Fichier gere : backend/requirements.txt
+
+  ..\.venv-10\Scripts\python.exe -m spacy download fr_core_news_md
+    - Telecharge le modele spaCy francais (NLP principal)
+    - A faire une seule fois apres installation
+
+  cd frontend
+  npm install
+    - Installe les dependances JavaScript
+    - Fichier gere : frontend/package.json
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. FICHIERS DE CONFIGURATION IMPORTANTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+backend/.env (valeurs actuelles importantes)
+  DATABASE_URL=postgresql://postgres:postgres@localhost:5433/talentmatch
+  API_HOST=0.0.0.0
+  API_PORT=8000
+  SECRET_KEY=dev-secret-change-me-in-production
+  ACCESS_TOKEN_EXPIRE_MINUTES=1440
+  EMAIL_MODE=log               <- emails ecrits dans les logs (pas envoyes en dev)
+  SMTP_USER=garayoussef0@gmail.com
+  HF_ENABLE_CAMEMBERT_NAME=0   <- CamemBERT desactive (spaCy seul utilise)
+  HF_TOKEN=hf_...              <- present mais ignore car desactive
+
+dev.ps1 utilise : .venv-10\ comme virtualenv principal
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. CE QUI EST FAIT / CE QUI RESTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FAIT (Sprint 1 + Sprint 2)
+  [OK] Backend FastAPI complet (auth, CV, admin, offres)
+  [OK] Frontend React (login, register, upload CV, dashboard par role)
+  [OK] Authentification JWT + OAuth Google/LinkedIn + verification email
+  [OK] Roles : candidat / recruteur / admin avec acces differencies
+  [OK] Extraction texte : PDF (texte + colonnes), DOCX, images/scans (OCR)
+  [OK] Pipeline NLP : nom, contact, competences (300+), formations, experiences, langues
+  [OK] Classification sectorielle (15 secteurs)
+  [OK] en_cours dynamique (comparaison avec datetime.now().year — PAS hardcode)
+  [OK] 110 tests unitaires NLP passants
+  [OK] Base PostgreSQL avec 5 migrations Alembic
+  [OK] Statut candidature (en_attente / accepte / refuse) gere par recruteur/admin
+
+RESTE A FAIRE (Sprint 3)
+  [TODO] Score de matching candidat <-> offre (calcul de similarite competences)
+  [TODO] Correction extraction PDF double-colonnes (ex: CV Haythem Djebbi)
+  [TODO] Amelioration NER (faux positifs : noms d'ecoles dans competences decouvertes)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+12. DOCS DISPONIBLES DANS /docs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  docs/CDC_TalentMatch.tex           -> Cahier des charges complet (LaTeX)
+  docs/Sprint1_Backlog.tex           -> Backlog Sprint 1 (LaTeX)
+  docs/diagramme_cas_utilisation.tex -> Diagramme UML cas d'utilisation
+  docs/diagramme_classes.tex         -> Diagramme UML classes
+  docs/PROJET_OVERVIEW.md            -> Vue d'ensemble du projet
+  docs/PROJET_STATUS.md              -> Etat du projet (attention : partiellement obsolete)
+  correction.docx                    -> Remarques de l'encadrante a integrer
+
+================================================================================

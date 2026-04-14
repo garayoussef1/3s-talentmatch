@@ -7,13 +7,14 @@ import "./Login.css"; /* shared styles */
 function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const skipEmailVerification =
+    String(import.meta.env.VITE_SKIP_EMAIL_VERIFICATION || "false").toLowerCase() === "true";
   const [form, setForm] = useState({
     nom: "",
     prenom: "",
     email: "",
     password: "",
     password2: "",
-    role: "candidat",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,7 @@ function Register() {
       const { password2, ...payload } = form;
       const res = await api.post("/auth/register", payload);
       login(res.data.access_token, res.data.user);
-      navigate("/");
+      navigate(skipEmailVerification ? "/" : "/verify-email");
     } catch (err) {
       setError(err.response?.data?.detail || "Erreur lors de l'inscription");
     } finally {
@@ -51,7 +52,7 @@ function Register() {
 
         {error && <div className="auth-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" autoComplete="off">
           <div className="form-row">
             <label>
               Nom
@@ -61,6 +62,7 @@ function Register() {
                 onChange={handleChange}
                 required
                 placeholder="Dupont"
+                autoComplete="family-name"
               />
             </label>
             <label>
@@ -71,6 +73,7 @@ function Register() {
                 onChange={handleChange}
                 required
                 placeholder="Marie"
+                autoComplete="given-name"
               />
             </label>
           </div>
@@ -83,6 +86,7 @@ function Register() {
               onChange={handleChange}
               required
               placeholder="nom@exemple.com"
+              autoComplete="email"
             />
           </label>
           <label>
@@ -95,6 +99,7 @@ function Register() {
               required
               placeholder="Min. 6 caractères"
               minLength={6}
+              autoComplete="new-password"
             />
           </label>
           <label>
@@ -107,14 +112,8 @@ function Register() {
               required
               placeholder="••••••••"
               minLength={6}
+              autoComplete="new-password"
             />
-          </label>
-          <label>
-            Rôle
-            <select name="role" value={form.role} onChange={handleChange}>
-              <option value="candidat">Candidat</option>
-              <option value="recruteur">Recruteur</option>
-            </select>
           </label>
           <button type="submit" className="btn-primary auth-btn" disabled={loading}>
             {loading ? "Création…" : "Créer mon compte"}

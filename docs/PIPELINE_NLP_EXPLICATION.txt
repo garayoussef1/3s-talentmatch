@@ -3,6 +3,11 @@
 ║                     Sprint 2 — Mars 2026                             ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 
+NOTE (mise à jour) — 31 mars 2026
+Ce document est devenu PARTIELLEMENT HISTORIQUE.
+Pour une version claire et à jour (pipeline + spaCy + scripts A/B + carte de navigation), voir :
+  docs/CARTE_NAVIGATION_PROJET.md
+
 
 ══════════════════════════════════════════════════════════════════════
 1. VUE D'ENSEMBLE : QU'EST-CE QUI SE PASSE QUAND ON UPLOAD UN CV ?
@@ -72,10 +77,10 @@ Le flux complet est le suivant :
   - GitHub     → détecte les URLs github.com/...
 
   LIMITES ACTUELLES :
-  ✗ Ne détecte pas les numéros sans indicatif (ex: "22 333 444")
-  ✗ Ne détecte pas les emails écrits "youssef [at] gmail [dot] com"
-  ✗ Les CVs scannés avec OCR peuvent avoir des erreurs dans les
-    chiffres (ex: "O" au lieu de "0")
+  ✗ Les CVs scannés avec OCR peuvent avoir des erreurs dans les chiffres
+    (ex: "O" au lieu de "0"), ce qui peut dégrader les téléphones.
+  ✗ Certains formats très atypiques (téléphones trop courts, séparateurs rares)
+    peuvent encore passer à travers.
 
 
 ────────────────────────────────────────
@@ -86,20 +91,19 @@ Le flux complet est le suivant :
   MODÈLE : fr_core_news_md (modèle français moyen)
 
   Ce qu'il fait :
-  - Cherche les entités de type PERSON dans le texte
-  - Prend la première entité PERSON trouvée comme nom du candidat
+  - Aujourd'hui, l'extraction du nom est multi-passes (heuristiques + spaCy NER).
+  - spaCy NER (PERSON/PER) sert de filet de sécurité, pas d'unique source.
+  - Un extracteur CamemBERT optionnel peut aussi aider (via HF) si configuré.
 
   LIMITES ACTUELLES :
   ✗ spaCy ne reconnaît pas tous les noms (surtout arabes/tunisiens)
   ✗ Si le nom est en majuscules "YOUSSEF GARA", spaCy peut ne pas
     le reconnaître comme un nom de personne
-  ✗ Pas de fallback : si spaCy échoue, le nom reste vide
+  ✓ Fallback présent : heuristiques (haut du CV) + email (en dernier recours)
   
   AMÉLIORATIONS POSSIBLES :
-  → Ajouter un fallback regex : chercher le nom en haut du CV
-    (première ligne non-vide qui n'est pas un email/téléphone)
-  → Utiliser le modèle spaCy large (fr_core_news_lg) pour
-    meilleure précision NER
+  → Améliorer la résolution des conflits (quand plusieurs sources donnent des noms différents)
+  → Utiliser le modèle spaCy large (fr_core_news_lg) pour meilleure précision NER
   → Entraîner un modèle spaCy personnalisé sur des CVs tunisiens
 
 
@@ -120,9 +124,8 @@ Le flux complet est le suivant :
   5. On infère le niveau : 0-2 ans=Débutant, 3-5=Intermédiaire, etc.
 
   LIMITES ACTUELLES :
-  ✗ Cherche dans TOUT le texte, pas seulement la section Compétences
-    → Peut détecter "Java" dans "JavaScript" (faux positif)
-    → Peut détecter "C" quand c'est juste la lettre "C" dans du texte
+  ✓ Amélioration : la section "Compétences" est isolée et priorisée quand elle existe.
+  ✗ Les skills ambigus/courts (C, R, Go...) restent sensibles, malgré les garde-fous.
   ✗ Ne détecte que les skills présentes dans le dictionnaire
     → Si le candidat écrit "FastApi" au lieu de "FastAPI", pas détecté
   ✗ Les années d'expérience ne sont détectées que si écrites
@@ -206,8 +209,7 @@ Le flux complet est le suivant :
   ✗ L'entreprise peut être mal détectée si pas de séparateur clair
     → "Développeur Full Stack, TechCorp" peut rater TechCorp si
       pas de "chez" ou "@"
-  ✗ Les dates textuelles sans accents posent problème
-    → "Fevrier" au lieu de "Février" n'est pas reconnu
+  ✓ Amélioration : la normalisation supprime les accents, donc "Fevrier" est en général reconnu.
   ✗ Quand 2 expériences sont collées sans ligne vide, elles
     peuvent être fusionnées en une seule
   ✗ Le lieu est détecté uniquement si dans la liste des 60 villes
@@ -235,7 +237,8 @@ Le flux complet est le suivant :
 │ 2 │ Faux positifs skills ("C", "R" dans     │ Moyen    │ P1       │
 │   │ du texte normal)                        │          │          │
 │ 3 │ Expérience : "Fevrier" sans accent      │ Moyen    │ P1       │
-│   │ pas reconnu comme mois                  │          │          │
+│   │ (en grande partie corrigé via           │          │          │
+│   │ normalisation)                          │          │          │
 │ 4 │ Villes tunisiennes manquantes           │ Moyen    │ P2       │
 │ 5 │ Postes non standards pas détectés       │ Moyen    │ P2       │
 │ 6 │ CVs sans sections claires : extraction  │ Élevé    │ P2       │

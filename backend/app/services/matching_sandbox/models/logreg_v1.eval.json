@@ -1,0 +1,5 @@
+{
+  "samples": 6,
+  "precision_at_5": 0.2,
+  "ndcg_at_10": 1.0
+}

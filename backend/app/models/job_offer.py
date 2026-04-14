@@ -34,7 +34,12 @@ class JobOffer(Base):
 
     # Relations
     recruiter = relationship("User")
-    matches = relationship("Match", back_populates="job_offer")
+    matches = relationship(
+        "Match",
+        back_populates="job_offer",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return f"<JobOffer titre={self.titre} status={self.status}>"

@@ -1,0 +1,177 @@
+% ============================================================
+% Diagramme de Cas d'Utilisation — 3S TalentMatch
+% À compiler seul (standalone) ou à inclure dans le cahier
+% ============================================================
+\documentclass[border=10pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, fit, calc, backgrounds}
+
+% ── Styles ──────────────────────────────────────────────────
+\tikzset{
+    % Acteur (bonhomme bâton)
+    actor/.style={
+        inner sep=0pt,
+        minimum size=0pt,
+    },
+    % Cas d'utilisation (ellipse)
+    usecase/.style={
+        ellipse,
+        draw=black,
+        thick,
+        fill=blue!8,
+        text width=3.2cm,
+        align=center,
+        font=\small,
+        minimum height=1.2cm,
+    },
+    % Système (rectangle englobant)
+    system/.style={
+        rectangle,
+        draw=black!70,
+        thick,
+        rounded corners=5pt,
+        fill=gray!5,
+        inner sep=15pt,
+    },
+    % Flèche association
+    assoc/.style={
+        -,
+        thick,
+        draw=black!70,
+    },
+    % Flèche include
+    incl/.style={
+        ->,
+        dashed,
+        thick,
+        draw=black!60,
+        >={Stealth[length=6pt]},
+    },
+    % Flèche extend
+    ext/.style={
+        ->,
+        dashed,
+        thick,
+        draw=green!50!black,
+        >={Stealth[length=6pt]},
+    },
+    % Flèche héritage acteur
+    inherit/.style={
+        ->,
+        thick,
+        draw=black,
+        >={Triangle[open, length=8pt, width=8pt]},
+    },
+}
+
+% Macro pour dessiner un acteur (bonhomme bâton)
+\newcommand{\stickman}[3]{% #1=name, #2=position, #3=label
+    \node[actor] (#1) at #2 {};
+    % Tête
+    \draw[thick] ([yshift=12pt]#1.center) circle (5pt);
+    % Corps
+    \draw[thick] ([yshift=7pt]#1.center) -- ([yshift=-5pt]#1.center);
+    % Bras
+    \draw[thick] ([yshift=3pt, xshift=-7pt]#1.center) -- ([yshift=3pt, xshift=7pt]#1.center);
+    % Jambes
+    \draw[thick] ([yshift=-5pt]#1.center) -- ([yshift=-14pt, xshift=-6pt]#1.center);
+    \draw[thick] ([yshift=-5pt]#1.center) -- ([yshift=-14pt, xshift=6pt]#1.center);
+    % Label
+    \node[below=16pt, font=\small\bfseries] at (#1.center) {#3};
+}
+
+\begin{document}
+
+% ════════════════════════════════════════════════════════════
+% 1. DIAGRAMME DE CAS D'UTILISATION GÉNÉRAL
+% ════════════════════════════════════════════════════════════
+
+\begin{tikzpicture}[node distance=1.2cm and 2.5cm]
+
+    % ── Titre ───────────────────────
+    \node[font=\Large\bfseries, anchor=south] at (7.5, 16.5)
+        {Diagramme de Cas d'Utilisation -- 3S TalentMatch};
+
+    % ── Cas d'utilisation : Authentification ──────────────
+    \node[usecase] (uc_inscrire)       at (4, 15)    {S'inscrire};
+    \node[usecase] (uc_connecter)      at (4, 13.3)  {Se connecter};
+    \node[usecase] (uc_oauth)          at (8, 14.2)  {S'authentifier\\via OAuth};
+    \node[usecase] (uc_verif_email)    at (8, 12.5)  {Vérifier son\\email (OTP)};
+    \node[usecase] (uc_reset_pwd)      at (8, 15.5)  {Réinitialiser\\mot de passe};
+    \node[usecase] (uc_profil)         at (4, 11.6)  {Consulter\\son profil};
+
+    % ── Cas d'utilisation : Candidat ──────────────────────
+    \node[usecase] (uc_upload_cv)      at (4, 9.8)   {Uploader\\un CV};
+    \node[usecase] (uc_mes_candidat)   at (4, 8.1)   {Consulter mes\\candidatures};
+    \node[usecase] (uc_extract)        at (8, 9.8)   {Extraire texte\\du CV};
+    \node[usecase] (uc_parse_nlp)      at (11.5, 9.8){Parser NLP\\(spaCy)};
+
+    % ── Cas d'utilisation : Recruteur ─────────────────────
+    \node[usecase] (uc_creer_offre)    at (4, 6.2)   {Créer une\\offre d'emploi};
+    \node[usecase] (uc_lister_cand)    at (4, 4.5)   {Consulter la\\liste des candidats};
+    \node[usecase] (uc_detail_cand)    at (8, 4.5)   {Consulter le\\détail d'un candidat};
+    \node[usecase] (uc_statut_cand)    at (4, 2.8)   {Modifier le statut\\de candidature};
+    \node[usecase] (uc_suppr_cand)     at (8, 2.8)   {Supprimer\\un candidat};
+    \node[usecase] (uc_matching)       at (4, 1.1)   {Lancer le\\matching CV/Offre};
+    \node[usecase] (uc_calc_score)     at (8, 1.1)   {Calculer le\\score de matching};
+
+    % ── Cas d'utilisation : Admin ─────────────────────────
+    \node[usecase] (uc_gerer_users)    at (4, -0.8)  {Gérer les\\utilisateurs};
+    \node[usecase] (uc_suppr_all)      at (8, -0.8)  {Supprimer tous\\les candidats};
+
+    % ── Système englobant ─────────────────────────────────
+    \begin{scope}[on background layer]
+        \node[system, fit=(uc_inscrire)(uc_suppr_all)(uc_oauth)(uc_parse_nlp)(uc_reset_pwd),
+              label={[font=\large\bfseries]above:Système 3S TalentMatch}] (sys) {};
+    \end{scope}
+
+    % ── Acteurs ───────────────────────────────────────────
+    \stickman{candidat}{(-2.5, 11)}{Candidat}
+    \stickman{recruteur}{(-2.5, 4)}{Recruteur}
+    \stickman{admin}{(-2.5, -1)}{Admin}
+    \stickman{systeme}{(14, 6)}{Système}
+
+    % ── Héritage Admin → Recruteur ────────────────────────
+    \draw[inherit] (admin.north) ++(0, 0.8) -- (recruteur.south) ++(0, -0.8);
+
+    % ── Associations Candidat ─────────────────────────────
+    \draw[assoc] (candidat.east) ++(0.3, 0.5) -- (uc_inscrire.west);
+    \draw[assoc] (candidat.east) ++(0.3, 0)   -- (uc_connecter.west);
+    \draw[assoc] (candidat.east) ++(0.3, -0.3) -- (uc_profil.west);
+    \draw[assoc] (candidat.east) ++(0.3, -0.5) -- (uc_upload_cv.west);
+    \draw[assoc] (candidat.east) ++(0.3, -0.8) -- (uc_mes_candidat.west);
+
+    % ── Associations Recruteur ────────────────────────────
+    \draw[assoc] (recruteur.east) ++(0.3, 0.5) -- (uc_inscrire.west);
+    \draw[assoc] (recruteur.east) ++(0.3, 0.3) -- (uc_connecter.west);
+    \draw[assoc] (recruteur.east) ++(0.3, 0)   -- (uc_creer_offre.west);
+    \draw[assoc] (recruteur.east) ++(0.3, -0.2) -- (uc_lister_cand.west);
+    \draw[assoc] (recruteur.east) ++(0.3, -0.5) -- (uc_statut_cand.west);
+    \draw[assoc] (recruteur.east) ++(0.3, -0.7) -- (uc_suppr_cand.west);
+    \draw[assoc] (recruteur.east) ++(0.3, -1)   -- (uc_matching.west);
+
+    % ── Associations Admin ────────────────────────────────
+    \draw[assoc] (admin.east) ++(0.3, 0.2) -- (uc_gerer_users.west);
+    \draw[assoc] (admin.east) ++(0.3, -0.2) -- (uc_suppr_all.west);
+
+    % ── Associations Système ──────────────────────────────
+    \draw[assoc] (systeme.west) ++(-0.3, 0.5)  -- (uc_extract.east);
+    \draw[assoc] (systeme.west) ++(-0.3, 0)    -- (uc_calc_score.east);
+
+    % ── Relations <<include>> ─────────────────────────────
+    \draw[incl] (uc_inscrire.east)     -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_verif_email.west);
+    \draw[incl] (uc_upload_cv.east)    -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_extract.west);
+    \draw[incl] (uc_extract.east)      -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_parse_nlp.west);
+    \draw[incl] (uc_matching.east)     -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_calc_score.west);
+    \draw[incl] (uc_lister_cand.east)  -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_detail_cand.west);
+
+    % ── Relations <<extend>> ──────────────────────────────
+    \draw[ext] (uc_oauth.west)      -- node[above, font=\scriptsize, sloped] {$\ll$extend$\gg$} (uc_connecter.east);
+    \draw[ext] (uc_reset_pwd.west)  -- node[above, font=\scriptsize, sloped] {$\ll$extend$\gg$} (uc_connecter.east);
+
+\end{tikzpicture}
+
+\end{document}

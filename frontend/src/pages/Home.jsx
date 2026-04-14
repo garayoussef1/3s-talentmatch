@@ -6,7 +6,8 @@ import './Home.css'
 
 function Home() {
   const { user } = useAuth()
-  const isCandidat = user?.role === 'candidat'
+  const role = (user?.role ?? '').toString().trim().toLowerCase()
+  const isCandidat = role === 'candidat'
   const [stats, setStats] = useState({ cvs: '…', offres: '—', matchings: '—', myApps: '…' })
 
   useEffect(() => {

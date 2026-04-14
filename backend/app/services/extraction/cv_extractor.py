@@ -32,10 +32,11 @@ class CVExtractor:
       - Images       → OCRExtractor (EasyOCR)
     """
 
-    def __init__(self, ocr_languages: list = None):
+    def __init__(self, ocr_languages: list = None, enable_ocr_fallback: bool = True):
         self._pdf_extractor  = PDFExtractor()
         self._word_extractor = WordExtractor()
         self._ocr_extractor  = OCRExtractor(languages=ocr_languages or ['fr', 'en'])
+        self.enable_ocr_fallback = enable_ocr_fallback
         logger.info("CVExtractor initialisé")
 
     def extract(self, file_path: str) -> Dict:
@@ -78,7 +79,7 @@ class CVExtractor:
             result = self._pdf_extractor.extract(file_path)
 
             # Si le PDF est scanné (needs_ocr=True), basculer sur OCR
-            if result.get('needs_ocr'):
+            if result.get('needs_ocr') and self.enable_ocr_fallback:
                 logger.info("PDF scanné détecté → basculement sur OCR")
                 result = self._ocr_extractor.extract(file_path)
                 result['method'] = 'pypdf+ocr'

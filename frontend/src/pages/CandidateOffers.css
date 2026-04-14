@@ -1,0 +1,102 @@
+.candidate-offers-page {
+  padding: 24px;
+  background: radial-gradient(circle at top left, #eef2f8 0%, #f4f5f7 60%);
+  min-height: calc(100vh - 64px);
+}
+
+.page-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-hero h1 {
+  font-size: 2rem;
+  margin: 6px 0 8px;
+}
+
+.page-hero p { color: #5b616a; margin: 0; }
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: #7b828c;
+}
+
+.hero-chip {
+  background: #eef2f6;
+  color: #3f4a57;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.offer-card {
+  background: #fdfdfc;
+  border: 1px solid #e2e6ea;
+  border-radius: 14px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04);
+}
+
+.offer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.offer-meta { color: #5b616a; font-size: 0.9rem; }
+
+.offer-desc {
+  color: #3f4a57;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  background: #eef0f4;
+  color: #3c4452;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-active { background: #e6f4ea; color: #1f6b45; }
+
+.btn-primary {
+  background: #3e5f9b;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  .page-hero { flex-direction: column; align-items: flex-start; }
+}

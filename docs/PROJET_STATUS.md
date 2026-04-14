@@ -1,5 +1,9 @@
 # 🎯 État Actuel du Projet - Transition Sprint 1 → Sprint 2
 
+NOTE (mise à jour) — 31 mars 2026
+- Ce fichier reflète un état ancien (début Sprint 2) et certaines sections "à faire" ne sont plus vraies.
+- Pour un récap à jour (pipeline, spaCy, scripts A/B, carte de navigation), voir : `docs/CARTE_NAVIGATION_PROJET.md`
+
 **Date:** 28 février 2026  
 **Statut:** ✅ Sprint 1 Terminé | 🚀 Sprint 2 Démarré
 

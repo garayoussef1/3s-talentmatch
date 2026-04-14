@@ -78,6 +78,31 @@
   font-weight: 600;
 }
 
+.offer-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.offer-badge {
+  background: #eef2f6;
+  color: #3f4a57;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.offer-badge.more {
+  background: #e7eefc;
+  color: #2f6fed;
+}
+
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -126,6 +151,20 @@
   cursor: not-allowed;
 }
 
+.btn-view {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+  color: #374151;
+}
+
+.btn-view:hover {
+  background: #f9fafb;
+}
+
 /* ── Sélecteur de statut candidature ── */
 .status-select {
   padding: 0.3rem 0.5rem;
@@ -156,6 +195,37 @@
 }
 
 .status-select.status-refuse {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+/* ── Badge statut (lecture seule) ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.85rem;
+  font-weight: 600;
+  user-select: none;
+}
+
+.status-badge.status-en_attente {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.status-badge.status-accepte {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.status-badge.status-refuse {
   background: #fee2e2;
   color: #991b1b;
   border-color: #fca5a5;
