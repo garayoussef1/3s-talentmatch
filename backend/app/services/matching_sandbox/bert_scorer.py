@@ -277,8 +277,12 @@ class BERTMatchingScorer:
 
         parsed = candidate.parsed_data if isinstance(candidate.parsed_data, dict) else {}
         experiences = parsed.get("experiences") if isinstance(parsed, dict) else []
+        # Vérifier uniquement les skills de l'offre que le candidat prétend avoir
+        # (intersection offer_skills ∩ cv_skills) — évite pénalité sur skills non déclarées
+        cv_skills_lower = {s.lower() for s in cv_skills}
+        skills_to_check = [s for s in offer_skills if s.lower() in cv_skills_lower]
         inconsistencies = self.detect_skill_inconsistencies(
-            cv_skills=cv_skills,
+            cv_skills=skills_to_check if skills_to_check else offer_skills[:5],
             cv_experiences=experiences,
             cv_raw_text=(candidate.raw_text or ""),
         )

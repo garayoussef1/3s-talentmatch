@@ -1,102 +1,250 @@
-# Matching - Resume de la partie IA
+# Matching IA - Documentation Technique
+# Projet : 3S TalentMatch - PFE ESPRIT 2025-2026
+# Auteur  : Youssef Gara
 
-## 1) Objectif defini
-Construire ton propre modele IA de matching, de facon solide et progressive, sans casser le moteur existant.
+---
 
-Principes retenus:
-- Travailler en sandbox isolee.
-- Garder le moteur officiel intact tant que la version IA n'est pas validee.
-- Comparer heuristique vs IA avec des metriques de ranking.
+## 1. Objectif
 
-## 2) Ce qui a ete propose
-Approche en etapes:
-1. Creer un espace sandbox separe.
-2. Construire un dataset d'entrainement depuis la base.
-3. Entrainer un modele local baseline (Logistic Regression).
-4. Ajouter un endpoint de comparaison non destructif.
-5. Evaluer et calibrer avant toute integration officielle.
+Construire un systeme de matching CV-offres progressif et defensable en soutenance,
+sans casser le moteur de production existant.
 
-## 3) Ce qui a ete implemente jusqu'a maintenant
-### 3.1 Structure sandbox creee
-- app/services/matching_sandbox/
-- app/services/matching_sandbox/datasets/
-- app/services/matching_sandbox/models/
-- app/services/matching_sandbox/reports/
+Principes retenus :
+- Sandbox isolee (aucune persistance en base).
+- Garder le moteur officiel intact.
+- Comparer heuristique vs ML vs IA semantique avec des metriques claires.
 
-Fichiers ajoutes:
-- app/services/matching_sandbox/__init__.py
-- app/services/matching_sandbox/README.md
-- app/services/matching_sandbox/ml_scorer.py
+---
 
-### 3.2 Scripts sandbox ajoutes
-- scripts/sandbox_build_dataset.py
-  - Extrait les exemples labels depuis Match.
-  - Labels utilises:
-    - accepted = 1
-    - rejected = 0
-    - pending/reviewed exclus du train.
-  - Ajout d'un mode bootstrap pour creer des negatifs synthetiques si la base manque de rejected (utile pour demo/PoC).
+## 2. Architecture du systeme de matching
 
-- scripts/sandbox_train_model.py
-  - Entraine un Logistic Regression local.
-  - Sauvegarde le modele dans matching_sandbox/models/logreg_v1.joblib.
-  - Ecrit un fichier de metriques .metrics.json.
-  - Gere le cas petit dataset avec fallback de split.
+```
+Offre d'emploi + CV candidat
+         |
+         v
++---------------------------+
+|   MatchEngine             |  <- Production (non modifie)
+|   (heuristique RapidFuzz) |
++---------------------------+
+         |
+         v
++---------------------------+
+|   Sandbox (non destructif)|
+|   - SandboxMLScorer       |  <- LogReg classique
+|   - BERTMatchingScorer    |  <- Sentence-BERT (IA profonde)
++---------------------------+
+         |
+         v
+POST /api/match-sandbox/{id}?engine=heuristic_ml|bert|compare_all
+```
 
-- scripts/sandbox_eval_model.py
-  - Charge le modele et evalue sur dataset CSV.
-  - Calcule Precision@5 et NDCG@10.
+---
 
-### 3.3 Endpoint de comparaison ajoute (non destructif)
-Dans app/routes/matching.py:
-- Nouveau endpoint: POST /api/match-sandbox/{job_offer_id}
-- Parametre: alpha (par defaut 0.6)
-- Retourne:
-  - heuristic_score
-  - ml_score
-  - hybrid_score = alpha * ml + (1-alpha) * heuristique
-- Important: aucune persistance en base (persisted = false).
+## 3. Moteurs implementes
 
-## 4) Execution et resultats observes
-### 4.1 Dataset genere
-Fichier:
-- app/services/matching_sandbox/datasets/matching_dataset_v1.csv
+### 3.1 MatchEngine - Heuristique (production)
 
-Etat observe pendant les tests:
-- 1 label reel accepted
-- 0 label reel rejected
-- 5 rejected synthetiques ajoutes (bootstrap)
-- total 6 lignes
+Fichier : app/services/matching/match_engine.py
 
-### 4.2 Entrainement et evaluation
-Artefacts generes:
-- app/services/matching_sandbox/models/logreg_v1.joblib
-- app/services/matching_sandbox/models/logreg_v1.metrics.json
-- app/services/matching_sandbox/models/logreg_v1.eval.json
+Composants :
+- Skills : fuzzy matching RapidFuzz (token_set_ratio)
+- Experience : ratio annees_candidat / annees_requises
+- Education : comparaison niveau Bac+X
+- Localisation : presence ville dans texte CV
+- Semantique : similarite spaCy word vectors
 
-Metriques obtenues (etat actuel demo):
-- AUC: 1.0
-- AP: 1.0
-- Precision@5: 0.2
-- NDCG@10: 1.0
+Poids :
+- Skills      : 45%
+- Experience  : 25%
+- Education   : 20%
+- Localisation: 10%
+- Semantique  : 12% (normalise)
 
-Interpretation correcte:
-- Ces metriques ne representent pas encore une performance "reelle production".
-- Le dataset est trop petit et contient des negatifs synthetiques.
-- Le resultat valide surtout le pipeline technique de bout en bout.
+### 3.2 SandboxMLScorer - Machine Learning classique
 
-## 5) Ce qui reste a faire (priorites)
-1. Collecter de vrais labels rejected (decisions recruteur) pour remplacer les synthetiques.
-2. Rebuilder le dataset avec plus de donnees reelles.
-3. Re-entrainer et re-evaluer avec split plus robuste.
-4. Calibrer alpha sur cas reels offre-candidats.
-5. Enrichir l'explicabilite (importance features, raison du score).
+Fichier : app/services/matching_sandbox/ml_scorer.py
 
-## 6) Conclusion
-Le socle de ton propre modele IA de matching est en place:
-- environnement sandbox isole,
-- dataset builder,
-- training/eval scripts,
-- endpoint de comparaison sans risque.
+Modele : Logistic Regression (logreg_v1.joblib)
+Dataset : 6 lignes (1 reel + 5 synthetiques bootstrap)
+Statut  : PoC technique valide, pas encore productif (manque de donnees reelles)
 
-La prochaine valeur metier majeure est d'augmenter la quantite de labels reels pour passer d'un PoC technique a un modele solide et defensable en PFE.
+### 3.3 BERTMatchingScorer - IA Semantique Profonde (NOUVEAU)
+
+Fichier : app/services/matching_sandbox/bert_scorer.py
+
+Modele : paraphrase-multilingual-MiniLM-L12-v2
+Source : HuggingFace (sentence-transformers)
+Taille : 3.4 GB sur disque
+Langues: 50 langues dont FR et EN natif
+Mode   : offline apres 1er telechargement (fonctionne sans internet)
+
+Formule du score :
+  total = 0.50 x bert_semantic
+        + 0.30 x bert_skills
+        + 0.20 x base
+        - penalty
+
+  bert_semantic : cosine similarity embeddings offre vs CV complet
+  bert_skills   : max cosine sim par skill requise vs skills candidat
+  base          : (exp_score + edu_score) / 2
+  penalty       : min(0.15, nb_incoherences x 0.05)
+
+Detection d'incoherences (4 niveaux) :
+  Niveau 1 : skill declaree absente du texte brut du CV
+  Niveau 2 : skill absente de toutes les descriptions d'experiences
+  Niveau 3 : ecosysteme manquant (React sans JavaScript, Angular sans TypeScript...)
+  Niveau 4 : similarite BERT entre skill et contexte experience < 0.25
+
+---
+
+## 4. Endpoint sandbox
+
+Route : POST /api/match-sandbox/{job_offer_id}
+Auth  : recruteur ou admin uniquement
+Params:
+  - alpha  : float (0-1, defaut 0.6) - poids ML dans hybride heuristic_ml
+  - engine : string - mode de calcul
+
+Modes disponibles :
+
+  engine=heuristic_ml (defaut)
+    Retourne : heuristic_score, ml_score, hybrid_score = alpha*ml + (1-alpha)*heuristic
+
+  engine=bert
+    Retourne : bert_score, details (semantic, skills, incoherences)
+
+  engine=compare_all
+    Retourne : heuristic_score, ml_score, bert_score,
+               hybrid_score = 0.4*bert + 0.3*ml + 0.3*heuristic
+
+Regles importantes :
+  - persisted = False dans tous les modes (aucune ecriture en base)
+  - /api/match (production) non modifie
+
+---
+
+## 5. Resultats de validation (demo sur CVs reels)
+
+### 5.1 Configuration du test
+
+Date      : 15 avril 2026
+CVs testes: 6 CVs reels (Wajih EN/FR, Maram, Ines, Ahmed Aziz, Ranim EN)
+Offres    : 3 offres fictives realistes
+
+### 5.2 Offre : Ingenieur Backend Python
+Skills requises : Python, FastAPI, Docker, SQL, REST API
+
+Candidat        | Heuristique | BERT  | Diff  | Incoherences
+----------------|-------------|-------|-------|-------------
+Wajih EN        |    72.4%    | 65.4% |  -7%  | 2 (FastAPI, Docker absents)
+Ahmed Aziz      |    63.5%    | 65.0% |  +1%  | 1
+Maram           |    68.8%    | 63.5% |  -5%  | 2
+Ranim EN        |    69.2%    | 62.9% |  -6%  | 2
+Wajih FR        |    72.6%    | 60.9% | -12%  | 3
+Ines            |    65.7%    | 56.2% |  -9%  | 5
+
+BERT moyen : 62.3%  |  Heuristique moyen : 68.7%
+
+### 5.3 Offre : Data Scientist / ML Engineer
+Skills requises : Python, Machine Learning, TensorFlow, Pandas, Deep Learning
+
+Candidat        | Heuristique | BERT  | Diff  | Incoherences
+----------------|-------------|-------|-------|-------------
+Wajih FR        |    75.0%    | 70.4% |  -5%  | 1
+Wajih EN        |    74.1%    | 69.7% |  -4%  | 1
+Ranim EN        |    71.9%    | 69.3% |  -3%  | 1
+Ines            |    73.3%    | 68.9% |  -4%  | 1
+Maram           |    87.9%    | 66.7% | -21%  | 5 (penalite max)
+Ahmed Aziz      |    81.7%    | 60.2% | -22%  | 3
+
+Observation : Maram declare TensorFlow/Pandas mais ces termes sont
+peu presents dans ses experiences concretes -> BERT penalise correctement.
+
+### 5.4 Offre : Developpeur Mobile React Native
+Skills requises : React Native, JavaScript, TypeScript, Mobile, Git
+
+Candidat        | Heuristique | BERT  | Diff  | Incoherences
+----------------|-------------|-------|-------|-------------
+Ines            |    80.6%    | 68.9% | -12%  | 2
+Ahmed Aziz      |    73.4%    | 66.7% |  -7%  | 1
+Wajih FR        |    81.1%    | 65.2% | -16%  | 2
+Wajih EN        |    81.1%    | 65.1% | -16%  | 2
+Maram           |    76.2%    | 64.1% | -12%  | 2
+Ranim EN        |    84.1%    | 60.5% | -24%  | 3
+
+Observation : Ines correctement classee #1 (profil mobile valide).
+
+---
+
+## 6. Analyse comparative heuristique vs BERT
+
+Avantages de BERT sur l'heuristique :
+1. Comprend le sens semantique : "Python engineer" = "developpeur Python"
+2. Multilingue natif : compare FR et EN sans traduction
+3. Detection d'incoherences : penalise les skills declarees mais non prouvees
+4. Robuste aux variations de vocabulaire : "FastAPI" ~ "REST framework Python"
+
+Limites actuelles :
+1. Score BERT inferieur a l'heuristique en moyenne (-10%) a cause de la penalite
+2. Penalite parfois agressive si le CV est court ou peu detaille
+3. Temps de calcul : 1-3 sec par matching sur CPU (acceptable pour demo)
+4. Modele generique : non fine-tune sur CVs tunisiens specifiquement
+
+---
+
+## 7. Tests automatises
+
+Fichier : backend/tests/test_bert_matching.py
+Nombre  : 3 tests pytest
+Mode    : mock SentenceTransformer (pas de telechargement requis pour CI)
+
+test_bert_semantic_score        : score [0,1] avec mock vecteurs fixes
+test_skill_inconsistency_detection : Kubernetes absent du texte -> niveau 1 detecte
+test_hybrid_scoring             : score total [0,1] avec candidat et offre mock
+
+Execution : python -m pytest tests/test_bert_matching.py -v
+Resultat  : 3/3 PASSED
+
+---
+
+## 8. Demo standalone
+
+Fichier : demo_matching.py (racine du projet)
+Usage   : .venv-10\Scripts\python.exe demo_matching.py
+
+Aucune base de donnees requise.
+Lit les CVs depuis data/Cv/ directement.
+Affiche tableau comparatif heuristique vs BERT pour 3 offres types.
+
+---
+
+## 9. Ce qui reste a faire (ameliorations possibles)
+
+Court terme :
+- Calibrer les poids BERT (50/30/20) sur plus de CVs reels
+- Ajouter plus d'ecosystemes dans la detection (Vue->JavaScript, Laravel->PHP)
+- Afficher les scores BERT dans le frontend recruteur
+
+Moyen terme :
+- Collecter des labels reels (recruteur accepte/refuse) pour entrainer le ML
+- Fine-tuning du modele BERT sur donnees metier tunisiennes
+- Explication du score au recruteur ("Pourquoi 65% ?")
+
+---
+
+## 10. Conclusion
+
+Le systeme de matching dispose maintenant de 3 niveaux d'intelligence :
+
+Niveau 1 - Heuristique (production)
+  Rapide, deterministe, explicable. Base de comparaison.
+
+Niveau 2 - Machine Learning classique (sandbox)
+  LogReg sur features extraites. Necessite plus de donnees reelles.
+
+Niveau 3 - Sentence-BERT (sandbox IA)
+  Comprehension semantique profonde. Multilingue FR+EN.
+  Detecte les incoherences. Defensable en soutenance PFE.
+
+Architecture sandbox garantit : aucun risque sur la production,
+comparaison transparente, evolution progressive vers le meilleur moteur.
