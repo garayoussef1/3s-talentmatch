@@ -1,10 +1,29 @@
+from contextlib import asynccontextmanager
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from app.routes import cv, auth
-from app.routes import admin, job_offers, matching
+from app.routes import admin, job_offers, matching, dashboard, notifications
 from app.services.nlp.hf_camembert import camembert_runtime_config
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Pré-charger TalentMatch-BERT au démarrage pour éviter le cold start."""
+    try:
+        from app.services.matching_sandbox.bert_scorer import BERTMatchingScorer
+        scorer = BERTMatchingScorer()
+        scorer._get_model()
+        status = scorer.model_version if scorer.ready else "indisponible"
+        print(f"[startup] BERT scorer : {status}")
+    except Exception as e:
+        print(f"[startup] BERT scorer erreur : {e}")
+    yield
 
 tags_metadata = [
     {
@@ -22,6 +41,7 @@ tags_metadata = [
 ]
 
 app = FastAPI(
+    lifespan=lifespan,
     title="3S TalentMatch API",
     description=(
         "## Plateforme intelligente de matching CV / offres d'emploi\n\n"
@@ -46,10 +66,11 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# --- CORS (autorise le frontend React sur localhost:3000) ---
+# --- CORS ---
+_cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=[o.strip() for o in _cors_origins.split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,6 +82,10 @@ app.include_router(cv.router, prefix="/api", tags=["CV"])
 app.include_router(admin.router, prefix="/api", tags=["Admin"])
 app.include_router(job_offers.router, prefix="/api", tags=["Offres"])
 app.include_router(matching.router, prefix="/api", tags=["Matching"])
+app.include_router(dashboard.router, prefix="/api", tags=["Dashboard"])
+app.include_router(notifications.router, prefix="/api", tags=["Notifications"])
+
+
 
 
 @app.get("/", include_in_schema=False)
