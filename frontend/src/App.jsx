@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -8,9 +8,15 @@ import UploadCV from './pages/UploadCV'
 import Candidates from './pages/Candidates'
 import CandidateDetail from './pages/CandidateDetail'
 import MyApplications from './pages/MyApplications'
+import MesDonnees from './pages/MesDonnees'
 import AdminUsers from './pages/AdminUsers'
-import JobOffers from './pages/JobOffers'
+import OffersList  from './pages/OffersList'
+import OfferNew    from './pages/OfferNew'
+import OfferDetail from './pages/OfferDetail'
 import CandidateOffers from './pages/CandidateOffers'
+import Dashboard from './pages/Dashboard'
+import Dashboard2 from './pages/Dashboard2'
+import CandidateOfferDetail from './pages/CandidateOfferDetail'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import OAuthCallback from './pages/OAuthCallback'
@@ -19,11 +25,13 @@ import ForgotPassword from './pages/ForgotPassword'
 import './App.css'
 
 function App() {
+  const location = useLocation()
+
   return (
     <AuthProvider>
       <div className="app">
-        <Navbar />
-        <main className="main-content">
+        {location.pathname !== '/login' && <Navbar />}
+        <main className={`main-content ${location.pathname === '/login' ? 'main-content--full' : ''}`}>
           <ErrorBoundary>
             <Routes>
               {/* Public */}
@@ -43,14 +51,21 @@ function App() {
               {/* Recruteur / Admin uniquement */}
               <Route path="/candidates" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><Candidates /></ProtectedRoute>} />
               <Route path="/candidates/:cvId" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><CandidateDetail /></ProtectedRoute>} />
-              <Route path="/offers" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><JobOffers /></ProtectedRoute>} />
+              <Route path="/offers"      element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><OffersList  /></ProtectedRoute>} />
+              <Route path="/offers/new"  element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><OfferNew    /></ProtectedRoute>} />
+              <Route path="/offers/:id"  element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><OfferDetail /></ProtectedRoute>} />
+
+              <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><Dashboard /></ProtectedRoute>} />
+              <Route path="/dashboard2" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><Dashboard2 /></ProtectedRoute>} />
 
               {/* Admin uniquement */}
               <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
 
               {/* Candidat uniquement */}
               <Route path="/jobs" element={<ProtectedRoute allowedRoles={["candidat"]}><CandidateOffers /></ProtectedRoute>} />
+              <Route path="/jobs/:id" element={<ProtectedRoute allowedRoles={["candidat"]}><CandidateOfferDetail /></ProtectedRoute>} />
               <Route path="/my-applications" element={<ProtectedRoute allowedRoles={["candidat"]}><MyApplications /></ProtectedRoute>} />
+              <Route path="/mes-donnees" element={<ProtectedRoute allowedRoles={["candidat"]}><MesDonnees /></ProtectedRoute>} />
             </Routes>
           </ErrorBoundary>
         </main>

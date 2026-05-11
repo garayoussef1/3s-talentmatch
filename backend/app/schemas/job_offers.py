@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
+from datetime import datetime
 
 
 class JobOfferBase(BaseModel):
@@ -8,7 +9,9 @@ class JobOfferBase(BaseModel):
     competences_requises: Optional[List[str]] = None
     localisation: Optional[str] = None
     type_contrat: Optional[str] = None
+    nb_postes: Optional[int] = 1
     status: Optional[str] = None
+    date_limite: Optional[datetime] = None
 
 
 class JobOfferCreate(JobOfferBase):
@@ -21,17 +24,25 @@ class JobOfferUpdate(BaseModel):
     competences_requises: Optional[List[str]] = None
     localisation: Optional[str] = None
     type_contrat: Optional[str] = None
+    nb_postes: Optional[int] = None
     status: Optional[str] = None
+    date_limite: Optional[datetime] = None
 
 
 class JobOfferItem(JobOfferBase):
     id: str
     recruiter_id: Optional[str] = None
     created_at: Optional[str] = None
+    date_limite: Optional[str] = None
+    candidate_count: Optional[int] = 0
+    assigned_recruiter_ids: Optional[List[str]] = None
+
+    model_config = {"extra": "allow"}
 
 
 class JobOfferListResponse(BaseModel):
     total: int
+    total_pool: Optional[int] = 0
     offers: List[JobOfferItem]
 
 

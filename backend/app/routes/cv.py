@@ -1,5 +1,6 @@
 import uuid
 import os
+import json
 import tempfile
 import re
 from pathlib import Path
@@ -14,6 +15,8 @@ from pydantic import BaseModel, Field
 
 from app.services.extraction.cv_extractor import CVExtractor
 from app.services.nlp.nlp_parser import NLPParser
+from app.services.access_logger import log_access, VIEW_CANDIDATE, DOWNLOAD_CV, DELETE_CANDIDATE, STATUS_CHANGED, UPLOAD_CV, ANONYMIZE_CANDIDATE
+from app.services.email_service import send_status_change_email
 from app.database import get_db
 from app.models.candidate import Candidate, CandidatureStatus
 from app.models.job_offer import JobOffer, JobStatus
@@ -149,11 +152,14 @@ class CandidatesListResponse(BaseModel):
 async def upload_cv(
     file: UploadFile = File(..., description="Fichier CV au format PDF, DOCX, PNG ou JPG (max 10 Mo)"),
     offer_id: Optional[UUID] = None,
+    information_acknowledged: bool = False,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     if current_user.role == UserRole.candidat and offer_id is None:
         raise HTTPException(status_code=400, detail="Une offre est requise pour postuler")
+    if current_user.role == UserRole.candidat and not information_acknowledged:
+        raise HTTPException(status_code=400, detail="Vous devez accepter les conditions d'utilisation de vos données personnelles.")
     # Validation extension
     _, ext = os.path.splitext(file.filename.lower())
     if ext not in ALLOWED_EXTENSIONS:
@@ -223,6 +229,7 @@ async def upload_cv(
             import logging
             logging.getLogger(__name__).warning(f"NLP parsing failed: {e}")
 
+    from datetime import datetime, timezone as tz
     # Sauvegarde en base de données
     candidate = Candidate(
         cv_id=cv_id,
@@ -237,10 +244,68 @@ async def upload_cv(
         parsed_data=parsed_data,
         user_id=current_user.id,
         candidature_status=CandidatureStatus.en_attente,
+        information_acknowledged=bool(information_acknowledged),
+        information_date=datetime.now(tz.utc) if information_acknowledged else None,
     )
     db.add(candidate)
     db.commit()
     db.refresh(candidate)
+
+    # Quand admin/recruteur uploade un CV (sans offer_id spécifique),
+    # créer des Match pour toutes les offres actives afin que candidate_count
+    # soit immédiatement correct sur la page des offres.
+    if current_user.role in (UserRole.admin, UserRole.recruteur) and not offer_id:
+        try:
+            active_offers = db.query(JobOffer).filter(JobOffer.status == JobStatus.active).all()
+            for offer in active_offers:
+                already = (
+                    db.query(Match)
+                    .filter(Match.candidate_id == candidate.id, Match.job_offer_id == offer.id)
+                    .first()
+                )
+                if not already:
+                    db.add(Match(
+                        candidate_id=candidate.id,
+                        job_offer_id=offer.id,
+                        score=0.0,
+                        details=None,
+                        status=MatchStatus.pending,
+                    ))
+            db.commit()
+        except Exception:
+            db.rollback()
+
+    log_access(db, UPLOAD_CV, current_user, resource_type="candidate", resource_id=cv_id, detail=file.filename)
+
+    # Notification in-app aux recruteurs/admins quand un candidat uploade un CV
+    try:
+        if current_user.role == UserRole.candidat:
+            from app.routes.notifications import create_notification
+            recruiters = db.query(User).filter(
+                User.role.in_([UserRole.recruteur, UserRole.admin]),
+                User.is_active == True,
+            ).all()
+            candidate_name = nom_extrait or file.filename
+
+            # Titre de la notification = nom de l'offre si disponible
+            if offer_id:
+                offer_obj = db.query(JobOffer).filter(JobOffer.id == offer_id).first()
+                notif_title = f"Candidature — {offer_obj.titre}" if offer_obj else "Nouveau CV reçu"
+                notif_link  = f"/offers/{offer_id}" if offer_obj else "/candidates"
+            else:
+                notif_title = "Nouveau CV reçu"
+                notif_link  = "/candidates"
+
+            for recruiter in recruiters:
+                create_notification(
+                    db, recruiter.id, "new_cv",
+                    notif_title,
+                    f"{candidate_name} vient de déposer sa candidature.",
+                    link=notif_link,
+                )
+            db.commit()
+    except Exception:
+        pass
 
     application_id = None
     if offer_id:
@@ -280,6 +345,72 @@ async def upload_cv(
         "parsed_data": parsed_data,
         "application_id": application_id,
         "message": "CV reçu, texte extrait et parsing NLP effectué." if parsed_data else "CV reçu, texte extrait (parsing NLP non disponible).",
+    }
+
+
+@router.get(
+    "/candidates/grouped",
+    summary="Candidats groupés par offre — actives / clôturées (recruteur/admin)",
+)
+def get_candidates_grouped(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    """Retourne les offres avec leurs candidats, groupées par statut (active / closed)."""
+    query = db.query(JobOffer).options(
+        selectinload(JobOffer.matches).selectinload(Match.candidate)
+    )
+    if current_user.role.value != "admin":
+        query = query.filter(JobOffer.recruiter_id == current_user.id)
+    offers = query.order_by(JobOffer.created_at.desc()).all()
+
+    def _build_group(offer: JobOffer) -> dict:
+        cand_items = []
+        for m in (offer.matches or []):
+            c = m.candidate
+            if not c:
+                continue
+            cand_items.append({
+                "cv_id":              c.cv_id,
+                "nom":                c.nom,
+                "email":              c.email,
+                "telephone":          c.telephone,
+                "filename":           c.filename,
+                "extraction_method":  c.extraction_method,
+                "score":              round(float(m.score) * 100, 1) if m.score else None,
+                "match_status":       m.status.value if m.status else "pending",
+                "candidature_status": c.candidature_status.value if c.candidature_status else "en_attente",
+                "created_at":         c.created_at.isoformat() if c.created_at else None,
+            })
+        # Tri par score décroissant, puis par date
+        cand_items.sort(key=lambda x: (-(x["score"] or 0), x["created_at"] or ""))
+        return {
+            "offer_id":    str(offer.id),
+            "titre":       offer.titre,
+            "type_contrat": offer.type_contrat or "—",
+            "localisation": offer.localisation or "—",
+            "nb_postes":   offer.nb_postes or 1,
+            "status":      offer.status.value if offer.status else "active",
+            "created_at":  offer.created_at.isoformat() if offer.created_at else None,
+            "nb_candidats": len(cand_items),
+            "candidates":  cand_items,
+        }
+
+    active, closed, draft = [], [], []
+    for offer in offers:
+        grp = _build_group(offer)
+        s = offer.status.value if offer.status else "active"
+        if s == "active":
+            active.append(grp)
+        elif s == "closed":
+            closed.append(grp)
+        else:
+            draft.append(grp)
+
+    return {
+        "active": active,
+        "closed": closed,
+        "draft":  draft,
     }
 
 
@@ -511,6 +642,7 @@ def get_candidate_detail(cv_id: str, db: Session = Depends(get_db), current_user
     )
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidat non trouvé")
+    log_access(db, VIEW_CANDIDATE, current_user, resource_type="candidate", resource_id=cv_id)
     raw_text = candidate.raw_text or ""
     original_file = _find_original_file(cv_id)
 
@@ -531,6 +663,20 @@ def get_candidate_detail(cv_id: str, db: Session = Depends(get_db), current_user
             candidature_status = "refuse"
         else:
             candidature_status = "en_attente"
+    matches_data = []
+    for m in relevant_matches:
+        try:
+            details = json.loads(m.details) if m.details else None
+        except Exception:
+            details = None
+        matches_data.append({
+            "offer_id":    str(m.job_offer.id),
+            "offer_titre": m.job_offer.titre,
+            "score":       round(float(m.score) * 100, 1) if m.score else None,
+            "status":      m.status.value if m.status else "pending",
+            "components":  details.get("components") if details else None,
+        })
+
     return {
         "cv_id": candidate.cv_id,
         "filename": candidate.filename,
@@ -546,6 +692,7 @@ def get_candidate_detail(cv_id: str, db: Session = Depends(get_db), current_user
         "candidature_status": candidature_status,
         "created_at": candidate.created_at.isoformat() if candidate.created_at else None,
         "original_file_available": original_file is not None,
+        "matches": matches_data,
     }
 
 
@@ -568,6 +715,7 @@ def download_original_cv(cv_id: str, db: Session = Depends(get_db), current_user
     if not original_file or not original_file.exists():
         raise HTTPException(status_code=404, detail="Fichier original indisponible")
 
+    log_access(db, DOWNLOAD_CV, current_user, resource_type="candidate", resource_id=cv_id)
     filename = candidate.filename or original_file.name
     return FileResponse(path=str(original_file), filename=filename)
 
@@ -600,6 +748,48 @@ def update_candidature_status(
     candidate.candidature_status = CandidatureStatus(status)
     db.commit()
     db.refresh(candidate)
+    log_access(db, STATUS_CHANGED, current_user, resource_type="candidate", resource_id=cv_id, detail=status)
+
+    # Notification email + in-app au candidat (best-effort)
+    try:
+        if candidate.user_id:
+            from app.models.user import User as UserModel
+            from app.routes.notifications import create_notification
+            cand_user = db.query(UserModel).filter(UserModel.id == candidate.user_id).first()
+            offer_title = "votre poste"
+            first_match = next((m for m in (candidate.matches or []) if m.job_offer), None)
+            if first_match:
+                offer_title = first_match.job_offer.titre or offer_title
+            cv_name = candidate.filename or candidate.nom or "votre CV"
+            if cand_user:
+                status_labels = {
+                    "accepte": (
+                        "Candidature acceptée ✓",
+                        f"Votre CV « {cv_name} » pour le poste « {offer_title} » a été accepté.",
+                    ),
+                    "refuse": (
+                        "Candidature refusée",
+                        f"Votre CV « {cv_name} » pour le poste « {offer_title} » n'a pas été retenu.",
+                    ),
+                    "en_attente": (
+                        "Candidature en attente",
+                        f"Votre CV « {cv_name} » pour le poste « {offer_title} » est en cours d'examen.",
+                    ),
+                }
+                title, message = status_labels.get(status, ("Mise à jour de candidature", f"Statut mis à jour : {status}"))
+                create_notification(db, cand_user.id, "status_change", title, message, link="/my-applications")
+                db.commit()
+                if cand_user.email:
+                    send_status_change_email(
+                        to_email=cand_user.email,
+                        prenom=cand_user.prenom or cand_user.nom or "Candidat",
+                        offer_title=offer_title,
+                        new_status=status,
+                        cv_name=cv_name,
+                    )
+    except Exception:
+        pass
+
     return {
         "success": True,
         "cv_id": cv_id,
@@ -630,6 +820,7 @@ def delete_candidate(cv_id: str, db: Session = Depends(get_db), current_user: Us
             original_file.unlink()
         except Exception:
             pass
+    log_access(db, DELETE_CANDIDATE, current_user, resource_type="candidate", resource_id=cv_id)
     db.delete(candidate)
     db.commit()
     return {"success": True, "message": f"Candidat {cv_id} supprimé."}
@@ -686,6 +877,65 @@ def get_my_applications(db: Session = Depends(get_db), current_user: User = Depe
             for c in candidates
         ],
     }
+
+
+@router.post(
+    "/candidates/{cv_id}/anonymize",
+    summary="Anonymiser un candidat (recruteur/admin)",
+    description="Remplace les données personnelles par des valeurs neutres. Irréversible.",
+)
+def anonymize_candidate(cv_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_recruteur_or_admin)):
+    candidate = db.query(Candidate).filter(Candidate.cv_id == cv_id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidat non trouvé")
+    if candidate.anonymized:
+        return {"success": True, "cv_id": cv_id, "message": "Candidat déjà anonymisé."}
+
+    # Supprimer le fichier original
+    original_file = _find_original_file(cv_id)
+    if original_file and original_file.exists():
+        try:
+            original_file.unlink()
+        except Exception:
+            pass
+
+    # Remplacer les données personnelles
+    candidate.nom = "Anonyme"
+    candidate.email = f"anonyme_{cv_id[:8]}@anonyme.com"
+    candidate.telephone = "0000000000"
+    candidate.linkedin = None
+    candidate.github = None
+    candidate.raw_text = None
+    candidate.parsed_data = None
+    candidate.anonymized = True
+
+    db.commit()
+    log_access(db, ANONYMIZE_CANDIDATE, current_user, resource_type="candidate", resource_id=cv_id)
+    return {"success": True, "cv_id": cv_id, "message": "Candidat anonymisé avec succès."}
+
+
+@router.delete(
+    "/my-cv/{cv_id}",
+    summary="Supprimer mon CV (candidat)",
+    description="Le candidat connecté supprime son propre CV et ses données.",
+)
+def delete_my_cv(cv_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.candidat:
+        raise HTTPException(status_code=403, detail="Réservé aux candidats")
+    candidate = db.query(Candidate).filter(Candidate.cv_id == cv_id, Candidate.user_id == current_user.id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="CV non trouvé ou accès refusé")
+
+    original_file = _find_original_file(cv_id)
+    if original_file and original_file.exists():
+        try:
+            original_file.unlink()
+        except Exception:
+            pass
+    log_access(db, DELETE_CANDIDATE, current_user, resource_type="candidate", resource_id=cv_id, detail="self-delete")
+    db.delete(candidate)
+    db.commit()
+    return {"success": True, "message": "Votre CV et vos données ont été supprimés."}
 
 
 @router.get(

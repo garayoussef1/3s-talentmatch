@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import NotificationBell from './NotificationBell'
+import logo3s from '../assets/logo_3s.png'
 import './Navbar.css'
 
 function Navbar() {
@@ -15,9 +17,14 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">
-        <span className="brand-icon">🎯</span>
-        <span className="brand-name">3S TalentMatch</span>
+      <div className="navbar-brand" onClick={() => navigate('/')}
+        role="button" tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter') navigate('/') }}>
+        <img src={logo3s} alt="3S" className="brand-logo" />
+        <div className="brand-text">
+          <span className="brand-name">3S TalentMatch</span>
+          <span className="brand-slogan">L'intelligence au service du recrutement</span>
+        </div>
       </div>
 
       <ul className="navbar-links">
@@ -25,7 +32,7 @@ function Navbar() {
           <>
             <li>
               <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
-                Tableau de bord
+                Accueil
               </Link>
             </li>
             <li>
@@ -47,6 +54,20 @@ function Navbar() {
               <li>
                 <Link to="/offers" className={location.pathname === '/offers' ? 'active' : ''}>
                   Offres
+                </Link>
+              </li>
+            )}
+            {role !== 'candidat' && (
+              <li>
+                <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>
+                  Dashboard
+                </Link>
+              </li>
+            )}
+            {role !== 'candidat' && (
+              <li>
+                <Link to="/dashboard2" className={location.pathname === '/dashboard2' ? 'active' : ''}>
+                  Scoring avancé
                 </Link>
               </li>
             )}
@@ -72,6 +93,13 @@ function Navbar() {
                 </Link>
               </li>
             )}
+            {role === 'candidat' && (
+              <li>
+                <Link to="/mes-donnees" className={location.pathname === '/mes-donnees' ? 'active' : ''}>
+                  Mes Données
+                </Link>
+              </li>
+            )}
           </>
         ) : null}
       </ul>
@@ -79,6 +107,7 @@ function Navbar() {
       <div className="navbar-auth">
         {isAuthenticated ? (
           <div className="user-menu">
+            <NotificationBell />
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt="" className="user-avatar" />
             ) : (

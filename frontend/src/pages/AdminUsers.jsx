@@ -11,6 +11,46 @@ function AdminUsers() {
   const [form, setForm] = useState({ nom: '', prenom: '', email: '', password: '', telephone: '' })
   const [busy, setBusy] = useState(false)
 
+  // Création candidat manuel
+  const [candForm, setCandForm] = useState({
+    nom: '', prenom: '', email: '', telephone: '',
+    linkedin: '', github: '', competences: '', note: '', offer_id: '',
+  })
+  const [candBusy, setCandBusy] = useState(false)
+  const [candSuccess, setCandSuccess] = useState('')
+  const [offers, setOffers] = useState([])
+
+  useEffect(() => {
+    api.get('/offers').then(res => setOffers(res.data.offers || [])).catch(() => {})
+  }, [])
+
+  const handleCreateCandidate = (e) => {
+    e.preventDefault()
+    setCandBusy(true)
+    setCandSuccess('')
+    setError(null)
+    const payload = {
+      nom: candForm.nom || undefined,
+      prenom: candForm.prenom || undefined,
+      email: candForm.email || undefined,
+      telephone: candForm.telephone || undefined,
+      linkedin: candForm.linkedin || undefined,
+      github: candForm.github || undefined,
+      competences: candForm.competences
+        ? candForm.competences.split(',').map(s => s.trim()).filter(Boolean)
+        : [],
+      note: candForm.note || undefined,
+      offer_id: candForm.offer_id || undefined,
+    }
+    api.post('/admin/candidates', payload)
+      .then(res => {
+        setCandSuccess(res.data.message)
+        setCandForm({ nom: '', prenom: '', email: '', telephone: '', linkedin: '', github: '', competences: '', note: '', offer_id: '' })
+      })
+      .catch(() => setError("Erreur lors de la création du candidat."))
+      .finally(() => setCandBusy(false))
+  }
+
   const stats = useMemo(() => {
     const counts = { admin: 0, recruteur: 0, candidat: 0, active: 0 }
     users.forEach(u => {
@@ -152,6 +192,61 @@ function AdminUsers() {
           </form>
         </section>
 
+        <section className="admin-card admin-card--form">
+          <div className="card-title">
+            <h2>Créer un candidat</h2>
+            <span className="pill">Manuel</span>
+          </div>
+          <p className="card-subtitle">Ajoutez un candidat directement sans upload de CV.</p>
+          {candSuccess && <div className="alert success">✅ {candSuccess}</div>}
+          <form className="admin-form" onSubmit={handleCreateCandidate}>
+            <div className="field-row">
+              <label className="field">
+                <span>Prénom</span>
+                <input value={candForm.prenom} onChange={e => setCandForm(f => ({ ...f, prenom: e.target.value }))} placeholder="Jean" />
+              </label>
+              <label className="field">
+                <span>Nom</span>
+                <input value={candForm.nom} onChange={e => setCandForm(f => ({ ...f, nom: e.target.value }))} placeholder="Dupont" required />
+              </label>
+            </div>
+            <label className="field">
+              <span>Email</span>
+              <input type="email" value={candForm.email} onChange={e => setCandForm(f => ({ ...f, email: e.target.value }))} placeholder="jean@exemple.com" />
+            </label>
+            <div className="field-row">
+              <label className="field">
+                <span>Téléphone</span>
+                <input value={candForm.telephone} onChange={e => setCandForm(f => ({ ...f, telephone: e.target.value }))} placeholder="+216 XX XXX XXX" />
+              </label>
+              <label className="field">
+                <span>LinkedIn</span>
+                <input value={candForm.linkedin} onChange={e => setCandForm(f => ({ ...f, linkedin: e.target.value }))} placeholder="linkedin.com/in/..." />
+              </label>
+            </div>
+            <label className="field">
+              <span>Compétences <small>(séparées par virgule)</small></span>
+              <input value={candForm.competences} onChange={e => setCandForm(f => ({ ...f, competences: e.target.value }))} placeholder="Python, React, SQL, ..." />
+            </label>
+            <label className="field">
+              <span>Résumé du profil</span>
+              <textarea rows={3} value={candForm.note} onChange={e => setCandForm(f => ({ ...f, note: e.target.value }))} placeholder="Développeur full-stack avec 3 ans d'expérience..." />
+            </label>
+            <label className="field">
+              <span>Lier à une offre <small>(optionnel)</small></span>
+              <select value={candForm.offer_id} onChange={e => setCandForm(f => ({ ...f, offer_id: e.target.value }))}>
+                <option value="">— Aucune offre —</option>
+                {offers.filter(o => o.status === 'active').map(o => (
+                  <option key={o.id} value={o.id}>{o.titre}</option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className="btn-primary" disabled={candBusy}>
+              {candBusy ? 'Création...' : '+ Créer le candidat'}
+            </button>
+          </form>
+        </section>
+
         <section className="admin-card admin-card--table">
           <div className="card-title">
             <h2>Utilisateurs</h2>
@@ -203,7 +298,7 @@ function AdminUsers() {
                 <article key={u.id} className="user-card">
                   <header className="user-card-header">
                     <div className="user-name">
-                      <span className="avatar">{(u.prenom || 'U')[0]}</span>
+                      <span className={`avatar avatar-${u.role}`}>{(u.prenom || 'U')[0]}</span>
                       <div>
                         <div className="user-title">{u.prenom} {u.nom}</div>
                         <div className="muted">ID: {u.id.slice(0, 8)}</div>

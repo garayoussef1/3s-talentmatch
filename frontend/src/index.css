@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,6 +29,86 @@ body {
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
+}
+
+.main-content--full {
+  padding: 0;
+  max-width: none;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+}
+
+@keyframes floatSlow {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, 16px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes floatMedium {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -18px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes floatFast {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(12px, 12px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.float-slow { animation: floatSlow 10s ease-in-out infinite; }
+.float-medium { animation: floatMedium 8s ease-in-out infinite; }
+.float-fast { animation: floatFast 6s ease-in-out infinite; }
+
+.login-bg-grid {
+  background-image:
+    linear-gradient(rgba(27, 79, 138, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 79, 138, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.glow-card {
+  box-shadow:
+    0 30px 80px -40px rgba(27, 79, 138, 0.45),
+    0 0 0 1px rgba(231, 236, 242, 0.7),
+    0 8px 24px -16px rgba(247, 148, 29, 0.35);
+}
+
+.glass-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.field-lift {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.field-lift:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -18px rgba(27, 79, 138, 0.5);
+}
+
+.btn-pulse {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 60%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.btn-pulse:hover::after { opacity: 1; }
+
+.social-hover { transition: transform 180ms ease, box-shadow 180ms ease; }
+.social-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px -18px rgba(27, 79, 138, 0.5);
 }
 
 /* ── Responsive global ────────────────────────────── */

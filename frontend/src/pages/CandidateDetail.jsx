@@ -67,6 +67,45 @@ function _downloadBlob(blob, filename) {
   window.URL.revokeObjectURL(url)
 }
 
+const CAND_STATUS = {
+  en_attente: { label: 'En attente',  color: '#F7941D', bg: '#FFF8EE' },
+  accepte:    { label: 'Accepté',     color: '#16a34a', bg: '#F0FDF4' },
+  refuse:     { label: 'Refusé',      color: '#ef4444', bg: '#FEF2F2' },
+}
+
+const MATCH_STATUS = {
+  pending:   { label: 'En attente', color: '#94a3b8' },
+  reviewed:  { label: 'Examiné',   color: '#3b82f6' },
+  accepted:  { label: 'Accepté',   color: '#16a34a' },
+  rejected:  { label: 'Refusé',    color: '#ef4444' },
+}
+
+const COMP_DIMS = [
+  { key: 'skills',     label: 'Compétences', icon: '🎯' },
+  { key: 'experience', label: 'Expérience',  icon: '📅' },
+  { key: 'education',  label: 'Formation',   icon: '🎓' },
+  { key: 'location',   label: 'Localisation',icon: '📍' },
+  { key: 'semantic',   label: 'Sémantique',  icon: '🧠' },
+]
+
+function ScoreRing({ pct, size = 52 }) {
+  const r = (size - 8) / 2
+  const circ = 2 * Math.PI * r
+  const offset = circ * (1 - pct / 100)
+  const color = pct >= 70 ? '#16a34a' : pct >= 45 ? '#F7941D' : '#ef4444'
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#e2e8f0" strokeWidth="6" />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="6"
+        strokeDasharray={circ} strokeDashoffset={offset}
+        strokeLinecap="round" transform={`rotate(-90 ${size/2} ${size/2})`}
+        style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
+      <text x={size/2} y={size/2 + 5} textAnchor="middle"
+        fontSize="11" fontWeight="700" fill={color}>{pct}%</text>
+    </svg>
+  )
+}
+
 function CandidateDetail() {
   const { cvId } = useParams()
   const navigate = useNavigate()
@@ -74,6 +113,7 @@ function CandidateDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [busyAction, setBusyAction] = useState(null)
+  const [expandedMatch, setExpandedMatch] = useState(null)
 
   useEffect(() => {
     setLoading(true)
@@ -235,6 +275,14 @@ function CandidateDetail() {
               <span className="cd-chip">{stats.seniorite}{stats.years === undefined ? '' : ` • ${stats.years} ans`}</span>
               <span className="cd-chip">{_formatDate(data?.created_at)}</span>
               <span className="cd-chip">{_asString(data?.extraction_method) || '—'}</span>
+              {data?.candidature_status && (() => {
+                const s = CAND_STATUS[data.candidature_status] || CAND_STATUS.en_attente
+                return (
+                  <span className="cd-status-badge" style={{ background: s.bg, color: s.color, borderColor: s.color }}>
+                    {s.label}
+                  </span>
+                )
+              })()}
             </div>
           </div>
         </div>
@@ -398,6 +446,97 @@ function CandidateDetail() {
                 )}
               </details>
             </section>
+
+            {/* ── Candidatures & Matching ── */}
+            {(() => {
+              const matches = data?.matches || []
+              return (
+                <section className="cd-card cd-matches-section">
+                  <div className="cd-card-title">
+                    Candidatures &amp; Matching
+                    <span className="cd-matches-count">{matches.length}</span>
+                  </div>
+
+                  {matches.length === 0 ? (
+                    <div className="cd-muted cd-matches-empty">
+                      Aucune analyse de matching disponible pour ce candidat.
+                    </div>
+                  ) : (
+                    <div className="cd-matches-list">
+                      {matches
+                        .slice()
+                        .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+                        .map((m, idx) => {
+                          const pct = m.score != null ? Math.round(m.score) : null
+                          const ms = MATCH_STATUS[m.status] || MATCH_STATUS.pending
+                          const comps = m.components || null
+                          const isOpen = expandedMatch === (m.offer_id + idx)
+                          return (
+                            <div key={m.offer_id + idx} className="cd-match-card">
+                              <div
+                                className="cd-match-header"
+                                onClick={() => setExpandedMatch(isOpen ? null : m.offer_id + idx)}
+                              >
+                                {pct != null
+                                  ? <ScoreRing pct={pct} />
+                                  : <div className="cd-match-no-score">—</div>}
+                                <div className="cd-match-info">
+                                  <div className="cd-match-offer">{m.offer_titre || 'Offre'}</div>
+                                  <div className="cd-match-sub">
+                                    <span className="cd-match-status-dot" style={{ color: ms.color }}>● {ms.label}</span>
+                                    {pct != null && (
+                                      <span className="cd-match-pct-label" style={{ color: pct >= 70 ? '#16a34a' : pct >= 45 ? '#F7941D' : '#ef4444' }}>
+                                        Score global : {pct}%
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <span className="cd-match-chevron">{isOpen ? '▲' : '▼'}</span>
+                              </div>
+
+                              {isOpen && comps && (
+                                <div className="cd-match-dims">
+                                  {COMP_DIMS.map(d => {
+                                    const v = comps[d.key]?.score
+                                    if (v == null) return null
+                                    const pctD = Math.round(v * 100)
+                                    const col = pctD >= 70 ? '#16a34a' : pctD >= 45 ? '#F7941D' : '#ef4444'
+                                    const extra = d.key === 'experience'
+                                      ? comps.experience?.candidate_years != null
+                                        ? ` (${comps.experience.candidate_years} ans)`
+                                        : ''
+                                      : d.key === 'education'
+                                      ? comps.education?.candidate_level
+                                        ? ` (${comps.education.candidate_level})`
+                                        : ''
+                                      : ''
+                                    return (
+                                      <div key={d.key} className="cd-dim-row">
+                                        <span className="cd-dim-icon">{d.icon}</span>
+                                        <span className="cd-dim-label">{d.label}{extra}</span>
+                                        <div className="cd-dim-bar-wrap">
+                                          <div className="cd-dim-bar" style={{ width: `${pctD}%`, background: col }} />
+                                        </div>
+                                        <span className="cd-dim-pct" style={{ color: col }}>{pctD}%</span>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              )}
+
+                              {isOpen && !comps && (
+                                <div className="cd-match-dims cd-muted">
+                                  Détail de score non disponible (matching non encore lancé).
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })}
+                    </div>
+                  )}
+                </section>
+              )
+            })()}
 
             {data?.raw_text_preview ? (
               <section className="cd-card">

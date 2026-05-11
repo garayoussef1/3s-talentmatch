@@ -1,0 +1,427 @@
+/* CandidateMatchCard — 3S colors: Orange #F7941D | Blue marine #1B4F8A */
+
+.cmcard {
+  border: 1px solid #e0e6ef;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(27, 79, 138, 0.07);
+  transition: box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.cmcard--open {
+  box-shadow: 0 4px 16px rgba(27, 79, 138, 0.13);
+  border-color: #1B4F8A;
+}
+
+/* ── Header ── */
+.cmcard-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cmcard-header:hover {
+  background: #f5f8ff;
+}
+
+.cmcard-rank {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1B4F8A;
+  min-width: 30px;
+}
+
+.cmcard-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+.cmcard-name {
+  font-weight: 600;
+  font-size: 0.97rem;
+  color: #1a1a2e;
+}
+
+.cmcard-email {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.cmcard-scores-row {
+  display: flex;
+  gap: 18px;
+  flex: 1;
+  justify-content: center;
+}
+
+.cmcard-score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cmcard-score-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.cmcard-score-label {
+  font-size: 0.7rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cmcard-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.cmcard-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 20px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.cmcard-badge--outline {
+  background: transparent !important;
+  border: 1.5px solid;
+}
+
+.cmcard-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #1B4F8A;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.cmcard-toggle:hover {
+  background: #e8f0fe;
+}
+
+.cmcard-report-btn {
+  background: #1B4F8A;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.cmcard-report-btn:hover {
+  background: #153b6a;
+}
+
+/* ── Body ── */
+.cmcard-body {
+  padding: 16px 20px 20px;
+  border-top: 1px solid #e8edf5;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Modal rapport ── */
+.cmcard-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+
+.cmcard-modal-card {
+  width: min(900px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.35);
+  padding: 18px 20px;
+}
+
+.cmcard-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cmcard-modal-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1B4F8A;
+}
+
+.cmcard-modal-sub {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.cmcard-modal-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cmcard-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cmcard-modal-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cmcard-kpi {
+  background: #f8fafd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #e8edf5;
+}
+
+.cmcard-kpi-label {
+  display: block;
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cmcard-kpi-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.cmcard-section {
+  padding: 12px 14px;
+  background: #f8fafd;
+  border-radius: 8px;
+}
+
+.cmcard-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #1B4F8A;
+  margin: 0 0 8px;
+}
+
+.cmcard-green { color: #22a05a !important; }
+.cmcard-red   { color: #e53935 !important; }
+.cmcard-orange{ color: #F7941D !important; }
+
+/* ── Bars ── */
+.cmcard-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cmcard-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cmcard-bar-name {
+  font-size: 0.8rem;
+  color: #555;
+  min-width: 145px;
+}
+
+.cmcard-bar-track {
+  flex: 1;
+  height: 10px;
+  background: #e8edf5;
+  border-radius: 5px;
+  position: relative;
+  overflow: visible;
+}
+
+.cmcard-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+.cmcard-bar-label {
+  position: absolute;
+  right: -38px;
+  top: -2px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.cmcard-gain {
+  font-size: 0.82rem;
+  color: #555;
+  margin: 8px 0 0;
+}
+
+/* ── Two-col layout ── */
+.cmcard-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.cmcard-two-col > div {
+  background: #f8fafd;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+/* ── Lists ── */
+.cmcard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cmcard-list-item {
+  font-size: 0.83rem;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.cmcard-list-item--green  { background: #e6f9ee; color: #1a7a45; }
+.cmcard-list-item--red    { background: #fdecea; color: #b71c1c; }
+.cmcard-list-item--orange { background: #fff3e0; color: #b85f00; }
+
+.cmcard-muted {
+  font-size: 0.8rem;
+  color: #aaa;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ── Meta row (exp/edu) ── */
+.cmcard-meta-row {
+  display: flex;
+  gap: 24px;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.cmcard-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafd;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.cmcard-meta-icon {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cmcard-meta-label {
+  font-size: 0.85rem;
+  color: #444;
+}
+
+/* ── Action ── */
+.cmcard-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fffbe6;
+  border: 1px solid #F7941D;
+  color: #7a4a00;
+  font-size: 0.87rem;
+  font-weight: 500;
+}
+
+.cmcard-action-icon {
+  font-size: 1rem;
+}
+
+/* ── AI Summary ── */
+.cmcard-ai-summary {
+  background: #f0f4ff;
+  border-left: 3px solid #1B4F8A;
+}
+
+.cmcard-ai-summary p {
+  font-size: 0.88rem;
+  color: #333;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.cmcard-ai-badge {
+  margin-left: 8px;
+  font-size: 0.68rem;
+  background: #1B4F8A;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+/* ── Explanation ── */
+.cmcard-explanation {
+  font-size: 0.87rem;
+  color: #444;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .cmcard-header {
+    flex-wrap: wrap;
+  }
+  .cmcard-scores-row {
+    gap: 12px;
+  }
+  .cmcard-two-col {
+    grid-template-columns: 1fr;
+  }
+  .cmcard-bar-name {
+    min-width: 110px;
+    font-size: 0.75rem;
+  }
+}

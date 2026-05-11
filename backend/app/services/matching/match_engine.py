@@ -21,63 +21,103 @@ def _clip_for_semantic(text: str, max_chars: int = 3000) -> str:
 
 def _offer_text_for_semantic(offer: JobOffer) -> str:
     parts = [offer.titre or "", offer.description or ""]
-    req = offer.competences_requises or []
-    if isinstance(req, list) and req:
-        parts.append("Compétences requises: " + ", ".join([str(x) for x in req if x]))
+    # Utilise _extract_offer_skills pour avoir des tokens individuels
+    # (évite qu'une longue chaîne espace-séparée pollue le vecteur sémantique)
+    extracted = _extract_offer_skills(offer)
+    if extracted:
+        parts.append("Compétences requises: " + ", ".join(extracted))
     if offer.localisation:
         parts.append("Localisation: " + offer.localisation)
     return "\n".join(p for p in parts if p)
 
 
 def _candidate_text_for_semantic(candidate: Candidate) -> str:
-    # Priorité: texte brut (OCR/PDF), sinon un résumé via parsed_data
-    if candidate.raw_text:
-        return candidate.raw_text
+    """Construit un profil sémantique structuré à partir des sections parsed_data.
 
+    Priorité : parsed_data (signal propre) > raw_text (fallback bruité).
+
+    Sections retenues par ordre d'importance sémantique :
+      1. Résumé IA           — synthèse du profil (ia_analyse.resume)
+      2. Secteur détecté     — domaine principal (secteur_detecte.label)
+      3. Expériences         — postes + missions (signal le plus discriminant)
+      4. Compétences         — liste de skills catégorisées
+      5. Formations          — diplôme + établissement
+
+    Sections exclues (bruit pour BERT) :
+      - contacts (email, téléphone, adresse)
+      - identite.nom_complet
+      - metadata, errors
+    """
     pd = candidate.parsed_data or {}
     if not isinstance(pd, dict):
-        return ""
+        # Fallback : raw_text si pas de parsing
+        return (candidate.raw_text or "")[:3000]
 
     parts: List[str] = []
-    ident = pd.get("identite") or {}
-    if isinstance(ident, dict):
-        if ident.get("titre"):
-            parts.append(str(ident.get("titre")))
-        if ident.get("resume"):
-            parts.append(str(ident.get("resume")))
 
-    skills = pd.get("competences") or []
-    if isinstance(skills, list) and skills:
-        skill_names: List[str] = []
-        for s in skills:
-            if isinstance(s, dict):
-                name = s.get("name") or s.get("skill") or s.get("valeur")
-            else:
-                name = s
-            if isinstance(name, str) and name.strip():
-                skill_names.append(name.strip())
-        if skill_names:
-            parts.append("Compétences: " + ", ".join(skill_names[:50]))
+    # 1. Résumé IA — synthèse déjà construite par le parser
+    ia = pd.get("ia_analyse") or {}
+    if isinstance(ia, dict):
+        resume = ia.get("resume") or ""
+        if isinstance(resume, str) and len(resume.strip()) > 20:
+            parts.append("Profil : " + resume.strip())
 
+    # 2. Secteur détecté
+    secteur = pd.get("secteur_detecte") or {}
+    if isinstance(secteur, dict) and secteur.get("label"):
+        parts.append("Domaine : " + str(secteur["label"]))
+
+    # 3. Expériences — postes + missions (section la plus utile)
     exps = pd.get("experiences") or []
     if isinstance(exps, list) and exps:
-        titles: List[str] = []
-        for e in exps[:10]:
-            if isinstance(e, dict) and e.get("poste"):
-                titles.append(str(e.get("poste")))
-        if titles:
-            parts.append("Expériences: " + ", ".join(titles))
+        exp_parts: List[str] = []
+        for e in exps[:8]:
+            if not isinstance(e, dict):
+                continue
+            poste = e.get("poste") or ""
+            entreprise = e.get("entreprise") or ""
+            line = " @ ".join(filter(None, [poste, entreprise]))
+            missions = e.get("missions") or []
+            if isinstance(missions, list) and missions:
+                missions_str = ". ".join(str(m) for m in missions[:3] if m)
+                if missions_str:
+                    line = line + " : " + missions_str
+            if line.strip():
+                exp_parts.append(line.strip())
+        if exp_parts:
+            parts.append("Expériences : " + " | ".join(exp_parts))
 
+    # 4. Compétences catégorisées
+    skills = pd.get("competences") or []
+    if isinstance(skills, list) and skills:
+        names: List[str] = []
+        for s in skills:
+            name = s.get("name") if isinstance(s, dict) else s
+            if isinstance(name, str) and name.strip():
+                names.append(name.strip())
+        if names:
+            parts.append("Compétences : " + ", ".join(names[:60]))
+
+    # 5. Formations — diplôme + établissement
     forms = pd.get("formations") or []
     if isinstance(forms, list) and forms:
-        diplomas: List[str] = []
-        for f in forms[:5]:
-            if isinstance(f, dict) and f.get("diplome"):
-                diplomas.append(str(f.get("diplome")))
-        if diplomas:
-            parts.append("Formations: " + ", ".join(diplomas))
+        form_parts: List[str] = []
+        for f in forms[:4]:
+            if not isinstance(f, dict):
+                continue
+            diplome = f.get("diplome") or f.get("titre") or ""
+            ecole = f.get("etablissement") or f.get("ecole") or ""
+            line = " — ".join(filter(None, [diplome, ecole]))
+            if line.strip():
+                form_parts.append(line.strip())
+        if form_parts:
+            parts.append("Formations : " + " | ".join(form_parts))
 
-    return "\n".join(p for p in parts if p)
+    # Si parsed_data insuffisant → fallback raw_text (tronqué)
+    if len(parts) < 2 and candidate.raw_text:
+        return candidate.raw_text[:3000]
+
+    return "\n".join(parts)
 
 
 def _candidate_lang(candidate: Candidate) -> str:
@@ -169,6 +209,187 @@ def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").strip().lower())
 
 
+# Dictionnaire d'alias : forme courte / variante → forme canonique normalisée
+_SKILL_ALIASES: Dict[str, str] = {
+    # JavaScript
+    "js": "javascript",
+    "javascript": "javascript",
+    "es6": "javascript",
+    "es2015": "javascript",
+    "ecmascript": "javascript",
+    "vanilla js": "javascript",
+    "vanilla javascript": "javascript",
+    # TypeScript
+    "ts": "typescript",
+    "typescript": "typescript",
+    # Python
+    "py": "python",
+    "python3": "python",
+    "python 3": "python",
+    # Machine Learning / IA
+    "ml": "machine learning",
+    "machine learning": "machine learning",
+    "apprentissage automatique": "machine learning",
+    "ai": "intelligence artificielle",
+    "ia": "intelligence artificielle",
+    "intelligence artificielle": "intelligence artificielle",
+    "artificial intelligence": "intelligence artificielle",
+    "deep learning": "deep learning",
+    "dl": "deep learning",
+    # NLP
+    "nlp": "nlp",
+    "natural language processing": "nlp",
+    "traitement du langage naturel": "nlp",
+    "tln": "nlp",
+    # React
+    "reactjs": "react",
+    "react.js": "react",
+    "react js": "react",
+    "react": "react",
+    "react native": "react native",
+    "reactnative": "react native",
+    # Angular
+    "angularjs": "angular",
+    "angular.js": "angular",
+    "angular js": "angular",
+    # Vue
+    "vuejs": "vue",
+    "vue.js": "vue",
+    "vue js": "vue",
+    # Node.js
+    "node": "node.js",
+    "nodejs": "node.js",
+    "node js": "node.js",
+    "node.js": "node.js",
+    # Bases de données
+    "postgres": "postgresql",
+    "postgresql": "postgresql",
+    "mysql": "mysql",
+    "mongo": "mongodb",
+    "mongodb": "mongodb",
+    "nosql": "nosql",
+    "sql server": "sql server",
+    "mssql": "sql server",
+    "ms sql": "sql server",
+    "sqlite": "sqlite",
+    # Cloud
+    "aws": "aws",
+    "amazon web services": "aws",
+    "gcp": "gcp",
+    "google cloud": "gcp",
+    "google cloud platform": "gcp",
+    "azure": "azure",
+    "microsoft azure": "azure",
+    # DevOps / CI-CD
+    "ci/cd": "ci/cd",
+    "cicd": "ci/cd",
+    "ci cd": "ci/cd",
+    "github actions": "ci/cd",
+    "gitlab ci": "ci/cd",
+    "jenkins": "ci/cd",
+    "docker": "docker",
+    "k8s": "kubernetes",
+    "kubernetes": "kubernetes",
+    # Git
+    "git": "git",
+    "github": "git",
+    "gitlab": "git",
+    "bitbucket": "git",
+    # Java
+    "java": "java",
+    "jdk": "java",
+    "spring": "spring",
+    "spring boot": "spring boot",
+    "springboot": "spring boot",
+    # C#
+    "c#": "c#",
+    "csharp": "c#",
+    "dotnet": ".net",
+    ".net": ".net",
+    "asp.net": ".net",
+    # PHP
+    "php": "php",
+    "laravel": "laravel",
+    "symfony": "symfony",
+    # Data / Analytics
+    "pandas": "pandas",
+    "numpy": "numpy",
+    "matplotlib": "matplotlib",
+    "scikit-learn": "scikit-learn",
+    "sklearn": "scikit-learn",
+    "scikit learn": "scikit-learn",
+    "tensorflow": "tensorflow",
+    "tf": "tensorflow",
+    "keras": "keras",
+    "pytorch": "pytorch",
+    "torch": "pytorch",
+    "power bi": "power bi",
+    "powerbi": "power bi",
+    "tableau": "tableau",
+    "excel": "excel",
+    "microsoft excel": "excel",
+    # Mobile
+    "flutter": "flutter",
+    "dart": "dart",
+    "swift": "swift",
+    "kotlin": "kotlin",
+    "android": "android",
+    "ios": "ios",
+    # Autres
+    "rest": "rest api",
+    "rest api": "rest api",
+    "restful": "rest api",
+    "graphql": "graphql",
+    "html": "html",
+    "html5": "html",
+    "css": "css",
+    "css3": "css",
+    "sass": "css",
+    "scss": "css",
+    "linux": "linux",
+    "bash": "bash",
+    "shell": "bash",
+    "agile": "agile",
+    "scrum": "agile",
+    "kanban": "agile",
+    "jira": "jira",
+    "figma": "figma",
+}
+
+
+def _normalize_skill(skill: str) -> str:
+    """Normalise une skill : minuscules + alias → forme canonique."""
+    s = re.sub(r"\s+", " ", (skill or "").strip().lower())
+    return _SKILL_ALIASES.get(s, s)
+
+
+# Phrases multi-mots connues (utilisées pour le tokenizer greedy)
+_KNOWN_MULTI_WORD = frozenset(k for k in _SKILL_ALIASES if " " in k)
+
+
+def _split_skill_string(text: str) -> List[str]:
+    """Greedy tokenizer : extrait les skills individuels d'une chaîne espace-séparée.
+
+    Préserve les expressions multi-mots connues (ex: 'Spring Boot', 'REST API').
+    """
+    words = text.split()
+    result: List[str] = []
+    i = 0
+    while i < len(words):
+        matched = False
+        for length in range(min(4, len(words) - i), 1, -1):
+            phrase = " ".join(words[i : i + length]).lower()
+            if phrase in _KNOWN_MULTI_WORD:
+                result.append(" ".join(words[i : i + length]))
+                i += length
+                matched = True
+                break
+        if not matched:
+            result.append(words[i])
+            i += 1
+    return result
+
+
 def _safe_float(val: Any) -> Optional[float]:
     try:
         if val is None:
@@ -254,18 +475,38 @@ def _candidate_skills(candidate: Candidate) -> List[str]:
 
 
 def _extract_offer_skills(offer: JobOffer) -> List[str]:
+    """Extrait les compétences requises de l'offre sous forme de tokens individuels.
+
+    Gère le cas où la DB stocke une liste comme un seul élément espace-séparé
+    (ex: ['Python Java Spring Boot ...']) au lieu de ['Python', 'Java', ...]).
+    """
     req = offer.competences_requises or []
     if not req:
         return []
-    out: List[str] = []
-    seen = set()
+    raw: List[str] = []
     for s in req:
         if not isinstance(s, str):
             continue
-        n = _norm(s)
+        # Découpe d'abord sur les séparateurs forts (virgule, point-virgule, newline, pipe)
+        chunks = re.split(r"[,;\n|]+", s)
+        for chunk in chunks:
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            words = chunk.split()
+            if len(words) <= 2:
+                # Mot unique ou bi-gram → conserver tel quel
+                raw.append(chunk)
+            else:
+                # 3+ mots : tokenizer greedy (gère aussi "Google Cloud Platform", "Natural Language Processing"…)
+                raw.extend(_split_skill_string(chunk))
+    out: List[str] = []
+    seen: set = set()
+    for t in raw:
+        n = _norm(t)
         if n and n not in seen:
             seen.add(n)
-            out.append(s.strip())
+            out.append(t.strip())
     return out
 
 
@@ -334,31 +575,46 @@ class MatchEngine:
         }
 
         if required_skills:
-            # matching best effort par compétence requise
-            cand_norm = {_norm(s): s for s in candidate_skills}
-            cand_norm_keys = list(cand_norm.keys())
+            # Normalisation avec aliases avant matching
+            # { alias_normalisé → skill originale du candidat }
+            cand_alias_map: Dict[str, str] = {}
+            for s in candidate_skills:
+                key = _normalize_skill(s)
+                if key not in cand_alias_map:
+                    cand_alias_map[key] = s
+            cand_alias_keys = list(cand_alias_map.keys())
 
             per_req: List[float] = []
             for req in required_skills:
-                req_n = _norm(req)
+                req_alias = _normalize_skill(req)
+
+                # 1) Match exact après normalisation (alias → alias)
+                if req_alias in cand_alias_map:
+                    skills_detail["matched"].append({
+                        "required": req,
+                        "candidate": cand_alias_map[req_alias],
+                        "ratio": 1.0,
+                        "match_type": "alias_exact",
+                    })
+                    per_req.append(1.0)
+                    continue
+
+                # 2) Fuzzy match sur les formes normalisées
                 best = None
-                if cand_norm_keys:
-                    best = process.extractOne(req_n, cand_norm_keys, scorer=fuzz.token_set_ratio)
+                if cand_alias_keys:
+                    best = process.extractOne(req_alias, cand_alias_keys, scorer=fuzz.token_set_ratio)
 
                 if best:
                     best_key, best_score, _ = best
-                    skills_detail["matched"].append(
-                        {
-                            "required": req,
-                            "candidate": cand_norm.get(best_key),
-                            "ratio": round(best_score / 100.0, 3),
-                        }
-                    )
+                    skills_detail["matched"].append({
+                        "required": req,
+                        "candidate": cand_alias_map.get(best_key),
+                        "ratio": round(best_score / 100.0, 3),
+                        "match_type": "fuzzy",
+                    })
                     per_req.append(best_score / 100.0)
                 else:
-                    skills_detail["matched"].append(
-                        {"required": req, "candidate": None, "ratio": 0.0}
-                    )
+                    skills_detail["matched"].append({"required": req, "candidate": None, "ratio": 0.0})
                     per_req.append(0.0)
 
             skills_score = sum(per_req) / max(1, len(per_req))

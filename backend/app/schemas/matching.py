@@ -10,6 +10,8 @@ class MatchCandidateItem(BaseModel):
 
     score: float
     details: Optional[Dict[str, Any]] = None
+    bert_details: Optional[Dict[str, Any]] = None
+    inconsistencies: Optional[List[Any]] = None
 
 
 class MatchCandidatesResponse(BaseModel):

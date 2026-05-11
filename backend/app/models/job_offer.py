@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, DateTime, JSON, ForeignKey, Enum as SAEnum
+from sqlalchemy import Column, String, Text, DateTime, JSON, Integer, ForeignKey, Enum as SAEnum, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -6,6 +6,14 @@ import uuid
 import enum
 
 from app.database import Base
+
+# Table de jonction offre ↔ recruteur (accès)
+offer_recruiters = Table(
+    "offer_recruiters",
+    Base.metadata,
+    Column("offer_id", UUID(as_uuid=True), ForeignKey("job_offers.id", ondelete="CASCADE"), primary_key=True),
+    Column("user_id",  UUID(as_uuid=True), ForeignKey("users.id",      ondelete="CASCADE"), primary_key=True),
+)
 
 
 class JobStatus(str, enum.Enum):
@@ -27,13 +35,16 @@ class JobOffer(Base):
     competences_requises = Column(JSON, nullable=True)   # liste de compétences
     localisation = Column(String(255), nullable=True)
     type_contrat = Column(String(50), nullable=True)     # CDI, CDD, Stage...
+    nb_postes    = Column(Integer, default=1, nullable=False)
     status = Column(SAEnum(JobStatus), default=JobStatus.active, nullable=False)
+    date_limite = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relations
-    recruiter = relationship("User")
+    recruiter = relationship("User", foreign_keys=[recruiter_id])
+    assigned_recruiters = relationship("User", secondary="offer_recruiters", lazy="selectin")
     matches = relationship(
         "Match",
         back_populates="job_offer",

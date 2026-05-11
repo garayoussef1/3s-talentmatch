@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, DateTime, JSON, ForeignKey, Enum as SAEnum
+from sqlalchemy import Column, String, Text, DateTime, JSON, ForeignKey, Enum as SAEnum, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -48,6 +48,13 @@ class Candidate(Base):
 
     # Méthode d'extraction utilisée (pypdf, ocr, docx)
     extraction_method = Column(String(50), nullable=True)
+
+    # RGPD — consentement à l'information (Mesure 1)
+    information_acknowledged = Column(Boolean, default=False, nullable=False, server_default="false")
+    information_date = Column(DateTime(timezone=True), nullable=True)
+
+    # RGPD — anonymisation (Mesure 4)
+    anonymized = Column(Boolean, default=False, nullable=False, server_default="false")
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

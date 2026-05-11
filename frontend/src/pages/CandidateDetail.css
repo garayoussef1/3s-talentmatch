@@ -265,12 +265,142 @@
 }
 
 @keyframes cdFadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Statut badge dans le hero ─────────────────────────── */
+.cd-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  letter-spacing: 0.2px;
+}
+
+/* ── Section Candidatures & Matching ──────────────────── */
+.cd-matches-section .cd-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cd-matches-count {
+  background: #1B4F8A;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.cd-matches-empty {
+  padding: 12px 0 4px;
+  font-size: 0.88rem;
+}
+
+.cd-matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cd-match-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow 0.15s;
+}
+.cd-match-card:hover { box-shadow: 0 2px 12px rgba(27,79,138,0.08); }
+
+.cd-match-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  background: #f8fafc;
+}
+.cd-match-header:hover { background: #f1f5f9; }
+
+.cd-match-no-score {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: grid; place-items: center;
+  font-size: 0.9rem; color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.cd-match-info { flex: 1; min-width: 0; }
+
+.cd-match-offer {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cd-match-sub {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+
+.cd-match-status-dot { font-size: 0.78rem; font-weight: 600; }
+.cd-match-pct-label  { font-size: 0.78rem; font-weight: 600; color: #64748b; }
+
+.cd-match-chevron {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* Barres par dimension */
+.cd-match-dims {
+  padding: 12px 16px 14px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.cd-dim-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+.cd-dim-icon  { font-size: 0.9rem; width: 18px; text-align: center; flex-shrink: 0; }
+.cd-dim-label { width: 110px; color: #475569; font-weight: 500; flex-shrink: 0; font-size: 0.8rem; }
+
+.cd-dim-bar-wrap {
+  flex: 1;
+  height: 7px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cd-dim-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.cd-dim-pct {
+  width: 34px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
 }

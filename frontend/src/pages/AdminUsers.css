@@ -208,16 +208,23 @@
 .user-name { display: flex; align-items: center; gap: 10px; }
 .user-title { font-weight: 700; }
 .avatar {
-	background: #1e2a3a;
-	color: white;
-	width: 34px;
-	height: 34px;
+	width: 38px;
+	height: 38px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 10px;
-	font-weight: 600;
+	border-radius: 11px;
+	font-weight: 700;
+	font-size: 1rem;
+	flex-shrink: 0;
+	color: #fff;
+	background: #1e2a3a;
 }
+
+/* Couleur de l'avatar selon le rôle */
+.avatar-admin    { background: linear-gradient(135deg, #b45309, #d97706); color: #fff; }
+.avatar-recruteur { background: linear-gradient(135deg, #1B4F8A, #2563eb); color: #fff; }
+.avatar-candidat  { background: linear-gradient(135deg, #15803d, #22c55e); color: #fff; }
 
 .muted { color: var(--muted); font-size: 0.8rem; }
 
@@ -341,3 +348,18 @@
 @media (max-width: 980px) {
 	.admin-card--form { max-width: 100%; }
 }
+
+/* ── Ligne double champ ── */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+.admin-form textarea {
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  resize: vertical;
+  font-family: inherit;
+  transition: border 0.2s;
+}
+.admin-form textarea:focus { border-color: #1B4F8A; outline: none; }
