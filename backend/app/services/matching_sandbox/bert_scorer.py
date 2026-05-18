@@ -667,12 +667,18 @@ def _cosine(a: np.ndarray, b: np.ndarray) -> float:
 _MODELS_ROOT = os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "..", "data", "models"
 )
-_TALENTMATCH_PATHS = [
-    os.path.join(_MODELS_ROOT, "talentmatch-bert-v2.0"),  # v2.0 bilingue FR+EN (priorité)
-    os.path.join(_MODELS_ROOT, "talentmatch-bert"),        # v1.3 fallback
-    os.path.join(_MODELS_ROOT, "talentmatch-bert-v1.2"),   # v1.2 fallback
-]
-_BASE_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+# MLP head weights are decoupled from the transformer — loaded independently.
+_MLP_WEIGHTS_PATH = os.path.join(
+    _MODELS_ROOT, "talentmatch-bert-v2.0", "scoring_mlp.pt"
+)
+# BGE-M3 — SOTA multilingual sentence embedder (~568M params, 1024-dim,
+# normalized outputs, no prefix required).
+_EMBEDDER_MODEL = "BAAI/bge-m3"
+# Cross-encoder reranker — canonical pair with BGE-M3. Used to score the
+# full (offer, CV) pair jointly for the s_semantique MLP feature.
+_RERANKER_MODEL = "BAAI/bge-reranker-v2-m3"
+# BGE-M3 hidden size — used by _encode's zero-fallback when the model isn't loaded.
+_EMBEDDER_DIM = 1024
 
 
 class _ScoringMLP(nn.Module if _TORCH_AVAILABLE else object):
@@ -692,66 +698,62 @@ class _ScoringMLP(nn.Module if _TORCH_AVAILABLE else object):
 
 
 class BERTMatchingScorer:
-    def __init__(self, model_name: str = _BASE_MODEL):
-        self._tokenizer   = None   # AutoTokenizer (v2.0)
-        self._auto_model  = None   # AutoModel     (v2.0)
-        self._st_model    = None   # SentenceTransformer (v1.x fallback)
-        self._mlp         = None   # ScoringMLP 5D
-        self._use_v2      = False
+    def __init__(self, model_name: str = _EMBEDDER_MODEL):
+        self._st_model   = None    # SentenceTransformer (bi-encoder)
+        self._reranker   = None    # CrossEncoder (joint scorer)
+        self._mlp        = None    # ScoringMLP 5D
         self._load_attempted = False
-        self.ready        = False
+        self._reranker_load_attempted = False
+        self.ready       = False
+        self.reranker_ready = False
         self.load_error: Optional[str] = None
-        self.model_name   = model_name
-        self.model_version = "base"
+        self.reranker_load_error: Optional[str] = None
+        self.model_name  = model_name
+        self.model_version = model_name
+        self.reranker_model_name = _RERANKER_MODEL
 
     def _ensure_loaded(self) -> bool:
         if self.ready or self._load_attempted:
             return self.ready
         self._load_attempted = True
 
-        # ── Essayer v2.0 (AutoModel) ──────────────────────────────
-        for path in _TALENTMATCH_PATHS:
-            if not os.path.exists(os.path.join(path, "config.json")):
-                continue
-            try:
-                from transformers import AutoTokenizer, AutoModel  # type: ignore
-                self._tokenizer  = AutoTokenizer.from_pretrained(path, local_files_only=True)
-                self._auto_model = AutoModel.from_pretrained(path, local_files_only=True)
-                self._auto_model.eval()
-                self.model_name    = path
-                self.model_version = os.path.basename(path)
-                self._use_v2 = True
-                self.ready   = True
-                # Charger le MLP si disponible
-                self._load_mlp(path)
-                return True
-            except Exception as e:
-                self._auto_model = None
-                self._tokenizer  = None
-                continue
+        try:
+            from sentence_transformers import SentenceTransformer  # type: ignore
+            self._st_model = SentenceTransformer(_EMBEDDER_MODEL)
+            self.model_name    = _EMBEDDER_MODEL
+            self.model_version = _EMBEDDER_MODEL
+            self.ready = True
+            # Charger le MLP si disponible (poids indépendants du transformer)
+            self._load_mlp(_MLP_WEIGHTS_PATH)
+            return True
+        except Exception as e:
+            self._st_model = None
+            self.ready = False
+            self.load_error = f"embedder_load_failed:{type(e).__name__}:{e}"
+            return False
 
-        # ── Fallback SentenceTransformer (v1.x) ───────────────────
-        for path in _TALENTMATCH_PATHS:
-            if not os.path.exists(os.path.join(path, "config.json")):
-                continue
-            try:
-                from sentence_transformers import SentenceTransformer  # type: ignore
-                self._st_model   = SentenceTransformer(path)
-                self.model_name  = path
-                self.model_version = os.path.basename(path) + " (ST)"
-                self.ready = True
-                return True
-            except Exception:
-                continue
+    def _ensure_reranker_loaded(self) -> bool:
+        """Lazy-load the cross-encoder reranker. Independent of the embedder."""
+        if self.reranker_ready or self._reranker_load_attempted:
+            return self.reranker_ready
+        self._reranker_load_attempted = True
 
-        self.ready = False
-        self.load_error = "no_model_available"
-        return False
+        try:
+            from sentence_transformers import CrossEncoder  # type: ignore
+            # max_length=512 matches bge-reranker-v2-m3's default; truncation handles longer.
+            self._reranker = CrossEncoder(_RERANKER_MODEL, max_length=512)
+            self.reranker_ready = True
+            return True
+        except Exception as e:
+            self._reranker = None
+            self.reranker_ready = False
+            self.reranker_load_error = f"reranker_load_failed:{type(e).__name__}:{e}"
+            return False
 
-    def _load_mlp(self, model_path: str) -> None:
+    def _load_mlp(self, mlp_path: str) -> None:
+        """Load the 5-feature scoring MLP from a direct .pt path. Fail-soft."""
         if not _TORCH_AVAILABLE:
             return
-        mlp_path = os.path.join(model_path, "scoring_mlp.pt")
         if not os.path.exists(mlp_path):
             return
         try:
@@ -763,25 +765,12 @@ class BERTMatchingScorer:
             self._mlp = None
 
     def _encode(self, texts: List[str]) -> np.ndarray:
-        """Encode des textes en vecteurs normalisés — supporte v2.0 et v1.x."""
-        if self._use_v2 and self._tokenizer and self._auto_model:
-            enc = self._tokenizer(
-                texts, padding=True, truncation=True,
-                max_length=256, return_tensors="pt"
-            )
-            with torch.no_grad():
-                out = self._auto_model(**enc)
-            mask = enc["attention_mask"]
-            emb  = out.last_hidden_state
-            m    = mask.unsqueeze(-1).expand(emb.size()).float()
-            pooled = torch.sum(emb * m, 1) / torch.clamp(m.sum(1), min=1e-9)
-            pooled = _F.normalize(pooled, p=2, dim=1)
-            return pooled.numpy()
-        elif self._st_model is not None:
-            return self._st_model.encode(
-                texts, convert_to_numpy=True, normalize_embeddings=True
-            )
-        return np.zeros((len(texts), 384))
+        """Encode des textes en vecteurs normalisés via SentenceTransformer."""
+        if self._st_model is None:
+            return np.zeros((len(texts), _EMBEDDER_DIM))
+        return self._st_model.encode(
+            texts, convert_to_numpy=True, normalize_embeddings=True
+        )
 
     def _mlp_score(
         self,
@@ -802,9 +791,9 @@ class BERTMatchingScorer:
             return float(self._mlp(x)) / 100.0
 
     def _get_model(self):
-        """Compatibilité — retourne le modèle disponible."""
+        """Compatibilité — retourne le SentenceTransformer chargé (ou None)."""
         self._ensure_loaded()
-        return self._st_model or (self if self._use_v2 else None)
+        return self._st_model
 
     def score_semantic(self, offer_text: str, cv_text: str) -> Tuple[float, Dict[str, Any]]:
         if not self._ensure_loaded():
@@ -840,9 +829,10 @@ class BERTMatchingScorer:
             offer_emb = self._encode([_normalize_skill(s) for s in offer_skills])
             cv_emb    = self._encode([_normalize_skill(s) for s in cv_skills])
 
-            # Seuil 0.65 : suffisant pour Python≈Pandas ou TF≈PyTorch,
-            # mais bloque Java≈Python (~0.55) et Jenkins≈TensorFlow (~0.45).
-            THRESHOLD = 0.65
+            # Seuil 0.78 — calibré pour BGE-M3 dont les cosines sur vrais matches
+            # sont typiquement 0.78–0.92, vs 0.55–0.75 pour MiniLM.
+            # Bloque toujours Java≈Python et Jenkins≈TensorFlow (~0.60).
+            THRESHOLD = 0.78
 
             per_skill: List[Dict[str, Any]] = []
             max_scores: List[float] = []
@@ -1164,20 +1154,68 @@ class BERTMatchingScorer:
             return 1.0
         return round(max(0.0, cv_edu / required_edu), 4)
 
+    def score_semantique_rerank(
+        self,
+        offer_text: str,
+        cv_text: str,
+    ) -> Tuple[float, Dict[str, Any]]:
+        """
+        Score sémantique via cross-encoder (offre+CV ensemble — pas deux embeddings séparés).
+
+        Retourne (score 0..1, détails). Sigmoid sur les logits du reranker.
+        Fallback transparent vers `score_semantic` (bi-encodeur) si reranker indisponible.
+        """
+        if not offer_text or not cv_text:
+            return 0.5, {"ready": False, "reason": "empty_text", "method": "rerank"}
+
+        if not self._ensure_reranker_loaded():
+            # Fallback bi-encodeur si le reranker ne charge pas
+            bi_score, bi_detail = self.score_semantic(offer_text, cv_text)
+            bi_detail["method"] = "bi_encoder_fallback"
+            bi_detail["reranker_reason"] = self.reranker_load_error or "unavailable"
+            return bi_score, bi_detail
+
+        try:
+            # Le reranker reçoit la paire entière, ne nécessite pas de normalisation.
+            # On clippe à ~512 mots pour rester dans la fenêtre max_length=512 du modèle.
+            offer_input = _clip_words(offer_text, 256)
+            cv_input    = _clip_words(cv_text,    256)
+            logit = self._reranker.predict([(offer_input, cv_input)])
+            # CrossEncoder.predict peut retourner np.ndarray ou float — on normalise.
+            if hasattr(logit, "__len__"):
+                logit_val = float(logit[0])
+            else:
+                logit_val = float(logit)
+            # bge-reranker-v2-m3 émet des logits → sigmoid pour [0, 1].
+            score = 1.0 / (1.0 + np.exp(-logit_val))
+            score = float(max(0.0, min(1.0, score)))
+            return score, {
+                "ready": True,
+                "model": self.reranker_model_name,
+                "method": "cross_encoder",
+                "raw_logit": round(logit_val, 4),
+            }
+        except Exception as e:
+            return 0.5, {
+                "ready": False,
+                "reason": f"rerank_error:{type(e).__name__}",
+                "model": self.reranker_model_name,
+                "method": "rerank",
+            }
+
     def score_semantique(
         self,
         offer_text: str,
         cv_text: str,
     ) -> float:
         """
-        Dimension 4 — Sémantique BERT (25% du score final).
+        Dimension 4 — Sémantique (alimente le MLP, feature `sem_sim`).
 
-        Similarité cosinus entre le vecteur offre et le vecteur CV.
-        Score brut — aucune calibration.
-        Fallback 0.5 si le modèle n'est pas disponible.
+        Utilise le cross-encoder (BGE-reranker-v2-m3) si chargé — signal beaucoup plus
+        fort que le simple cosinus bi-encodeur. Fallback bi-encodeur sinon.
         """
-        raw, _ = self.score_semantic(offer_text, cv_text)
-        return float(raw)
+        score, _ = self.score_semantique_rerank(offer_text, cv_text)
+        return float(score)
 
     def _analyze_offer_profile(
         self,
