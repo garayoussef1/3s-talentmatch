@@ -14,13 +14,21 @@ from app.services.nlp.hf_camembert import camembert_runtime_config
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Pré-charger TalentMatch-BERT au démarrage pour éviter le cold start."""
+    """Pré-charger l'embedder BGE-M3 + le cross-encoder reranker au démarrage."""
     try:
         from app.services.matching_sandbox.bert_scorer import BERTMatchingScorer
         scorer = BERTMatchingScorer()
         scorer._get_model()
-        status = scorer.model_version if scorer.ready else "indisponible"
-        print(f"[startup] BERT scorer : {status}")
+        emb_status = scorer.model_version if scorer.ready else f"indisponible ({scorer.load_error})"
+        print(f"[startup] BGE-M3 embedder : {emb_status}")
+
+        scorer._ensure_reranker_loaded()
+        rer_status = (
+            scorer.reranker_model_name
+            if scorer.reranker_ready
+            else f"indisponible ({scorer.reranker_load_error})"
+        )
+        print(f"[startup] Cross-encoder reranker : {rer_status}")
     except Exception as e:
         print(f"[startup] BERT scorer erreur : {e}")
     yield

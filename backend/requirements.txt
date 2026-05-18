@@ -17,7 +17,7 @@ pydantic==2.6.0
 spacy==3.7.4
 fr-core-news-md==3.7.0
 rapidfuzz>=3.0.0
-sentence-transformers>=2.7.0
+sentence-transformers>=3.0.0
 
 # --- Base de données ---
 sqlalchemy==2.0.28
