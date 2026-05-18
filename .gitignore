@@ -40,3 +40,45 @@ Thumbs.db
 
 # spaCy modèles téléchargés
 *.whl
+
+# Modèles IA entraînés (trop lourds pour GitHub)
+data/models/
+
+# CVs personnels (données privées / RGPD)
+data/Cv/
+data/CVtest/
+
+# Fichiers générés / cache
+data/ocr_cache/
+data/results/
+data/training/
+data/triplets/
+data/annotations.json
+data/experiences_discovered.json
+data/skills_discovered.json
+
+# Téléchargements incomplets
+*.crdownload
+
+# Config Claude locale
+.claude/
+
+# Variables d'environnement frontend
+frontend/.env.local
+backend/.env
+
+# Fichiers temporaires
+*.zip
+*.tmp
+
+# Anciennes versions PPTX
+docs/Presentation_TalentMatch_Youssef_GARA.pptx
+docs/Presentation_TalentMatch_Youssef_GARA_v2.pptx
+docs/Presentation_TalentMatch_Youssef_GARA_v3.pptx
+docs/Presentation_TalentMatch_Youssef_GARA_v4.pptx
+docs/Presentation_TalentMatch_Youssef_GARA_v5.pptx
+docs/Presentation_TalentMatch_Youssef_GARA_v6.pptx
+
+# CV personnel dans data/
+"data/haithem djebbi cv (1).pdf"
+data/.scriptsrun-dev.ps1.txt

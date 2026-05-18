@@ -31,11 +31,14 @@ class JobOffer(Base):
     recruiter_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
 
     titre = Column(String(255), nullable=False)
+    entreprise = Column(String(255), nullable=True)
     description = Column(Text, nullable=True)
-    competences_requises = Column(JSON, nullable=True)   # liste de compétences
+    competences_requises  = Column(JSON, nullable=True)
+    competences_appreciees = Column(JSON, nullable=True)
     localisation = Column(String(255), nullable=True)
     type_contrat = Column(String(50), nullable=True)     # CDI, CDD, Stage...
     nb_postes    = Column(Integer, default=1, nullable=False)
+    experience_requise = Column(Integer, nullable=True)  # années minimum requises
     status = Column(SAEnum(JobStatus), default=JobStatus.active, nullable=False)
     date_limite = Column(DateTime(timezone=True), nullable=True)
 

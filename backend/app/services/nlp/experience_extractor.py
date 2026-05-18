@@ -1026,6 +1026,29 @@ class ExperienceExtractor:
                 result["duree_mois"] = _compute_duration_months(year, m1, year, m2)
                 return result
 
+            # 1 ter-bis. « Jan 2022  Présent » sans tiret (séparateur = espace seul)
+            # Cas fréquent dans les CVs PDF où le tiret est absent ou mal extrait.
+            if _EN_COURS.search(text):
+                space_m = _DATE_SINGLE_MONTH_YEAR.search(text)
+                if not space_m:
+                    # Tenter avec une année seule : « 2022  Présent »
+                    space_m_yr = re.search(r'\b(20\d{2})\b', text)
+                    if space_m_yr:
+                        sy2 = int(space_m_yr.group(1))
+                        result["date_debut"] = f"{sy2}-01"
+                        result["en_cours"] = True
+                        result["date_fin"] = None
+                        result["duree_mois"] = _compute_duration_months(sy2, 1, None, None)
+                        return result
+                else:
+                    y2 = int(space_m.group(2))
+                    m2 = MONTHS_MAP_NORMALIZED.get(_normalize_date_text(space_m.group(1)), 1)
+                    result["date_debut"] = f"{y2}-{str(m2).zfill(2)}"
+                    result["en_cours"] = True
+                    result["date_fin"] = None
+                    result["duree_mois"] = _compute_duration_months(y2, m2, None, None)
+                    return result
+
             # 1 ter. « Juillet 2023 » (mois seul → stage d'un mois)
             single_m = _DATE_SINGLE_MONTH_YEAR.search(text)
             if single_m:

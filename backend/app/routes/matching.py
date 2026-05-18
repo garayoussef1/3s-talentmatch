@@ -14,6 +14,7 @@ from app.dependencies import get_current_recruteur_or_admin
 from app.models.candidate import Candidate
 from app.models.job_offer import JobOffer
 from app.models.match import Match
+from app.models.notification import Notification
 from app.models.user import User
 from app.schemas.matching import MatchCandidatesResponse, MatchCandidateItem
 from app.services.matching.match_engine import MatchEngine
@@ -147,6 +148,19 @@ def match_candidates_for_offer(
         )
 
     db.commit()
+
+    # Auto-dismiss new_cv notifications liées à cette offre pour le recruteur courant
+    try:
+        db.query(Notification).filter(
+            Notification.user_id == current_user.id,
+            Notification.type == "new_cv",
+            Notification.link == f"/offers/{job_offer_id}",
+            Notification.is_read == False,
+        ).update({"is_read": True})
+        db.commit()
+    except Exception:
+        pass
+
     results.sort(key=lambda r: r.score, reverse=True)
 
     return MatchCandidatesResponse(

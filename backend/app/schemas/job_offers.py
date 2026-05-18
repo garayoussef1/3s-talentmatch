@@ -5,11 +5,14 @@ from datetime import datetime
 
 class JobOfferBase(BaseModel):
     titre: str = Field(..., min_length=2, max_length=255)
+    entreprise: Optional[str] = None
     description: Optional[str] = None
-    competences_requises: Optional[List[str]] = None
+    competences_requises:  Optional[List[str]] = None
+    competences_appreciees: Optional[List[str]] = None
     localisation: Optional[str] = None
     type_contrat: Optional[str] = None
     nb_postes: Optional[int] = 1
+    experience_requise: Optional[int] = None
     status: Optional[str] = None
     date_limite: Optional[datetime] = None
 
@@ -20,11 +23,14 @@ class JobOfferCreate(JobOfferBase):
 
 class JobOfferUpdate(BaseModel):
     titre: Optional[str] = None
+    entreprise: Optional[str] = None
     description: Optional[str] = None
-    competences_requises: Optional[List[str]] = None
+    competences_requises:  Optional[List[str]] = None
+    competences_appreciees: Optional[List[str]] = None
     localisation: Optional[str] = None
     type_contrat: Optional[str] = None
     nb_postes: Optional[int] = None
+    experience_requise: Optional[int] = None
     status: Optional[str] = None
     date_limite: Optional[datetime] = None
 

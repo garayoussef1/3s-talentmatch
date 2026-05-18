@@ -354,7 +354,59 @@ _SKILL_ALIASES: Dict[str, str] = {
     "kanban": "agile",
     "jira": "jira",
     "figma": "figma",
+    # Ingénierie / BTP (multi-word — must be preserved as-is by _split_skill_string)
+    "calcul de structure": "calcul de structure",
+    "résistance des matériaux": "résistance des matériaux",
+    "resistance des materiaux": "résistance des matériaux",
+    "génie civil": "génie civil",
+    "genie civil": "génie civil",
+    "béton armé": "béton armé",
+    "beton arme": "béton armé",
+    "travaux publics": "travaux publics",
+    "schémas électriques": "schémas électriques",
+    "schemas electriques": "schémas électriques",
+    "gestion de chantier": "gestion de chantier",
+    "dessin assisté par ordinateur": "dao",
+    # Finance / Gestion
+    "analyse financière": "analyse financière",
+    "analyse financiere": "analyse financière",
+    "contrôle de gestion": "contrôle de gestion",
+    "controle de gestion": "contrôle de gestion",
+    "gestion de trésorerie": "gestion de trésorerie",
+    "normes ifrs": "normes ifrs",
+    "comptabilité générale": "comptabilité générale",
+    "comptabilite generale": "comptabilité générale",
+    # RH / Management
+    "gestion de projet": "gestion de projet",
+    "gestion des talents": "gestion des talents",
+    "droit du travail": "droit du travail",
+    "ressources humaines": "ressources humaines",
+    "droit social": "droit social",
+    # Marketing / Digital
+    "community management": "community management",
+    "content marketing": "content marketing",
+    "google analytics": "google analytics",
+    "google ads": "google ads",
+    "réseaux sociaux": "réseaux sociaux",
+    "reseaux sociaux": "réseaux sociaux",
+    # IT multi-word
+    "machine learning": "machine learning",
+    "deep learning": "deep learning",
+    "api rest": "api rest",
+    "développement logiciel": "développement logiciel",
+    "developpement logiciel": "développement logiciel",
+    "base de données": "sql",
+    "bases de données": "sql",
+    "génie logiciel": "développement logiciel",
 }
+
+
+# Mots à ignorer comme skills isolés (prépositions, articles français)
+_SKILL_STOPWORDS: frozenset = frozenset({
+    "de", "des", "du", "la", "le", "les", "un", "une",
+    "en", "et", "ou", "par", "pour", "sur", "avec", "dans",
+    "au", "aux", "à", "l", "d",
+})
 
 
 def _normalize_skill(skill: str) -> str:
@@ -504,7 +556,12 @@ def _extract_offer_skills(offer: JobOffer) -> List[str]:
     seen: set = set()
     for t in raw:
         n = _norm(t)
-        if n and n not in seen:
+        if not n:
+            continue
+        # Ignorer les mots vides isolés (prépositions, articles) issus du découpage
+        if n in _SKILL_STOPWORDS:
+            continue
+        if n not in seen:
             seen.add(n)
             out.append(t.strip())
     return out
@@ -623,7 +680,11 @@ class MatchEngine:
             skills_score = 0.5
 
         # ── Experience (0..1)
-        required_years = _extract_required_years((offer.description or "") + "\n" + (offer.titre or ""))
+        required_years = (
+            int(offer.experience_requise)
+            if getattr(offer, 'experience_requise', None) is not None
+            else _extract_required_years((offer.description or "") + "\n" + (offer.titre or ""))
+        )
         cand_years = _candidate_years(candidate)
         if required_years and required_years > 0:
             exp_score = min(1.0, cand_years / required_years)

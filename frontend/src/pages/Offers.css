@@ -1028,12 +1028,86 @@
 .tm-score-ring svg { display: block; }
 .tm-score-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.92rem; font-weight: 800; }
 .tm-dims { display: grid; gap: 6px; padding: 10px 16px 14px; border-top: 1px solid #f3f4f6; }
-.tm-dim { display: grid; grid-template-columns: 18px 90px 1fr 36px; align-items: center; gap: 8px; font-size: 0.78rem; }
+.tm-dim { display: grid; grid-template-columns: 18px 90px 1fr 46px 36px; align-items: center; gap: 8px; font-size: 0.78rem; }
 .tm-dim-icon { font-size: 0.85rem; text-align: center; }
 .tm-dim-label { color: #374151; font-weight: 500; }
 .tm-dim-bar-wrap { background: #f1f5f9; border-radius: 4px; height: 6px; overflow: hidden; }
 .tm-dim-bar { height: 6px; border-radius: 4px; transition: width 0.4s ease; }
-.tm-dim-val { font-weight: 700; text-align: right; color: #374151; }
+.tm-dim-tag { font-size: 0.7rem; font-weight: 700; text-align: center; }
+.tm-dim-val { font-weight: 600; text-align: right; color: #6b7280; font-size: 0.72rem; }
+
+/* Verdict lisible sous le nom */
+.tm-verdict {
+  display: inline-block; margin-top: 4px;
+  font-size: 0.7rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 99px; letter-spacing: 0.02em;
+}
+
+/* Alertes BERT */
+.tm-inco-section {
+  padding: 10px 16px 12px;
+  border-top: 1px solid #fde68a;
+  background: #fffbeb;
+}
+.tm-inco-title { font-size: 0.78rem; font-weight: 700; color: #92400e; margin-bottom: 6px; }
+.tm-inco-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.tm-inco-list li { font-size: 0.76rem; }
+
+/* ── Score de confiance ── */
+.tm-confidence {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-width: 1px; border-style: solid; border-radius: 8px;
+  margin: 8px 16px 0; font-size: 0.76rem; font-weight: 500;
+}
+.tm-conf-icon { font-size: 0.9rem; font-weight: 800; }
+.tm-conf-penalty { margin-left: auto; font-size: 0.72rem; font-weight: 700; opacity: 0.85; }
+
+/* ── Alerte faux expert ── */
+.tm-fake-expert-alert {
+  margin: 6px 16px 0; padding: 8px 12px;
+  background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 8px;
+  font-size: 0.76rem; font-weight: 600; color: #dc2626;
+}
+
+/* ── Critères comparatifs ── */
+.tm-criteres-section {
+  padding: 10px 16px 8px;
+  border-top: 1px solid #f3f4f6;
+}
+.tm-criteres-title {
+  font-size: 0.72rem; font-weight: 700; color: #374151;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+}
+.tm-criteres-grid {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.tm-critere {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 99px; font-size: 0.73rem; font-weight: 600;
+  border: 1px solid transparent;
+}
+.tm-critere.matched {
+  background: #f0fdf4; border-color: #86efac; color: #16a34a;
+}
+.tm-critere.missing {
+  background: #fef2f2; border-color: #fca5a5; color: #dc2626;
+}
+.tm-critere.appreciated-match {
+  background: #f5f3ff; border-color: #c4b5fd; color: #7c3aed;
+}
+.tm-critere.appreciated-miss {
+  background: #f9fafb; border-color: #e5e7eb; color: #9ca3af;
+}
+.tm-critere-icon { font-size: 0.78rem; font-weight: 900; }
+.tm-critere-skill { font-size: 0.72rem; }
+
+/* ── Chips required vs appreciated ── */
+.chip-required {
+  background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5;
+}
+.chip-appreciated {
+  background: #f5f3ff; color: #7c3aed; border: 1px solid #c4b5fd;
+}
 
 /* ── Sélection finale candidats ── */
 .tm-select-bar {

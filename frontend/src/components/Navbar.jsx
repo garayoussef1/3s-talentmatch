@@ -107,7 +107,7 @@ function Navbar() {
       <div className="navbar-auth">
         {isAuthenticated ? (
           <div className="user-menu">
-            <NotificationBell />
+            {role !== 'admin' && <NotificationBell />}
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt="" className="user-avatar" />
             ) : (
