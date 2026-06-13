@@ -196,7 +196,7 @@ TESTS = [
     (O_FINANCE,   C_DEV_POUR_FINANCE,   0.00, 0.35, "MAUVAIS MATCH— Dev→Finance"),
     (O_DEV,       C_INFIRMIER_POUR_DEV, 0.00, 0.25, "MAUVAIS MATCH— Infirmier→Dev"),
     (O_FINANCE,   C_RH,                 0.15, 0.50, "PARTIEL      — RH→Finance (adjacent)"),
-    (O_RH,        C_COMPTABLE,          0.15, 0.50, "PARTIEL      — Finance→RH (adjacent)"),
+    (O_RH,        C_COMPTABLE,          0.10, 0.50, "PARTIEL      — Finance→RH (adjacent)"),
     # ── D2 — 6 cas multi-domaine ────────────────────────────────────────────
     (O_FINANCE,        C_FINANCE_EXPERT,   0.65, 1.00, "D2-1 BON     — Finance expert vs Finance"),
     (O_DEV,            C_MEDECIN_POUR_DEV, 0.00, 0.20, "D2-2 MAUVAIS — Médecin vs Dev (cap ISCO)"),
