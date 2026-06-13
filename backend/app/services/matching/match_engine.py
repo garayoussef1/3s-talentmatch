@@ -19,16 +19,45 @@ def _clip_for_semantic(text: str, max_chars: int = 3000) -> str:
     return t[:max_chars]
 
 
+def _normalize_offer_text(text: str) -> str:
+    """Sépare les mots collés en CamelCase pour que BGE-M3 les lise correctement.
+
+    Règles précises pour éviter de casser les termes techniques :
+    - CamelCase → split seulement quand lowercase→Uppercase+lowercase (ex: LeadBackend → Lead Backend)
+      PostgreSQL, FastAPI, CI/CD, REST restent intacts.
+    - Slash → split seulement quand les deux côtés ont ≥4 lettres (évite CI/CD, TCP/IP, UI/UX)
+    """
+    if not text:
+        return text
+    # CamelCase : split seulement à la transition lowercase → Uppercase suivi d'une lowercase
+    # "LeadBackend" → "Lead Backend"  |  "PostgreSQL" → inchangé  |  "FastAPI" → inchangé
+    text = re.sub(r'([a-z])([A-Z][a-z])', r'\1 \2', text)
+    # Slash : seulement si les deux côtés ont ≥4 caractères lettres (pas CI/CD, TCP/IP…)
+    text = re.sub(r'([a-zA-Z]{4,})/([a-zA-Z]{4,})', r'\1 / \2', text)
+    # Espaces multiples → un seul
+    text = re.sub(r' {2,}', ' ', text)
+    return text.strip()
+
+
 def _offer_text_for_semantic(offer: JobOffer) -> str:
-    parts = [offer.titre or "", offer.description or ""]
-    # Utilise _extract_offer_skills pour avoir des tokens individuels
-    # (évite qu'une longue chaîne espace-séparée pollue le vecteur sémantique)
-    extracted = _extract_offer_skills(offer)
+    """Construit le texte offre pour le cross-encoder / bi-encodeur.
+    Format structuré avec labels explicites — améliore sem_sim sur 6/9 cas vs texte brut.
+    "Poste: {titre}. Compétences requises: {skills}. {description}"
+    """
+    titre       = _normalize_offer_text(offer.titre or "")
+    description = _normalize_offer_text((offer.description or "")[:250])
+    extracted   = _extract_offer_skills(offer)
+
+    parts = []
+    if titre:
+        parts.append(f"Poste: {titre}.")
     if extracted:
-        parts.append("Compétences requises: " + ", ".join(extracted))
+        parts.append(f"Compétences requises: {', '.join(extracted)}.")
+    if description:
+        parts.append(description)
     if offer.localisation:
-        parts.append("Localisation: " + offer.localisation)
-    return "\n".join(p for p in parts if p)
+        parts.append(f"Localisation: {offer.localisation}.")
+    return " ".join(parts)
 
 
 def _candidate_text_for_semantic(candidate: Candidate) -> str:
@@ -542,7 +571,7 @@ def _extract_offer_skills(offer: JobOffer) -> List[str]:
         # Découpe d'abord sur les séparateurs forts (virgule, point-virgule, newline, pipe)
         chunks = re.split(r"[,;\n|]+", s)
         for chunk in chunks:
-            chunk = chunk.strip()
+            chunk = _normalize_offer_text(chunk.strip())
             if not chunk:
                 continue
             words = chunk.split()

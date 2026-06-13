@@ -22,6 +22,7 @@ except ImportError:
 
 from app.models.candidate import Candidate
 from app.models.job_offer import JobOffer
+from app.services.matching_sandbox.esco_service import EscoService
 from app.services.matching.match_engine import (
     _candidate_education_level,
     _candidate_skills,
@@ -30,6 +31,7 @@ from app.services.matching.match_engine import (
     _extract_offer_skills,
     _extract_required_education_level,
     _extract_required_years,
+    _normalize_offer_text,
     _normalize_skill,
     _offer_text_for_semantic,
 )
@@ -301,15 +303,56 @@ _TECH_EXPANSION: Dict[str, frozenset] = {
     "parties prenantes": frozenset({"stakeholders", "gestion parties prenantes", "stakeholder management"}),
 }
 
+# ── A1 : Chargement depuis skills_aliases.json (ESCO + curé multi-domaine) ──
+# Remplace skill_expansion.json (pollué par des faux positifs ESCO).
+# Généré par scripts/build_skills_aliases.py — relancer si besoin.
+def _load_skill_expansion() -> Dict[str, frozenset]:
+    import json as _json
+    import os as _os
+    import unicodedata as _ud
+
+    def _norm(t: str) -> str:
+        t = t.lower().strip()
+        t = _ud.normalize("NFKD", t)
+        return "".join(c for c in t if not _ud.combining(c))
+
+    # Priorité 1 : skills_aliases.json (A1 — propre et multi-domaine)
+    _path_clean = _os.path.join(
+        _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.dirname(
+            _os.path.dirname(_os.path.abspath(__file__)))))),
+        "data", "skills", "skills_aliases.json"
+    )
+    merged: dict = {}
+    if _os.path.exists(_path_clean):
+        try:
+            with open(_path_clean, encoding="utf-8") as _f:
+                _data = _json.load(_f)
+            for _key, _syns in _data.items():
+                _k = _norm(_key)
+                if _k not in merged:
+                    merged[_k] = set()
+                for _s in _syns:
+                    _sn = _norm(_s)
+                    if _sn and _sn != _k:
+                        merged[_k].add(_sn)
+            print(f"[SkillAliases] {len(merged)} skills chargées depuis skills_aliases.json")
+        except Exception as _e:
+            print(f"[SkillAliases] Erreur chargement : {_e}")
+    else:
+        print("[SkillAliases] skills_aliases.json absent — lancez scripts/build_skills_aliases.py")
+
+    return {k: frozenset(v) for k, v in merged.items() if v}
+
+_TECH_EXPANSION = _load_skill_expansion()
 
 import re as _re
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ONTOLOGIE MÉTIER — Tous domaines professionnels (inspirée ESCO)
-# (pattern regex, domaine, niveau_rôle 1-5, compétences_implicites)
-# niveau : 1=stagiaire  2=junior  3=intermédiaire  4=senior  5=expert/directeur
+# Détection de domaine : remplacé par EscoService (ISCO-08 universel).
+# L'ancienne ontologie hardcodée (~20 métiers) est conservée ci-dessous
+# uniquement comme fallback si ESCO n'est pas disponible.
 # ─────────────────────────────────────────────────────────────────────────────
-_PROFESSION_ONTOLOGY: List[Tuple[str, str, int, List[str]]] = [
+_PROFESSION_ONTOLOGY_FALLBACK: List[Tuple[str, str, int, List[str]]] = [
 
     # ── SANTÉ ─────────────────────────────────────────────────────────────────
     (r"médecin\s+généraliste|médecin\s+général|general\s+practitioner|généraliste\s+médical", "sante", 5,
@@ -501,6 +544,16 @@ _PROFESSION_ONTOLOGY: List[Tuple[str, str, int, List[str]]] = [
      ["développement commercial", "négociation", "gestion équipe", "crm"]),
     (r"\bcommercial?\b|sales\s+representative|attaché\s+commercial", "commerce", 3,
      ["prospection", "négociation", "crm", "développement commercial"]),
+
+    # ── DESIGN UX/UI / GRAPHIQUE ──────────────────────────────────────────────
+    (r"designer?.+(?:ux|ui)|ux.+designer?|ui.+designer?|designer?.+(?:graphique|web|numérique|digitale?)|web\s+designer?|graphic\s+designer?|motion\s+designer?|créateur?.+visuel", "design", 3,
+     ["figma", "ux design", "ui design", "prototypage", "wireframes", "user research", "sketch", "adobe xd"]),
+    (r"\bdesigner?\b", "design", 3,
+     ["figma", "ux design", "ui design"]),
+
+    # ── TECHNICIEN IT / SUPPORT ───────────────────────────────────────────────
+    (r"technicien?.+(?:informatique|it|réseau|système|support|helpdesk|maintenance\s+informatique)|technicien?.+développ|support\s+(?:technique|it|informatique|n[123]|helpdesk)|assistant?\s+(?:technique|informatique)", "it", 2,
+     ["maintenance informatique", "support technique", "résolution de problèmes"]),
 ]
 
 
@@ -541,55 +594,211 @@ _INSTITUTION_PRESTIGE: Dict[str, float] = {
     "mcgill": 0.90,
 }
 
-# Domaines considérés comme "adjacents" (pénalité réduite de mismatch)
-_ADJACENT_DOMAINS: frozenset = frozenset({
-    ("sante", "sante_paramedical"), ("sante_paramedical", "sante"),
-    ("sante", "sante_pharma"), ("sante_pharma", "sante"),
-    ("sante_paramedical", "sante_pharma"), ("sante_pharma", "sante_paramedical"),
-    ("droit", "rh"), ("rh", "droit"),
-    ("finance", "commerce"), ("commerce", "finance"),
-    ("finance", "rh"), ("rh", "finance"),
-    ("it", "ingenierie"), ("ingenierie", "it"),
-})
+# _ADJACENT_DOMAINS remplacé par EscoService.are_adjacent() / get_score_cap()
+
+# ── Domaines d'études — mots-clés de spécialité ──────────────────────────────
+# Chaque domaine = ensemble de mots-clés trouvables dans la spécialité du diplôme
+# ET dans les skills/description de l'offre.
+_EDU_DOMAINS: Dict[str, frozenset] = {
+    "informatique": frozenset({
+        "informatique", "génie logiciel", "software", "computer science",
+        "développement", "programmation", "systèmes", "réseaux",
+        "cybersécurité", "data", "ia", "intelligence artificielle",
+        "numérique", "digital", "web", "mobile", "cloud", "devops",
+        "python", "java", "algorithme", "base de données", "si",
+    }),
+    "finance": frozenset({
+        "finance", "comptabilité", "accounting", "gestion", "économie",
+        "audit", "fiscalité", "banque", "bourse", "trésorerie",
+        "contrôle de gestion", "sciences économiques", "management financier",
+        "gestion financière", "analyse financière", "microéconomie",
+    }),
+    "marketing": frozenset({
+        "marketing", "communication", "commerce", "vente", "publicité",
+        "média", "stratégie commerciale", "brand", "digital marketing",
+        "community", "relations publiques",
+    }),
+    "rh": frozenset({
+        "ressources humaines", "rh", "management", "gestion des ressources",
+        "psychologie du travail", "relations sociales", "droit social",
+        "talent", "recrutement", "formation professionnelle",
+    }),
+    "droit": frozenset({
+        "droit", "juridique", "law", "sciences juridiques", "notariat",
+        "droit des affaires", "droit public", "droit privé", "avocat",
+    }),
+    "medecine": frozenset({
+        "médecine", "santé", "soins", "pharmacie", "paramédical",
+        "infirmier", "dentaire", "biomédical", "sciences médicales",
+        "chirurgie", "pathologie", "biologie médicale", "kiné",
+    }),
+    "btp": frozenset({
+        "génie civil", "architecture", "construction", "btp",
+        "topographie", "bâtiment", "travaux publics", "structures",
+        "géotechnique", "hydraulique",
+    }),
+    "logistique": frozenset({
+        "logistique", "supply chain", "transport", "achats",
+        "génie industriel", "gestion de production", "qualité",
+        "lean", "management industriel",
+    }),
+    "sciences": frozenset({
+        "chimie", "physique", "biologie", "mathématiques",
+        "sciences", "physique-chimie", "biochimie",
+    }),
+    "lettres": frozenset({
+        "lettres", "langues", "littérature", "traduction",
+        "français", "anglais", "linguistique", "fle",
+    }),
+}
+
+# Groupes adjacents — domaines proches → pénalité réduite
+_EDU_ADJACENT: Dict[str, frozenset] = {
+    "informatique": frozenset({"sciences", "logistique"}),
+    "finance":      frozenset({"marketing", "rh", "logistique"}),
+    "marketing":    frozenset({"finance", "rh"}),
+    "rh":           frozenset({"droit", "finance", "marketing"}),
+    "droit":        frozenset({"rh", "finance"}),
+    "medecine":     frozenset({"sciences"}),
+    "btp":          frozenset({"sciences", "logistique"}),
+    "logistique":   frozenset({"finance", "informatique", "btp"}),
+    "sciences":     frozenset({"informatique", "médecine", "btp"}),
+    "lettres":      frozenset({"rh", "marketing"}),
+}
+
+
+def _normalize_accents(text: str) -> str:
+    """Normalise les accents pour comparaison robuste."""
+    import unicodedata
+    return "".join(
+        c for c in unicodedata.normalize("NFD", text)
+        if unicodedata.category(c) != "Mn"
+    )
+
+
+def _detect_edu_domain(text: str) -> Optional[str]:
+    """Détecte le domaine d'études depuis un texte (spécialité, description offre...)."""
+    text_norm = _normalize_accents(text.lower())
+    best_domain = None
+    best_score = 0
+    for domain, keywords in _EDU_DOMAINS.items():
+        hits = sum(1 for kw in keywords if _normalize_accents(kw) in text_norm)
+        if hits > best_score:
+            best_score = hits
+            best_domain = domain
+    return best_domain if best_score >= 1 else None
+
+
+def _edu_domain_compatibility(cand_domain: Optional[str], offer_domain: Optional[str]) -> float:
+    """
+    Retourne la compatibilité entre domaine d'études candidat et domaine de l'offre.
+
+    Mêmes domaine       → 1.00
+    Domaines adjacents  → 0.75
+    Domaines différents → 0.45
+    Domaine inconnu     → 0.80 (on ne pénalise pas si on ne sait pas)
+    """
+    if cand_domain is None or offer_domain is None:
+        return 0.80
+    if cand_domain == offer_domain:
+        return 1.00
+    if offer_domain in _EDU_ADJACENT.get(cand_domain, frozenset()):
+        return 0.75
+    return 0.45
+
+
+def _isco_role_level(major_group: int) -> int:
+    """Convertit un major group ISCO en niveau de rôle 1-5."""
+    if major_group == 1: return 5   # managers/directeurs
+    if major_group == 2: return 4   # professionnels bac+3/5
+    if major_group == 3: return 3   # techniciens
+    if major_group in (4, 5): return 2   # employés / services
+    if major_group >= 6: return 1   # artisans, ouvriers, élémentaire
+    return 3
+
+
+def _hard_formation_cap(required_edu: int, cand_edu: int) -> Optional[float]:
+    """
+    Cap dur basé sur l'écart de niveau de formation.
+    S'applique INDÉPENDAMMENT de la compatibilité de domaine ESCO :
+    même si infirmier et pédiatre sont "adjacents" en ESCO, un gap
+    de 5 niveaux de diplôme est rédhibitoire en recrutement réel.
+
+    Mapping niveaux : 0=sans, 1=Bac, 2=Bac+2, 3=Bac+3, 4=Bac+4,
+                      5=Bac+5, 8=Bac+8 (médecine/doctorat)
+    """
+    if required_edu <= 0 or cand_edu <= 0:
+        return None   # formation non renseignée → pas de cap dur
+    gap = required_edu - cand_edu
+    if gap >= 5: return 0.25   # ex: Bac+3 → Bac+8 (infirmier → médecin)
+    if gap >= 3: return 0.40   # ex: Bac+2 → Bac+5 (technicien → master)
+    if gap >= 2: return 0.52   # ex: Bac+3 → Bac+5 (licence → master)
+    if gap == 1: return 0.65   # ex: Bac+4 → Bac+5
+    return None                # même niveau ou candidat surqualifié → pas de cap
 
 
 def _detect_profession_from_cv(
     raw_lower: str, parsed_data: Dict[str, Any]
-) -> Tuple[Optional[str], int, List[str]]:
+) -> Tuple[Optional[Dict], int, List[str]]:
     """
-    Détecte le domaine professionnel et les compétences implicites du candidat.
-    Retourne (domaine, niveau_rôle 1-5, compétences_implicites).
+    Détecte le domaine ISCO-08 du candidat via EscoService (universel).
+    Retourne (domaine_dict, niveau_rôle 1-5, compétences_implicites).
     """
+    esco = EscoService.get()
+
+    # Construire les textes candidats par ordre de priorité
     candidate_texts: List[str] = []
     meta = parsed_data.get("metadata") or {}
     for key in ("titre_professionnel", "titre", "poste", "current_title", "intitule"):
         val = meta.get(key)
         if isinstance(val, str) and val.strip():
-            candidate_texts.append(val.lower().strip())
+            candidate_texts.append(val.strip())
     for exp in (parsed_data.get("experiences") or [])[:3]:
         if not isinstance(exp, dict):
             continue
         for key in ("poste", "title", "intitule", "fonction", "position"):
             val = exp.get(key)
             if isinstance(val, str) and val.strip():
-                candidate_texts.append(val.lower().strip())
-    candidate_texts.append(raw_lower[:500])
+                candidate_texts.append(val.strip())
+    candidate_texts.append(raw_lower[:300])
+
+    # Trouver le meilleur domaine ESCO
+    best: Optional[Dict] = None
+    best_score = 0.0
     for text in candidate_texts:
-        for (pattern, domain, level, skills) in _PROFESSION_ONTOLOGY:
-            if _re.search(pattern, text, _re.IGNORECASE):
-                return domain, level, skills
-    return None, 0, []
+        result = esco.detect_domain(text)
+        if result and result["score"] > best_score:
+            best_score = result["score"]
+            best = result
+
+    if best is None:
+        # Fallback : ancienne ontologie hardcodée si ESCO non chargé
+        for text in candidate_texts:
+            for (pattern, domain, level, skills) in _PROFESSION_ONTOLOGY_FALLBACK:
+                if _re.search(pattern, text, _re.IGNORECASE):
+                    return {"isco_code": domain, "major_group": 0, "skills_fr": skills}, level, skills
+        return None, 0, []
+
+    level = _isco_role_level(best["major_group"])
+    return best, level, best.get("skills_fr", [])
 
 
-def _detect_offer_domain(offer: Any) -> Tuple[Optional[str], int]:
-    """Détecte le domaine et niveau de rôle attendu dans l'offre."""
-    offer_text = (
-        (offer.titre or "") + " " + ((offer.description or "")[:400])
-    ).lower()
-    for (pattern, domain, level, _skills) in _PROFESSION_ONTOLOGY:
-        if _re.search(pattern, offer_text, _re.IGNORECASE):
-            return domain, level
-    return None, 0
+def _detect_offer_domain(offer: Any) -> Tuple[Optional[Dict], int]:
+    """Détecte le domaine ISCO-08 de l'offre via EscoService (universel)."""
+    esco = EscoService.get()
+    offer_text = ((offer.titre or "") + " " + ((offer.description or "")[:300])).strip()
+    result = esco.detect_domain(offer_text)
+
+    if result is None:
+        # Fallback ancienne ontologie
+        offer_lower = offer_text.lower()
+        for (pattern, domain, level, _skills) in _PROFESSION_ONTOLOGY_FALLBACK:
+            if _re.search(pattern, offer_lower, _re.IGNORECASE):
+                return {"isco_code": domain, "major_group": 0, "skills_fr": []}, level
+        return None, 0
+
+    level = _isco_role_level(result["major_group"])
+    return result, level
 
 
 def _institution_prestige_score(parsed_data: Dict[str, Any]) -> float:
@@ -642,6 +851,81 @@ def _clip_words(text: str, max_tokens: int = 512) -> str:
     return " ".join(words[:max_tokens])
 
 
+def _extract_title_skill(offer_title: str, offer_skills: List[str], encode_fn=None) -> Optional[str]:
+    """
+    Detects the central skill using semantic similarity (BGE-M3 / SentenceTransformer).
+    No hardcoded list — the model understands job titles across all domains.
+
+    Strategy:
+      1. Semantic: embed the title, embed each required skill, pick best cosine match.
+      2. Lexical fallback: check if a required skill appears literally in the title.
+
+    Works for IT, Finance, Healthcare, Law, BTP, Logistics, HR... without any domain list.
+    """
+    from rapidfuzz import fuzz as _rfuzz
+
+    if not offer_title or not offer_skills:
+        return None
+
+    title_norm = _normalize_accents(offer_title.lower())
+    clean_skills = [s for s in offer_skills if s and len(s.strip()) >= 2]
+    if not clean_skills:
+        return None
+
+    # 1. Semantic matching via the loaded BGE-M3 / SentenceTransformer encoder
+    if encode_fn is not None:
+        try:
+            title_emb = encode_fn(offer_title)
+            best_skill, best_sim = None, 0.0
+            for skill in clean_skills:
+                sim = _cosine(title_emb, encode_fn(skill))
+                if sim > best_sim:
+                    best_sim = sim
+                    best_skill = skill
+            if best_skill and best_sim >= 0.45:
+                return _normalize_accents(best_skill.lower())
+        except Exception:
+            pass
+
+    # 2. Lexical fallback — skill present literally in the title
+    for skill in clean_skills:
+        s_norm = _normalize_accents(skill.lower().strip())
+        if len(s_norm) >= 3 and s_norm in title_norm:
+            return s_norm
+        for word in title_norm.split():
+            if len(word) >= 3 and _rfuzz.ratio(word, s_norm) >= 88:
+                return s_norm
+
+    return None
+
+def _candidate_has_skill(skill_canonical: str, cv_skills: List[str]) -> bool:
+    """
+    Vérifie si le candidat possède la compétence centrale.
+    Utilise correspondance exacte, fuzzy et expansion de synonymes.
+    """
+    if not skill_canonical or not cv_skills:
+        return False
+
+    from rapidfuzz import fuzz as _rfuzz
+    skill_norm = _normalize_accents(skill_canonical.lower())
+
+    for s in cv_skills:
+        s_norm = _normalize_accents(s.lower())
+        # Match exact ou partiel
+        if skill_norm in s_norm or s_norm in skill_norm:
+            return True
+        # Match fuzzy
+        if _rfuzz.token_set_ratio(skill_norm, s_norm) >= 85:
+            return True
+        # Expansion synonymes
+        if skill_norm in _TECH_EXPANSION.get(s_norm, frozenset()):
+            return True
+        if s_norm in _TECH_EXPANSION.get(skill_norm, frozenset()):
+            return True
+
+    return False
+
+
 def _safe_list_of_strings(values: Any) -> List[str]:
     out: List[str] = []
     if not isinstance(values, list):
@@ -669,7 +953,7 @@ _MODELS_ROOT = os.path.join(
 )
 # MLP head weights are decoupled from the transformer — loaded independently.
 _MLP_WEIGHTS_PATH = os.path.join(
-    _MODELS_ROOT, "talentmatch-bert-v2.0", "scoring_mlp.pt"
+    _MODELS_ROOT, "fusion_mlp", "fusion_mlp.pt"
 )
 # BGE-M3 — SOTA multilingual sentence embedder (~568M params, 1024-dim,
 # normalized outputs, no prefix required).
@@ -682,33 +966,67 @@ _EMBEDDER_DIM = 1024
 
 
 class _ScoringMLP(nn.Module if _TORCH_AVAILABLE else object):
-    """MLP 5 dimensions -> score 0-100% appris."""
+    """MLP 7 features → score [0,1] — architecture v2."""
     def __init__(self):
         if _TORCH_AVAILABLE:
             super().__init__()
             self.net = nn.Sequential(
-                nn.Linear(5, 128), nn.ReLU(), nn.Dropout(0.15),
-                nn.Linear(128, 64), nn.ReLU(), nn.Dropout(0.10),
-                nn.Linear(64, 32),  nn.ReLU(),
-                nn.Linear(32, 1),   nn.Sigmoid(),
+                nn.Linear(7, 64),  nn.BatchNorm1d(64), nn.ReLU(), nn.Dropout(0.20),
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.10),
+                nn.Linear(32, 1),  nn.Sigmoid(),
             )
+            self.n_features = 7
 
     def forward(self, x):
-        return self.net(x).squeeze(-1) * 100
+        return self.net(x).squeeze(-1)
+
+
+class _ScoringMLPv3(nn.Module if _TORCH_AVAILABLE else object):
+    """MLP 9 features → score [0,1] — architecture v3 (domaine exp + formation)."""
+    def __init__(self):
+        if _TORCH_AVAILABLE:
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(9, 64),  nn.BatchNorm1d(64), nn.ReLU(), nn.Dropout(0.20),
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.10),
+                nn.Linear(32, 1),  nn.Sigmoid(),
+            )
+            self.n_features = 9
+
+    def forward(self, x):
+        return self.net(x).squeeze(-1)
+
+
+class _ScoringMLPv3b1(nn.Module if _TORCH_AVAILABLE else object):
+    """MLP 10 features -> score [0,1] — architecture B1 (titre_skill, crit_ratio, offer_type)."""
+    def __init__(self):
+        if _TORCH_AVAILABLE:
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(10, 64), nn.BatchNorm1d(64), nn.ReLU(), nn.Dropout(0.20),
+                nn.Linear(64, 32), nn.ReLU(),           nn.Dropout(0.10),
+                nn.Linear(32, 1),  nn.Sigmoid(),
+            )
+            self.n_features = 10
+
+    def forward(self, x):
+        return self.net(x).squeeze(-1)
 
 
 class BERTMatchingScorer:
     def __init__(self, model_name: str = _EMBEDDER_MODEL):
         self._st_model   = None    # SentenceTransformer (bi-encoder)
         self._reranker   = None    # CrossEncoder (joint scorer)
-        self._mlp        = None    # ScoringMLP 5D
+        self._mlp         = None    # FusionMLP (v2=7D, v3=9D)
+        self._mlp_version = 0       # 0=absent, 2=7feat, 3=9feat
         self._load_attempted = False
         self._reranker_load_attempted = False
         self.ready       = False
         self.reranker_ready = False
         self.load_error: Optional[str] = None
         self.reranker_load_error: Optional[str] = None
-        self.model_name  = model_name
+        self._model_path = model_name   # chemin/nom réel pour charger le transformer
+        self.model_name  = model_name   # nom d'affichage (peut être surchargé)
         self.model_version = model_name
         self.reranker_model_name = _RERANKER_MODEL
 
@@ -719,9 +1037,9 @@ class BERTMatchingScorer:
 
         try:
             from sentence_transformers import SentenceTransformer  # type: ignore
-            self._st_model = SentenceTransformer(_EMBEDDER_MODEL)
-            self.model_name    = _EMBEDDER_MODEL
-            self.model_version = _EMBEDDER_MODEL
+            # Utilise _model_path (chemin réel) et non model_name (qui peut être
+            # un nom d'affichage surchargé après la construction).
+            self._st_model = SentenceTransformer(self._model_path)
             self.ready = True
             # Charger le MLP si disponible (poids indépendants du transformer)
             self._load_mlp(_MLP_WEIGHTS_PATH)
@@ -757,12 +1075,35 @@ class BERTMatchingScorer:
         if not os.path.exists(mlp_path):
             return
         try:
-            mlp = _ScoringMLP()
-            mlp.load_state_dict(torch.load(mlp_path, map_location="cpu", weights_only=True))
-            mlp.eval()
-            self._mlp = mlp
-        except Exception:
+            # Priorite : v3b1 (10D) > v3 (9D) > v2 (7D)
+            mlp_v3b1_path = mlp_path.replace("fusion_mlp.pt", "fusion_mlp_v3b1.pt")
+            mlp_v3_path   = mlp_path.replace("fusion_mlp.pt", "fusion_mlp_v3.pt")
+            if os.path.exists(mlp_v3b1_path):
+                mlp = _ScoringMLPv3b1()
+                mlp.load_state_dict(torch.load(mlp_v3b1_path, map_location="cpu", weights_only=True))
+                mlp.eval()
+                self._mlp = mlp
+                self._mlp_version = 4   # v3b1 = version 4 (10 features)
+                print(f"[MLP] v3b1 (10D) charge depuis {mlp_v3b1_path}")
+            elif os.path.exists(mlp_v3_path):
+                mlp = _ScoringMLPv3()
+                mlp.load_state_dict(torch.load(mlp_v3_path, map_location="cpu", weights_only=True))
+                mlp.eval()
+                self._mlp = mlp
+                self._mlp_version = 3
+            elif os.path.exists(mlp_path):
+                mlp = _ScoringMLP()
+                mlp.load_state_dict(torch.load(mlp_path, map_location="cpu", weights_only=True))
+                mlp.eval()
+                self._mlp = mlp
+                self._mlp_version = 2
+            else:
+                self._mlp = None
+                self._mlp_version = 0
+        except Exception as _e:
+            print(f"[MLP] Chargement echoue : {_e}")
             self._mlp = None
+            self._mlp_version = 0
 
     def _encode(self, texts: List[str]) -> np.ndarray:
         """Encode des textes en vecteurs normalisés via SentenceTransformer."""
@@ -772,23 +1113,86 @@ class BERTMatchingScorer:
             texts, convert_to_numpy=True, normalize_embeddings=True
         )
 
-    def _mlp_score(
+    def _calibrated_score(
         self,
         sem_sim: float,
         skill_rate: float,
         exp_score: float,
         formation_score: float,
-        appreciated_rate: float,
-    ) -> Optional[float]:
-        """Retourne le score MLP 0-1 ou None si MLP indisponible."""
-        if self._mlp is None or not _TORCH_AVAILABLE:
-            return None
-        x = torch.tensor(
-            [[sem_sim, skill_rate, exp_score, formation_score, appreciated_rate]],
-            dtype=torch.float32,
+        domain_compat_key: str = "unknown",
+        w_skills: float = 0.40,
+        w_sem:    float = 0.25,
+        w_exp:    float = 0.20,
+        w_form:   float = 0.15,
+    ) -> float:
+        """Score calibré : formule pondérée × domain_multiplier multiplicatif.
+
+        Poids dynamiques selon type d'offre (Phase 3) :
+          Tech spécialisé : skills 55% / sem 20% / exp 15% / form 10%
+          Senior 5+ ans   : skills 40% / sem 20% / exp 30% / form 10%
+          Stage/Junior    : skills 45% / sem 25% / exp  5% / form 25%
+          Management/RH   : skills 35% / sem 25% / exp 25% / form 15%
+
+        domain_multiplier (multiplicatif) :
+          same × 1.00 · adjacent × 0.70 · same_major × 0.40 · different × 0.15
+        """
+        _DOMAIN_MULT = {
+            "same":       1.00,
+            "adjacent":   0.70,
+            "same_major": 0.50,   # domaines du même secteur (RH↔Finance) : moins pénalisé
+            "different":  0.15,
+            "unknown":    1.00,
+        }
+        base = (
+            w_skills * skill_rate
+          + w_sem    * sem_sim
+          + w_exp    * exp_score
+          + w_form   * formation_score
         )
-        with torch.no_grad():
-            return float(self._mlp(x)) / 100.0
+        mult = _DOMAIN_MULT.get(domain_compat_key, 0.85)
+        return round(max(0.04, min(0.95, base * mult)), 4)
+
+
+    @staticmethod
+    def _compute_mlp_features(
+        *,
+        s_semantique: float,
+        s_competences: float,
+        s_experience: float,
+        s_formation: float,
+        sem_v2: float,
+        edu_domain_compat: float,
+        exp_domain_ratio: float,
+        title_skill_match: float,
+        crit_skill_ratio: float,
+        offer_type_encoded: float,
+    ) -> "List[float]":
+        """Vecteur 10D pour le MLP.
+        Methode unique : inference ET generation dataset (zero train/prod gap).
+
+        1. s_semantique       — similarite BGE-M3
+        2. s_competences      — skills ponderees criticite (Phase 2)
+        3. s_experience       — score experience
+        4. s_formation        — score formation + domaine (A3)
+        5. sem_v2             — cross-encoder (ou proxy BGE-M3)
+        6. edu_domain_compat  — compatibilite domaine etudes
+        7. exp_domain_ratio   — ratio experience dans le domaine
+        8. title_skill_match  — 1.0 si skill titre presente, 0.0 sinon (Phase 1)
+        9. crit_skill_ratio   — ratio skills critiques matchees (Phase 2)
+       10. offer_type_encoded — 0.0=junior / 0.25=mgmt / 0.5=tech / 1.0=senior
+        """
+        return [
+            float(s_semantique),
+            float(s_competences),
+            float(s_experience),
+            float(s_formation),
+            float(sem_v2),
+            float(edu_domain_compat),
+            float(exp_domain_ratio),
+            float(title_skill_match),
+            float(crit_skill_ratio),
+            float(offer_type_encoded),
+        ]
 
     def _get_model(self):
         """Compatibilité — retourne le SentenceTransformer chargé (ou None)."""
@@ -1097,40 +1501,202 @@ class BERTMatchingScorer:
 
         return round(min(1.0, matches / len(offer_skills)), 4)
 
+    def _compute_domain_relevant_years(
+        self,
+        cv_experiences: List[Dict],
+        offer_skills: List[str],
+        offer_text: str,
+    ) -> Tuple[float, float]:
+        """
+        Calcule les années d'expérience pertinentes par rapport au domaine de l'offre.
+
+        Pour chaque expérience du CV :
+          - Calcule le chevauchement de compétences avec l'offre (via _TECH_EXPANSION)
+          - Calcule la similarité sémantique BGE avec le texte de l'offre
+          - Si l'expérience est "dans le domaine" → compte ses années à plein poids
+          - Si l'expérience est hors-domaine → compte à 20%
+
+        Retourne (domain_relevant_years, total_years).
+        """
+        if not cv_experiences or not isinstance(cv_experiences, list):
+            return 0.0, 0.0
+
+        offer_norms = {_normalize_skill(s) for s in offer_skills}
+        offer_expanded: set[str] = set()
+        for s in offer_norms:
+            offer_expanded.add(s)
+            offer_expanded.update(_TECH_EXPANSION.get(s, frozenset()))
+
+        domain_years = 0.0
+        total_years  = 0.0
+
+        for exp in cv_experiences:
+            if not isinstance(exp, dict):
+                continue
+
+            # Durée de cette expérience
+            duration = 0.0
+            raw_dur  = exp.get("duree_mois") or exp.get("duration_months") or 0
+            try:
+                duration = float(raw_dur) / 12.0
+            except (TypeError, ValueError):
+                duration = 0.0
+            if duration <= 0:
+                duration = 1.0  # durée inconnue : on estime 1 an
+
+            total_years += duration
+
+            # Texte de cette expérience
+            exp_parts: List[str] = []
+            for key in ("poste", "title", "entreprise", "company", "description"):
+                val = exp.get(key)
+                if isinstance(val, str) and val.strip():
+                    exp_parts.append(val.strip())
+            missions = exp.get("missions") or []
+            if isinstance(missions, list):
+                exp_parts += [m for m in missions if isinstance(m, str) and m.strip()]
+            exp_text = " ".join(exp_parts).lower()
+
+            if not exp_text.strip():
+                # Pas de texte → expérience neutre, on compte 50%
+                domain_years += duration * 0.5
+                continue
+
+            # Compétences mentionnées dans cette expérience
+            exp_norms = set()
+            for word in _re.split(r"[\s,;/]+", exp_text):
+                w = _normalize_skill(word)
+                if len(w) >= 3:
+                    exp_norms.add(w)
+                    exp_norms.update(_TECH_EXPANSION.get(w, frozenset()))
+
+            # Chevauchement avec l'offre
+            overlap = len(offer_expanded & exp_norms)
+            overlap_ratio = overlap / max(len(offer_expanded), 1)
+
+            # Similarité sémantique BGE entre cette expérience et l'offre
+            # On utilise le cosinus brut (pas normalisé) : domaines différents → cosine 0.1-0.3
+            # La normalisation (sim+1)/2 masquerait la différence de domaine
+            bge_raw = 0.0
+            if offer_text and exp_text and self._ensure_loaded():
+                try:
+                    embs = self._encode([
+                        _clip_words(offer_text, 128),
+                        _clip_words(exp_text, 128),
+                    ])
+                    bge_raw = float(_cosine(
+                        np.asarray(embs[0], dtype=float),
+                        np.asarray(embs[1], dtype=float),
+                    ))
+                    bge_raw = max(0.0, min(1.0, bge_raw))  # cosinus brut clamped [0,1]
+                except Exception:
+                    bge_raw = 0.0
+
+            # Score de pertinence : skill overlap domine (80%), BGE complète (20%)
+            # overlap_ratio est plus fiable pour distinguer les domaines
+            relevance = overlap_ratio * 0.80 + bge_raw * 0.20
+
+            # Seuils de pertinence → poids
+            if overlap_ratio >= 0.25 or relevance >= 0.40:
+                weight = 1.00   # expérience clairement dans le domaine
+            elif overlap_ratio >= 0.10 or relevance >= 0.20:
+                weight = 0.55   # domaine adjacent / partiellement pertinent
+            elif overlap_ratio >= 0.03 or relevance >= 0.10:
+                weight = 0.20   # domaine éloigné
+            else:
+                weight = 0.05   # hors-domaine complet
+
+            domain_years += duration * weight
+
+        return round(domain_years, 2), round(total_years, 2)
+
+    def _skill_credibility(
+        self,
+        skill: str,
+        exp_text_lower: str,
+    ) -> float:
+        """
+        Retourne le facteur de crédibilité d'un skill (0.6 à 1.0).
+
+        1.0 → skill présente dans les descriptions d'expériences (crédible)
+        0.6 → skill uniquement déclarée en section compétences, absente des expériences
+        0.8 → skill trouvée via expansion/synonyme dans les expériences
+        """
+        if not exp_text_lower:
+            return 0.8  # pas d'expériences → on ne peut pas vérifier, légère précaution
+
+        s_norm = _normalize_skill(skill)
+        s_low  = skill.lower()
+
+        # Présence directe
+        if s_low in exp_text_lower or s_norm in exp_text_lower:
+            return 1.0
+
+        # Présence via expansion (synonymes)
+        for equiv in _TECH_EXPANSION.get(s_norm, frozenset()):
+            if equiv in exp_text_lower:
+                return 0.8
+
+        return 0.6  # skill non trouvée dans les expériences
+
     def score_experience(
         self,
         cv_years: float,
         required_years: float,
         offer_text: str = "",
         cv_experience_text: str = "",
-    ) -> float:
+        cv_experiences: Optional[List[Dict]] = None,
+        offer_skills: Optional[List[str]] = None,
+    ) -> Tuple[float, Dict[str, Any]]:
         """
         Dimension 2 — Expérience (20% du score final).
 
-        50% ratio années  +  50% similarité sémantique BERT du domaine d'expérience.
-        Si le modèle est indisponible, repli sur le ratio seul.
+        Formule v2 (semaine 2) :
+          40% années pertinentes (dans le bon domaine)
+          30% années totales (base)
+          30% similarité sémantique BGE
 
         Exemples :
-            Requis 2 ans dev Python, CV 3 ans dev Python → 1.00 (ratio OK + domaine OK)
-            Requis 2 ans dev Python, CV 3 ans marketing  → ~0.55 (ratio OK, domaine éloigné)
-            Requis 0 ans                                 → 1.00 (pas de prérequis)
+            Offre finance, CV 3 ans finance                → ~0.95
+            Offre finance, CV 3 ans IT                     → ~0.35
+            Offre développeur, CV 3 ans dev Python + 2 mktg→ ~0.85
+            Requis 0 ans                                   → 1.00
         """
-        # Composante 1 : ratio années
+        detail: Dict[str, Any] = {}
+
         if not required_years or required_years <= 0:
-            years_ratio = 1.0
-        elif cv_years >= required_years:
-            years_ratio = 1.0
-        else:
-            years_ratio = max(0.0, cv_years / required_years)
+            detail["note"] = "no_experience_required"
+            return 1.0, detail
 
-        # Composante 2 : pertinence sémantique du domaine d'expérience
+        # ── Composante 1 : années pertinentes dans le domaine ────────────────
+        domain_years, total_years_parsed = 0.0, cv_years
+        if cv_experiences and offer_skills:
+            domain_years, total_years_parsed = self._compute_domain_relevant_years(
+                cv_experiences, offer_skills, offer_text
+            )
+            detail["domain_relevant_years"] = domain_years
+            detail["total_years_parsed"]    = total_years_parsed
+        else:
+            domain_years = cv_years
+
+        domain_ratio = min(1.0, max(0.0, domain_years / required_years))
+        total_ratio  = min(1.0, max(0.0, cv_years     / required_years))
+
+        # ── Composante 2 : similarité sémantique (domaine global) ────────────
         if offer_text and cv_experience_text:
-            domain_sim, _ = self.score_semantic(offer_text, cv_experience_text)
+            sem_sim, _ = self.score_semantic(offer_text, cv_experience_text)
         else:
-            domain_sim = years_ratio  # fallback : repli sur le ratio
+            sem_sim = (domain_ratio + total_ratio) / 2.0
 
-        score = years_ratio * 0.50 + domain_sim * 0.50
-        return round(max(0.0, min(1.0, score)), 4)
+        # ── Score final ───────────────────────────────────────────────────────
+        score = domain_ratio * 0.40 + total_ratio * 0.30 + sem_sim * 0.30
+        detail.update({
+            "domain_ratio": round(domain_ratio, 3),
+            "total_ratio":  round(total_ratio, 3),
+            "sem_sim":      round(sem_sim, 3),
+            "required_years": required_years,
+        })
+        return round(max(0.0, min(1.0, score)), 4), detail
 
     def score_formation(
         self,
@@ -1290,10 +1856,10 @@ class BERTMatchingScorer:
           Peu de skills     → sémantique compensatrice
         """
         # ── Poids initiaux de base ────────────────────────────────
-        w_comp = 0.40
+        w_comp = 0.50
         w_exp  = 0.20
         w_form = 0.15
-        w_sem  = 0.25
+        w_sem  = 0.15
 
         required_years      = profile["required_years"]
         offer_skills_count  = profile["offer_skills_count"]
@@ -1302,37 +1868,37 @@ class BERTMatchingScorer:
         if profile["is_stage"] or profile["is_alternance"]:
             # Étudiant : exp quasi nulle, formation importante, skills + sémantique
             w_exp  = 0.03
-            w_comp = 0.42
-            w_form = 0.22
-            w_sem  = 0.33
+            w_comp = 0.50
+            w_form = 0.25
+            w_sem  = 0.22
 
         elif profile["is_junior"] or required_years == 0:
             # Junior : peu d'exp attendue
             w_exp  = 0.06
-            w_comp = 0.44
+            w_comp = 0.55
             w_form = 0.15
-            w_sem  = 0.35
+            w_sem  = 0.24
 
         elif profile["is_senior"] or required_years >= 5:
             # Senior : expérience très importante
             w_exp  = 0.33
-            w_comp = 0.34
+            w_comp = 0.42
             w_form = 0.13
-            w_sem  = 0.20
+            w_sem  = 0.12
 
         elif required_years >= 3:
             # Confirmé
             w_exp  = 0.25
-            w_comp = 0.38
+            w_comp = 0.48
             w_form = 0.14
-            w_sem  = 0.23
+            w_sem  = 0.13
 
         else:
             # Débutant / 1-2 ans
             w_exp  = 0.12
-            w_comp = 0.43
+            w_comp = 0.53
             w_form = 0.15
-            w_sem  = 0.30
+            w_sem  = 0.20
 
         # ── 2. Adapter selon le domaine ──────────────────────────
         if profile["is_technical"] and not profile["is_management"]:
@@ -1398,13 +1964,14 @@ class BERTMatchingScorer:
         cv_skills      = _candidate_skills(candidate)
         cand_years     = _candidate_years(candidate)
         cand_edu       = _candidate_education_level(candidate)
-        desc_blob      = ((offer.description or "") + "\n" + (offer.titre or "")).strip()
+        desc_blob      = _normalize_offer_text(((offer.description or "") + "\n" + (offer.titre or "")).strip())
         required_years = (
             int(offer.experience_requise)
             if getattr(offer, 'experience_requise', None) is not None
             else (_extract_required_years(desc_blob) or 0)
         )
-        required_edu   = _extract_required_education_level(desc_blob) or 0
+        _stored_edu    = getattr(offer, 'formation_requise_niveau', None)
+        required_edu   = int(_stored_edu) if _stored_edu is not None else (_extract_required_education_level(desc_blob) or 0)
         offer_text     = _offer_text_for_semantic(offer)
         cv_text        = _candidate_text_for_semantic(candidate)
 
@@ -1419,6 +1986,10 @@ class BERTMatchingScorer:
                 if isinstance(val, str) and val.strip():
                     exp_parts.append(val.strip())
         cv_experience_text = _clip_words(" ".join(exp_parts), 128) if exp_parts else ""
+        # Si le texte d'expérience est trop pauvre (poste non extrait), on enrichit avec
+        # les skills déclarés du candidat — ils reflètent son domaine de compétences réel.
+        if len(cv_experience_text.split()) < 8:
+            cv_experience_text = (_clip_words(" ".join(cv_skills[:25]), 80) + " " + cv_experience_text).strip()
 
         # ── 4 dimensions ─────────────────────────────────────────
         # Compétences : hybride RapidFuzz + BERT + fallback texte brut
@@ -1469,16 +2040,52 @@ class BERTMatchingScorer:
 
         cv_norms  = {_normalize_skill(s): s for s in cv_skills_filtered}
 
+        # ── Phase 2 : Pondération skills par criticité ──────────────────────
+        # Critique (titre du poste) × 3 / Requise (métier) × 2 / Générique × 1
+        # On calcule _title_skill ici pour réutiliser dans Phase 1 (cap) ET Phase 2 (poids)
+        _title_skill_early = _extract_title_skill(
+            offer.titre or "", offer_skills, encode_fn=self._encode
+        )
+        _title_norm_early = _normalize_skill(_title_skill_early) if _title_skill_early else ""
+
+        # Outils universels transversaux — poids 1 car peu discriminants entre candidats
+        _GENERIC_TOOLS = frozenset({
+            "git", "github", "gitlab", "svn",
+            "excel", "word", "powerpoint", "office", "libreoffice", "outlook",
+            "teams", "slack", "zoom", "skype",
+            "jira", "confluence", "trello", "notion", "asana",
+            "windows", "linux", "macos",
+        })
+
+        def _skill_weight_and_crit(skill: str):
+            s_n = _normalize_skill(skill)
+            if _title_norm_early and s_n == _title_norm_early:
+                return 3.0, "critique"
+            if s_n in _GENERIC_TOOLS or any(s_n.startswith(g) for g in _GENERIC_TOOLS):
+                return 1.0, "generique"
+            return 2.0, "requise"
+
+        _skills_criticality: Dict[str, str] = {}
+        total_weight = sum(_skill_weight_and_crit(s)[0] for s in offer_skills) if offer_skills else 1.0
+
         skills_matched: List[Dict[str, str]] = []
         skills_missing: List[str] = []
         total_comp = 0.0
 
+        # Texte des expériences pour le calcul de crédibilité des skills
+        _exp_text_lower = " ".join(exp_parts).lower() if exp_parts else ""
+
         for skill in offer_skills:
             norm = _normalize_skill(skill)
+            credibility = 1.0   # sera ajusté si skill non backée par expériences
             # 1) Match exact après normalisation alias
             if norm in cv_norms:
-                skills_matched.append({"skill": skill, "source": "extrait"})
-                total_comp += 1.0
+                credibility = self._skill_credibility(skill, _exp_text_lower)
+                _w2a, _crit2a = _skill_weight_and_crit(skill)
+                _skills_criticality[skill] = _crit2a
+                skills_matched.append({"skill": skill, "source": "extrait",
+                                       "credibility": round(credibility, 2), "criticite": _crit2a})
+                total_comp += _w2a * 1.0 * credibility
                 continue
             # 2) Fuzzy match sur les skills parsés (filtrés — sans les niés)
             best_fz = max(
@@ -1486,8 +2093,12 @@ class BERTMatchingScorer:
                 default=0,
             )
             if best_fz >= 80:
-                skills_matched.append({"skill": skill, "source": "fuzzy"})
-                total_comp += 1.0
+                credibility = self._skill_credibility(skill, _exp_text_lower)
+                _w2b, _crit2b = _skill_weight_and_crit(skill)
+                _skills_criticality[skill] = _crit2b
+                skills_matched.append({"skill": skill, "source": "fuzzy",
+                                       "credibility": round(credibility, 2), "criticite": _crit2b})
+                total_comp += _w2b * 1.0 * credibility
                 continue
             # 2b) Expansion écosystème — "iOS" satisfait par "Swift", "Android" par "Kotlin"
             cv_norms_set = {_normalize_skill(s) for s in cv_skills_filtered}
@@ -1500,13 +2111,15 @@ class BERTMatchingScorer:
                         eco_found = True
                         break
             if eco_found:
-                skills_matched.append({"skill": skill, "source": "ecosystem"})
-                total_comp += 0.9
+                credibility = self._skill_credibility(skill, _exp_text_lower)
+                _w2c, _crit2c = _skill_weight_and_crit(skill)
+                _skills_criticality[skill] = _crit2c
+                skills_matched.append({"skill": skill, "source": "ecosystem",
+                                       "credibility": round(credibility, 2), "criticite": _crit2c})
+                total_comp += _w2c * 0.9 * credibility
                 continue
 
             # 3) Fallback texte brut — uniquement si la mention n'est pas niée.
-            # Cherche la skill dans le texte brut, puis vérifie qu'aucun mot de
-            # négation n'apparaît dans les 60 caractères qui précèdent.
             skill_lower = skill.lower()
             idx = raw_lower.find(norm) if norm in raw_lower else (
                 raw_lower.find(skill_lower) if skill_lower in raw_lower else -1
@@ -1514,20 +2127,33 @@ class BERTMatchingScorer:
             if idx != -1:
                 context_before = raw_lower[max(0, idx - 60):idx]
                 if not any(neg in context_before for neg in _NEGATIONS_CTX):
-                    skills_matched.append({"skill": skill, "source": "texte_brut"})
-                    total_comp += 0.7
+                    credibility = self._skill_credibility(skill, _exp_text_lower)
+                    _w2d, _crit2d = _skill_weight_and_crit(skill)
+                    _skills_criticality[skill] = _crit2d
+                    skills_matched.append({"skill": skill, "source": "texte_brut",
+                                           "credibility": round(credibility, 2), "criticite": _crit2d})
+                    total_comp += _w2d * 0.7 * credibility
                     continue
             skills_missing.append(skill)
 
-        s_fuzzy_v2    = round(min(1.0, total_comp / max(1, len(offer_skills))), 4) if offer_skills else 0.5
+        # B1 feature #9 : ratio skills critiques matchees
+        _crit_skills_offer   = [s for s in offer_skills
+                                 if _skills_criticality.get(s, "requise") == "critique"]
+        _matched_skill_names = {m["skill"] for m in skills_matched if isinstance(m, dict)}
+        _crit_matched_count  = sum(1 for s in _crit_skills_offer if s in _matched_skill_names)
+        _crit_skill_ratio    = (round(_crit_matched_count / len(_crit_skills_offer), 4)
+                                if _crit_skills_offer else 1.0)
+
+        s_fuzzy_v2    = round(min(1.0, total_comp / max(1.0, total_weight)), 4) if offer_skills else 0.5
         s_bert_skills, _ = self.score_skills_bert(offer_skills, cv_skills_filtered)
-        # Fuzzy est le signal principal (exact + alias + texte brut).
-        # BERT peut ajouter au max +10% pour les synonymes proches (PyTorch ≈ TensorFlow)
-        # mais ne peut pas compenser des skills complètement absents.
         _bert_bonus   = max(0.0, s_bert_skills - s_fuzzy_v2) * 0.20
         s_competences = round(min(1.0, s_fuzzy_v2 + _bert_bonus), 4)
-        # Expérience  : ratio années + BERT domaine
-        s_experience  = self.score_experience(cand_years, required_years, offer_text, cv_experience_text)
+        # Expérience : pertinence domaine + ratio années + sémantique
+        cv_experiences_list = (parsed_for_exp.get("experiences") or [])
+        s_experience, _exp_detail = self.score_experience(
+            cand_years, required_years, offer_text, cv_experience_text,
+            cv_experiences=cv_experiences_list, offer_skills=offer_skills,
+        )
         s_formation   = self.score_formation(cand_edu, required_edu)
 
         # ── Prestige institution de formation ────────────────────────────────
@@ -1535,25 +2161,58 @@ class BERTMatchingScorer:
         # 70% niveau diplôme + 30% prestige institution (ajustement modéré)
         s_formation = round(s_formation * (0.70 + 0.30 * _prestige), 4)
 
-        # Formation domaine — Bac+5 Informatique ≠ Bac+5 Marketing pour un poste dev
-        # Ajuste le score formation par la pertinence sémantique du domaine d'études
+        # Formation domaine — Bac+5 Informatique ≠ Bac+5 Droit pour un poste dev
+        # Couche 1 : mots-clés domaine (rapide, précis)
+        # Couche 2 : BGE cosinus brut (signal sémantique fin)
         if required_edu > 0:
             _edu_texts: List[str] = []
+            _specialites: List[str] = []
             _parsed_edu = parsed_for_exp.get("formations") or parsed_for_exp.get("education") or []
             if isinstance(_parsed_edu, list):
                 for _edu in _parsed_edu:
                     if isinstance(_edu, dict):
-                        for _key in ("diplome", "etablissement", "domaine", "specialite",
+                        _sp = _edu.get("specialite") or _edu.get("domaine") or _edu.get("field")
+                        if isinstance(_sp, str) and _sp.strip():
+                            _specialites.append(_sp.strip())
+                        for _key in ("diplome", "etablissement", "specialite",
                                      "degree", "school", "titre", "field"):
                             _val = _edu.get(_key)
                             if isinstance(_val, str) and _val.strip():
                                 _edu_texts.append(_val.strip())
-            if _edu_texts and offer_text:
-                _edu_domain_sim, _ = self.score_semantic(
-                    offer_text, _clip_words(" ".join(_edu_texts), 128)
-                )
-                # 70% niveau diplôme + 30% pertinence domaine d'études
-                s_formation = round(s_formation * 0.70 + _edu_domain_sim * 0.30, 4)
+
+            # Couche 1 : compatibilité via mots-clés domaine
+            _cand_domain_text = " ".join(_specialites) if _specialites else " ".join(_edu_texts)
+            _offer_domain_text = (offer_text or "") + " " + " ".join(offer_skills)
+            _cand_edu_domain  = _detect_edu_domain(_cand_domain_text)
+            _offer_edu_domain = _detect_edu_domain(_offer_domain_text)
+            _kw_compat = _edu_domain_compatibility(_cand_edu_domain, _offer_edu_domain)
+
+            # Couche 2 : BGE cosinus brut entre spécialité et offre
+            _bge_edu_sim = 0.5
+            if _edu_texts and offer_text and self._ensure_loaded():
+                try:
+                    _embs_edu = self._encode([
+                        _clip_words(offer_text, 128),
+                        _clip_words(" ".join(_edu_texts), 64),
+                    ])
+                    _raw_cos = float(_cosine(
+                        np.asarray(_embs_edu[0], dtype=float),
+                        np.asarray(_embs_edu[1], dtype=float),
+                    ))
+                    _bge_edu_sim = max(0.0, min(1.0, _raw_cos))  # cosinus brut
+                except Exception:
+                    _bge_edu_sim = 0.5
+
+            # Score domaine formation : 65% mots-clés + 35% BGE brut
+            _edu_domain_score = _kw_compat * 0.65 + _bge_edu_sim * 0.35
+
+            # Sauvegarder pour le details dict
+            self._last_edu_domain_cand  = _cand_edu_domain
+            self._last_edu_domain_offer = _offer_edu_domain
+            self._last_edu_kw_compat    = round(_kw_compat, 2)
+
+            # Intégration : 65% niveau diplôme + 35% domaine d'études
+            s_formation = round(s_formation * 0.65 + _edu_domain_score * 0.35, 4)
 
         s_semantique  = self.score_semantique(offer_text, cv_text)
 
@@ -1561,12 +2220,7 @@ class BERTMatchingScorer:
         offer_profile = self._analyze_offer_profile(offer, required_years, required_edu, len(offer_skills))
         W = self._dynamic_weights(offer_profile)
 
-        # Fix 2 — Formation pénalisée si compétences faibles.
-        # Un Bac+5 en Java ne compense pas un poste Python.
-        if s_competences <= 0.50:
-            s_formation = s_formation * 0.5
-
-        # Fix 5 — Expérience pénalisée si domaine incompatible.
+        # Fix 5 — Expérience pénalisée si compétences très faibles.
         # 5 ans de Java ne valent pas grand chose pour un poste Python/ML.
         if s_competences <= 0.40:
             s_experience = s_experience * (0.5 + s_competences)  # réduit graduellement
@@ -1585,21 +2239,23 @@ class BERTMatchingScorer:
         )
 
         # ── Pénalités incohérences appliquées au score final ─────
-        # Chaque niveau d'incohérence réduit le score pour refléter le risque réel.
+        # La pénalité par inco est inversement proportionnelle à la taille de l'offre :
+        # une offre avec 16 skills requis génère naturellement plus d'alertes niv.2
+        # qu'une offre simple → on normalise pour éviter de pénaliser tous les candidats.
+        n_checked = max(5, len(skills_to_check) if skills_to_check else 5)
+        _scale = min(1.0, 5.0 / n_checked)   # 5 skills → ×1.0 / 10 skills → ×0.50 / 16 → ×0.31
         inco_penalty = 0.0
         has_fake_expert = False
         for _inc in inconsistencies:
             _lvl = int(_inc.get("level", 0))
-            if _lvl == 2:
-                inco_penalty += 0.05   # skill absent des expériences
-            elif _lvl == 3:
-                inco_penalty += 0.04   # écosystème manquant
-            elif _lvl == 4:
+            # niv.2 (absent des expériences) retiré des pénalités : trop de faux positifs
+            # car les CVs listent les skills en section dédiée, pas dans chaque expérience.
+            if _lvl == 4:
                 inco_penalty += 0.08   # BERT contexte trop faible
             elif _lvl == 5:
                 inco_penalty += 0.15   # faux expert détecté
                 has_fake_expert = True
-        inco_penalty = min(inco_penalty, 0.20)   # cap global −20%
+        inco_penalty = min(inco_penalty, 0.15)   # cap global −15%
         # Pénalités appliquées après le MLP (voir section ci-dessous)
 
         # ── Matching compétences appréciées ──────────────────────
@@ -1658,9 +2314,19 @@ class BERTMatchingScorer:
         apr_rate = (appreciated_matched / len(appreciated_skills)) if appreciated_skills else 0.5
 
         # ── Détection séniorité — pénalité si junior pour poste senior ──────
-        _offer_senior_level = _detect_seniority_level(
-            (offer.titre or "") + " " + (offer.description or "")[:200]
-        )
+        # Priorité au champ explicite niveau_seniorite si renseigné dans l'offre
+        _niveau_explicite = getattr(offer, "niveau_seniorite", None) or ""
+        _SENIORITY_MAP = {
+            "stage": 1, "alternance": 1, "junior": 2,
+            "confirmé": 3, "confirme": 3, "senior": 4, "expert": 5,
+        }
+        if _niveau_explicite and _niveau_explicite.lower() in _SENIORITY_MAP:
+            _offer_senior_level = _SENIORITY_MAP[_niveau_explicite.lower()]
+        else:
+            _offer_senior_level = _detect_seniority_level(
+                (offer.titre or "") + " " + (offer.description or "")[:200]
+            )
+
         _cv_senior_texts = " ".join([
             raw_lower[:300],
             *[str(e.get("poste", "") or e.get("title", "")) for e in
@@ -1677,71 +2343,197 @@ class BERTMatchingScorer:
             # Offre stage mais candidat senior — surqualifié (pénalité légère)
             s_competences = round(min(s_competences, 0.85), 4)
 
-        # ── Détection mismatch domaine professionnel ─────────────
+        # ── Compatibilité de domaine professionnel (ESCO universel) ────────
         _offer_domain, _offer_role_level = _detect_offer_domain(offer)
-        _domain_cap: Optional[float] = None   # cap sur score_final
-        _domain_penalty_exp = 0.0             # pénalité sur s_experience
+        _domain_penalty_exp = 0.0
+        _compat_key = "unknown"   # "same"|"adjacent"|"same_major"|"different"|"unknown"
 
         if _offer_domain and _cand_domain:
-            if _offer_domain != _cand_domain:
-                _pair = (_offer_domain, _cand_domain)
-                if _pair in _ADJACENT_DOMAINS:
-                    _domain_cap = 0.62   # adjacent → au max "à évaluer" haut
-                else:
-                    _domain_cap = 0.44   # domaine différent → "non adapté"
-            else:
-                # Même domaine mais niveau de rôle insuffisant
-                if _cand_role_level > 0 and _offer_role_level > 0:
-                    _lvl_diff = _offer_role_level - _cand_role_level
-                    if _lvl_diff >= 2:
-                        _domain_penalty_exp = 0.20   # trop junior
-                    elif _lvl_diff == 1:
-                        _domain_penalty_exp = 0.10   # légèrement junior
+            _esco = EscoService.get()
+            _compat_key = _esco.get_compatibility(
+                _cand_domain["isco_code"], _offer_domain["isco_code"]
+            )
+            # Pénalité expérience si niveau de rôle très inférieur
+            if _compat_key in ("same", "adjacent") and _cand_role_level > 0 and _offer_role_level > 0:
+                _lvl_diff = _offer_role_level - _cand_role_level
+                if _lvl_diff >= 2:
+                    _domain_penalty_exp = 0.15
+                elif _lvl_diff == 1:
+                    _domain_penalty_exp = 0.07
 
         if _domain_penalty_exp > 0:
             s_experience = round(max(0.0, s_experience - _domain_penalty_exp), 4)
 
-        # ── Score final — MLP ou formule pondérée ────────────────
-        mlp_result = self._mlp_score(
-            sem_sim          = float(s_semantique),
-            skill_rate       = float(s_competences),
-            exp_score        = float(s_experience),
-            formation_score  = float(s_formation),
-            appreciated_rate = float(apr_rate),
+        # B1 features #8 #10 : title_skill_match + offer_type_encoded
+        _ote_dom_str = str((_offer_domain or {}).get("label", "") or "").lower()
+        _ote_is_mgmt = any(k in _ote_dom_str for k in (
+            "management", "ressources humaines", "direction", "rh",
+            "finance", "comptabil", "juridique", "droit", "vente",
+            "commercial", "marketing", "logistique", "achat",
+        )) or any(k in (offer.titre or "").lower() for k in (
+            "rh", "ressources humaines", "drh", "people",
+            "comptable", "finance", "juriste", "avocat", "commercial",
+        ))
+        _ote_sen_str = (getattr(offer, "niveau_seniorite", None) or "").lower()
+        if _ote_sen_str in ("stage", "alternance", "junior") or _offer_senior_level <= 2:
+            _offer_type_encoded = 0.0
+        elif _offer_senior_level >= 4 and (required_years or 0) >= 5:
+            _offer_type_encoded = 1.0
+        elif _ote_is_mgmt:
+            _offer_type_encoded = 0.25
+        else:
+            _offer_type_encoded = 0.5
+
+        _edu_dom_compat_feat = float(getattr(self, "_last_edu_kw_compat", 0.8))
+
+        _dom_yrs_b1, _tot_yrs_b1 = self._compute_domain_relevant_years(
+            cv_experiences_list if cv_experiences_list else [],
+            offer_skills, offer_text,
+        )
+        _exp_dom_ratio_b1 = round(_dom_yrs_b1 / max(_tot_yrs_b1, 0.5), 4) if _tot_yrs_b1 > 0 else 0.5
+
+        # ── Phase 1 : compétence centrale obligatoire ───────────────────
+        # Réutilise _title_skill_early calculé avant la boucle (Phase 2)
+        _title_skill      = _title_skill_early
+        _has_title_skill  = _candidate_has_skill(_title_skill, cv_skills) if _title_skill else True
+        _title_skill_cap  = not _has_title_skill
+
+        # ── Score MLP (si disponible) ────────────────────────────────────
+        # Calcule les features pour le MLP et fusionne avec la formule calibrée
+        _mlp_score = None
+        if self._mlp is not None and _TORCH_AVAILABLE:
+            try:
+                import torch as _torch
+                # Features communes (v2 et v3)
+                _edu_gap_feat = max(-1.0, min(1.0, (required_edu - cand_edu) / 5.0))
+                _skills_raw_feat = len(set(
+                    _normalize_skill(s) for s in offer_skills
+                ) & set(
+                    _normalize_skill(s) for s in cv_skills
+                )) / max(len(offer_skills), 1)
+
+                if getattr(self, "_mlp_version", 2) in (3, 4):
+                    # 9 features v3
+                    _cand_edu_dom = _detect_edu_domain(
+                        " ".join(f.get("specialite", "") for f in
+                                 (parsed_for_exp.get("formations") or []) if isinstance(f, dict))
+                    )
+                    _offer_edu_dom = _detect_edu_domain(offer_text)
+                    _edu_dom_feat = _edu_domain_compatibility(_cand_edu_dom, _offer_edu_dom)
+                    _dom_years, _tot_years = self._compute_domain_relevant_years(
+                        cv_experiences_list, offer_skills, offer_text
+                    )
+                    _exp_dom_feat = round(_dom_years / max(_tot_years, 0.5), 4) if _tot_years > 0 else 0.5
+                    feat = self._compute_mlp_features(
+                        s_semantique       = float(s_semantique),
+                        s_competences      = float(s_competences),
+                        s_experience       = float(s_experience),
+                        s_formation        = float(s_formation),
+                        sem_v2             = float(s_semantique),
+                        edu_domain_compat  = _edu_dom_compat_feat,
+                        exp_domain_ratio   = _exp_dom_ratio_b1,
+                        title_skill_match  = 1.0 if _has_title_skill else 0.0,
+                        crit_skill_ratio   = _crit_skill_ratio,
+                        offer_type_encoded = _offer_type_encoded,
+                    )
+                else:
+                    # 7 features v2
+                    feat = self._compute_mlp_features(
+                        s_semantique       = float(s_semantique),
+                        s_competences      = float(s_competences),
+                        s_experience       = float(s_experience),
+                        s_formation        = float(s_formation),
+                        sem_v2             = float(s_semantique),
+                        edu_domain_compat  = _edu_dom_compat_feat,
+                        exp_domain_ratio   = _exp_dom_ratio_b1,
+                        title_skill_match  = 1.0 if _has_title_skill else 0.0,
+                        crit_skill_ratio   = _crit_skill_ratio,
+                        offer_type_encoded = _offer_type_encoded,
+                    )[:7]
+
+                with _torch.no_grad():
+                    x = _torch.tensor([feat], dtype=_torch.float32)
+                    self._mlp.eval()
+                    _mlp_score = float(self._mlp(x).item())
+            except Exception:
+                _mlp_score = None
+
+        # ── Phase 3 : Recalibration poids selon type d'offre ─────────────
+        _offer_domain_str = str((_offer_domain or {}).get("label", "") or "").lower()
+        _is_mgmt = any(k in _offer_domain_str for k in (
+            "management", "ressources humaines", "direction", "rh",
+            "finance", "comptabil", "juridique", "droit", "vente", "commercial",
+            "marketing", "logistique", "achat",
+        ))
+        _is_mgmt = _is_mgmt or any(k in (offer.titre or "").lower() for k in (
+            "rh", "ressources humaines", "drh", "people",
+            "comptable", "finance", "juriste", "avocat", "commercial", "logistic",
+        ))
+
+        _sen_str = (getattr(offer, "niveau_seniorite", None) or "").lower()
+        if _sen_str in ("stage", "alternance", "junior") or _offer_senior_level <= 2:
+            _offer_type    = "junior"
+            _w_sk, _w_se, _w_ex, _w_fo = 0.45, 0.25, 0.05, 0.25
+            _recommend_thr = 65   # seuil décision en %
+        elif _offer_senior_level >= 4 and (required_years or 0) >= 5:
+            _offer_type    = "senior"
+            _w_sk, _w_se, _w_ex, _w_fo = 0.40, 0.20, 0.30, 0.10
+            _recommend_thr = 70
+        elif _is_mgmt:
+            _offer_type    = "management"
+            _w_sk, _w_se, _w_ex, _w_fo = 0.35, 0.25, 0.25, 0.15
+            _recommend_thr = 68
+        else:
+            _offer_type    = "tech"
+            _w_sk, _w_se, _w_ex, _w_fo = 0.55, 0.20, 0.15, 0.10
+            _recommend_thr = 68
+
+        # ── Score final — formule calibrée × domain_multiplier ──────────
+        score_final = self._calibrated_score(
+            sem_sim           = float(s_semantique),
+            skill_rate        = float(s_competences),
+            exp_score         = float(s_experience),
+            formation_score   = float(s_formation),
+            domain_compat_key = _compat_key,
+            w_skills          = _w_sk,
+            w_sem             = _w_se,
+            w_exp             = _w_ex,
+            w_form            = _w_fo,
         )
 
-        if mlp_result is not None:
-            # Le MLP décide du score — pas une formule manuelle
-            score_final = round(max(0.20, min(0.95, mlp_result)), 4)
-        else:
-            # Fallback : formule pondérée si MLP indisponible
-            score_final = (
-                s_competences * W["competences"]
-                + s_experience  * W["experience"]
-                + s_formation   * W["formation"]
-                + s_semantique  * W["semantique"]
-            )
-            if s_competences < 0.25:
-                score_final = min(score_final, 0.32)
-            elif s_competences < 0.40:
-                score_final = min(score_final, 0.42)
-            elif s_competences <= 0.50:
-                score_final = min(score_final, 0.52)
-            score_final = round(max(0.20, min(0.95, score_final)), 4)
+        # MLP influence : 40% si v3b1 (10D valide), 10% sinon
+        # v3b1 a ete entraine sur _compute_mlp_features() -> zero train/prod gap
+        if _mlp_score is not None:
+            _mlp_weight = 0.40 if self._mlp_version == 4 else 0.10
+            score_final = round(_mlp_score * _mlp_weight + score_final * (1.0 - _mlp_weight), 4)
 
-        # Bonus appréciées si MLP absent
-        if mlp_result is None and appreciated_skills:
-            _apr_bonus = apr_rate * 0.08
+        # Bonus compétences appréciées (+12% max)
+        if appreciated_skills:
+            _apr_bonus = apr_rate * 0.12
             score_final = round(min(0.95, score_final + _apr_bonus), 4)
 
-        # ── Pénalités incohérences (appliquées après MLP) ────────
-        score_final = round(max(0.20, score_final - inco_penalty), 4)
+        # ── Phase 1 : cap compétence centrale manquante ─────────────────
+        # Appliqué uniquement si domaine identique (same/unknown) :
+        # Pour domaines adjacents/différents, le domain_multiplier suffit.
+        # Exemple : RH candidat pour Finance → domain_mult réduit déjà le score.
+        # Exemple : Java dev pour Python role → même domaine IT → cap sévère.
+        if _title_skill_cap and _compat_key in ("same", "unknown"):
+            score_final = round(score_final * 0.50, 4)
+
+        # ── Cap "zéro skills + domaine incompatible" ─────────────────────
+        # Si le candidat n'a AUCUNE skill requise ET est dans un domaine totalement
+        # différent, l'expérience/formation ne doivent pas compenser.
+        # Ex: Dev Python 5 ans pour Finance → 0 skills, domaine=different → plafonné.
+        if s_competences <= 0.05 and _compat_key == "different":
+            score_final = round(min(score_final, 0.12), 4)
+
+        # ── Pénalités incohérences (CV incohérent = signal fraude) ──
+        score_final = round(max(0.05, score_final - inco_penalty), 4)
         if has_fake_expert:
             score_final = min(score_final, 0.45)
 
-        # ── Cap domaine professionnel ─────────────────────────────
-        if _domain_cap is not None:
-            score_final = round(min(score_final, _domain_cap), 4)
+        # Clip final — le MLP décide du score, pas de règles heuristiques
+        score_final = round(max(0.05, min(0.95, score_final)), 4)
 
         # ── Critères obligatoires (reformattés pour affichage) ────
         criteres_obligatoires: List[Dict[str, Any]] = []
@@ -1758,9 +2550,11 @@ class BERTMatchingScorer:
         _n_inco   = len(inconsistencies)
         _has_l5   = has_fake_expert
         _has_l4   = any(i.get("level") == 4 for i in inconsistencies)
-        if _has_l5 or _n_inco >= 3:
+        # niv.2 retiré de la confiance — faux positif systématique :
+        # les CVs listent les skills en section dédiée, pas dans chaque poste.
+        if _has_l5:
             _confidence = {"niveau": "BASSE",   "message": "Vérification humaine fortement recommandée"}
-        elif _has_l4 or _n_inco >= 1:
+        elif _has_l4:
             _confidence = {"niveau": "MOYENNE", "message": "Quelques incohérences détectées"}
         else:
             _confidence = {"niveau": "HAUTE",   "message": "Profil cohérent — modèle confiant"}
@@ -1769,7 +2563,7 @@ class BERTMatchingScorer:
         _pct = score_final * 100
         _decision = (
             "Excellent candidat"                if _pct >= 75 else
-            "Bon profil - Entretien recommandé" if _pct >= 58 else
+            "Bon profil - Entretien recommandé" if _pct >= _recommend_thr else
             "Profil partiel - À évaluer"        if _pct >= 42 else
             "Profil non adapté"
         )
@@ -1784,10 +2578,16 @@ class BERTMatchingScorer:
             "semantique":  round(s_semantique  * 100, 1),
             "total":       round(score_final   * 100, 1),
             "poids": {
-                "competences": f"{round(W['competences']*100)}% (BERT skills)",
-                "experience":  f"{round(W['experience']*100)}% (BERT domaine + années)",
-                "formation":   f"{round(W['formation']*100)}% (niveau diplôme + domaine)",
-                "semantique":  f"{round(W['semantique']*100)}% (BERT global)",
+                "competences": "40% (BGE-M3 skills)",
+                "semantique":  "25% (BGE-M3 global)",
+                "experience":  "20% (années expérience)",
+                "formation":   "15% (niveau diplôme)",
+            },
+            "domain_compat": {
+                "key":        _compat_key,
+                "multiplier": {"same": 1.0, "adjacent": 0.70,
+                               "same_major": 0.40, "different": 0.15,
+                               "unknown": 0.85}.get(_compat_key, 0.85),
             },
             "profil_offre": {
                 "type":    "stage/alternance" if (offer_profile["is_stage"] or offer_profile["is_alternance"])
@@ -1826,13 +2626,43 @@ class BERTMatchingScorer:
             # Domaine professionnel détecté
             "candidate_domain":    _cand_domain,
             "offer_domain":        _offer_domain,
-            "domain_cap_applied":  _domain_cap is not None,
+            "offer_type":         _offer_type,
+            "weights_used":       {"skills": _w_sk, "semantique": _w_se, "experience": _w_ex, "formation": _w_fo},
             "institution_prestige": round(_prestige, 2),
             "implied_skills_added": _implied_skills,
+            # ── Phase 1 & 2 : compétence centrale + criticité ─────
+            "title_skill":         _title_skill,
+            "title_skill_missing": _title_skill_cap,
+            "skills_criticality":  _skills_criticality,
+            # B1 : vecteur 10D pour dataset generation
+            "mlp_features_10d": self._compute_mlp_features(
+                s_semantique       = float(s_semantique),
+                s_competences      = float(s_competences),
+                s_experience       = float(s_experience),
+                s_formation        = float(s_formation),
+                sem_v2             = float(s_semantique),
+                edu_domain_compat  = _edu_dom_compat_feat,
+                exp_domain_ratio   = _exp_dom_ratio_b1,
+                title_skill_match  = 1.0 if _has_title_skill else 0.0,
+                crit_skill_ratio   = _crit_skill_ratio,
+                offer_type_encoded = _offer_type_encoded,
+            ),
+            # ── Nouveaux signaux S2/S3 ─────────────────────────────
+            # Expérience domaine (S2)
+            "exp_domain_relevant_years": _exp_detail.get("domain_relevant_years"),
+            "exp_total_years_parsed":    _exp_detail.get("total_years_parsed"),
+            "exp_domain_ratio":          round(_exp_detail.get("domain_ratio", 0), 3)
+                                         if _exp_detail.get("domain_ratio") is not None else None,
+            # Formation domaine (S3)
+            "edu_domain_cand":           getattr(self, "_last_edu_domain_cand", None),
+            "edu_domain_offer":          getattr(self, "_last_edu_domain_offer", None),
+            "edu_kw_compat":             getattr(self, "_last_edu_kw_compat", None),
+            # MLP version utilisée
+            "mlp_version":               self._mlp_version,
             # Compat backend/frontend
             "ready":               bool(self.ready),
             "model":               self.model_name,
-            "mlp_used":            mlp_result is not None,
+            "scoring_method":      "calibrated_formula_v5",
             "bert_semantic":       round(s_semantique, 4),
             "bert_skills":         round(s_competences, 4),
         }
