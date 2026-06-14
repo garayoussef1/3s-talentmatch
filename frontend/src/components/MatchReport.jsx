@@ -1,4 +1,5 @@
-import { useRef } from 'react'
+import { useRef, useState, useCallback } from 'react'
+import api from '../services/api'
 import './MatchReport.css'
 
 const DIMS = [
@@ -41,6 +42,41 @@ function LogoHeader() {
 
 export default function MatchReport({ offer, results, modelInfo, onClose }) {
   const reportRef = useRef(null)
+  const [aiSummaries, setAiSummaries] = useState({})
+  const [cvLoading,   setCvLoading]   = useState({})
+
+  const viewCV = async (cvId, candidateName) => {
+    setCvLoading(prev => ({ ...prev, [cvId]: true }))
+    try {
+      const res = await api.get(`/candidates/${cvId}/original`, {
+        responseType: 'blob', timeout: 15000,
+      })
+      const blob = new Blob([res.data], { type: res.headers['content-type'] || 'application/pdf' })
+      window.open(URL.createObjectURL(blob), '_blank')
+    } catch (e) {
+      alert(e?.response?.status === 404
+        ? `Fichier CV non disponible pour ${candidateName}.`
+        : `Impossible d'ouvrir le CV.`)
+    } finally {
+      setCvLoading(prev => ({ ...prev, [cvId]: false }))
+    }
+  }
+
+  const generateSummary = useCallback(async (r) => {
+    const id = r.candidate_id
+    setAiSummaries(prev => ({ ...prev, [id]: { loading: true } }))
+    try {
+      const res = await api.post('/summarize', {
+        candidate_id: id,
+        offer_id: offer?.id,
+        bert_score: r.bert_score ?? 0,
+        bert_details: r.bert_details || {},
+      }, { timeout: 90000 })
+      setAiSummaries(prev => ({ ...prev, [id]: { loading: false, ...res.data } }))
+    } catch (e) {
+      setAiSummaries(prev => ({ ...prev, [id]: { loading: false, error: "Erreur lors de la génération." } }))
+    }
+  }, [offer?.id])
   const now = new Date().toLocaleDateString('fr-FR', {
     day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
   })
@@ -176,13 +212,24 @@ export default function MatchReport({ offer, results, modelInfo, onClose }) {
               const pct = Math.round((r.bert_score ?? 0) * 100)
               const bd = r.bert_details || {}
               const retained = idx < nbPostes
-              const incos = bd.inconsistencies || []
+              // niv.2 = skill absente des expériences = faux positif systématique → masqué
+              const incos = (bd.inconsistencies || []).filter(i => (i.level || 0) !== 2)
               const matched = bd.skills_matched || []
               const missing = bd.skills_missing || []
+              const skillsCrit = bd.skills_criticality || {}
               const expYears = bd.candidate_years
               const reqYears = bd.required_years
               const candEdu = bd.candidate_edu
               const reqEdu = bd.required_edu
+              // Phase 1 : compétence centrale
+              const titleSkill        = bd.title_skill
+              const titleSkillMissing = bd.title_skill_missing
+              // Nouveaux signaux S2/S3
+              const domainRelYears = bd.exp_domain_relevant_years
+              const domainRatio    = bd.exp_domain_ratio
+              const eduDomCand     = bd.edu_domain_cand
+              const eduDomOffer    = bd.edu_domain_offer
+              const eduKwCompat    = bd.edu_kw_compat
 
               const dimVals = DIMS.map(d => ({
                 ...d,
@@ -215,10 +262,22 @@ export default function MatchReport({ offer, results, modelInfo, onClose }) {
                       <div className="mr-card-email">{r.candidate_email || ''}</div>
                       <div className="mr-card-meta-inline">
                         {expYears != null && (
-                          <span>📅 {expYears} an{expYears !== 1 ? 's' : ''}{reqYears > 0 ? ` / ${reqYears} requis` : ''}</span>
+                          <span>
+                            📅 {expYears} an{expYears !== 1 ? 's' : ''}{reqYears > 0 ? ` / ${reqYears} requis` : ''}
+                            {domainRelYears != null && domainRelYears < expYears - 0.5 && (
+                              <span className="mr-domain-warn"> · {domainRelYears.toFixed(1)} an{domainRelYears !== 1 ? 's' : ''} dans le domaine</span>
+                            )}
+                          </span>
                         )}
                         {candEdu != null && (
-                          <span>🎓 Bac+{candEdu}{reqEdu > 0 ? ` / Bac+${reqEdu} requis` : ''}</span>
+                          <span>
+                            🎓 Bac+{candEdu}{reqEdu > 0 ? ` / Bac+${reqEdu} requis` : ''}
+                            {eduDomCand && eduDomOffer && (
+                              <span className={`mr-edu-domain ${eduKwCompat >= 0.9 ? 'mr-edu-match' : eduKwCompat >= 0.7 ? 'mr-edu-adjacent' : 'mr-edu-mismatch'}`}>
+                                {' · '}{eduDomCand} → {eduDomOffer}
+                              </span>
+                            )}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -229,6 +288,22 @@ export default function MatchReport({ offer, results, modelInfo, onClose }) {
                     {retained
                       ? <span className="mr-badge mr-badge--ok">Recommandé</span>
                       : <span className="mr-badge mr-badge--no">Non retenu</span>}
+                    {r.cv_id && (
+                      <button
+                        className="no-print"
+                        onClick={() => viewCV(r.cv_id, r.candidate_name)}
+                        disabled={cvLoading[r.cv_id]}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          background: '#f0f9ff', color: '#0369a1',
+                          border: '1px solid #bae6fd', borderRadius: 6,
+                          padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {cvLoading[r.cv_id] ? '⏳' : '📄'} Voir CV
+                      </button>
+                    )}
                   </div>
 
                   <div className="mr-card-body">
@@ -257,11 +332,26 @@ export default function MatchReport({ offer, results, modelInfo, onClose }) {
                                 Compétences présentes ({matched.length})
                               </div>
                               <div className="mr-chips">
-                                {matched.map((m, i) => (
-                                  <span key={i} className="mr-chip mr-chip--ok">
-                                    {typeof m === 'object' ? m.skill : m}
-                                  </span>
-                                ))}
+                                {matched.map((m, i) => {
+                                  const skillName = typeof m === 'object' ? m.skill : m
+                                  const cred = typeof m === 'object' ? m.credibility : null
+                                  const crit = (typeof m === 'object' ? m.criticite : null) || skillsCrit[skillName] || 'requise'
+                                  const lowCred = cred != null && cred < 0.7
+                                  const chipClass = [
+                                    'mr-chip',
+                                    crit === 'critique' ? 'mr-chip--critique-ok' : 'mr-chip--ok',
+                                    crit === 'generique' ? 'mr-chip--generic' : '',
+                                    lowCred ? 'mr-chip--lowcred' : '',
+                                  ].filter(Boolean).join(' ')
+                                  return (
+                                    <span key={i} className={chipClass}
+                                      title={`Criticité: ${crit}${cred != null ? ` · Crédibilité: ${Math.round(cred*100)}%` : ''}`}>
+                                      {crit === 'critique' && <span className="mr-crit-star">★</span>}
+                                      {skillName}
+                                      {lowCred && <span className="mr-chip-cred">⚠</span>}
+                                    </span>
+                                  )
+                                })}
                               </div>
                             </div>
                           )}
@@ -271,11 +361,17 @@ export default function MatchReport({ offer, results, modelInfo, onClose }) {
                                 Compétences manquantes ({missing.length})
                               </div>
                               <div className="mr-chips">
-                                {missing.map((s, i) => (
-                                  <span key={i} className="mr-chip mr-chip--ko">
-                                    {typeof s === 'object' ? s.skill : s}
-                                  </span>
-                                ))}
+                                {missing.map((s, i) => {
+                                  const skillName = typeof s === 'object' ? s.skill : s
+                                  const crit = skillsCrit[skillName] || 'requise'
+                                  return (
+                                    <span key={i} className={`mr-chip mr-chip--ko${crit === 'critique' ? ' mr-chip--critique-ko' : ''}`}
+                                      title={`Criticité: ${crit}`}>
+                                      {crit === 'critique' && <span className="mr-crit-star">★</span>}
+                                      {skillName}
+                                    </span>
+                                  )
+                                })}
                               </div>
                             </div>
                           )}
@@ -283,11 +379,47 @@ export default function MatchReport({ offer, results, modelInfo, onClose }) {
                       )}
                     </div>
 
+                    {/* Alerte compétence centrale manquante */}
+                    {titleSkillMissing && titleSkill && (
+                      <div className="mr-title-skill-alert">
+                        ⛔ Compétence principale absente : <strong>{titleSkill}</strong> — score réduit de 50%
+                      </div>
+                    )}
+
                     {/* Explication */}
                     <div className="mr-explain">
                       <span className="mr-explain-icon">{retained ? '💡' : '📋'}</span>
                       {explain}
                     </div>
+
+                    {/* Analyse IA */}
+                    {(() => {
+                      const ai = aiSummaries[r.candidate_id]
+                      return (
+                        <div className="mr-ai-block no-print">
+                          {!ai ? (
+                            <button className="mr-btn-ai" onClick={() => generateSummary(r)}>
+                              ✨ Analyse IA
+                            </button>
+                          ) : ai.loading ? (
+                            <div className="mr-ai-loading">
+                              <span className="mr-ai-spinner" /> Génération en cours…
+                            </div>
+                          ) : ai.error ? (
+                            <div className="mr-ai-error">{ai.error}</div>
+                          ) : (
+                            <div className="mr-ai-result">
+                              <div className="mr-ai-result-label">
+                                ✨ Analyse IA
+                                <span className="mr-ai-source">{ai.source === 'ollama' ? 'Ollama local' : ai.source === 'claude' ? 'Claude IA' : 'Auto'}</span>
+                              </div>
+                              <p className="mr-ai-text">{ai.summary}</p>
+                              <button className="mr-btn-ai-regen" onClick={() => generateSummary(r)}>↺ Régénérer</button>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
 
                     {/* Incohérences */}
                     {incos.length > 0 && (

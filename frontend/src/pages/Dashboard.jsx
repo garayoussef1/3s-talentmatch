@@ -87,39 +87,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ══ Alertes prioritaires ═════════════════════════════ */}
-      {alertes.length > 0 && (
-        <div className="dk-alertes-panel">
-          <div className="dk-alertes-header">
-            <span className="dk-alertes-title">🔔 Actions prioritaires</span>
-            <span className="dk-alertes-count">{alertes.length}</span>
-          </div>
-          <div className="dk-alertes-list">
-            {alertes.map((a, i) => (
-              <div
-                key={i}
-                className="dk-alerte"
-                style={{
-                  borderLeftColor: ALERTE_COLOR[a.niveau] ?? '#6b7280',
-                  background: ALERTE_BG[a.niveau] ?? '#f9fafb',
-                }}
-              >
-                <span className="dk-alerte-icon" style={{ color: ALERTE_COLOR[a.niveau] }}>
-                  {ALERTE_ICON[a.niveau]}
-                </span>
-                <span className="dk-alerte-msg">{a.message}</span>
-                {a.offer_id
-                  ? <button className="dk-alerte-btn" onClick={() => navigate(`/offers/${a.offer_id}`)}>
-                      {a.action} ›
-                    </button>
-                  : <Link to="/candidates" className="dk-alerte-btn">{a.action} ›</Link>
-                }
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ══ KPIs ════════════════════════════════════════════ */}
       <div className="dk-kpi-grid">
         <KpiCard

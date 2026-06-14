@@ -763,7 +763,169 @@ SYNONYMS: Dict[str, str] = {
     "amdec": "AMDEC",
     "spc": "SPC",
     "msp": "MSP",
+
+    # ── Finance EN→FR (A1) ────────────────────────────────────────────────────
+    "accounting":          "Comptabilité générale",
+    "bookkeeping":         "Comptabilité générale",
+    "payroll":             "Gestion paie",
+    "auditing":            "Audit",
+    "internal audit":      "Audit interne",
+    "financial audit":     "Audit financier",
+    "budgeting":           "Gestion budgétaire",
+    "financial reporting": "Reporting financier",
+    "management control":  "Contrôle de gestion",
+    "controlling":         "Contrôle de gestion",
+    "cash management":     "Trésorerie",
+    "financial analysis":  "Analyse financière",
+    "tax":                 "Fiscalité",
+    "taxation":            "Fiscalité",
+    "consolidation":       "Consolidation",
+    "p&l":                 "Reporting financier",
+    "ebitda":              "Analyse financière",
+    "roi":                 "Analyse financière",
+    "roe":                 "Analyse financière",
+    "kpi":                 "Reporting financier",
+    "etats financiers":    "Comptabilité générale",
+    "états financiers":    "Comptabilité générale",
+    "cloture comptable":   "Comptabilité générale",
+    "clôture comptable":   "Comptabilité générale",
+    "plan comptable":      "Comptabilité générale",
+    "provisions":          "Comptabilité générale",
+    "amortissements":      "Comptabilité générale",
+    "balance comptable":   "Comptabilité générale",
+    "grand livre":         "Comptabilité générale",
+    "journaux comptables": "Comptabilité générale",
+    "rapprochement bancaire": "Trésorerie",
+    "controle interne":    "Audit interne",
+    "contrôle interne":    "Audit interne",
+
+    # ── RH EN→FR (A1) ─────────────────────────────────────────────────────────
+    "recruitment":         "Recrutement",
+    "recruiting":          "Recrutement",
+    "human resources":     "SIRH",
+    "hr":                  "SIRH",
+    "talent management":   "GPEC",
+    "talent acquisition":  "Recrutement",
+    "performance review":  "Entretien annuel",
+    "performance management": "Entretien annuel",
+    "compensation":        "Gestion paie",
+    "benefits":            "Gestion paie",
+    "workforce planning":  "GPEC",
+    "employer branding":   "Recrutement",
+    "marque employeur":    "Recrutement",
+    "mobilite interne":    "GPEC",
+    "mobilité interne":    "GPEC",
+    "plan de succession":  "GPEC",
+    "bilan de competences": "Plan de formation",
+    "bilan de compétences": "Plan de formation",
+    "entretien de sortie": "Entretien annuel",
+    "gestion des carrieres": "GPEC",
+    "gestion des carrières": "GPEC",
+    "disciplinaire":       "Droit du travail",
+    "licenciement":        "Droit du travail",
+    "rupture conventionnelle": "Droit du travail",
+
+    # ── Médical EN→FR (A1) ────────────────────────────────────────────────────
+    "nursing":             "Soins infirmiers",
+    "pharmacy":            "Pharmacologie",
+    "pharmacology":        "Pharmacologie",
+    "surgery":             "Soins post-opératoires",
+    "emergency":           "Soins d'urgence",
+    "intensive care":      "Soins intensifs",
+    "icu":                 "Soins intensifs",
+    "patient care":        "Protocoles de soins",
+    "medical record":      "Dossier patient électronique",
+    "prescription":        "Protocoles de soins",
+    "radiology":           "ECG",
+    "pharmacovigilance":   "Pharmacologie",
+    "dossier medical":     "Dossier patient électronique",
+    "dossier médical":     "Dossier patient électronique",
+    "ordonnance":          "Protocoles de soins",
+
+    # ── Logistique EN→FR (A1) ─────────────────────────────────────────────────
+    "supply chain":        "Logistique internationale",
+    "supply chain management": "Logistique internationale",
+    "warehousing":         "Gestion des entrepôts",
+    "warehouse":           "Gestion des entrepôts",
+    "purchasing":          "Achats",
+    "procurement":         "Achats",
+    "sourcing":            "Achats",
+    "logistics":           "Gestion du transport",
+    "demand planning":     "MRP",
+    "s&op":                "MRP",
+    "3pl":                 "Gestion des transporteurs",
+    "reverse logistics":   "Gestion du transport",
+    "freight":             "Fret aérien",
+    "customs":             "Douane",
+
+    # ── Certifications / abréviations métier (A3) ─────────────────────────────
+    "certifie ifrs":       "IFRS",
+    "certifié ifrs":       "IFRS",
+    "norme ifrs":          "IFRS",
+    "normes ifrs":         "IFRS",
+    "certifie iso 9001":   "ISO 9001",
+    "certifié iso 9001":   "ISO 9001",
+    "certifie iso 27001":  "ISO 27001",
+    "certifié iso 27001":  "ISO 27001",
+    "certifie haccp":      "HACCP",
+    "certifié haccp":      "HACCP",
+    "habilitation":        "Habilitation électrique",
+    "hse":                 "HSE",
+    "qhse":                "HACCP",
+    "hsst":                "HSE",
+    "sst":                 "HSE",
+    "bilan social":        "Reporting financier",
+    "tableau de bord":     "Reporting financier",
+    "indicateurs rh":      "GPEC",
+    "masse salariale":     "Gestion paie",
+    "gestion administrative rh": "SIRH",
 }
+
+
+# ================================================================
+# A1/A2 — Enrichissement depuis skills_aliases.json (propre, multi-domaine)
+# Remplace skill_expansion.json (pollué par faux positifs ESCO).
+# ================================================================
+def _load_expansion_into_synonyms() -> None:
+    """Charge data/skills/skills_aliases.json et enrichit SYNONYMS."""
+    import unicodedata as _ud
+
+    def _norm(t: str) -> str:
+        t = t.lower().strip()
+        t = _ud.normalize("NFKD", t)
+        return "".join(c for c in t if not _ud.combining(c))
+
+    try:
+        _path = Path(__file__).resolve().parents[4] / "data" / "skills" / "skills_aliases.json"
+        if not _path.exists():
+            return
+        with open(_path, encoding="utf-8") as _f:
+            _aliases: Dict[str, List[str]] = json.load(_f)
+
+        # Index des skills canoniques (normalisé → original)
+        _canonical: Dict[str, str] = {}
+        for _cat_skills in SKILLS_DATABASE.values():
+            for _sk in _cat_skills:
+                _canonical[_norm(_sk)] = _sk
+
+        for _skill_norm, _alias_list in _aliases.items():
+            # Si l'alias pointe vers un skill canonique, ajouter le mapping
+            if _skill_norm in _canonical:
+                for _a in _alias_list:
+                    _a_norm = _norm(_a)
+                    if _a_norm not in SYNONYMS and _a_norm != _skill_norm:
+                        SYNONYMS[_a_norm] = _canonical[_skill_norm]
+            # Sens inverse
+            for _a in _alias_list:
+                _a_norm = _norm(_a)
+                if _a_norm in _canonical:
+                    if _skill_norm not in SYNONYMS:
+                        SYNONYMS[_skill_norm] = _canonical[_a_norm]
+    except Exception:
+        pass
+
+
+_load_expansion_into_synonyms()
 
 
 # ================================================================
@@ -1412,18 +1574,27 @@ class SkillsExtractor:
             if token_lower in self._CONTEXT_BLACKLIST:
                 continue
 
-            # Ignorer les tokens qui sont des phrases (> 3 mots)
+            # Ignorer les tokens qui sont des longues phrases (> 5 mots)
+            # On autorise jusqu'à 5 mots pour les skills composées
+            # (ex: "gestion prévisionnelle emplois compétences")
             words = token.split()
-            if len(words) > 3:
+            if len(words) > 5:
                 continue
 
-            # Ignorer les syntagmes nominaux français : "Production de contenus X"
-            # (2e mot = préposition → phrase, pas une compétence)
+            # Ignorer les syntagmes nominaux français ("Production de contenus X")
+            # SAUF si la phrase entière est une skill connue dans le dictionnaire
+            # ex: "contrôle de gestion", "droit du travail" → garder
             if len(words) >= 2 and words[1].lower() in {
                 "de", "des", "du", "la", "le", "les", "a", "aux", "en",
                 "par", "pour", "sur", "avec", "sans", "dans", "et", "ou"
             }:
-                continue
+                # Vérifier si c'est une skill reconnue (dictionnaire ou synonymes)
+                _tok_norm = token_lower
+                import unicodedata as _ud2
+                _tok_norm = _ud2.normalize("NFKD", _tok_norm)
+                _tok_norm = "".join(c for c in _tok_norm if not _ud2.combining(c))
+                if _tok_norm not in self._index:
+                    continue
 
             # Ignorer les lignes de section ou d'éducation
             if re.search(

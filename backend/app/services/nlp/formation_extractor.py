@@ -346,6 +346,98 @@ _SPECIALTY_PATTERN = re.compile(
 )
 
 
+# ================================================================
+# A3 — Domaine d'études (informatique, finance, rh, medecine…)
+# Aligné avec _EDU_DOMAINS dans bert_scorer.py
+# ================================================================
+_DOMAINE_KEYWORDS: dict = {
+    "informatique": [
+        "informatique", "genie logiciel", "software", "computer science",
+        "developpement", "programmation", "systemes", "reseaux",
+        "cybersecurite", "data", "intelligence artificielle", "ia",
+        "numerique", "digital", "web", "mobile", "cloud", "devops",
+        "python", "java", "algorithme", "base de donnees", "si",
+        "information technology", "telecommunications",
+    ],
+    "finance": [
+        "finance", "comptabilite", "accounting", "economie",
+        "audit", "fiscalite", "banque", "bourse", "tresorerie",
+        "controle de gestion", "sciences economiques", "gestion financiere",
+        "analyse financiere", "microeconomie", "gestion",
+    ],
+    "marketing": [
+        "marketing", "communication", "commerce", "vente", "publicite",
+        "media", "strategie commerciale", "digital marketing",
+        "community", "relations publiques",
+    ],
+    "rh": [
+        "ressources humaines", "rh", "management des ressources",
+        "psychologie du travail", "relations sociales", "droit social",
+        "talent", "recrutement", "formation professionnelle",
+    ],
+    "droit": [
+        "droit", "juridique", "law", "sciences juridiques", "notariat",
+        "droit des affaires", "droit public", "droit prive", "avocat",
+    ],
+    "medecine": [
+        "medecine", "sante", "soins", "pharmacie", "paramedical",
+        "infirmier", "dentaire", "biomedical", "sciences medicales",
+        "chirurgie", "pathologie", "biologie medicale", "kine",
+        "nursing", "pharmacy",
+    ],
+    "btp": [
+        "genie civil", "architecture", "construction", "btp",
+        "topographie", "batiment", "travaux publics", "structures",
+        "geotechnique", "hydraulique",
+    ],
+    "logistique": [
+        "logistique", "supply chain", "transport", "achats",
+        "genie industriel", "gestion de production", "qualite",
+        "lean", "management industriel",
+    ],
+    "sciences": [
+        "chimie", "physique", "biologie", "mathematiques",
+        "physique-chimie", "biochimie",
+    ],
+    "lettres": [
+        "lettres", "langues", "litterature", "traduction",
+        "francais", "anglais", "linguistique",
+    ],
+}
+
+
+def _detect_formation_domaine(specialty: str, block_text: str = "") -> Optional[str]:
+    """Détecte le domaine d'études (informatique, finance…) depuis la spécialité."""
+    import re as _re
+    import unicodedata as _ud
+
+    def _n(t: str) -> str:
+        t = t.lower()
+        t = _ud.normalize("NFKD", t)
+        return "".join(c for c in t if not _ud.combining(c))
+
+    # Priorité à la spécialité seule, puis au bloc complet en fallback
+    spec_norm  = _n(specialty or "")
+    block_norm = _n(block_text or "")
+
+    def _count_hits(text: str, keywords: list) -> int:
+        hits = 0
+        for kw in keywords:
+            # word-boundary pour éviter "ia" dans "IAE"
+            if _re.search(r"(?<!\w)" + _re.escape(kw) + r"(?!\w)", text):
+                hits += 1
+        return hits
+
+    best, best_score = None, 0
+    for domain, keywords in _DOMAINE_KEYWORDS.items():
+        # Spécialité d'abord (score × 2), puis bloc entier (score × 1)
+        hits = _count_hits(spec_norm, keywords) * 2 + _count_hits(block_norm, keywords)
+        if hits > best_score:
+            best_score = hits
+            best = domain
+    return best if best_score >= 1 else None
+
+
 class FormationExtractor:
     """
     Extracteur de formations académiques.
@@ -1014,6 +1106,7 @@ class FormationExtractor:
             return {
                 "diplome": diploma,
                 "specialite": specialty,
+                "domaine": _detect_formation_domaine(specialty, block),
                 "etablissement": establishment,
                 "lieu": lieu,
                 "annee": annee,

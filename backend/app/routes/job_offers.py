@@ -57,6 +57,7 @@ def _to_item(offer: JobOffer, candidate_count: int = None) -> dict:
         "type_contrat": offer.type_contrat,
         "nb_postes": offer.nb_postes or 1,
         "experience_requise": offer.experience_requise,
+        "formation_requise_niveau": offer.formation_requise_niveau,
         "status": offer.status.value if offer.status else "active",
         "created_at": offer.created_at.isoformat() if offer.created_at else None,
         "date_limite": offer.date_limite.isoformat() if offer.date_limite else None,
@@ -142,6 +143,27 @@ def get_public_offer(
     return _to_item(offer)
 
 
+_VALID_CONTRATS = {"CDI", "CDD", "Stage", "Alternance", "Freelance"}
+
+
+def _validate_offer_quality(payload) -> None:
+    """Garantit la qualité minimale d'une offre pour un bon matching."""
+    skills = [s.strip() for s in (payload.competences_requises or []) if s.strip()]
+    if not skills:
+        raise HTTPException(
+            status_code=400,
+            detail="Au moins une compétence requise est obligatoire pour garantir la qualité du matching."
+        )
+    contrat = (payload.type_contrat or "").strip()
+    if not contrat:
+        raise HTTPException(status_code=400, detail="Le type de contrat est obligatoire.")
+    if contrat not in _VALID_CONTRATS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Type de contrat invalide. Valeurs acceptées : {', '.join(sorted(_VALID_CONTRATS))}"
+        )
+
+
 @router.post("/offers", response_model=JobOfferItem, summary="Créer une offre (admin uniquement)")
 def create_offer(
     payload: JobOfferCreate,
@@ -152,14 +174,19 @@ def create_offer(
     if status not in {s.value for s in JobStatus}:
         raise HTTPException(status_code=400, detail="Statut invalide")
 
+    _validate_offer_quality(payload)
+
     offer = JobOffer(
         recruiter_id=current_user.id,
         titre=payload.titre,
         description=payload.description,
-        competences_requises=payload.competences_requises or [],
+        competences_requises=[s.strip() for s in (payload.competences_requises or []) if s.strip()],
+        competences_appreciees=[s.strip() for s in (payload.competences_appreciees or []) if s.strip()],
         localisation=payload.localisation,
         type_contrat=payload.type_contrat,
         nb_postes=max(1, payload.nb_postes or 1),
+        experience_requise=payload.experience_requise,
+        formation_requise_niveau=payload.formation_requise_niveau,
         status=JobStatus(status),
         date_limite=payload.date_limite,
     )
@@ -196,6 +223,10 @@ def update_offer(
         offer.status = JobStatus(payload.status)
     if payload.nb_postes is not None:
         offer.nb_postes = max(1, payload.nb_postes)
+    if payload.experience_requise is not None:
+        offer.experience_requise = payload.experience_requise
+    if "formation_requise_niveau" in payload.model_fields_set:
+        offer.formation_requise_niveau = payload.formation_requise_niveau
     if "date_limite" in payload.model_fields_set:
         offer.date_limite = payload.date_limite
 

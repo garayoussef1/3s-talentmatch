@@ -13,6 +13,9 @@ class JobOfferBase(BaseModel):
     type_contrat: Optional[str] = None
     nb_postes: Optional[int] = 1
     experience_requise: Optional[int] = None
+    formation_requise_niveau: Optional[int] = None
+    domaine_metier: Optional[str] = None
+    niveau_seniorite: Optional[str] = None
     status: Optional[str] = None
     date_limite: Optional[datetime] = None
 
@@ -31,6 +34,9 @@ class JobOfferUpdate(BaseModel):
     type_contrat: Optional[str] = None
     nb_postes: Optional[int] = None
     experience_requise: Optional[int] = None
+    formation_requise_niveau: Optional[int] = None
+    domaine_metier: Optional[str] = None
+    niveau_seniorite: Optional[str] = None
     status: Optional[str] = None
     date_limite: Optional[datetime] = None
 

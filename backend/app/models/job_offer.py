@@ -39,6 +39,9 @@ class JobOffer(Base):
     type_contrat = Column(String(50), nullable=True)     # CDI, CDD, Stage...
     nb_postes    = Column(Integer, default=1, nullable=False)
     experience_requise = Column(Integer, nullable=True)  # années minimum requises
+    formation_requise_niveau = Column(Integer, nullable=True)  # 0=non spécifié, 2=Bac+2, 3=Bac+3, 4=Bac+4, 5=Bac+5, 8=Bac+8
+    domaine_metier   = Column(String(100), nullable=True)   # ex: "IT", "Santé", "Finance"
+    niveau_seniorite = Column(String(50),  nullable=True)   # ex: "Junior", "Senior", "Stage"
     status = Column(SAEnum(JobStatus), default=JobStatus.active, nullable=False)
     date_limite = Column(DateTime(timezone=True), nullable=True)
 

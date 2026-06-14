@@ -1161,3 +1161,16 @@
   border-color: #dc2626 !important;
   box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
 }
+
+/* ── Badge qualité matching ── */
+.ol-quality-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  cursor: default;
+}
+.ol-quality-good    { background: #dcfce7; color: #15803d; }
+.ol-quality-partial { background: #fef9c3; color: #92400e; }
+.ol-quality-weak    { background: #fee2e2; color: #b91c1c; }

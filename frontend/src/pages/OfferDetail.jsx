@@ -18,6 +18,17 @@ const STATUS_CLS   = { active: 'status-active', draft: 'status-draft', closed: '
 const APP_LABEL    = { pending: 'En attente', accepted: 'Accepté', rejected: 'Refusé' }
 const APP_CLS      = { pending: 'badge-pending', accepted: 'badge-accepted', rejected: 'badge-rejected' }
 
+const FORMATION_LEVELS = [
+  { niveau: null, value: '',     label: 'Non spécifié' },
+  { niveau: 0,   value: 'Bac',   label: 'Bac (Bac+0)' },
+  { niveau: 2,   value: 'Bac+2', label: 'Bac+2 (BTS, DUT)' },
+  { niveau: 3,   value: 'Bac+3', label: 'Bac+3 (Licence)' },
+  { niveau: 4,   value: 'Bac+4', label: 'Bac+4 (Master 1)' },
+  { niveau: 5,   value: 'Bac+5', label: 'Bac+5 (Master, Ingénieur)' },
+  { niveau: 8,   value: 'Bac+8', label: 'Bac+8 (Doctorat)' },
+]
+const niveauToLabel = (n) => FORMATION_LEVELS.find(f => f.niveau === n)?.label || '—'
+
 function ScoreBar({ value, type = '' }) {
   return (
     <div className="score-cell">
@@ -102,6 +113,7 @@ function TabInfo({ offer, onUpdated, onDeleted }) {
       localisation: offer.localisation || '',
       type_contrat: offer.type_contrat || '',
       nb_postes: offer.nb_postes ?? 1,
+      formation_requise_niveau: offer.formation_requise_niveau ?? null,
       status: offer.status || 'active',
     })
     setEditing(true)
@@ -122,6 +134,7 @@ function TabInfo({ offer, onUpdated, onDeleted }) {
       localisation: form.localisation || null,
       type_contrat: form.type_contrat || null,
       nb_postes: parseInt(form.nb_postes) || 1,
+      formation_requise_niveau: form.formation_requise_niveau,
       status: form.status,
     })
       .then(res => { onUpdated(res.data); setEditing(false) })
@@ -170,6 +183,10 @@ function TabInfo({ offer, onUpdated, onDeleted }) {
             <span className="info-value" style={{ fontWeight: 700, color: '#4f46e5' }}>
               {offer.nb_postes ?? 1} poste(s)
             </span>
+          </div>
+          <div className="info-field">
+            <span className="info-label">Formation requise</span>
+            <span className="info-value">{niveauToLabel(offer.formation_requise_niveau ?? null)}</span>
           </div>
           <div className="info-field">
             <span className="info-label">Créée le</span>
@@ -223,11 +240,30 @@ function TabInfo({ offer, onUpdated, onDeleted }) {
               </div>
               <div className="form-group">
                 <label>Type de contrat</label>
-                <input value={form.type_contrat} onChange={e => set('type_contrat', e.target.value)} />
+                <select value={form.type_contrat} onChange={e => set('type_contrat', e.target.value)}>
+                  <option value="">-- Choisir --</option>
+                  {['CDI','CDD','Stage','Alternance','Freelance'].map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>Nb de postes</label>
                 <input type="number" min="1" max="20" value={form.nb_postes} onChange={e => set('nb_postes', e.target.value)} style={{ width: 80 }} />
+              </div>
+              <div className="form-group">
+                <label>Formation requise</label>
+                <select
+                  value={form.formation_requise_niveau ?? ''}
+                  onChange={e => {
+                    const found = FORMATION_LEVELS.find(f => String(f.niveau) === e.target.value || (e.target.value === '' && f.niveau === null))
+                    set('formation_requise_niveau', found ? found.niveau : null)
+                  }}
+                >
+                  {FORMATION_LEVELS.map(f => (
+                    <option key={f.value} value={f.niveau ?? ''}>{f.label}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>Statut</label>
@@ -370,12 +406,59 @@ function dimLabel(val) {
 
 function TabMatching({ offerId, offer }) {
   const nbPostes = offer?.nb_postes ?? 1
-  const [results, setResults]     = useState(null)
-  const [loading, setLoading]     = useState(false)
-  const [error, setError]         = useState(null)
-  const [selected, setSelected]   = useState([])
-  const [selecting, setSelecting] = useState(false)
+  const [results, setResults]         = useState(null)
+  const [loading, setLoading]         = useState(false)
+  const [error, setError]             = useState(null)
+  const [selected, setSelected]       = useState([])
+  const [selecting, setSelecting]     = useState(false)
   const [selectResult, setSelectResult] = useState(null)
+  const [aiSummaries, setAiSummaries]   = useState({})
+  const [cvLoading,   setCvLoading]     = useState({})
+  const [compareResults, setCompareResults] = useState(null)
+  const [loadingCompare, setLoadingCompare] = useState(false)
+  const [showCompare, setShowCompare]       = useState(false)
+  const [fusionResults, setFusionResults]   = useState(null)
+  const [loadingFusion, setLoadingFusion]   = useState(false)
+  const [showFusion, setShowFusion]         = useState(false)
+
+  const viewCV = async (cvId, candidateName) => {
+    setCvLoading(prev => ({ ...prev, [cvId]: true }))
+    try {
+      const res = await api.get(`/candidates/${cvId}/original`, {
+        responseType: 'blob',
+        timeout: 15000,
+      })
+      const mime = res.headers['content-type'] || 'application/pdf'
+      const blob = new Blob([res.data], { type: mime })
+      const url  = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+    } catch (e) {
+      const status = e?.response?.status
+      if (status === 404) {
+        alert(`Fichier CV non disponible pour ${candidateName} (candidat inséré sans fichier).`)
+      } else {
+        alert(`Impossible d'ouvrir le CV de ${candidateName}.`)
+      }
+    } finally {
+      setCvLoading(prev => ({ ...prev, [cvId]: false }))
+    }
+  }
+
+  const generateAI = async (r) => {
+    const id = r.candidate_id
+    setAiSummaries(prev => ({ ...prev, [id]: { loading: true } }))
+    try {
+      const res = await api.post('/summarize', {
+        candidate_id: id,
+        offer_id: offerId,
+        bert_score: r.bert_score ?? 0,
+        bert_details: r.bert_details || {},
+      }, { timeout: 90000 })
+      setAiSummaries(prev => ({ ...prev, [id]: { loading: false, ...res.data } }))
+    } catch {
+      setAiSummaries(prev => ({ ...prev, [id]: { loading: false, error: 'Erreur de génération.' } }))
+    }
+  }
 
   const toggleSelect = (cvId) => {
     setSelected(prev => {
@@ -400,10 +483,38 @@ function TabMatching({ offerId, offer }) {
     setLoading(true)
     setError(null)
     setResults(null)
+    setCompareResults(null)
+    setShowCompare(false)
+    setFusionResults(null)
+    setShowFusion(false)
     api.post(`/match-sandbox/${offerId}?engine=bert`, null, { timeout: 180000 })
       .then(res => setResults(res.data))
       .catch(err => setError(err?.response?.data?.detail || err?.message || "Erreur lors du matching."))
       .finally(() => setLoading(false))
+  }
+
+  const runBertV2 = () => {
+    setLoadingCompare(true)
+    setError(null)
+    setCompareResults(null)
+    setShowCompare(false)
+    setFusionResults(null)
+    setShowFusion(false)
+    api.post(`/match-sandbox/${offerId}?engine=bert_v2`, null, { timeout: 180000 })
+      .then(res => { setCompareResults(res.data); setShowCompare(true) })
+      .catch(err => setError(err?.response?.data?.detail || err?.message || "Erreur lors du matching BERT v2."))
+      .finally(() => setLoadingCompare(false))
+  }
+
+  const runFusion = () => {
+    setLoadingFusion(true)
+    setError(null)
+    setFusionResults(null)
+    setShowFusion(false)
+    api.post(`/match-sandbox/${offerId}?engine=fusion`, null, { timeout: 240000 })
+      .then(res => { setFusionResults(res.data); setShowFusion(true) })
+      .catch(err => setError(err?.response?.data?.detail || err?.message || "Erreur lors du matching Fusion."))
+      .finally(() => setLoadingFusion(false))
   }
 
   return (
@@ -421,12 +532,129 @@ function TabMatching({ offerId, offer }) {
             </>
           )}
         </div>
-        <button className="btn-primary" onClick={runMatching} disabled={loading}>
-          {loading ? 'Analyse en cours…' : results ? 'Relancer le matching' : 'Lancer le Matching'}
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-primary" onClick={runMatching} disabled={loading || loadingCompare}>
+            {loading ? 'Analyse en cours…' : results ? 'Relancer le matching' : 'Lancer le Matching'}
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={runBertV2}
+            disabled={loading || loadingCompare || loadingFusion}
+            title="Matching avec TalentMatch-BERT v2.0 (modèle entraîné sur Google Colab — bilingue FR/EN)"
+          >
+            {loadingCompare ? '⏳ BERT v2 en cours…' : '🤖 Matching BERT v2'}
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={runFusion}
+            disabled={loading || loadingCompare || loadingFusion}
+            title="Fusion intelligente BGE-M3 + BERT v2 — compétences via BGE-M3, sémantique via BERT v2"
+            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff', border: 'none' }}
+          >
+            {loadingFusion ? '⏳ Fusion en cours…' : '🔀 Matching Fusion'}
+          </button>
+        </div>
       </div>
 
       {error && <div className="alert error">{error}</div>}
+
+      {showCompare && compareResults && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, padding: '10px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8 }}>
+            <span style={{ fontSize: 18 }}>🤖</span>
+            <div>
+              <strong style={{ fontSize: 14 }}>Résultats — TalentMatch-BERT v2.0</strong>
+              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 10 }}>Modèle entraîné sur Google Colab · bilingue FR/EN · {compareResults.total} candidats</span>
+            </div>
+            <button onClick={() => setShowCompare(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#94a3b8' }}>✕</button>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+            <thead>
+              <tr style={{ background: '#1d4ed8', color: '#fff' }}>
+                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Rang</th>
+                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Candidat</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Score BERT v2</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Compétences</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Expérience</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Formation</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Sémantique</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(compareResults.results || [])
+                .slice()
+                .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+                .map((c, i) => {
+                  const pct = Math.round((c.score ?? 0) * 100)
+                  const d   = c.bert_details || {}
+                  const verdict = pct >= 70 ? '#16a34a' : pct >= 45 ? '#d97706' : '#dc2626'
+                  return (
+                    <tr key={c.candidate_id} style={{ borderBottom: '1px solid #e2e8f0', background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
+                      <td style={{ padding: '10px 14px', fontWeight: 700, color: i === 0 ? '#ca8a04' : '#64748b' }}>#{i + 1}</td>
+                      <td style={{ padding: '10px 14px', fontWeight: 600 }}>{c.candidate_name}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                        <span style={{ background: verdict + '22', color: verdict, fontWeight: 700, padding: '3px 12px', borderRadius: 20 }}>{pct}%</span>
+                      </td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.competences != null ? `${Math.round(d.competences)}%` : '—'}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.experience  != null ? `${Math.round(d.experience)}%`  : '—'}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.formation   != null ? `${Math.round(d.formation)}%`   : '—'}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.semantique  != null ? `${Math.round(d.semantique)}%`  : '—'}</td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showFusion && fusionResults && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, padding: '10px 16px', background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: 8 }}>
+            <span style={{ fontSize: 18 }}>🔀</span>
+            <div>
+              <strong style={{ fontSize: 14 }}>Résultats — Matching Fusion (MLP BGE-M3 + BERT v2)</strong>
+              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 10 }}>Fusion intelligente apprise par MLP · {fusionResults.total} candidats</span>
+            </div>
+            <button onClick={() => setShowFusion(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#94a3b8' }}>✕</button>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+            <thead>
+              <tr style={{ background: '#6d28d9', color: '#fff' }}>
+                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Rang</th>
+                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Candidat</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Score Fusion</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Compétences</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Expérience</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Formation</th>
+                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Sémantique</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(fusionResults.results || [])
+                .slice()
+                .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+                .map((c, i) => {
+                  const pct     = Math.round((c.score ?? 0) * 100)
+                  const d       = c.bert_details || {}
+                  const verdict = pct >= 70 ? '#16a34a' : pct >= 45 ? '#d97706' : '#dc2626'
+                  return (
+                    <tr key={c.candidate_id} style={{ borderBottom: '1px solid #e2e8f0', background: i % 2 === 0 ? '#fff' : '#faf5ff' }}>
+                      <td style={{ padding: '10px 14px', fontWeight: 700, color: i === 0 ? '#ca8a04' : '#64748b' }}>#{i + 1}</td>
+                      <td style={{ padding: '10px 14px', fontWeight: 600 }}>{c.candidate_name}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                        <span style={{ background: verdict + '22', color: verdict, fontWeight: 700, padding: '3px 12px', borderRadius: 20 }}>{pct}%</span>
+                      </td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.competences != null ? `${Math.round(d.competences)}%` : '—'}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.experience  != null ? `${Math.round(d.experience)}%`  : '—'}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.formation   != null ? `${Math.round(d.formation)}%`   : '—'}</td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.semantique  != null ? `${Math.round(d.semantique)}%`  : '—'}</td>
+                    </tr>
+                  )
+                })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {!results && !loading && (
         <div className="empty-state" style={{ paddingTop: 48 }}>
@@ -514,10 +742,31 @@ function TabMatching({ offerId, offer }) {
                     <div className="tm-card-info">
                       <div className="tm-card-name">{r.candidate_name || '—'}</div>
                       <div className="tm-card-email">{r.candidate_email || ''}</div>
-                      {/* Verdict lisible */}
-                      <span className="tm-verdict" style={{ color: verdict.color, background: verdict.bg }}>
-                        {verdict.label}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+                        {/* Verdict lisible */}
+                        <span className="tm-verdict" style={{ color: verdict.color, background: verdict.bg }}>
+                          {verdict.label}
+                        </span>
+                        {/* Bouton Voir CV */}
+                        {r.cv_id && (
+                          <button
+                            onClick={() => viewCV(r.cv_id, r.candidate_name)}
+                            disabled={cvLoading[r.cv_id]}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 5,
+                              background: cvLoading[r.cv_id] ? '#e2e8f0' : '#f0f9ff',
+                              color: cvLoading[r.cv_id] ? '#94a3b8' : '#0369a1',
+                              border: '1px solid #bae6fd',
+                              borderRadius: 6, padding: '3px 10px',
+                              fontSize: '0.78rem', fontWeight: 600,
+                              cursor: cvLoading[r.cv_id] ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.15s',
+                            }}
+                          >
+                            {cvLoading[r.cv_id] ? '⏳' : '📄'} Voir CV
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* Score ring */}
@@ -664,6 +913,60 @@ function TabMatching({ offerId, offer }) {
                             </ul>
                           </div>
                         )}
+
+                        {/* ── Analyse IA ── */}
+                        {(() => {
+                          const ai = aiSummaries[r.candidate_id]
+                          return (
+                            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #e2e8f0' }}>
+                              {!ai ? (
+                                <button
+                                  onClick={() => generateAI(r)}
+                                  style={{
+                                    background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                                    color: '#fff', border: 'none', borderRadius: 8,
+                                    padding: '8px 18px', fontSize: '0.85rem',
+                                    fontWeight: 600, cursor: 'pointer',
+                                  }}
+                                >
+                                  ✨ Analyse IA (Mistral)
+                                </button>
+                              ) : ai.loading ? (
+                                <span style={{ color: '#6366f1', fontSize: '0.85rem', fontStyle: 'italic' }}>
+                                  ⏳ Génération en cours…
+                                </span>
+                              ) : ai.error ? (
+                                <span style={{ color: '#dc2626', fontSize: '0.82rem' }}>{ai.error}</span>
+                              ) : (
+                                <div style={{
+                                  background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)',
+                                  border: '1px solid #c4b5fd', borderRadius: 10, padding: '12px 16px',
+                                }}>
+                                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#5b21b6', marginBottom: 6 }}>
+                                    ✨ Analyse IA
+                                    <span style={{
+                                      background: '#ddd6fe', color: '#4c1d95', borderRadius: 20,
+                                      padding: '2px 8px', fontSize: '0.7rem', marginLeft: 8,
+                                    }}>
+                                      {ai.source === 'ollama' ? 'Mistral local' : ai.source === 'claude' ? 'Claude IA' : 'Auto'}
+                                    </span>
+                                  </div>
+                                  <p style={{ fontSize: '0.875rem', color: '#374151', lineHeight: 1.6, margin: '0 0 8px' }}>
+                                    {ai.summary}
+                                  </p>
+                                  <button
+                                    onClick={() => generateAI(r)}
+                                    style={{
+                                      background: 'none', border: '1px solid #a78bfa',
+                                      color: '#6d28d9', borderRadius: 6, padding: '4px 10px',
+                                      fontSize: '0.78rem', cursor: 'pointer',
+                                    }}
+                                  >↺ Régénérer</button>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })()}
                       </>
                     )
                   })()}

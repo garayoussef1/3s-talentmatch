@@ -387,6 +387,37 @@
 .mr-chip--ok { background: #dcfce7; color: #15803d; }
 .mr-chip--ko { background: #fee2e2; color: #dc2626; }
 
+/* Alerte compétence centrale manquante */
+.mr-title-skill-alert {
+  background: #fff1f2;
+  border: 1.5px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Skill avec faible crédibilité (déclaré mais pas dans expériences) */
+.mr-chip--lowcred { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.mr-chip-cred { margin-left: 3px; font-size: 0.65rem; }
+
+/* Phase 2 — criticité des compétences */
+.mr-chip--critique-ok  { background: #fef9c3; color: #854d0e; border: 1.5px solid #fbbf24; font-weight: 700; }
+.mr-chip--critique-ko  { background: #fef2f2; color: #991b1b; border: 1.5px solid #ef4444; font-weight: 700; }
+.mr-chip--generic      { background: #f1f5f9; color: #64748b; font-weight: 500; opacity: 0.85; }
+.mr-crit-star          { margin-right: 3px; font-size: 0.65rem; vertical-align: middle; }
+
+/* Domaine expérience */
+.mr-domain-warn { color: #d97706; font-size: 0.78rem; font-style: italic; }
+
+/* Domaine formation */
+.mr-edu-domain  { font-size: 0.75rem; font-weight: 600; margin-left: 4px; }
+.mr-edu-match   { color: #15803d; }
+.mr-edu-adjacent{ color: #d97706; }
+.mr-edu-mismatch{ color: #dc2626; }
+
 /* Explication */
 .mr-explain {
   display: flex;
@@ -457,3 +488,96 @@
     print-color-adjust: exact;
   }
 }
+
+/* ── Bloc Analyse IA ── */
+.mr-ai-block {
+  margin-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+}
+
+.mr-btn-ai {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.mr-btn-ai:hover { opacity: 0.88; }
+
+.mr-ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6366f1;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.mr-ai-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #c4b5fd;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: mr-spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes mr-spin { to { transform: rotate(360deg); } }
+
+.mr-ai-error {
+  color: #dc2626;
+  font-size: 0.82rem;
+  background: #fef2f2;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.mr-ai-result {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border: 1px solid #c4b5fd;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.mr-ai-result-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #5b21b6;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mr-ai-source {
+  background: #ddd6fe;
+  color: #4c1d95;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.mr-ai-text {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+
+.mr-btn-ai-regen {
+  background: none;
+  border: 1px solid #a78bfa;
+  color: #6d28d9;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mr-btn-ai-regen:hover { background: #ede9fe; }

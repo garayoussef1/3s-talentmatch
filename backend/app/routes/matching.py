@@ -3,10 +3,12 @@ from __future__ import annotations
 import json
 import math
 import os
+from pathlib import Path
 from uuid import UUID
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -31,8 +33,70 @@ _heuristic_engine: Optional[Any] = None
 _ml_scorer: Optional[Any] = None
 _bert_scorer: Optional[Any] = None
 _bert_base_scorer: Optional[Any] = None
+_bert_v2_scorer: Optional[Any] = None
 _report_generator: Optional[ReportGenerator] = None
 _claude_summarizer: Optional[ClaudeSummarizer] = None
+_fusion_mlp_model: Optional[Any] = None   # False si chargement échoué, None si pas encore tenté
+
+_BERT_V2_MODEL_PATH  = str(Path(__file__).resolve().parents[2] / "data" / "models" / "talentmatch-bert-v2.0")
+_FUSION_MLP_PATH     = str(Path(__file__).resolve().parents[3] / "data" / "models" / "fusion_mlp" / "fusion_mlp.pt")
+
+
+# ── MLP Fusion (PyTorch) ──────────────────────────────────────────────────────
+def _get_fusion_mlp():
+    """Charge le MLP Fusion v3.0 (7->64->32->1) depuis le fichier .pt.
+    Retourne le modèle si disponible, None sinon (fallback sur poids fixes).
+    """
+    global _fusion_mlp_model
+    if _fusion_mlp_model is not None:
+        return _fusion_mlp_model if _fusion_mlp_model is not False else None
+
+    try:
+        import torch
+        import torch.nn as nn
+
+        class _FusionMLP(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.net = nn.Sequential(
+                    nn.Linear(7, 64),  nn.BatchNorm1d(64), nn.ReLU(), nn.Dropout(0.20),
+                    nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.10),
+                    nn.Linear(32, 1),  nn.Sigmoid(),
+                )
+            def forward(self, x):
+                return self.net(x).squeeze(-1)
+
+        model = _FusionMLP()
+        model.load_state_dict(torch.load(_FUSION_MLP_PATH, map_location="cpu"))
+        model.eval()
+        _fusion_mlp_model = model
+        print(f"[Fusion MLP v3.0] Chargé depuis {_FUSION_MLP_PATH}")
+        return model
+    except FileNotFoundError:
+        print(f"[Fusion MLP] Modèle non trouvé — fallback sur poids fixes. "
+              f"Lancez generate_mlp_dataset_fusion.py + train_mlp_fusion.py pour l'entraîner.")
+        _fusion_mlp_model = False
+        return None
+    except Exception as exc:
+        print(f"[Fusion MLP] Erreur de chargement : {exc}")
+        _fusion_mlp_model = False
+        return None
+
+
+def _compute_skills_raw(offer_skills: list, cv_skills: list) -> float:
+    """Ratio brut compétences matchées — sans boost BERT. Feature clé pour hors-domaine."""
+    from rapidfuzz import fuzz as _rfuzz
+    from app.services.matching.match_engine import _normalize_skill
+    if not offer_skills:
+        return 0.5
+    matches = 0
+    for req in offer_skills:
+        req_n = _normalize_skill(req)
+        for cv_s in cv_skills:
+            if req_n == _normalize_skill(cv_s) or _rfuzz.token_set_ratio(req_n, _normalize_skill(cv_s)) >= 80:
+                matches += 1
+                break
+    return round(min(1.0, matches / len(offer_skills)), 4)
 
 
 def _get_heuristic_engine():
@@ -60,10 +124,21 @@ def _get_bert_base_scorer():
     global _bert_base_scorer
     if _bert_base_scorer is None:
         _bert_base_scorer = BERTMatchingScorer(model_name="paraphrase-multilingual-MiniLM-L12-v2")
-        # Forcer l'usage du modèle de base même si TalentMatch-BERT est présent
         _bert_base_scorer.model_name    = "paraphrase-multilingual-MiniLM-L12-v2"
         _bert_base_scorer.model_version = "Base (paraphrase-multilingual)"
     return _bert_base_scorer
+
+
+def _get_bert_v2_scorer():
+    global _bert_v2_scorer
+    if _bert_v2_scorer is None:
+        _bert_v2_scorer = BERTMatchingScorer(model_name=_BERT_V2_MODEL_PATH)
+        _bert_v2_scorer.model_name    = "TalentMatch-BERT-v2.0"
+        _bert_v2_scorer.model_version = "TalentMatch-BERT v2.0 (Google Colab — bilingue FR/EN)"
+        # Désactiver le MLP : les poids MLP actuels sont calibrés pour BGE-M3
+        # → utiliser la formule pondérée avec les features du modèle fine-tuné
+        _bert_v2_scorer._disable_mlp = True
+    return _bert_v2_scorer
 
 
 def _get_report_generator():
@@ -189,10 +264,10 @@ def match_candidates_for_offer_sandbox(
 
     alpha = max(0.0, min(1.0, float(alpha)))
     engine = (engine or "heuristic_ml").strip().lower()
-    if engine not in {"heuristic_ml", "bert", "compare_all", "heuristic", "hybrid"}:
+    if engine not in {"heuristic_ml", "bert", "compare_all", "heuristic", "hybrid", "bert_v2", "fusion"}:
         raise HTTPException(
             status_code=400,
-            detail="engine must be one of: heuristic_ml, bert, compare_all, heuristic, hybrid",
+            detail="engine must be one of: heuristic_ml, bert, compare_all, heuristic, hybrid, bert_v2, fusion",
         )
 
     # Sandbox : matcher uniquement les candidats qui ont postulé à CETTE offre.
@@ -205,10 +280,12 @@ def match_candidates_for_offer_sandbox(
     )
 
     heuristic_engine = _get_heuristic_engine()
-    bert = _get_bert_scorer()
+    bert = _get_bert_v2_scorer() if engine == "bert_v2" else _get_bert_scorer()
     bert_base = _get_bert_base_scorer() if engine == "compare_all" else None
     report_gen = _get_report_generator() if engine == "compare_all" else None
     summarizer = _get_claude_summarizer() if engine == "compare_all" else None
+    # Pour le mode fusion : BGE-M3 (bert) + BERT v2 (bert_fusion_v2)
+    bert_fusion_v2 = _get_bert_v2_scorer() if engine == "fusion" else None
 
     bert_weight       = max(0.0, min(1.0, float(alpha)))
     heuristic_weight  = 1.0 - bert_weight
@@ -219,6 +296,9 @@ def match_candidates_for_offer_sandbox(
         h_score, h_details = heuristic_engine.score(offer, candidate)
         b_score, b_details = bert.score(offer, candidate)
         base_raw = float(bert_base.score(offer, candidate)[0]) if bert_base else None
+        bv2_score_raw, bv2_details_raw = (
+            bert_fusion_v2.score(offer, candidate) if bert_fusion_v2 else (None, None)
+        )
 
         raw_data.append({
             "candidate":         candidate,
@@ -227,6 +307,8 @@ def match_candidates_for_offer_sandbox(
             "bert_score":        float(b_score),
             "bert_details":      b_details,
             "base_score_raw":    base_raw,
+            "bv2_score":         float(bv2_score_raw) if bv2_score_raw is not None else None,
+            "bv2_details":       bv2_details_raw,
         })
 
     # ── Scores absolus — aucune normalisation batch ──────────────────────
@@ -244,6 +326,8 @@ def match_candidates_for_offer_sandbox(
         bert_score        = round(float(d["bert_score"]), 4)
         bert_details      = d["bert_details"]
         base_score        = round(d["base_score_raw"], 4) if d["base_score_raw"] is not None else None
+        bv2_score         = round(d["bv2_score"], 4) if d.get("bv2_score") is not None else None
+        bv2_details       = d.get("bv2_details") or {}
 
         hybrid_score = round(max(0.0, min(1.0,
             (bert_weight * bert_score) + (heuristic_weight * heuristic_score),
@@ -262,11 +346,96 @@ def match_candidates_for_offer_sandbox(
                 "heuristic_score":    round(heuristic_score, 4),
                 "heuristic_details":  heuristic_details,
             })
-        elif engine == "bert":
+        elif engine in ("bert", "bert_v2"):
             row.update({
                 "score":           bert_score,
                 "bert_score":      bert_score,
                 "bert_details":    bert_details,
+                "inconsistencies": bert_details.get("inconsistencies", []),
+            })
+        elif engine == "fusion":
+            # ── Fusion intelligente : MLP appris ou poids fixes ───────────────
+            # Features (0-1) : exactement celles utilisées à l'entraînement
+            _sem_bge  = bert_details.get("semantique",  50) / 100
+            _comp_bge = bert_details.get("competences", 50) / 100
+            _exp_bge  = bert_details.get("experience",  50) / 100
+            _form_bge = bert_details.get("formation",   50) / 100
+            _sem_v2   = bv2_details.get("semantique",   50) / 100
+
+            # Nouvelles features v3.0 : discriminantes hors-domaine et formation
+            from app.services.matching.match_engine import (
+                _extract_offer_skills, _candidate_skills,
+                _candidate_education_level, _extract_required_education_level,
+                _normalize_offer_text,
+            )
+            _offer_skills_raw = _extract_offer_skills(offer)
+            _cv_skills_raw    = _candidate_skills(candidate)
+            _skills_raw       = _compute_skills_raw(_offer_skills_raw, _cv_skills_raw)
+            _desc_blob        = _normalize_offer_text(
+                ((offer.description or "") + "\n" + (offer.titre or "")).strip()
+            )
+            _req_edu_raw  = getattr(offer, "experience_requise", None)
+            _req_edu      = _extract_required_education_level(_desc_blob) or 0
+            _cand_edu     = _candidate_education_level(candidate)
+            _edu_gap_norm = max(-1.0, min(1.0, (_req_edu - _cand_edu) / 5.0))
+
+            fusion_mlp = _get_fusion_mlp()
+            mlp_used   = False
+
+            if fusion_mlp is not None:
+                # ── MLP Fusion entraîné v3.0 (7 features) ────────
+                try:
+                    import torch
+                    features_t = torch.tensor(
+                        [[_sem_bge, _comp_bge, _exp_bge, _form_bge, _sem_v2,
+                          _skills_raw, _edu_gap_norm]],
+                        dtype=torch.float32,
+                    )
+                    with torch.no_grad():
+                        score_fused = float(fusion_mlp(features_t).item())
+                    score_fused = round(max(0.02, min(0.95, score_fused)), 4)
+                    mlp_used = True
+                except Exception as _mlp_err:
+                    print(f"[Fusion MLP] Erreur inference: {_mlp_err}", flush=True)
+                    fusion_mlp = None  # fallback si erreur inférence
+
+            if not mlp_used:
+                # ── Fallback : poids fixes (avant entraînement du MLP) ───────
+                # Compétences : BGE-M3 plus fiable (768M params, multilingual)
+                # Sémantique : BERT v2 plus fiable (fine-tuné sur CVs FR)
+                _comp_v2 = bv2_details.get("competences", 50) / 100
+                _exp_v2  = bv2_details.get("experience",  50) / 100
+                comp_f   = 0.65 * _comp_bge + 0.35 * _comp_v2
+                sem_f    = 0.35 * _sem_bge  + 0.65 * _sem_v2
+                exp_f    = 0.50 * _exp_bge  + 0.50 * _exp_v2
+                score_fused = round(
+                    max(0.05, min(0.95,
+                        0.50 * comp_f + 0.25 * exp_f + 0.15 * _form_bge + 0.10 * sem_f,
+                    )), 4
+                )
+
+            # ── Dimensions fusionnées (pour affichage frontend) ───────────────
+            _comp_v2_d = bv2_details.get("competences", 50) / 100
+            _exp_v2_d  = bv2_details.get("experience",  50) / 100
+            fused_details = {
+                **bert_details,
+                "competences": round((0.65 * _comp_bge + 0.35 * _comp_v2_d) * 100, 1),
+                "semantique":  round((0.35 * _sem_bge  + 0.65 * _sem_v2)    * 100, 1),
+                "experience":  round((0.50 * _exp_bge  + 0.50 * _exp_v2_d)  * 100, 1),
+                "formation":   round(_form_bge * 100, 1),
+                "fusion": {
+                    "bge_m3_score":  bert_score,
+                    "bert_v2_score": bv2_score,
+                    "mlp_trained":   mlp_used,
+                },
+            }
+
+            row.update({
+                "score":           score_fused,
+                "bert_score":      score_fused,
+                "bge_m3_score":    bert_score,
+                "bert_v2_score":   bv2_score,
+                "bert_details":    fused_details,
                 "inconsistencies": bert_details.get("inconsistencies", []),
             })
         elif engine == "compare_all":
@@ -542,3 +711,84 @@ def evaluate_matching(
         "offer_title": offer.titre,
         "metrics": metrics,
     }
+
+
+# ──────────────────────────────────────────────
+# POST /matching/summarize
+# ──────────────────────────────────────────────
+class SummarizePayload(BaseModel):
+    candidate_id: str
+    offer_id: str
+    bert_score: Optional[float] = None
+    bert_details: Optional[Dict[str, Any]] = None
+
+
+@router.post("/summarize", summary="Générer une analyse IA d'un candidat pour une offre")
+def generate_ai_summary(
+    payload: SummarizePayload,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    from uuid import UUID as _UUID
+    try:
+        cand_uuid  = _UUID(str(payload.candidate_id))
+        offer_uuid = _UUID(str(payload.offer_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="ID invalide")
+
+    candidate = db.query(Candidate).filter(Candidate.id == cand_uuid).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidat non trouvé")
+
+    offer = db.query(JobOffer).filter(JobOffer.id == offer_uuid).first()
+    if not offer:
+        raise HTTPException(status_code=404, detail="Offre non trouvée")
+
+    details = payload.bert_details or {}
+    score   = payload.bert_score or 0.0
+
+    candidate_data = {
+        "nom": candidate.nom or "Candidat",
+        "competences": (candidate.parsed_data or {}).get("competences", []) if candidate.parsed_data else [],
+    }
+    offer_data = {
+        "titre": offer.titre,
+        "competences_requises": offer.competences_requises or [],
+    }
+    scores = {"hybrid": score, "bert_score": score}
+
+    # Construire un rapport simplifié depuis les détails BERT
+    comp_score = float(details.get("competences", 0))
+    exp_score  = float(details.get("experience", 0))
+    edu_score  = float(details.get("formation", 0))
+
+    # Skills présents / manquants
+    offer_skills = [s.lower() for s in (offer.competences_requises or [])]
+    raw_cand = (candidate.parsed_data or {}).get("competences", []) if candidate.parsed_data else []
+    cand_skills = [
+        (s.get("name") or s.get("skill") or s.get("label") or "").lower()
+        if isinstance(s, dict) else str(s).lower()
+        for s in raw_cand
+    ]
+    strong  = [s for s in offer_skills if any(s in c or c in s for c in cand_skills)]
+    missing = [s for s in offer_skills if s not in strong]
+
+    recommendation = (
+        "HAUTEMENT_RECOMMANDE" if score >= 0.75 else
+        "RECOMMANDE"           if score >= 0.55 else
+        "NEUTRE"               if score >= 0.35 else
+        "NON_RECOMMANDE"
+    )
+
+    report = {
+        "recommendation":   recommendation,
+        "strong_points":    strong[:5],
+        "missing_skills":   missing[:5],
+        "experience_match": exp_score >= 0.5,
+        "education_match":  edu_score >= 0.5,
+        "confidence":       "HAUTE" if score >= 0.6 else "MOYENNE" if score >= 0.4 else "BASSE",
+    }
+
+    summarizer = _get_claude_summarizer()
+    result = summarizer.generate_candidate_summary(candidate_data, offer_data, scores, report)
+    return result

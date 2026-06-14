@@ -4,7 +4,35 @@ import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import './Offers.css'
 
-/* ── Modal assignation recruteurs ─────────────────────────────── */
+const VALID_CONTRATS = ['CDI', 'CDD', 'Stage', 'Alternance', 'Freelance']
+
+function matchQuality(offer) {
+  let score = 0
+  const issues = []
+
+  const skills = offer.competences_requises || []
+  if (skills.length >= 3) score += 35
+  else if (skills.length >= 1) { score += 15; issues.push(`${skills.length} compétence${skills.length > 1 ? 's' : ''} (min. 3 recommandées)`) }
+  else issues.push('Aucune compétence requise')
+
+  if (offer.type_contrat && VALID_CONTRATS.includes(offer.type_contrat)) score += 20
+  else issues.push('Type de contrat manquant')
+
+  if (offer.description && offer.description.length >= 80) score += 20
+  else { score += 5; issues.push('Description trop courte') }
+
+  if (offer.experience_requise != null) score += 15
+  else issues.push('Expérience non précisée')
+
+  const desc = (offer.description || '').toLowerCase()
+  if (/bac\+?\s*[0-9]|master|ingénieur|doctorat/i.test(desc)) score += 10
+  else issues.push('Niveau de formation non précisé')
+
+  const level = score >= 80 ? 'good' : score >= 45 ? 'partial' : 'weak'
+  return { score, level, issues }
+}
+
+
 function RecruiterModal({ offer, onClose, onSaved }) {
   const [recruiters, setRecruiters]     = useState([])   // tous les recruteurs
   const [selected, setSelected]         = useState([])   // ids cochés
@@ -299,6 +327,7 @@ export default function OffersList() {
               const assigned    = o.assigned_recruiter_ids?.length ?? 0
               const newCount    = getNewCount(o.id, cnt)
               const hasNew      = newCount > 0
+              const quality     = matchQuality(o)
 
               const handleCardClick = () => {
                 markOfferSeen(o.id, cnt)
@@ -324,9 +353,17 @@ export default function OffersList() {
                       <span className={`status-badge ${statusCls}`}>{statusLabel}</span>
                       {o.type_contrat && <span className="ol-tag-contract">{o.type_contrat}</span>}
                     </div>
-                    <div className="ol-cand-box">
-                      <span className="ol-cand-num">{cnt}</span>
-                      <span className="ol-cand-lbl">candidat{cnt !== 1 ? 's' : ''}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span
+                        className={`ol-quality-badge ol-quality-${quality.level}`}
+                        title={quality.issues.length > 0 ? `Problèmes : ${quality.issues.join(' · ')}` : 'Offre optimisée pour le matching'}
+                      >
+                        {quality.level === 'good' ? '✓ Prêt' : quality.level === 'partial' ? '⚠ Partiel' : '✕ Incomplet'}
+                      </span>
+                      <div className="ol-cand-box">
+                        <span className="ol-cand-num">{cnt}</span>
+                        <span className="ol-cand-lbl">candidat{cnt !== 1 ? 's' : ''}</span>
+                      </div>
                     </div>
                   </div>
 
