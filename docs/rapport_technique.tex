@@ -1,0 +1,909 @@
+% ============================================================
+%  RAPPORT TECHNIQUE — TalentMatch
+%  Youssef Gara — Stage PFE 3S — 2026
+% ============================================================
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{framed}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm}
+\onehalfspacing
+
+% ── Couleurs ──────────────────────────────────────────────
+\definecolor{navyblue}{RGB}{10,35,80}
+\definecolor{goldcolor}{RGB}{184,142,76}
+\definecolor{lightgray}{RGB}{245,245,245}
+\definecolor{codegreen}{rgb}{0.1,0.5,0.1}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0.1,0.1,0.8}
+
+% ── En-têtes / pieds de page ───────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{navyblue}{\textbf{TalentMatch — Rapport Technique}}}
+\fancyhead[R]{\small\textcolor{goldcolor}{Youssef Gara — 3S — 2026}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Titre de chapitres ─────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\color{navyblue}}
+  {\chaptertitlename\ \thechapter}{10pt}{\huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+
+\titleformat{\section}{\bfseries\large\color{navyblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\bfseries\normalsize\color{navyblue}}{\thesubsection}{1em}{}
+
+% ── Box colorées (framed) ─────────────────────────────────
+\newenvironment{infobox}[1][]{%
+  \begin{framed}\noindent\textbf{\textcolor{navyblue}{#1}}\\[2pt]%
+}{\end{framed}}
+
+\newenvironment{codebox}[1][]{%
+  \begin{framed}\noindent\textbf{\small\textcolor{codeblue}{#1}}\\[2pt]\ttfamily\small%
+}{\end{framed}}
+
+\newenvironment{whybox}[1][Pourquoi ce choix ?]{%
+  \colorbox{yellow!20}{\textbf{\textcolor{navyblue}{#1}}}\vspace{2pt}
+  \begin{framed}%
+}{\end{framed}}
+
+% ── Listings (code) ────────────────────────────────────────
+\lstset{
+  backgroundcolor=\color{lightgray},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{codeblue}\bfseries,
+  commentstyle=\color{codegreen}\itshape,
+  stringstyle=\color{red!70},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!50},
+  numbers=left, numberstyle=\tiny\color{gray},
+  tabsize=4
+}
+
+% ── Tableau path ──────────────────────────────────────────
+\newcommand{\filepath}[1]{\texttt{\small\textcolor{codeblue}{#1}}}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% ── PAGE DE GARDE ─────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{1cm}
+  {\color{navyblue}\rule{\textwidth}{2pt}}\\[0.5cm]
+  {\Huge\bfseries\color{navyblue} TalentMatch}\\[0.3cm]
+  {\Large Plateforme intelligente de matching CV / Offres d'emploi}\\[0.3cm]
+  {\color{goldcolor}\rule{\textwidth}{1pt}}\\[1.5cm]
+
+  {\LARGE\bfseries Rapport Technique}\\[0.4cm]
+  {\large Choix technologiques, architecture et implémentation}\\[2cm]
+
+  \begin{tabular}{ll}
+    \textbf{Réalisé par :}     & Youssef Gara \\[4pt]
+    \textbf{Entreprise :}      & 3S Group — Tunis \\[4pt]
+    \textbf{Encadrante société :}  & Mme Sirine Nasri \\[4pt]
+    \textbf{Encadrante académique :} & Mme Loujayne Bouzarti (Esprit) \\[4pt]
+    \textbf{Période :}         & Février 2026 — Août 2026 \\[4pt]
+    \textbf{Date :}            & Juin 2026 \\
+  \end{tabular}\\[3cm]
+
+  {\color{navyblue}\rule{\textwidth}{2pt}}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\chapter{Contexte et objectif du projet}
+% ============================================================
+
+\section{Problématique}
+
+Le recrutement moderne souffre d'un paradoxe : les entreprises reçoivent un
+volume croissant de candidatures, mais les outils existants (LinkedIn, Indeed,
+ANAPEC) se limitent à une recherche par \textbf{mots-clés}, sans comprendre
+le sens réel des profils.
+
+\begin{infobox}[Chiffre clé]
+Un recruteur consulte un CV en moyenne \textbf{23 secondes}. Sans outil
+intelligent, de nombreux bons profils sont ignorés ou mal classés.
+\end{infobox}
+
+Les problèmes concrets identifiés :
+\begin{itemize}
+  \item Faux positifs : un profil qui cite un mot-clé sans maîtriser le domaine.
+  \item Bons profils ignorés : un expert qui formule ses compétences différemment.
+  \item Pas de compréhension du \textbf{contexte sémantique} ni de la trajectoire professionnelle.
+  \item Absence d'explication : le recruteur ne sait pas \textit{pourquoi} un candidat est classé 1\textsuperscript{er}.
+\end{itemize}
+
+\section{Objectif — TalentMatch}
+
+TalentMatch est une plateforme web complète qui automatise le \textbf{matching CV / offres d'emploi}
+via un pipeline IA :
+
+\begin{enumerate}
+  \item \textbf{Extraction} — lire un CV (PDF, DOCX, scan) et en extraire le texte brut.
+  \item \textbf{Parsing NLP} — structurer le texte en JSON (compétences, expériences, formations).
+  \item \textbf{Scoring IA} — calculer un score de pertinence 0–100\% par modèle d'embeddings.
+  \item \textbf{Classement et explication} — classer les candidats et afficher un rapport détaillé.
+\end{enumerate}
+
+% ============================================================
+\chapter{Architecture générale du système}
+% ============================================================
+
+\section{Vue d'ensemble}
+
+Le système suit une architecture \textbf{client-serveur découplée} :
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Couche} & \textbf{Technologie} & \textbf{Rôle} \\
+\hline
+Frontend & React 18 + Vite & Interface utilisateur (SPA) \\
+API & FastAPI (Python) & Logique métier, endpoints REST \\
+IA / NLP & spaCy, BGE-M3, MLP & Parsing et matching \\
+Base de données & PostgreSQL 16 & Stockage persistant \\
+Auth & JWT (python-jose) & Sécurité des accès \\
+Email & SMTP Gmail & Notifications \\
+Déploiement & Railway + Docker & Cloud \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Structure du code}
+
+\begin{codebox}[Arborescence principale — projet 3s-talentmatch/]
+backend/
+  app/
+    main.py           <- Point d'entrée FastAPI (lifespan, CORS, routes)
+    routes/           <- Endpoints REST (auth, cv, matching, job_offers...)
+    models/           <- Tables SQLAlchemy (ORM)
+    schemas/          <- Validations Pydantic
+    services/
+      extraction/     <- Lecture PDF/DOCX/OCR
+      nlp/            <- Pipeline NLP (spaCy)
+      matching/       <- Moteur de matching principal
+      matching_sandbox/ <- Scoreurs IA (BGE-M3, MLP)
+      ai_summary/     <- Résumé IA du profil (Claude)
+  scripts/            <- Scripts d'entraînement et de seed
+
+frontend/
+  src/
+    pages/            <- Pages React (Dashboard, OfferDetail...)
+    components/       <- Composants réutilisables (MatchReport...)
+    services/api.js   <- Instance Axios centralisée
+\end{codebox}
+
+% ============================================================
+\chapter{Choix technologiques et justifications}
+% ============================================================
+
+\section{Backend — FastAPI}
+
+\begin{whybox}[Pourquoi FastAPI et pas Flask ou Django ?]
+\begin{itemize}
+  \item \textbf{Async natif} : FastAPI est basé sur ASGI (Starlette), ce qui permet
+        de gérer plusieurs requêtes simultanées sans bloquer — crucial pour les
+        appels aux modèles IA qui sont lents.
+  \item \textbf{Documentation automatique} : Swagger UI sur \texttt{/docs} et
+        ReDoc sur \texttt{/redoc} générés automatiquement depuis les types Python.
+  \item \textbf{Validation automatique} : les schémas Pydantic valident les entrées/sorties.
+  \item \textbf{Flask} : trop bas niveau, pas de validation intégrée, sync par défaut.
+  \item \textbf{Django} : monolithique, overhead inutile pour une API pure.
+\end{itemize}
+\end{whybox}
+
+\begin{infobox}[Fichier clé]
+  \filepath{backend/app/main.py} — point d'entrée FastAPI.
+  Le \textbf{lifespan handler} (lignes 1–50) pré-chauffe le modèle BGE-M3 au démarrage
+  pour éviter la latence au premier appel de matching.
+\end{infobox}
+
+\section{Base de données — PostgreSQL}
+
+\begin{whybox}[Pourquoi PostgreSQL et pas MySQL ou MongoDB ?]
+\begin{itemize}
+  \item \textbf{ACID} : transactions fiables — important pour les opérations de matching
+        qui mettent à jour plusieurs tables en même temps.
+  \item \textbf{JSON natif} : le champ \texttt{parsed\_data} (profil du candidat structuré)
+        est stocké en \texttt{JSONB}, ce qui permet des requêtes sur les sous-champs.
+  \item \textbf{MongoDB} : schéma trop flexible, difficile à maintenir avec des relations
+        (candidat ↔ offre ↔ match).
+  \item Port utilisé : \textbf{5433} (non-standard pour éviter les conflits avec
+        d'autres instances locales).
+\end{itemize}
+\end{whybox}
+
+\textbf{Tables principales :}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Table} & \textbf{Description} \\
+\midrule
+\texttt{users} & Comptes (candidat / recruteur / admin), auth JWT + OAuth \\
+\texttt{candidates} & Profil structuré du candidat + \texttt{parsed\_data} JSONB \\
+\texttt{cv\_documents} & Fichier CV uploadé (référence vers stockage) \\
+\texttt{job\_offers} & Offres d'emploi (titre, description, compétences requises) \\
+\texttt{matches} & Score de matching candidat↔offre (0–100\%) \\
+\texttt{notifications} & Alertes email (nouvelles candidatures, statut) \\
+\texttt{access\_logs} & Journal RGPD — chaque consultation de données personnelles \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{infobox}[Fichiers clés]
+  \filepath{backend/app/models/candidate.py} — modèle Candidate (\texttt{parsed\_data} JSONB).\\
+  \filepath{backend/app/models/match.py} — table des scores de matching.\\
+  \filepath{backend/app/models/access\_log.py} — journal RGPD.\\
+  \filepath{backend/alembic/versions/} — 9 fichiers de migration.
+\end{infobox}
+
+\section{Frontend — React 18 + Vite}
+
+\begin{whybox}[Pourquoi React et pas Vue ou Angular ?]
+\begin{itemize}
+  \item \textbf{Composants réutilisables} : le composant \texttt{MatchReport} est
+        utilisé à la fois dans le dashboard recruteur et la page candidat.
+  \item \textbf{Hooks} (useState, useEffect, useContext) : gestion d'état simple
+        sans Redux.
+  \item \textbf{Vite} : serveur de développement ultra-rapide (HMR instantané).
+  \item \textbf{Angular} : trop verbose, TypeScript obligatoire, courbe d'apprentissage.
+\end{itemize}
+\end{whybox}
+
+\begin{infobox}[Point d'attention — Instance Axios centralisée]
+  \filepath{frontend/src/services/api.js} — \textbf{toujours} importer depuis ce fichier.
+  Il injecte automatiquement le JWT dans chaque requête et redirige vers \texttt{/login}
+  en cas de 401. Contourner ce fichier casserait l'authentification.
+\end{infobox}
+
+\section{ORM — SQLAlchemy 2 + Alembic}
+
+\begin{itemize}
+  \item \textbf{SQLAlchemy 2} : ORM — on écrit du Python, pas du SQL brut.
+        Prévient les injections SQL.
+  \item \textbf{Alembic} : versioning du schéma de BDD. Chaque modification de
+        modèle génère un fichier de migration dans
+        \filepath{backend/alembic/versions/}.
+\end{itemize}
+
+% ============================================================
+\chapter{Pipeline d'ingestion des CVs}
+% ============================================================
+
+Le pipeline complet se déclenche sur \texttt{POST /api/upload-cv}
+(\filepath{backend/app/routes/cv.py}).
+
+\section{Étape 1 — Extraction du texte}
+
+Le module \filepath{backend/app/services/extraction/} dispatche selon le type de fichier :
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Type} & \textbf{Outil} & \textbf{Fichier} \\
+\midrule
+PDF textuel & PyMuPDF / pypdf & \texttt{pdf\_extractor.py} \\
+DOCX (Word) & python-docx & \texttt{word\_extractor.py} \\
+Image / PDF scanné & EasyOCR & \texttt{ocr\_extractor.py} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{whybox}[Pourquoi EasyOCR et pas Tesseract ?]
+\begin{itemize}
+  \item EasyOCR utilise du \textbf{Deep Learning} (CRAFT + CRNN) — meilleure précision
+        sur les documents bruités, inclinés ou avec des polices non standard.
+  \item Tesseract est basé sur de l'OCR classique, plus fragile sur les CVs
+        scannés de mauvaise qualité.
+  \item EasyOCR supporte le français et l'arabe nativement.
+\end{itemize}
+\end{whybox}
+
+\section{Étape 2 — Parsing NLP}
+
+L'orchestrateur \filepath{backend/app/services/nlp/nlp\_parser.py} appelle
+les extracteurs dans cet ordre :
+
+\begin{enumerate}
+  \item \textbf{ContactExtractor} — nom, email, téléphone, adresse.
+  \item \textbf{EntityExtractor} — entités nommées via spaCy NER.
+        Optionnel : \textbf{HFCamembertNameExtractor} si \texttt{HF\_ENABLE\_CAMEMBERT\_NAME=1}.
+  \item \textbf{SkillsExtractor} — compétences techniques et soft skills.
+        Fichier : \filepath{backend/app/services/nlp/skills\_extractor.py}
+  \item \textbf{FormationExtractor} — diplômes, établissements, années.
+        Fichier : \filepath{backend/app/services/nlp/formation\_extractor.py}
+  \item \textbf{ExperienceExtractor} — postes, entreprises, durées.
+        Fichier : \filepath{backend/app/services/nlp/experience\_extractor.py}
+  \item \textbf{Langues} — langues détectées automatiquement (\texttt{\_extract\_langues}).
+\end{enumerate}
+
+\begin{whybox}[Pourquoi spaCy \texttt{fr\_core\_news\_md} et pas NLTK ?]
+\begin{itemize}
+  \item spaCy propose une \textbf{pipeline NLP complète} (tokenisation, POS, dépendances, NER)
+        en un seul modèle.
+  \item Le modèle \texttt{fr\_core\_news\_md} est entraîné sur du français journalistique
+        et institutionnel — bien adapté aux CVs.
+  \item NLTK est un toolkit académique sans modèle NER français de qualité.
+  \item \textbf{Important} : le modèle n'est pas installable via pip. Il faut :
+        \texttt{python -m spacy download fr\_core\_news\_md}
+\end{itemize}
+\end{whybox}
+
+\section{Étape 3 — Stockage structuré}
+
+Le résultat du parsing est stocké dans \texttt{Candidate.parsed\_data}
+(champ JSONB PostgreSQL). Sa structure est définie dans
+\filepath{backend/app/schemas/cv\_data.py}.
+
+Exemple de structure :
+\begin{lstlisting}[language=Python]
+{
+  "identite": {"nom_complet": "...", "email": "..."},
+  "competences": {"techniques": ["React", "Python"], "soft": ["Leadership"]},
+  "experiences": [{"poste": "Dev React", "duree_mois": 24, ...}],
+  "formations": [{"diplome": "Licence Info", "etablissement": "Esprit"}],
+  "secteur_detecte": {"secteur": "informatique", "label": "Développeur"},
+  "metadata": {"spacy_fallback": false, "version": "2.1"}
+}
+\end{lstlisting}
+
+% ============================================================
+\chapter{Moteur de Matching IA}
+% ============================================================
+
+\section{Vue d'ensemble du scoring}
+
+Le score final (0–100\%) est calculé par le scoreur principal
+\filepath{backend/app/services/matching\_sandbox/bert\_scorer.py}
+via une architecture à \textbf{3 niveaux} :
+
+\begin{center}
+\begin{tabular}{clc}
+\toprule
+\textbf{Niveau} & \textbf{Composant} & \textbf{Rôle} \\
+\midrule
+1 & BGE-M3 (bi-encoder) & Embeddings sémantiques \\
+2 & Cross-Encoder (reranker) & Score sémantique précis \\
+3 & MLP Fusion (7 features) & Score final combiné \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Composant 1 — BGE-M3 (Bi-encoder)}
+
+\begin{infobox}[Qu'est-ce que BGE-M3 ?]
+BGE-M3 (\textbf{BAAI/bge-m3}) est un modèle de \textit{sentence embeddings}
+multilingue développé par le Beijing Academy of Artificial Intelligence.
+\begin{itemize}
+  \item \textbf{568 millions} de paramètres, vecteurs de dimension \textbf{1024}.
+  \item Supporte \textbf{100+ langues} — dont français, arabe et anglais en même temps.
+  \item Basé sur l'architecture \textbf{XLM-RoBERTa} fine-tuné pour la similarité sémantique.
+  \item Il encode séparément le CV et l'offre, puis calcule la \textbf{similarité cosinus}
+        entre les deux vecteurs.
+\end{itemize}
+\end{infobox}
+
+\begin{whybox}[Pourquoi BGE-M3 et pas CamemBERT ?]
+\begin{itemize}
+  \item \textbf{CamemBERT} est monolingue (français uniquement). Les CVs tunisiens
+        contiennent souvent de l'anglais, du français et parfois de l'arabe.
+  \item BGE-M3 est spécifiquement entraîné pour la \textbf{recherche sémantique} et
+        la \textbf{similarité de documents}, pas juste pour le NER ou la classification.
+  \item CamemBERT était utilisé dans les versions antérieures (Sprint 2-3).
+        Le passage à BGE-M3 au Sprint 4 a amélioré les scores de matching.
+\end{itemize}
+\end{whybox}
+
+\begin{codebox}[Localisation dans le code]
+Fichier  : backend/app/services/matching_sandbox/bert_scorer.py
+Ligne 734: _EMBEDDER_MODEL = "BAAI/bge-m3"
+Ligne 758: class BERTMatchingScorer:
+           -> méthode _encode() : calcule les embeddings
+           -> méthode score() : retourne la similarité cosinus
+\end{codebox}
+
+\section{Composant 2 — Cross-Encoder (Reranker)}
+
+\begin{infobox}[Qu'est-ce qu'un Cross-Encoder ?]
+Contrairement au bi-encoder (BGE-M3 encode séparément les deux textes),
+le Cross-Encoder (\textbf{BAAI/bge-reranker-v2-m3}) prend la \textbf{paire
+(offre, CV) comme entrée unique}.
+\begin{itemize}
+  \item Il peut ainsi capturer des \textbf{interactions fines} entre les deux textes
+        (un mot de l'offre qui répond à une phrase du CV).
+  \item Résultat : un score scalaire unique, plus précis que la similarité cosinus.
+  \item \textbf{Limitation} : beaucoup plus lent (pas de cache d'embeddings possible).
+        C'est pourquoi il est utilisé en \textit{reranker} après un premier filtre BGE-M3.
+\end{itemize}
+\end{infobox}
+
+\begin{codebox}[Localisation dans le code]
+Fichier  : backend/app/services/matching_sandbox/bert_scorer.py
+Ligne 737: _RERANKER_MODEL = "BAAI/bge-reranker-v2-m3"
+Ligne 794: def _load_reranker(self):
+           -> CrossEncoder chargé en lazy loading (au premier appel)
+           -> max_length=512 pour correspondre au modèle
+\end{codebox}
+
+\section{Composant 3 — MLP Fusion (10 features)}
+
+\subsection{Architecture du MLP}
+
+Le MLP (\textit{Multi-Layer Perceptron}) est un réseau de neurones simple entraîné
+\textbf{spécifiquement sur les données du projet}. La version actuelle (v3b1) prend
+\textbf{10 features} en entrée, contre 7 dans la première version : trois signaux
+métier supplémentaires ont été ajoutés (compétence du titre, criticité des
+compétences, type d'offre) — détaillés au chapitre~\ref{chap:ameliorations}.
+
+\begin{infobox}[Architecture — \filepath{backend/app/services/matching\_sandbox/bert\_scorer.py} (classe \texttt{\_ScoringMLPv3b1})]
+$10\ \text{features} \rightarrow 64\ \text{neurones} \rightarrow 32\ \text{neurones} \rightarrow 1\ \text{score}$
+
+Couches : Linéaire + BatchNorm + ReLU + Dropout 0.20, puis Linéaire + ReLU +
+Dropout 0.10, puis Linéaire + Sigmoid (score entre 0 et 1).
+\end{infobox}
+
+\subsection{Les 10 features d'entrée}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{clX}
+\toprule
+\textbf{\#} & \textbf{Feature} & \textbf{Description} \\
+\midrule
+1 & \texttt{sem\_sim} & Similarité sémantique BGE-M3 (bi-encoder) \\
+2 & \texttt{skill\_rate\_w} & Ratio compétences pondéré par criticité (Phase 2) \\
+3 & \texttt{exp\_score} & Score d'expérience (années vs. requis) \\
+4 & \texttt{form\_score} & Score de formation, intégrant le domaine d'études (A3) \\
+5 & \texttt{sem\_v2} & Score du Cross-Encoder (reranker) sur la paire \\
+6 & \texttt{edu\_dom\_compat} & Compatibilité du domaine d'études candidat / offre \\
+7 & \texttt{exp\_dom\_ratio} & Ratio d'expérience dans le domaine de l'offre \\
+8 & \texttt{title\_skill\_match} & 1.0 si la compétence du titre est présente, 0.0 sinon (Phase 1) \\
+9 & \texttt{crit\_skill\_ratio} & Ratio de compétences critiques matchées (Phase 2) \\
+10 & \texttt{offer\_type\_enc} & Type d'offre encodé : 0=junior / 0.25=management / 0.5=tech / 1=senior (Phase 3) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{whybox}[Pourquoi un MLP et pas une formule pondérée fixe ?]
+\begin{itemize}
+  \item Une formule fixe (ex: 40\% sémantique + 30\% skills + 30\% expérience) est
+        \textbf{rigide} et ne s'adapte pas aux nuances métier.
+  \item Le MLP \textbf{apprend les poids optimaux} depuis les données d'entraînement.
+  \item Il peut apprendre des interactions non-linéaires (ex: un candidat sans
+        diplôme requis mais avec 10 ans d'expérience est quand même pertinent).
+\end{itemize}
+\end{whybox}
+
+\begin{infobox}[Méthode unique \texttt{\_compute\_mlp\_features()} — zéro décalage train/prod]
+Le vecteur de 10 features est produit par \textbf{une seule méthode}, utilisée à la
+fois pour l'inférence en production et pour la génération du dataset d'entraînement.
+Cela garantit que le modèle apprend exactement sur les valeurs qu'il rencontrera en
+production (pas de \textit{train/serving skew}).
+\end{infobox}
+
+\subsection{Entraînement du MLP}
+
+\begin{infobox}[Fichiers d'entraînement (version v3b1)]
+\begin{itemize}
+  \item \filepath{backend/scripts/generate\_mlp\_dataset\_v3b1.py}
+        → génère $\sim$360 paires (candidat, offre) couvrant 8 domaines ISCO et
+        3 types d'offres, dont 30\% de cas hors-domaine. Encodage BGE-M3 en
+        \textit{batch} (génération en moins de 6 secondes).
+  \item \filepath{backend/scripts/train\_mlp\_v3b1.py}
+        → entraîne le MLP $10\to64\to32\to1$ (split 80/10/10, early stopping).
+        Sauvegarde les poids dans \filepath{data/models/fusion\_mlp/fusion\_mlp\_v3b1.pt}.
+        Résultats : précision binaire 97\%, MAE 5,9\%.
+  \item Le modèle entraîné est chargé au démarrage du serveur via le lifespan handler
+        (\filepath{backend/app/main.py}). Influence du MLP dans le score final : 40\%.
+\end{itemize}
+\end{infobox}
+
+\section{Domaine ISCO-08 — EscoService}
+
+\begin{infobox}[Qu'est-ce que l'ISCO-08 ?]
+L'ISCO-08 (\textit{International Standard Classification of Occupations 2008}) est
+la classification internationale des métiers de l'OIT (Organisation Internationale
+du Travail). Elle couvre \textbf{53 domaines professionnels}.
+\end{infobox}
+
+\textbf{Rôle dans TalentMatch :} avant de calculer le score, le système détecte
+le domaine professionnel du CV et de l'offre via
+\filepath{backend/app/services/matching\_sandbox/esco\_service.py}.
+
+\begin{itemize}
+  \item \textbf{Même domaine} (ex: Dev React ↔ Offre React) → pas de cap, score libre.
+  \item \textbf{Domaines adjacents} (ex: Data Science ↔ Dev Backend) → cap à 0.65 (65\%).
+  \item \textbf{Domaines différents} (ex: Médecin ↔ Offre Dev) → cap à 0.35 (35\%).
+\end{itemize}
+
+\begin{codebox}[Localisation]
+Fichier : backend/app/services/matching_sandbox/esco_service.py
+Données : data/esco/isco08_fr.json (53 groupes, keywords, skills_fr)
+Méthode : EscoService.get_score_cap(domain1, domain2) -> float | None
+\end{codebox}
+
+\section{Score final — Pipeline complet}
+
+\begin{center}
+\begin{tabular}{cll}
+\toprule
+\textbf{Étape} & \textbf{Opération} & \textbf{Résultat} \\
+\midrule
+1 & BGE-M3 encode CV + Offre séparément & Vecteurs 1024-dim \\
+2 & Similarité cosinus entre les deux vecteurs & Score sémantique brut \\
+3 & Cross-Encoder (CV, Offre) en entrée unique & Score sémantique raffiné \\
+4 & Calcul des 10 features (\texttt{\_compute\_mlp\_features}) & Vecteur 10 valeurs \\
+5 & MLP Fusion (40\%) + formule calibrée (60\%) & Score 0–1 \\
+6 & Multiplicateur de domaine ISCO-08 + cap titre (Phase 1) & Score ajusté \\
+7 & Multiplication × 100 & Score \% affiché \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ============================================================
+\chapter{Améliorations avancées du moteur de matching}
+\label{chap:ameliorations}
+% ============================================================
+
+Ce chapitre décrit les améliorations apportées au moteur après la première version.
+Elles se répartissent en deux familles : la \textbf{qualité des données d'entrée}
+(phases A1–A3) et la \textbf{logique métier de scoring} (phases 1–3), suivies de la
+boucle d'apprentissage humain et de l'évaluation systématique du modèle.
+
+\section{Qualité des données — Ontologie de synonymes (A1)}
+
+\begin{whybox}[Le problème résolu]
+La première version reconnaissait mal les synonymes de compétences. «~ReactJS~»,
+«~React.js~» et «~React~» n'étaient pas reliés ; «~recruiting~» (anglais) ne
+matchait pas «~recrutement~». Pire, le dictionnaire généré automatiquement
+contenait du bruit (ex: «~react~»~$\rightarrow$~«~nuclear energy~»).
+\end{whybox}
+
+Une ontologie propre a été construite dans \filepath{data/skills/skills\_aliases.json}
+(\textbf{5\,047 compétences} normalisées, FR + EN, multi-domaine). Elle fusionne :
+un dictionnaire IT curé manuellement, un dictionnaire métier (Finance, RH, Santé,
+Droit, BTP, Logistique\ldots), et les labels ESCO officiels. La normalisation
+(minuscules, suppression des accents) est appliquée \textbf{avant} le calcul du
+ratio de compétences.
+
+\begin{codebox}[Génération]
+Script : scripts/build_skills_aliases.py
+Sortie : data/skills/skills_aliases.json (5047 entrées)
+Test   : "ReactJS" == "React.js" == "React" -> match (8/8 validations)
+\end{codebox}
+
+\section{Qualité des données — Extraction multi-domaine (A2, A3)}
+
+\textbf{A2 — Compétences non-IT.} L'extracteur de compétences
+(\filepath{skills\_extractor.py}) a été corrigé pour gérer les compétences
+composées («~contrôle de gestion~», «~gestion prévisionnelle des emplois~») et les
+domaines non informatiques. Validation : \textbf{100\%} de rappel sur des CV de
+référence en Comptabilité, RH et Santé (38/38 compétences extraites).
+
+\textbf{A3 — Domaine d'études.} L'extracteur de formations
+(\filepath{formation\_extractor.py}) ne se limite plus au niveau du diplôme
+(Bac+5) mais en extrait aussi le \textbf{domaine} (informatique, finance,
+droit\ldots). Ainsi «~Master Informatique~» et «~Master Finance~», de même niveau,
+sont désormais distingués pour le scoring de la formation.
+
+\section{Logique métier — Compétence centrale du titre (Phase 1)}
+
+\begin{whybox}[Le problème résolu]
+Un développeur Java avec 4 ans d'expérience obtenait un meilleur score qu'un
+développeur Python junior pour un poste «~Développeur Python~» — alors que Python
+est la compétence \textbf{obligatoire} indiquée dans le titre.
+\end{whybox}
+
+Le système détecte la compétence centrale du titre de manière \textbf{sémantique}
+(via BGE-M3, sans liste codée en dur) : il compare le titre à chaque compétence
+requise et retient la plus proche. Si le candidat ne possède pas cette compétence
+\textbf{et} qu'il est dans le même domaine, son score est plafonné
+($\times\,0{,}50$). Résultat : le développeur Java passe de 69\% à 34\% pour un
+poste Python.
+
+\section{Logique métier — Pondération par criticité (Phase 2)}
+
+Toutes les compétences n'ont pas la même importance. Le système les classe en
+trois niveaux de poids :
+
+\begin{center}
+\begin{tabular}{lcl}
+\toprule
+\textbf{Niveau} & \textbf{Poids} & \textbf{Exemple (poste Dev Python)} \\
+\midrule
+Critique (compétence du titre) & $\times 3$ & Python \\
+Requise (métier)               & $\times 2$ & FastAPI, PostgreSQL \\
+Générique (outil transversal)  & $\times 1$ & Git, Docker, Excel \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Le ratio de compétences est alors normalisé par la somme des poids, ce qui donne
+plus de valeur aux compétences réellement discriminantes.
+
+\section{Logique métier — Recalibration par type d'offre (Phase 3)}
+
+Les poids des quatre dimensions (compétences, sémantique, expérience, formation)
+ne sont plus fixes : ils s'adaptent au type d'offre détecté.
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Type d'offre} & \textbf{Skills} & \textbf{Sém.} & \textbf{Exp.} & \textbf{Form.} \\
+\midrule
+Tech spécialisé   & 55\% & 20\% & 15\% & 10\% \\
+Senior 5+ ans     & 40\% & 20\% & 30\% & 10\% \\
+Stage / Junior    & 45\% & 25\% & 5\%  & 25\% \\
+Management / RH   & 35\% & 25\% & 25\% & 15\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Le seuil de décision «~Entretien recommandé~» s'ajuste lui aussi (65\% pour un
+poste junior, 70\% pour un senior).
+
+\section{Apprentissage humain dans la boucle}
+
+Pour ne pas apprendre uniquement sur une formule (raisonnement circulaire), un outil
+d'annotation (\filepath{scripts/label\_pairs.py}) permet à un recruteur d'attribuer
+un label réel (0 = mauvais, 0{,}5 = moyen, 1 = bon) à des paires (offre, CV)
+sélectionnées de façon stratifiée. Ces labels sont stockés dans
+\filepath{data/human\_labels.csv} et mélangés au dataset formule lors du
+réentraînement, avec un \textbf{poids double} pour la vérité terrain humaine
+(\filepath{train\_mlp\_human\_labels.py}). Un premier lot de 40 annotations a
+confirmé un accord de 39/40 avec le modèle, validant sa calibration.
+
+\section{Évaluation systématique du modèle}
+
+Un \textit{benchmark} (\filepath{scripts/benchmark\_model.py}) mesure les
+performances du modèle par \textbf{catégorie} de situation, pour cartographier
+précisément ses forces et faiblesses.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{Xcl}
+\toprule
+\textbf{Catégorie testée} & \textbf{Résultat} & \textbf{Statut} \\
+\midrule
+Match parfait (même domaine)        & 3/3 & Fort \\
+Rejet hors-domaine total            & 3/3 & Fort \\
+Domaines adjacents (zone grise)     & 2/2 & Fort \\
+Synonymes EN/FR (\textit{aliases})  & 2/2 & Fort \\
+Cap compétence titre (Phase 1)      & 2/2 & Fort \\
+Surqualification                    & 1/1 & Fort \\
+Sous-qualification expérience       & 2/2 & Fort \\
+Discrimination junior (exp. faible) & 1/2 & Moyen \\
+\midrule
+\textbf{Score global}               & \textbf{16/17} & \textbf{94\%} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Force principale.} Le modèle distingue très nettement les bons profils
+(85–91\%) des profils hors-domaine (5–18\%), y compris sur les métiers non
+informatiques, et reconnaît les synonymes multilingues.
+
+\textbf{Point faible identifié.} Sur les offres junior/stage, le poids élevé de la
+formation (25\%) peut gonfler le score d'un candidat ayant le bon diplôme mais peu de
+compétences. Cet axe d'amélioration est documenté pour une itération future.
+
+\begin{infobox}[Tests de non-régression]
+En complément du benchmark, deux suites garantissent la stabilité :
+\filepath{test\_matching\_reel.py} (15 cas de scoring, dont 6 multi-domaine) et
+\filepath{test\_ranking.py} (classement validé par corrélation de Spearman sur
+3 scénarios : $\rho = 0{,}90$ à $1{,}00$).
+\end{infobox}
+
+% ============================================================
+\chapter{Sécurité et conformité RGPD}
+% ============================================================
+
+\section{Authentification JWT}
+
+\begin{itemize}
+  \item \textbf{JSON Web Token} (JWT) : standard RFC 7519. Un token signé est
+        émis à la connexion et doit être envoyé dans chaque requête
+        (header \texttt{Authorization: Bearer <token>}).
+  \item Le token contient l'ID utilisateur et le rôle (candidat / recruteur / admin).
+  \item Expiration configurable via \texttt{ACCESS\_TOKEN\_EXPIRE\_MINUTES} dans
+        \filepath{backend/.env}.
+  \item Implémentation : \filepath{backend/app/services/auth\_service.py}
+\end{itemize}
+
+\begin{whybox}[Pourquoi JWT et pas sessions classiques ?]
+\begin{itemize}
+  \item \textbf{Stateless} : le serveur n'a pas besoin de stocker les sessions en BDD.
+        Scalable horizontalement (plusieurs instances du serveur).
+  \item \textbf{Déployable sur Railway} sans partage de session entre instances.
+\end{itemize}
+\end{whybox}
+
+\section{Rôles et contrôle d'accès}
+
+Trois rôles définis dans \filepath{backend/app/dependencies.py} :
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Rôle} & \textbf{Accès} \\
+\midrule
+Candidat & Upload CV, voir ses candidatures, liste des offres \\
+Recruteur & Gérer ses offres, voir les résultats de matching \\
+Admin & Tout + gestion utilisateurs + logs RGPD \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Conformité RGPD}
+
+\begin{itemize}
+  \item \textbf{Consentement explicite} : lors de la candidature, le candidat coche
+        une case RGPD. Visible sur la capture \textit{postuleCv.png}.
+  \item \textbf{Journal d'accès} : table \texttt{access\_logs}
+        (\filepath{backend/app/models/access\_log.py}) — chaque consultation de
+        données personnelles est enregistrée (qui, quand, quoi).
+  \item \textbf{Droit à l'effacement} : endpoint dédié de suppression complète.
+  \item \textbf{Conservation limitée} : suppression automatique après 2 ans d'inactivité.
+\end{itemize}
+
+% ============================================================
+\chapter{Interface utilisateur (Frontend)}
+% ============================================================
+
+\section{Architecture React}
+
+\begin{infobox}[Fichier central — \filepath{frontend/src/services/api.js}]
+Toutes les requêtes API passent par cette instance Axios unique.
+Elle injecte automatiquement le JWT, gère le timeout (8s) et redirige
+vers \texttt{/login} si le serveur répond 401.
+\textbf{Ne jamais appeler Axios directement} dans un composant — toujours
+passer par ce fichier.
+\end{infobox}
+
+\section{Pages principales}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Page / Fichier} & \textbf{Description} \\
+\midrule
+\filepath{frontend/src/pages/Dashboard.jsx} & Tableau de bord recruteur \\
+\filepath{frontend/src/pages/OffersList.jsx} & Liste des offres (côté candidat) \\
+\filepath{frontend/src/pages/OfferDetail.jsx} & Détail + bouton Postuler \\
+\filepath{frontend/src/pages/OfferNew.jsx} & Création d'une nouvelle offre \\
+\filepath{frontend/src/components/MatchReport.jsx} & Rapport de matching IA détaillé \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Rapport de matching — MatchReport}
+
+Le composant \filepath{frontend/src/components/MatchReport.jsx} affiche pour chaque
+candidat :
+\begin{itemize}
+  \item Score global (0–100\%) avec code couleur.
+  \item Décomposition par dimension (Compétences, Expérience, Formation, Sémantique).
+  \item Compétences présentes vs manquantes.
+  \item Bouton « Analyse IA (Mistral) » → rapport narratif généré par LLM.
+\end{itemize}
+
+% ============================================================
+\chapter{Méthodologie — Agile Scrum}
+% ============================================================
+
+\section{Organisation des sprints}
+
+Le projet est organisé en \textbf{6 sprints d'1 mois} de Février à Août 2026.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{cllX}
+\toprule
+\textbf{Sprint} & \textbf{Mois} & \textbf{Statut} & \textbf{Livrables principaux} \\
+\midrule
+1 & Février 2026 & \textcolor{codegreen}{\textbf{OK}} & CDC, conception UML, architecture, setup \\
+2 & Mars 2026    & \textcolor{codegreen}{\textbf{OK}} & Upload CV, extraction texte, OCR, BDD \\
+3 & Avril 2026   & \textcolor{codegreen}{\textbf{OK}} & Pipeline NLP spaCy, extraction skills \\
+4 & Mai 2026     & \textcolor{orange}{\textbf{En cours}} & BGE-M3 + Cross-Encoder, matching, dashboard \\
+5 & Juin 2026    & \textcolor{gray}{\textbf{TODO}} & Sécurité, tests intégration, notifications \\
+6 & Juil–Août 2026 & \textcolor{gray}{\textbf{TODO}} & Déploiement Railway, documentation, soutenance \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Outils utilisés}
+
+Git (GitHub), VS Code, PyCharm, Postman (tests API), Trello (backlog).
+Reviews régulières avec Mme Sirine Nasri (encadrante société) et
+Mme Loujayne Bouzarti (encadrante académique).
+
+% ============================================================
+\chapter{Avancement actuel — Sprint 4}
+% ============================================================
+
+\section{Fonctionnalités livrées}
+
+\begin{itemize}
+  \item[\checkmark] Authentification complète (JWT, OAuth Google/LinkedIn, OTP email).
+  \item[\checkmark] Upload et extraction multi-format (PDF textuel, DOCX, PDF scanné via OCR).
+  \item[\checkmark] Pipeline NLP complet : compétences, expériences, formations, langues.
+  \item[\checkmark] Moteur de matching BGE-M3 + Cross-Encoder + MLP Fusion.
+  \item[\checkmark] Dashboard recruteur : liste des offres, classement des candidats.
+  \item[\checkmark] Interface candidat : liste des offres compatibles, candidature avec RGPD.
+  \item[\checkmark] Score détaillé par dimension dans MatchReport.
+  \item[\checkmark] Résumé IA du profil (Claude/Mistral).
+  \item[\checkmark] Notifications (base implémentée).
+\end{itemize}
+
+\section{Démo — Scénario de test}
+
+\begin{infobox}[Comptes de démo]
+\begin{itemize}
+  \item Recruteur : \texttt{selim@esprit.tn} / \texttt{Demo3S2026!}
+  \item Admin : \texttt{admin1@esprit.tn} / \texttt{Demo3S2026!}
+  \item Offre de démo : \textbf{Developpeur React Senior}
+  \item 8 candidats avec scores de 93.7\% (Ahmed Benali) à 5.3\% (Amina Diallo)
+\end{itemize}
+\end{infobox}
+
+% ============================================================
+\chapter{Perspectives}
+% ============================================================
+
+\begin{enumerate}
+  \item \textbf{Notifications email recruteur} — alerte à chaque nouvelle candidature.
+  \item \textbf{Planification d'entretiens} — créneaux proposés par le recruteur, acceptés par le candidat.
+  \item \textbf{Page candidat enrichie} — compétences manquantes identifiées, conseils personnalisés.
+  \item \textbf{Amélioration continue par feedback} — le recruteur note « embauché / refusé »,
+        ces données alimentent un réentraînement du MLP.
+  \item \textbf{Génération de rapports via LLM (Mistral AI)} — rapport narratif complet sur chaque candidat.
+  \item \textbf{Déploiement Railway} — conteneurisation Docker, CI/CD GitHub Actions.
+\end{enumerate}
+
+% ============================================================
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+% ============================================================
+
+TalentMatch apporte une réponse technique complète à la problématique du matching
+CV / offres d'emploi. Le pipeline IA (BGE-M3 + Cross-Encoder + MLP Fusion) dépasse
+les approches par mots-clés des solutions existantes en comprenant la \textbf{sémantique}
+des profils et des offres.
+
+Les choix technologiques (FastAPI, PostgreSQL, React, spaCy) ont été guidés par des
+critères clairs : performance, maintenabilité et adéquation avec le périmètre du projet.
+L'architecture modulaire (\textit{pipeline-shaped}) facilite les évolutions futures.
+
+Le Sprint 4 marque le cœur du projet avec la livraison du moteur de matching IA.
+Les sprints 5 et 6 compléteront la solution avec la sécurité renforcée, les tests
+d'intégration et le déploiement en production sur Railway.
+
+\vspace{1cm}
+\begin{center}
+{\color{navyblue}\rule{0.5\textwidth}{0.5pt}}\\[0.3cm]
+\textit{Youssef Gara — Stage PFE 3S TalentMatch — Juin 2026}
+\end{center}
+
+\end{document}

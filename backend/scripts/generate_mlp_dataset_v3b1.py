@@ -173,7 +173,7 @@ def crit_skill_ratio(title_skill, offer_skills, cand_skills) -> float:
     return round(matched / len(crit), 4)
 
 
-def compute_label(o, c, sem_sim, s_comp, s_exp, s_form, dom_compat) -> float:
+def compute_label(o, c, sem_sim, s_comp, s_exp, s_form, dom_compat, crit_ratio=1.0) -> float:
     """Label = formule calibrée (approximation offline)."""
     od = o["dom"]; cd = c["dom"]
     if od == cd:
@@ -260,7 +260,7 @@ def run_fast(scorer: BERTMatchingScorer):
         c_ratio = crit_skill_ratio(title_skill, o["skills"], c["skills"])
 
         label = label_override if label_override is not None else \
-                compute_label(o, c, sem, s_comp, s_exp, s_form, dom_same)
+                compute_label(o, c, sem, s_comp, s_exp, s_form, dom_same, crit_ratio=c_ratio)
 
         pairs.append({
             "offre":    o["titre"], "candidat": c["nom"],

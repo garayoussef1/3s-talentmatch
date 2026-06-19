@@ -1,0 +1,8 @@
+idx,offre,candidat,model_score,sem_sim,skill_rate_w,exp_score,form_score,sem_v2,edu_dom_compat,exp_dom_ratio,title_skill_match,crit_skill_ratio,offer_type_enc
+1,Stage Développement Web Full Stack,Stagiaire 2/5 (faible),0.7148,0.7269,0.4444,1.0,0.8862,0.7269,1.0,1.0,1.0,1.0,0.0
+2,Stage Développement Web Full Stack,Stagiaire 3/5 (moyen),0.8418,0.7298,0.7822,1.0,0.8862,0.7298,1.0,1.0,1.0,1.0,0.0
+3,Stage Développement Web Full Stack,Stagiaire 4/5 (bon),0.8851,0.728,0.9333,1.0,0.8862,0.728,1.0,1.0,1.0,1.0,0.0
+4,Stage Développement Web Full Stack,Stagiaire 5/5 (excellent),0.9026,0.7285,1.0,1.0,0.8862,0.7285,1.0,1.0,1.0,1.0,0.0
+5,Développeur React Junior,Junior React 2/5 (faible),0.3577,0.7207,0.4727,0.6079,0.8793,0.7207,1.0,1.0,0.0,1.0,0.0
+6,Développeur React Junior,Junior React 3/5 (moyen),0.7719,0.719,0.6909,0.6046,0.8793,0.719,1.0,1.0,1.0,1.0,0.0
+7,Développeur React Junior,Junior React 5/5 (excellent),0.7936,0.7281,0.7455,0.6073,0.8793,0.7281,1.0,1.0,1.0,1.0,0.0

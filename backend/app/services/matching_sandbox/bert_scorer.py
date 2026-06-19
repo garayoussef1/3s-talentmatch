@@ -853,50 +853,83 @@ def _clip_words(text: str, max_tokens: int = 512) -> str:
 
 def _extract_title_skill(offer_title: str, offer_skills: List[str], encode_fn=None) -> Optional[str]:
     """
-    Detects the central skill using semantic similarity (BGE-M3 / SentenceTransformer).
-    No hardcoded list — the model understands job titles across all domains.
+    Détecte la compétence CENTRALE du poste — uniquement si le titre la nomme
+    explicitement. C'est un signal FIABLE : on ne pénalise un candidat que si le
+    titre désigne clairement une compétence (ex: "Développeur Python") qu'il n'a
+    pas. Sur un titre générique ("Stage Web Full Stack", "Développeur"), aucune
+    compétence n'est dominante → on retourne None → aucun plafonnement arbitraire.
 
-    Strategy:
-      1. Semantic: embed the title, embed each required skill, pick best cosine match.
-      2. Lexical fallback: check if a required skill appears literally in the title.
-
-    Works for IT, Finance, Healthcare, Law, BTP, Logistics, HR... without any domain list.
+    Le sémantique (BGE-M3) ne sert qu'à DÉPARTAGER si plusieurs compétences
+    requises sont nommées dans le titre — jamais à INVENTER une compétence absente
+    du titre.
     """
     from rapidfuzz import fuzz as _rfuzz
 
     if not offer_title or not offer_skills:
         return None
 
-    title_norm = _normalize_accents(offer_title.lower())
+    title_norm  = _normalize_accents(offer_title.lower())
+    title_words = title_norm.split()
     clean_skills = [s for s in offer_skills if s and len(s.strip()) >= 2]
     if not clean_skills:
         return None
 
-    # 1. Semantic matching via the loaded BGE-M3 / SentenceTransformer encoder
+    _STOP = {"de", "des", "du", "la", "le", "les", "et", "en", "aux",
+             "of", "and", "the", "pour", "sur", "avec"}
+
+    def _word_in_title(sw: str) -> bool:
+        """Un mot-compétence est présent dans le titre (exact, racine, ou fuzzy)."""
+        for tw in title_words:
+            if len(tw) < 3:
+                continue
+            if tw == sw:
+                return True
+            # Racine commune : "controle"/"controleur", "compta"/"comptable"
+            if len(sw) >= 5 and tw.startswith(sw[:5]):
+                return True
+            if len(tw) >= 5 and sw.startswith(tw[:5]):
+                return True
+            if _rfuzz.ratio(tw, sw) >= 82:
+                return True
+        return False
+
+    # ── Compétences réellement NOMMÉES dans le titre (signal fiable) ──────────
+    literal_matches: List[str] = []
+    for skill in clean_skills:
+        s_norm = _normalize_accents(skill.lower().strip())
+        # Correspondance substring directe ("python" dans "developpeur python")
+        if len(s_norm) >= 3 and s_norm in title_norm:
+            literal_matches.append(skill)
+            continue
+        # Correspondance par mots significatifs : TOUS les mots distinctifs de la
+        # compétence doivent figurer dans le titre (gère "Contrôle de gestion"
+        # nommé par "Contrôleur de Gestion", sans inventer "HTML" pour "Web Full Stack").
+        sig_words = [w for w in s_norm.split() if len(w) >= 4 and w not in _STOP]
+        if sig_words and all(_word_in_title(w) for w in sig_words):
+            literal_matches.append(skill)
+
+    # Titre générique : aucune compétence nommée → pas de compétence centrale
+    # fiable → on n'invente rien, pas de plafonnement.
+    if not literal_matches:
+        return None
+
+    if len(literal_matches) == 1:
+        return _normalize_accents(literal_matches[0].lower())
+
+    # Plusieurs compétences nommées → départage sémantique (la plus proche du titre)
     if encode_fn is not None:
         try:
             title_emb = encode_fn(offer_title)
-            best_skill, best_sim = None, 0.0
-            for skill in clean_skills:
+            best_skill, best_sim = literal_matches[0], -1.0
+            for skill in literal_matches:
                 sim = _cosine(title_emb, encode_fn(skill))
                 if sim > best_sim:
-                    best_sim = sim
-                    best_skill = skill
-            if best_skill and best_sim >= 0.45:
-                return _normalize_accents(best_skill.lower())
+                    best_sim, best_skill = sim, skill
+            return _normalize_accents(best_skill.lower())
         except Exception:
             pass
 
-    # 2. Lexical fallback — skill present literally in the title
-    for skill in clean_skills:
-        s_norm = _normalize_accents(skill.lower().strip())
-        if len(s_norm) >= 3 and s_norm in title_norm:
-            return s_norm
-        for word in title_norm.split():
-            if len(word) >= 3 and _rfuzz.ratio(word, s_norm) >= 88:
-                return s_norm
-
-    return None
+    return _normalize_accents(literal_matches[0].lower())
 
 def _candidate_has_skill(skill_canonical: str, cv_skills: List[str]) -> bool:
     """
@@ -2501,10 +2534,12 @@ class BERTMatchingScorer:
             w_form            = _w_fo,
         )
 
-        # MLP influence : 40% si v3b1 (10D valide), 10% sinon
-        # v3b1 a ete entraine sur _compute_mlp_features() -> zero train/prod gap
+        # MLP influence : 70% si v3b1 (10D valide), 10% sinon
+        # On fait davantage confiance au modele appris (v3b1) qu'a la formule fixe :
+        # la formule junior (form=25%) gonfle les profils diplomes sans competences,
+        # le MLP (entraine skills=55%) corrige ce biais.
         if _mlp_score is not None:
-            _mlp_weight = 0.40 if self._mlp_version == 4 else 0.10
+            _mlp_weight = 0.70 if self._mlp_version == 4 else 0.10
             score_final = round(_mlp_score * _mlp_weight + score_final * (1.0 - _mlp_weight), 4)
 
         # Bonus compétences appréciées (+12% max)
