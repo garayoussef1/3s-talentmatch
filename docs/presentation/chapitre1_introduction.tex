@@ -1,0 +1,235 @@
+% ============================================================
+%  CHAPITRE 1 — INTRODUCTION
+%  Présentation TalentMatch — 1ère Restitution
+% ============================================================
+\documentclass[aspectratio=169]{beamer}
+
+% ── Thème ────────────────────────────────────────────────────
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamercolor{palette primary}{bg=blue!70!black, fg=white}
+\setbeamercolor{palette secondary}{bg=blue!60!black, fg=white}
+\setbeamercolor{palette tertiary}{bg=blue!50!black, fg=white}
+\setbeamercolor{palette quaternary}{bg=blue!40!black, fg=white}
+\setbeamercolor{structure}{fg=blue!70!black}
+\setbeamercolor{block title}{bg=blue!70!black, fg=white}
+\setbeamercolor{block body}{bg=blue!5!white}
+\setbeamercolor{alertblock title}{bg=red!70!black, fg=white}
+\setbeamercolor{exampleblock title}{bg=green!50!black, fg=white}
+
+% ── Packages ─────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+
+% ── Métadonnées ───────────────────────────────────────────────
+\title[TalentMatch — 1\`ere Restitution]{%
+  \textbf{TalentMatch}\\
+  \large Plateforme intelligente de matching CV / Offres d'emploi}
+\subtitle{Rapport de stage — 1\`ere Restitution}
+\author[Youssef Gara]{%
+  \textbf{Youssef Gara}\\[4pt]
+  {\small Encadrantes : Mme Loujayne Bouzarti \& Mme Sirine Nasri}}
+\institute[3S]{%
+  \textbf{3S}\\
+  Stage du \textbf{Février 2026} au \textbf{Août 2026}}
+\date{\today}
+
+% ── Pied de page personnalisé ─────────────────────────────────
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1ex,center]{palette secondary}
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.5ex,dp=1ex,center]{palette tertiary}
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1ex,right]{palette primary}
+      \usebeamerfont{date in head/foot}
+      \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+    \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\setbeamertemplate{navigation symbols}{}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% ── SLIDE TITRE ──────────────────────────────────────────────
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ── SLIDE PLAN GÉNÉRAL ───────────────────────────────────────
+\begin{frame}{Plan de la présentation}
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+% ── SLIDE 1 : CONTEXTE DU MARCHÉ ─────────────────────────────
+\begin{frame}{Contexte — Le défi du recrutement moderne}
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{\faExclamationTriangle\ \ Problèmes actuels}
+        \begin{itemize}
+          \item Un recruteur consulte un CV en moyenne \textbf{23 secondes}
+          \item Les outils existants filtrent par \textbf{mots-clés uniquement}
+          \item Pas de compréhension du \textbf{sens réel} des profils
+          \item Nombreux \textbf{faux positifs} et \textbf{bons profils ignorés}
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exampleblock}{\faLightbulb\ \ Notre réponse}
+        \begin{itemize}
+          \item Analyse sémantique par \textbf{modèles IA} (NLP)
+          \item Compréhension du \textbf{domaine professionnel} (ISCO-08)
+          \item Score de matching \textbf{explicable} et \textbf{calibré}
+          \item Classement automatique des candidats
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.5cm}
+  \begin{block}{}
+    \centering
+    \large
+    \textit{Comment faire correspondre \textbf{intelligemment} un candidat à une offre,\\
+    au-delà de la simple recherche par mots-clés ?}
+  \end{block}
+
+\end{frame}
+
+% ── SLIDE 2 : OBJECTIF DU STAGE ──────────────────────────────
+\begin{frame}{Objectif du stage}
+
+  \begin{block}{\faBullseye\ \ Mission principale}
+    Concevoir et développer \textbf{TalentMatch} : une plateforme web complète
+    de matching automatique CV / Offres d'emploi, intégrant des modèles
+    d'intelligence artificielle et des algorithmes de NLP avancés.
+  \end{block}
+
+  \vspace{0.4cm}
+
+  \begin{columns}[T]
+    \begin{column}{0.23\textwidth}
+      \centering
+      \textcolor{blue!70!black}{\faFilePdf}\\[4pt]
+      \textbf{Extraction}\\
+      \small Analyser et structurer les CVs automatiquement
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \centering
+      \textcolor{blue!70!black}{\faBrain}\\[4pt]
+      \textbf{Compréhension}\\
+      \small Comprendre la sémantique des profils par IA
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \centering
+      \textcolor{blue!70!black}{\faChartBar}\\[4pt]
+      \textbf{Scoring}\\
+      \small Calculer un score de pertinence calibré
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \centering
+      \textcolor{blue!70!black}{\faListOl}\\[4pt]
+      \textbf{Classement}\\
+      \small Classer et expliquer les résultats
+    \end{column}
+  \end{columns}
+
+  \vspace{0.5cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Cadre :}
+      \begin{itemize}
+        \item Entreprise : \textbf{3S}
+        \item Encadrantes : Mme \textbf{Loujayne Bouzarti} \& Mme \textbf{Sirine Nasri}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Période :}
+      \begin{itemize}
+        \item Stage de \textbf{Février 2026} à \textbf{Août 2026}
+        \item Durée : \textbf{6 mois}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% ── SLIDE 3 : VUE D'ENSEMBLE DE LA SOLUTION ──────────────────
+\begin{frame}{TalentMatch — Vue d'ensemble}
+
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=0.7cm and 1.2cm,
+    box/.style={rectangle, rounded corners=4pt, draw=blue!60!black,
+                fill=blue!10, text width=2.4cm, align=center,
+                minimum height=1cm, font=\small},
+    arrow/.style={-{Stealth[length=4pt]}, thick, blue!60!black},
+  ]
+    \node[box] (cv)      {\faFilePdf\\[2pt]\textbf{CV (PDF)}};
+    \node[box, right=of cv] (ext)   {\faCogs\\[2pt]\textbf{Extraction}\\NLP};
+    \node[box, right=of ext] (match) {\faBrain\\[2pt]\textbf{Scoring}\\IA (BGE-M3)};
+    \node[box, right=of match] (rank) {\faListOl\\[2pt]\textbf{Classement}\\Candidats};
+    \node[box, below=of match] (offer) {\faBriefcase\\[2pt]\textbf{Offre}\\d'emploi};
+
+    \draw[arrow] (cv)    -- (ext);
+    \draw[arrow] (ext)   -- (match);
+    \draw[arrow] (match) -- (rank);
+    \draw[arrow] (offer) -- (match);
+  \end{tikzpicture}
+  \end{center}
+
+  \vspace{0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.32\textwidth}
+      \begin{block}{\small Backend}
+        \centering\small FastAPI · Python\\spaCy · PostgreSQL
+      \end{block}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{block}{\small Modèles IA}
+        \centering\small BGE-M3 · Cross-Encoder\\ISCO-08 (53 domaines)
+      \end{block}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \begin{block}{\small Frontend}
+        \centering\small React 18 · Vite\\Tailwind CSS
+      \end{block}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% ── SLIDE 4 : PLAN DE LA PRÉSENTATION ────────────────────────
+\begin{frame}{Plan de cette présentation}
+  \begin{enumerate}
+    \setlength\itemsep{0.5em}
+    \item[\textbf{1.}] \textbf{Introduction} \hfill \textcolor{gray}{\small ← vous êtes ici}
+    \item[\textbf{2.}] Cadre du projet \textit{(problématique, existant, solution)}
+    \item[\textbf{3.}] Analyse des besoins \textit{(fonctionnels \& non fonctionnels)}
+    \item[\textbf{4.}] Architecture \textit{(backend, frontend, IA)}
+    \item[\textbf{5.}] Méthodologie \textit{(Agile, outils, organisation)}
+    \item[\textbf{6.}] Avancement actuel \textit{(démos, résultats)}
+    \item[\textbf{7.}] Conclusion \& Perspectives
+  \end{enumerate}
+\end{frame}
+
+% ============================================================
+\end{document}
+% ============================================================

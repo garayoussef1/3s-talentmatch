@@ -1,0 +1,23 @@
+{
+  "version": "TalentMatch-MLP v3.0 — BGE-M3",
+  "date": "2026-05-22 00:24",
+  "base_model": "BAAI/bge-m3 + BAAI/bge-reranker-v2-m3",
+  "architecture": "5 → 128 → 64 → 32 → 1",
+  "dataset": {
+    "source": "Paires synthétiques générées avec BGE-M3",
+    "total": 120,
+    "train": 96,
+    "val": 24
+  },
+  "hyperparametres": {
+    "epochs": 150,
+    "batch_size": 16,
+    "lr": 0.001,
+    "optimizer": "Adam"
+  },
+  "evaluation": {
+    "best_val_loss": 0.00041,
+    "mae_final_pct": 1.52,
+    "accuracy_categorie": 0.95
+  }
+}

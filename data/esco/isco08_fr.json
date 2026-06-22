@@ -1,0 +1,566 @@
+{
+  "version": "ISCO-08-FR-v1.1",
+  "description": "Hiérarchie ISCO-08 adaptée au contexte français — tous domaines professionnels",
+  "groups": [
+
+    {
+      "code": "11", "major": 1,
+      "label_fr": "Directeurs généraux et cadres dirigeants",
+      "keywords_fr": [
+        "directeur général", "dg", "pdg", "ceo", "président directeur général",
+        "directeur exécutif", "gérant", "chef d'entreprise", "dirigeant",
+        "directeur des opérations", "coo", "secrétaire général"
+      ],
+      "skills_fr": ["management", "stratégie", "leadership", "gouvernance", "finance", "gestion d'entreprise"]
+    },
+    {
+      "code": "12", "major": 1,
+      "label_fr": "Directeurs administratifs, commerciaux et financiers",
+      "keywords_fr": [
+        "directeur commercial", "directeur financier", "directeur administratif",
+        "directeur marketing", "directeur rh", "directeur des ressources humaines",
+        "cfo", "cmo", "daf", "drh", "directeur achat", "directeur supply chain",
+        "directeur des ventes", "directeur associé"
+      ],
+      "skills_fr": ["gestion financière", "management d'équipe", "stratégie commerciale", "budget", "reporting"]
+    },
+    {
+      "code": "13", "major": 1,
+      "label_fr": "Directeurs de production et services spécialisés",
+      "keywords_fr": [
+        "directeur technique", "directeur de production", "directeur industriel",
+        "directeur des systèmes d'information", "dsi", "cto", "directeur r&d",
+        "directeur ingénierie", "directeur qualité", "directeur projet",
+        "directeur informatique", "vp engineering", "head of engineering"
+      ],
+      "skills_fr": ["management technique", "gestion de projet", "production", "r&d", "qualité"]
+    },
+    {
+      "code": "14", "major": 1,
+      "label_fr": "Directeurs hôtellerie, commerce et services",
+      "keywords_fr": [
+        "directeur hôtel", "directeur restaurant", "directeur magasin",
+        "directeur agence", "gérant commerce", "responsable établissement",
+        "directeur centre de soins", "directeur clinique"
+      ],
+      "skills_fr": ["gestion d'établissement", "service client", "gestion d'équipe", "commerce"]
+    },
+
+    {
+      "code": "21", "major": 2,
+      "label_fr": "Ingénieurs et scientifiques (sciences, physique, mathématiques)",
+      "keywords_fr": [
+        "ingénieur", "ingénieur civil", "ingénieur mécanique", "ingénieur électrique",
+        "ingénieur électronique", "ingénieur chimique", "ingénieur matériaux",
+        "ingénieur aéronautique", "ingénieur nucléaire", "physicien", "chimiste",
+        "mathématicien", "statisticien", "ingénieur environnement", "ingénieur génie civil",
+        "ingénieur btp", "ingénieur structure", "ingénieur hydraulique",
+        "ingénieur automatisme", "ingénieur process", "ingénieur r&d",
+        "chercheur", "chercheur scientifique", "ingénieur recherche",
+        "ingénieur industriel", "ingénieur production", "ingénieur qualité",
+        "architecte bâtiment", "architecte intérieur", "architecte d'intérieur",
+        "urbaniste", "paysagiste", "architecte urbaniste"
+      ],
+      "skills_fr": [
+        "mathématiques", "analyse", "conception", "modélisation", "simulation",
+        "python", "matlab", "solidworks", "autocad", "ansys", "machine learning",
+        "deep learning", "cloud", "docker", "kubernetes"
+      ]
+    },
+    {
+      "code": "22", "major": 2,
+      "label_fr": "Professionnels de la santé",
+      "keywords_fr": [
+        "médecin", "docteur", "chirurgien", "généraliste", "spécialiste",
+        "cardiologue", "neurologue", "pédiatre", "gynécologue", "dermatologue",
+        "psychiatre", "urgentiste", "anesthésiste", "radiologue", "oncologue",
+        "ophtalmologue", "oto-rhino-laryngologiste", "rhumatologue", "endocrinologue",
+        "pharmacien", "biologiste médical", "médecin du travail",
+        "dentiste", "chirurgien-dentiste", "orthodontiste",
+        "vétérinaire", "sage-femme"
+      ],
+      "skills_fr": [
+        "diagnostic médical", "soins", "pharmacologie", "anatomie", "chirurgie",
+        "médecine générale", "urgences", "bloc opératoire", "prescription"
+      ]
+    },
+    {
+      "code": "23", "major": 2,
+      "label_fr": "Enseignants et formateurs",
+      "keywords_fr": [
+        "enseignant", "professeur", "instituteur", "maître", "formateur",
+        "professeur des écoles", "enseignant collège", "enseignant lycée",
+        "professeur université", "maître de conférences", "chargé de cours",
+        "chercheur enseignant", "directeur pédagogique", "responsable formation",
+        "coach", "tuteur", "instructeur", "éducateur spécialisé"
+      ],
+      "skills_fr": ["pédagogie", "formation", "enseignement", "élaboration de cours", "évaluation"]
+    },
+    {
+      "code": "24", "major": 2,
+      "label_fr": "Professionnels des affaires, finance et administration",
+      "keywords_fr": [
+        "comptable", "expert-comptable", "auditeur", "contrôleur de gestion",
+        "analyste financier", "analyste comptable", "trésorier",
+        "consultant", "consultant en management", "consultant rh", "consultant stratégie",
+        "chargé de mission", "chef de projet", "responsable projet", "project manager",
+        "responsable rh", "chargé de recrutement", "responsable paie",
+        "responsable marketing", "chargé de marketing", "chef de produit",
+        "business analyst", "product manager", "product owner",
+        "scrum master", "agile coach", "responsable achats", "acheteur",
+        "responsable logistique", "supply chain manager",
+        "responsable communication", "chargé de communication",
+        "responsable qualité", "responsable conformité", "risk manager",
+        "business developer", "responsable développement commercial"
+      ],
+      "skills_fr": [
+        "gestion de projet", "analyse financière", "comptabilité", "audit",
+        "excel", "powerpoint", "sap", "erp", "jira", "agile", "scrum"
+      ]
+    },
+    {
+      "code": "25", "major": 2,
+      "label_fr": "Professionnels des technologies de l'information",
+      "keywords_fr": [
+        "développeur", "programmeur", "développeur web", "développeur logiciel",
+        "développeur fullstack", "développeur front-end", "développeur back-end",
+        "développeur mobile", "développeur react", "développeur angular",
+        "développeur vue", "développeur node", "développeur python",
+        "développeur java", "développeur php", "développeur ruby",
+        "développeur .net", "développeur c++", "développeur c#",
+        "développeur ios", "développeur android", "développeur flutter",
+        "dev react", "dev vue", "dev angular", "dev node", "dev python",
+        "dev php", "dev java", "dev ios", "dev android", "dev fullstack",
+        "dev frontend", "dev backend", "dev mobile",
+        "software engineer", "software developer", "web developer",
+        "frontend developer", "backend developer", "fullstack developer",
+        "full stack developer", "full-stack developer", "mobile developer",
+        "architecte logiciel", "architecte solutions", "architecte système",
+        "lead developer", "tech lead", "lead dev",
+        "analyste développeur", "analyste programmeur",
+        "administrateur système", "administrateur réseau", "administrateur base de données",
+        "dba", "sysadmin", "ops", "devops", "sre", "platform engineer",
+        "ingénieur devops", "ingénieur cloud", "ingénieur infrastructure",
+        "ingénieur sécurité informatique", "ingénieur réseau",
+        "consultant informatique", "expert informatique",
+        "cybersécurité", "expert sécurité", "pentesteur", "analyste soc",
+        "chef de projet informatique", "it project manager",
+        "ux designer", "ui designer", "product designer",
+        "data analyst", "analyste données", "business intelligence",
+        "data scientist", "data engineer", "ingénieur données",
+        "ingénieur machine learning", "ml engineer", "ai engineer",
+        "ingénieur ia", "ingénieur nlp", "machine learning engineer"
+      ],
+      "skills_fr": [
+        "javascript", "typescript", "python", "java", "php", "c++", "c#", "go",
+        "react", "angular", "vue", "node.js", "django", "spring", "laravel",
+        "html", "css", "sql", "postgresql", "mysql", "mongodb",
+        "git", "docker", "kubernetes", "aws", "azure", "gcp",
+        "api rest", "microservices", "ci/cd", "linux", "agile", "scrum"
+      ]
+    },
+    {
+      "code": "261", "major": 2,
+      "label_fr": "Juristes et professionnels du droit",
+      "keywords_fr": [
+        "avocat", "notaire", "juriste", "conseil juridique", "magistrat",
+        "juge", "greffier", "huissier", "commissaire priseur",
+        "juriste d'entreprise", "responsable juridique", "directeur juridique",
+        "clerc de notaire", "paralegal", "assistant juridique"
+      ],
+      "skills_fr": [
+        "droit", "droit des affaires", "droit du travail", "rédaction juridique",
+        "conseil", "médiation", "contentieux", "contrats"
+      ]
+    },
+    {
+      "code": "263", "major": 2,
+      "label_fr": "Professionnels du social et de l'orientation",
+      "keywords_fr": [
+        "psychologue", "sociologue", "assistant social", "travailleur social",
+        "éducateur social", "conseiller orientation", "psychothérapeute",
+        "conseiller emploi", "médiateur social", "animateur social",
+        "éducateur jeunes enfants", "éducateur spécialisé",
+        "accompagnateur personne handicapée"
+      ],
+      "skills_fr": [
+        "accompagnement social", "psychologie", "bilan de compétences",
+        "aide sociale", "éducation spécialisée", "médiation"
+      ]
+    },
+    {
+      "code": "264", "major": 2,
+      "label_fr": "Journalistes, auteurs et traducteurs",
+      "keywords_fr": [
+        "journaliste", "rédacteur", "correspondant", "reporter", "journaliste web",
+        "rédacteur en chef", "secrétaire de rédaction", "pigiste",
+        "auteur", "écrivain", "scénariste", "copywriter", "content manager",
+        "chargé de contenu", "community manager",
+        "traducteur", "interprète", "linguiste", "localisateur"
+      ],
+      "skills_fr": [
+        "rédaction", "journalisme", "écriture", "traduction", "langues",
+        "wordpress", "seo", "communication écrite", "storytelling"
+      ]
+    },
+    {
+      "code": "265", "major": 2,
+      "label_fr": "Artistes, designers et créatifs",
+      "keywords_fr": [
+        "graphiste", "designer graphique", "graphic designer",
+        "designer", "designer produit", "designer industriel",
+        "illustrateur", "directeur artistique", "directeur de création",
+        "photographe", "vidéaste", "motion designer", "animateur 3d",
+        "réalisateur", "monteur vidéo", "monteur",
+        "comédien", "acteur", "musicien", "artiste",
+        "conservateur musée", "archiviste", "commissaire d'exposition",
+        "styliste", "designer mode", "créateur de mode",
+        "décorateur", "décorateur intérieur",
+        "maquettiste", "prépressiste", "infographiste"
+      ],
+      "skills_fr": [
+        "adobe creative suite", "photoshop", "illustrator", "indesign",
+        "figma", "after effects", "premiere pro", "sketch",
+        "typographie", "composition", "identité visuelle", "branding",
+        "direction artistique", "création visuelle", "dessin"
+      ]
+    },
+
+    {
+      "code": "31", "major": 3,
+      "label_fr": "Techniciens en sciences et ingénierie",
+      "keywords_fr": [
+        "technicien", "technicien de laboratoire", "technicien qualité",
+        "technicien méthodes", "technicien maintenance", "technicien industriel",
+        "technicien btp", "dessinateur", "dessinateur projeteur",
+        "topographe", "géomètre", "technicien électrique",
+        "technicien mécanique", "technicien automatisme",
+        "technicien chimiste", "technicien environnement",
+        "contrôleur qualité", "technicien essais"
+      ],
+      "skills_fr": ["maintenance", "contrôle qualité", "mesure", "instrumentation", "autocad"]
+    },
+    {
+      "code": "32", "major": 3,
+      "label_fr": "Techniciens et para-médicaux de la santé",
+      "keywords_fr": [
+        "infirmier", "infirmière", "aide-soignant", "aide soignant",
+        "kinésithérapeute", "ostéopathe", "ergothérapeute", "orthophoniste",
+        "diététicien", "nutritionniste", "psychomotricien",
+        "manipulateur radio", "technicien labo médical", "préparateur pharmacie",
+        "ambulancier", "secouriste", "opticien", "prothésiste"
+      ],
+      "skills_fr": ["soins infirmiers", "paramédical", "médication", "anatomie", "hygiène"]
+    },
+    {
+      "code": "33", "major": 3,
+      "label_fr": "Techniciens en gestion et administration",
+      "keywords_fr": [
+        "assistant comptable", "aide comptable", "agent comptable",
+        "assistant rh", "gestionnaire paie", "chargé rh junior",
+        "assistant commercial", "agent commercial", "technico-commercial",
+        "assistant marketing", "chargé de projet junior",
+        "agent de maîtrise", "responsable d'équipe", "chef d'équipe"
+      ],
+      "skills_fr": ["comptabilité", "paie", "excel", "gestion administrative", "relation client"]
+    },
+    {
+      "code": "34", "major": 3,
+      "label_fr": "Techniciens juridiques, sociaux et culturels",
+      "keywords_fr": [
+        "assistant juridique", "clerc de notaire", "paralegal",
+        "conseiller emploi", "médiateur social",
+        "animateur social", "éducateur jeunes enfants",
+        "technicien communication", "assistant communication",
+        "assistant d'édition", "assistant graphiste"
+      ],
+      "skills_fr": ["droit", "aide sociale", "communication", "animation"]
+    },
+    {
+      "code": "35", "major": 3,
+      "label_fr": "Techniciens des technologies de l'information",
+      "keywords_fr": [
+        "technicien informatique", "technicien it", "technicien réseau",
+        "technicien support", "helpdesk", "support technique", "support n1", "support n2",
+        "technicien systèmes", "technicien poste de travail",
+        "administrateur réseau junior", "technicien infrastructure",
+        "webmaster", "intégrateur web", "développeur junior",
+        "testeur", "testeur logiciel", "qa", "analyst qa"
+      ],
+      "skills_fr": ["support technique", "réseau", "windows", "linux", "helpdesk", "maintenance informatique"]
+    },
+
+    {
+      "code": "41", "major": 4,
+      "label_fr": "Employés de bureau généraux",
+      "keywords_fr": [
+        "secrétaire", "assistant de direction", "assistant administratif",
+        "gestionnaire administratif", "agent administratif",
+        "hôtesse d'accueil", "standardiste", "réceptionniste",
+        "opérateur de saisie", "dactylographe"
+      ],
+      "skills_fr": ["saisie", "pack office", "word", "excel", "accueil", "standard téléphonique"]
+    },
+    {
+      "code": "42", "major": 4,
+      "label_fr": "Employés service client et guichet",
+      "keywords_fr": [
+        "conseiller client", "chargé de clientèle", "conseiller commercial",
+        "agent service client", "téléconseiller", "chargé de relations clients",
+        "gestionnaire sinistres", "agent d'assurance", "conseiller bancaire"
+      ],
+      "skills_fr": ["relation client", "vente", "crm", "communication", "gestion des réclamations"]
+    },
+    {
+      "code": "43", "major": 4,
+      "label_fr": "Employés comptables et logistiques",
+      "keywords_fr": [
+        "agent de facturation", "gestionnaire de stock", "magasinier",
+        "agent logistique", "préparateur de commandes", "agent douane",
+        "agent de transit", "gestionnaire entrepôt"
+      ],
+      "skills_fr": ["logistique", "gestion de stock", "sap", "erp", "entrepôt", "transport"]
+    },
+
+    {
+      "code": "51", "major": 5,
+      "label_fr": "Travailleurs des services personnels",
+      "keywords_fr": [
+        "coiffeur", "esthéticien", "cosmétologue",
+        "chef cuisinier", "chef de cuisine", "cuisinier", "cuisinière",
+        "pâtissier", "boulanger", "traiteur", "commis de cuisine",
+        "serveur", "barman", "maître d'hôtel", "chef de rang",
+        "steward", "hôtesse de l'air",
+        "guide touristique", "agent de voyage",
+        "agent funéraire", "gardien d'immeuble", "concierge"
+      ],
+      "skills_fr": ["service", "cuisine", "restauration", "accueil", "tourisme"]
+    },
+    {
+      "code": "52", "major": 5,
+      "label_fr": "Vendeurs et commerciaux terrain",
+      "keywords_fr": [
+        "commercial", "vendeur", "commercial terrain", "représentant",
+        "vrd", "délégué commercial", "ingénieur commercial", "key account manager",
+        "kam", "responsable grands comptes", "account manager",
+        "agent immobilier", "négociateur immobilier",
+        "conseiller de vente", "vendeur boutique"
+      ],
+      "skills_fr": ["vente", "négociation", "prospection", "crm", "salesforce", "relation client"]
+    },
+    {
+      "code": "53", "major": 5,
+      "label_fr": "Travailleurs de soins aux personnes",
+      "keywords_fr": [
+        "aide à domicile", "auxiliaire de vie", "aide ménagère",
+        "garde d'enfants", "assistante maternelle", "nourrice",
+        "auxiliaire petite enfance", "animateur périscolaire",
+        "accompagnateur personne handicapée", "atsem"
+      ],
+      "skills_fr": ["soins à la personne", "accompagnement", "petite enfance", "aide à domicile"]
+    },
+    {
+      "code": "54", "major": 5,
+      "label_fr": "Personnel de sécurité",
+      "keywords_fr": [
+        "agent de sécurité", "vigile", "gardien", "agent de surveillance",
+        "policier", "gendarme", "militaire", "pompier",
+        "agent protection rapprochée", "détective privé"
+      ],
+      "skills_fr": ["sécurité", "surveillance", "prévention", "secourisme", "habilitations sécurité"]
+    },
+
+    {
+      "code": "61", "major": 6,
+      "label_fr": "Agriculteurs et ouvriers agricoles qualifiés",
+      "keywords_fr": [
+        "agriculteur", "exploitant agricole", "viticulteur", "maraîcher",
+        "éleveur", "arboriculteur", "horticulteur", "pépiniériste",
+        "technicien agricole", "conseiller agricole"
+      ],
+      "skills_fr": ["agriculture", "élevage", "viticulture", "agronomie", "machinisme agricole"]
+    },
+    {
+      "code": "62", "major": 6,
+      "label_fr": "Forestiers, pêcheurs et chasseurs",
+      "keywords_fr": [
+        "forestier", "bûcheron", "technicien forestier",
+        "pêcheur", "marin pêcheur", "aquaculteur"
+      ],
+      "skills_fr": ["foresterie", "pêche", "environnement", "gestion des ressources naturelles"]
+    },
+
+    {
+      "code": "71", "major": 7,
+      "label_fr": "Ouvriers du bâtiment et travaux publics",
+      "keywords_fr": [
+        "maçon", "carreleur", "plâtrier", "peintre en bâtiment",
+        "charpentier", "menuisier", "couvreur", "zingueur",
+        "étanchéiste", "façadier", "terrassier", "canalisateur",
+        "grutier", "coffreur", "ferrailleur"
+      ],
+      "skills_fr": ["btp", "maçonnerie", "construction", "gros oeuvre", "second oeuvre"]
+    },
+    {
+      "code": "72", "major": 7,
+      "label_fr": "Ouvriers métal et métallurgie",
+      "keywords_fr": [
+        "soudeur", "chaudronnier", "tuyauteur", "métallurgiste",
+        "tourneur", "fraiseur", "rectifieur", "ajusteur",
+        "outilleur", "monteur", "usineur", "mécanicien industriel",
+        "forgeron", "fondeur", "métallier"
+      ],
+      "skills_fr": ["soudure", "usinage", "métallurgie", "machines outils", "cnc"]
+    },
+    {
+      "code": "73", "major": 7,
+      "label_fr": "Artisans et imprimeurs",
+      "keywords_fr": [
+        "bijoutier", "horloger", "luthier", "ébéniste", "tapissier",
+        "imprimeur", "façonnier impression", "typographe",
+        "cordonnier", "maroquinier", "sellier", "tailleur"
+      ],
+      "skills_fr": ["artisanat", "impression", "finition", "précision"]
+    },
+    {
+      "code": "74", "major": 7,
+      "label_fr": "Électriciens et techniciens électroniques",
+      "keywords_fr": [
+        "électricien", "électricien industriel", "électricien bâtiment",
+        "électronicien", "technicien électronique", "câbleur",
+        "automaticien", "installateur courants forts",
+        "technicien cvc", "plombier", "chauffagiste",
+        "installateur photovoltaïque", "technicien éolien"
+      ],
+      "skills_fr": ["électricité", "électronique", "automatisme", "plomberie", "habilitation électrique"]
+    },
+    {
+      "code": "75", "major": 7,
+      "label_fr": "Ouvriers de l'alimentation, bois et textile",
+      "keywords_fr": [
+        "boucher", "charcutier", "poissonnier", "fromager",
+        "boulanger", "pâtissier", "chocolatier", "confiseur",
+        "menuisier bois", "charpentier bois", "scieur",
+        "couturier", "tailleur", "brodeur", "tapissier décorateur"
+      ],
+      "skills_fr": ["alimentation", "bois", "textile", "artisanat alimentaire"]
+    },
+
+    {
+      "code": "81", "major": 8,
+      "label_fr": "Conducteurs d'installations industrielles",
+      "keywords_fr": [
+        "opérateur de production", "opérateur machine", "conducteur de ligne",
+        "opérateur de nuit", "opérateur chimique", "opérateur raffinerie",
+        "agent de fabrication", "opérateur traitement eau"
+      ],
+      "skills_fr": ["conduite de ligne", "production industrielle", "maintenance 1er niveau"]
+    },
+    {
+      "code": "82", "major": 8,
+      "label_fr": "Assembleurs",
+      "keywords_fr": [
+        "monteur assembleur", "opérateur assemblage", "technicien assemblage",
+        "câbleur", "opérateur électronique"
+      ],
+      "skills_fr": ["assemblage", "montage", "contrôle qualité", "lecture de plans"]
+    },
+    {
+      "code": "83", "major": 8,
+      "label_fr": "Conducteurs de véhicules et engins",
+      "keywords_fr": [
+        "chauffeur", "conducteur poids lourd", "chauffeur livreur",
+        "conducteur de bus", "chauffeur taxi", "vtc", "chauffeur privé",
+        "conducteur de train", "mécanicien de train",
+        "conducteur d'engins", "grutier", "cariste"
+      ],
+      "skills_fr": ["conduite", "permis poids lourd", "logistique transport", "gestion des livraisons"]
+    },
+
+    {
+      "code": "91", "major": 9,
+      "label_fr": "Agents de nettoyage et entretien",
+      "keywords_fr": [
+        "agent de nettoyage", "agent d'entretien", "femme de ménage",
+        "agent de propreté", "technicien de surface"
+      ],
+      "skills_fr": ["nettoyage", "entretien", "hygiène", "produits d'entretien"]
+    },
+    {
+      "code": "92", "major": 9,
+      "label_fr": "Ouvriers agricoles non qualifiés",
+      "keywords_fr": ["ouvrier agricole", "saisonnier agricole", "vendangeur"]
+    },
+    {
+      "code": "93", "major": 9,
+      "label_fr": "Manœuvres construction, industrie, transport",
+      "keywords_fr": [
+        "manœuvre", "manœuvre btp", "ouvrier non qualifié",
+        "manutentionnaire", "cariste non qualifié"
+      ]
+    },
+    {
+      "code": "94", "major": 9,
+      "label_fr": "Employés de restauration rapide et préparation",
+      "keywords_fr": ["employé restauration rapide", "équipier", "plongeur"]
+    },
+    {
+      "code": "96", "major": 9,
+      "label_fr": "Agents de collecte et emplois élémentaires",
+      "keywords_fr": ["éboueur", "agent collecte", "livreur à vélo", "coursier"]
+    }
+  ],
+
+  "adjacent_pairs": [
+    ["21", "25"],
+    ["21", "13"],
+    ["21", "31"],
+    ["25", "35"],
+    ["25", "13"],
+    ["25", "24"],
+    ["25", "265"],
+    ["22", "32"],
+    ["22", "23"],
+    ["22", "263"],
+    ["23", "263"],
+    ["32", "53"],
+    ["24", "33"],
+    ["24", "12"],
+    ["24", "42"],
+    ["261", "263"],
+    ["261", "34"],
+    ["263", "34"],
+    ["264", "265"],
+    ["264", "34"],
+    ["265", "34"],
+    ["265", "264"],
+    ["21", "265"],
+    ["31", "35"],
+    ["31", "72"],
+    ["31", "74"],
+    ["33", "43"],
+    ["11", "12"],
+    ["11", "13"],
+    ["12", "13"],
+    ["51", "52"],
+    ["71", "72"],
+    ["71", "74"],
+    ["72", "74"],
+    ["81", "82"],
+    ["83", "81"],
+    ["61", "62"],
+    ["71", "81"]
+  ],
+
+  "major_group_labels": {
+    "1": "Managers et cadres dirigeants",
+    "2": "Professionnels (Bac+3 minimum)",
+    "3": "Techniciens et agents de maîtrise",
+    "4": "Employés administratifs",
+    "5": "Services et commerce",
+    "6": "Agriculture et pêche",
+    "7": "Artisans et ouvriers qualifiés",
+    "8": "Conducteurs et opérateurs",
+    "9": "Emplois élémentaires"
+  }
+}

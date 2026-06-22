@@ -1,0 +1,7165 @@
+{
+  ".net": [
+    "visual studio .net",
+    "calculate wages",
+    "computer programming"
+  ],
+  ".net core": [
+    "decorate nails",
+    "decorate pastry for special events",
+    "decorate textile articles"
+  ],
+  "3ds max": [
+    "manage yield",
+    "advise on contact lense maintenance",
+    "weigh shipments"
+  ],
+  "5s": [
+    "lean manufacturing",
+    "organisation poste travail",
+    "kaizen",
+    "amélioration continue",
+    "lean"
+  ],
+  "a/b testing": [
+    "samurai web testing framework",
+    "blood type classification",
+    "assess artistic proposal"
+  ],
+  "accessibilité pmr": [
+    "develop strategies for accessibility",
+    "install organs"
+  ],
+  "accompagnement pédagogique": [
+    "post-secondary school procedures",
+    "hire background musicians",
+    "escort students on a field trip"
+  ],
+  "accord confidentialité": [
+    "nda"
+  ],
+  "accord niveau service": [
+    "sla"
+  ],
+  "account management": [
+    "manage environmental management system",
+    "manage digital documents",
+    "management department processes"
+  ],
+  "accounting": [
+    "comptabilité analytique",
+    "comptabilité générale"
+  ],
+  "accounting department processes": [
+    "compta pro",
+    "comptabilité générale",
+    "fiscalité"
+  ],
+  "accounting techniques": [
+    "compta pro"
+  ],
+  "achats": [
+    "e-procurement",
+    "package purchases in bags",
+    "prepare purchasing reportings",
+    "rfq"
+  ],
+  "actes notariés": [
+    "conclude business agreements",
+    "register deeds",
+    "advise on legislative acts"
+  ],
+  "actions correctives": [
+    "manage corrective actions",
+    "advise on animal welfare",
+    "provide advice on breaches of regulation"
+  ],
+  "active directory": [
+    "types of music therapies",
+    "manage groups outdoors",
+    "work within communities"
+  ],
+  "acute care": [
+    "soins critiques",
+    "soins intensifs",
+    "soins post-opératoires"
+  ],
+  "adapt hearing tests": [
+    "tests psychométriques"
+  ],
+  "adapt leadership styles in healthcare": [
+    "leadership"
+  ],
+  "adapt to changes on a boat": [
+    "rspec"
+  ],
+  "address an audience": [
+    "hugging face"
+  ],
+  "address problems critically": [
+    "esprit critique"
+  ],
+  "adhere to organisational guidelines": [
+    "organisation"
+  ],
+  "adhere to standard procedures": [
+    "soins post-opératoires"
+  ],
+  "adhere to transportation work schedule": [
+    "planning travaux"
+  ],
+  "administer anaesthetics to patients": [
+    "soins intensifs"
+  ],
+  "administration des ventes": [
+    "adv"
+  ],
+  "adobe illustrator": [
+    "graphics editor software",
+    "adobe photoshop",
+    "adobe indesign",
+    "adobe xd"
+  ],
+  "adobe indesign": [
+    "adobe photoshop",
+    "adobe photoshop lightroom",
+    "adobe illustrator",
+    "indesign"
+  ],
+  "adobe photoshop": [
+    "adobe photoshop lightroom",
+    "graphics editor software",
+    "adobe illustrator",
+    "adobe indesign",
+    "adobe xd"
+  ],
+  "adobe photoshop lightroom": [
+    "adobe indesign",
+    "adobe photoshop",
+    "adobe xd"
+  ],
+  "adobe xd": [
+    "adobe photoshop",
+    "adobe photoshop lightroom",
+    "adobe illustrator"
+  ],
+  "adv": [
+    "administration des ventes",
+    "order management",
+    "gestion commandes"
+  ],
+  "advise on animal welfare": [
+    "actions correctives"
+  ],
+  "advise on clay products handling": [
+    "sap fi"
+  ],
+  "advise on contact lense maintenance": [
+    "3ds max"
+  ],
+  "advise on curriculum development": [
+    "élaboration de programmes"
+  ],
+  "advise on food preservation": [
+    "technologie alimentaire"
+  ],
+  "advise on legislative acts": [
+    "actes notariés",
+    "rédaction d'actes"
+  ],
+  "advise on lesson plans": [
+    "plan d'expérience"
+  ],
+  "advise on mining environmental issues": [
+    "géotechnique"
+  ],
+  "advise on tax planning": [
+    "fiscalité"
+  ],
+  "advise on tax policy": [
+    "liasses fiscales"
+  ],
+  "advise on teaching methods": [
+    "gestion de classe"
+  ],
+  "advise on utility consumption": [
+    "red hat"
+  ],
+  "aerodynamics": [
+    "plans de masse",
+    "spectrométrie de masse"
+  ],
+  "affiliate marketing": [
+    "digital marketing techniques",
+    "marketing mix",
+    "evaluate marketing content"
+  ],
+  "affrètement": [
+    "tms"
+  ],
+  "agile": [
+    "agile development",
+    "agile project management",
+    "handle fragile items"
+  ],
+  "agile development": [
+    "agile"
+  ],
+  "agile project management": [
+    "agile"
+  ],
+  "ai": [
+    "ia"
+  ],
+  "ajax": [
+    "javascript"
+  ],
+  "ajax framework": [
+    "play framework",
+    "robot framework",
+    "serverless framework"
+  ],
+  "align components": [
+    "plans techniques"
+  ],
+  "allocate paychecks": [
+    "paie"
+  ],
+  "amazon web services": [
+    "software components libraries",
+    "manage email hosting service"
+  ],
+  "amélioration continue": [
+    "5s",
+    "lean"
+  ],
+  "amélioration processus": [
+    "six sigma"
+  ],
+  "anaesthetics": [
+    "réanimation"
+  ],
+  "analgesics": [
+    "analgésie"
+  ],
+  "analgésie": [
+    "manage pain for veterinary patients",
+    "analgesics"
+  ],
+  "analyse booking patterns": [
+    "analyses microbiologiques"
+  ],
+  "analyse client's physical condition": [
+    "mesures physiques"
+  ],
+  "analyse dangers": [
+    "haccp"
+  ],
+  "analyse des besoins": [
+    "learning needs analysis",
+    "business requirements techniques",
+    "analyse logistic needs"
+  ],
+  "analyse des dangers": [
+    "carry out storage risk management",
+    "test chemical auxiliaries",
+    "dangers of marshalling activity"
+  ],
+  "analyse economic trends": [
+    "commerce international"
+  ],
+  "analyse financière": [
+    "financial analysis",
+    "prepare financial projections",
+    "perform stock valuation"
+  ],
+  "analyse fish samples for diagnosis": [
+    "vue"
+  ],
+  "analyse foreign affairs policies": [
+    "go"
+  ],
+  "analyse logistic needs": [
+    "analyse des besoins",
+    "erp logistique",
+    "logistique internationale"
+  ],
+  "analyse sensorielle": [
+    "assess nicotine levels in tobacco leaves",
+    "assess sugar levels in tobacco leaves",
+    "neuroanatomy of animals"
+  ],
+  "analyse statistique": [
+    "apply statistical analysis techniques",
+    "statistical analysis system software",
+    "collect statistics on medical records"
+  ],
+  "analyse transport studies": [
+    "gestion des transporteurs",
+    "gestion du transport"
+  ],
+  "analyses microbiologiques": [
+    "newsletter analysis",
+    "perform patient activity analyses",
+    "analyse booking patterns"
+  ],
+  "analytical chemistry": [
+    "chimie analytique",
+    "chimie des matériaux"
+  ],
+  "analytics": [
+    "cpv"
+  ],
+  "anesthésie": [
+    "iade"
+  ],
+  "angular": [
+    "computer programming"
+  ],
+  "animal food products": [
+    "traçabilité alimentaire"
+  ],
+  "animal welfare legislation": [
+    "codes juridiques"
+  ],
+  "animate 3d organic forms": [
+    "autocad 3d"
+  ],
+  "animate in the outdoors": [
+    "animation de groupe"
+  ],
+  "animation de groupe": [
+    "animate in the outdoors",
+    "create moving images",
+    "deliver pilates exercises"
+  ],
+  "apache": [
+    "apache maven",
+    "apache tomcat",
+    "graphics editor software"
+  ],
+  "apache kafka": [
+    "apache maven",
+    "apache tomcat",
+    "graphics editor software"
+  ],
+  "apache maven": [
+    "apache",
+    "apache kafka",
+    "apache spark",
+    "maven"
+  ],
+  "apache spark": [
+    "spark",
+    "apache maven",
+    "apache tomcat"
+  ],
+  "apache tomcat": [
+    "apache",
+    "apache kafka",
+    "apache spark",
+    "http",
+    "https"
+  ],
+  "api": [
+    "interface programmation",
+    "application programming interface",
+    "rest api",
+    "web service"
+  ],
+  "api platform": [
+    "design application interfaces",
+    "owasp zap",
+    "mobile device software frameworks"
+  ],
+  "appel offres": [
+    "rfq"
+  ],
+  "appels d'offres": [
+    "manage tender processes",
+    "participate in governmental tenders",
+    "prospect new regional contracts"
+  ],
+  "applicant tracking system": [
+    "cisco",
+    "collect data using gps",
+    "learning management systems"
+  ],
+  "application programming interface": [
+    "api"
+  ],
+  "apply case management": [
+    "suivi individualisé"
+  ],
+  "apply food technology principles": [
+    "procédés agroalimentaires",
+    "technologie alimentaire"
+  ],
+  "apply freinet teaching strategies": [
+    "pédagogie",
+    "pédagogie active",
+    "pédagogie différenciée"
+  ],
+  "apply gmp": [
+    "bonnes pratiques de fabrication",
+    "bonnes pratiques de laboratoire",
+    "bpf"
+  ],
+  "apply haccp": [
+    "haccp",
+    "normes haccp",
+    "plan haccp"
+  ],
+  "apply hypno-psychotherapy": [
+    "nose"
+  ],
+  "apply military aviation regulations": [
+    "procédure civile"
+  ],
+  "apply optical coating": [
+    "revêtements"
+  ],
+  "apply psychoanalysis": [
+    "sap s/4hana"
+  ],
+  "apply risk management processes": [
+    "plan haccp"
+  ],
+  "apply rubber patches": [
+    "rust"
+  ],
+  "apply social media marketing": [
+    "facebook ads",
+    "social media marketing",
+    "twitter ads"
+  ],
+  "apply statistical analysis techniques": [
+    "analyse statistique"
+  ],
+  "apply techniques of occupational therapy": [
+    "éducation patient"
+  ],
+  "apply transportation management concepts": [
+    "gestion des transporteurs",
+    "gestion du transport"
+  ],
+  "apply various lifting techniques": [
+    "lever"
+  ],
+  "apply wound dressings": [
+    "pansements"
+  ],
+  "apprentissage automatique": [
+    "ml"
+  ],
+  "apprentissage par projet": [
+    "integrate community outreach",
+    "learning difficulties",
+    "manage artistic project"
+  ],
+  "approvisionnement": [
+    "detect bottlenecks",
+    "inform on water supply"
+  ],
+  "aquaculture production planning software": [
+    "planification",
+    "planification de la production"
+  ],
+  "aquatic ecology": [
+    "écologie"
+  ],
+  "architecture regulations": [
+    "statuts de société"
+  ],
+  "archive healthcare users' records": [
+    "dossier patient électronique"
+  ],
+  "arrange audit": [
+    "audit financier"
+  ],
+  "arrange customs documents": [
+    "douane"
+  ],
+  "artificial intelligence": [
+    "ia"
+  ],
+  "asepsie": [
+    "surgical asepsis"
+  ],
+  "asp.net": [
+    "octopus deploy"
+  ],
+  "assemble jewellery parts": [
+    "perl"
+  ],
+  "assemble printed circuit boards": [
+    "tms"
+  ],
+  "assemble robots": [
+    "robot framework"
+  ],
+  "assembly": [
+    "assembly (computer programming)"
+  ],
+  "assembly (computer programming)": [
+    "assembly"
+  ],
+  "assemblées générales": [
+    "manage health and safety",
+    "inspect binding work",
+    "operate material handling equipment"
+  ],
+  "assess artistic proposal": [
+    "m&a",
+    "a/b testing"
+  ],
+  "assess construction compliance": [
+    "conformité"
+  ],
+  "assess customers": [
+    "tableau interactif",
+    "tableau"
+  ],
+  "assess environment of animals": [
+    "bert"
+  ],
+  "assess groundwater environmental impact": [
+    "évaluation d'impact environnemental"
+  ],
+  "assess haccp implementation in plants": [
+    "haccp",
+    "normes haccp",
+    "plan haccp"
+  ],
+  "assess impact of industrial activities": [
+    "mécanique industrielle"
+  ],
+  "assess nicotine levels in tobacco leaves": [
+    "analyse sensorielle"
+  ],
+  "assess power needs": [
+    "électricité industrielle"
+  ],
+  "assess shelf life of food products": [
+    "emballage alimentaire"
+  ],
+  "assess sugar levels in tobacco leaves": [
+    "analyse sensorielle"
+  ],
+  "assessment center": [
+    "types of cylindrical grinding processes",
+    "informatica powercenter",
+    "manage digital documents"
+  ],
+  "assessment processes": [
+    "évaluation formative"
+  ],
+  "assign codes to product items": [
+    "codes juridiques",
+    "vs code"
+  ],
+  "assist employee health programmes": [
+    "élaboration de programmes"
+  ],
+  "assist in library facility planning": [
+    "planification"
+  ],
+  "assist in maritime rescue operations": [
+    "ssis"
+  ],
+  "assist with litigation matters": [
+    "contentieux",
+    "gestion du contentieux"
+  ],
+  "assist with plant propagation": [
+    "plan local d'urbanisme",
+    "react native"
+  ],
+  "astro": [
+    "astropsychology",
+    "elective astrology",
+    "teach space science"
+  ],
+  "astropsychology": [
+    "astro"
+  ],
+  "attach accessories to tile": [
+    "carrelage"
+  ],
+  "attend design meetings": [
+    "conception de cours"
+  ],
+  "attend performances": [
+    "ssis"
+  ],
+  "attend to hygiene": [
+    "hygiène hospitalière"
+  ],
+  "attend vehicle auctions": [
+    "event-driven"
+  ],
+  "audio editing software": [
+    "power bi"
+  ],
+  "audiovisual equipment": [
+    "computer vision"
+  ],
+  "audit": [
+    "prepare audit activities",
+    "develop audit plan",
+    "conduct aviation auditing"
+  ],
+  "audit closed vehicle rental contracts": [
+    "taxe professionnelle"
+  ],
+  "audit contractors": [
+    "audit qualité"
+  ],
+  "audit externe": [
+    "physiology of hearing",
+    "prepare audit activities",
+    "develop audit plan"
+  ],
+  "audit financier": [
+    "prepare financial auditing reports",
+    "conduct financial audits",
+    "arrange audit"
+  ],
+  "audit haccp": [
+    "haccp",
+    "soins critiques"
+  ],
+  "audit interne": [
+    "internal auditing",
+    "implement veterinary clinical governance",
+    "manage gambling hospitality"
+  ],
+  "audit qualité": [
+    "implement data quality processes",
+    "perform quality audits",
+    "audit contractors"
+  ],
+  "autocad": [
+    "create autocad drawings",
+    "cao",
+    "dao"
+  ],
+  "autocad 2d": [
+    "create autocad drawings",
+    "create 2d painting",
+    "synfig"
+  ],
+  "autocad 3d": [
+    "create autocad drawings",
+    "create 3d characters",
+    "animate 3d organic forms"
+  ],
+  "automotive engineering": [
+    "mécanique auto"
+  ],
+  "autonomie": [
+    "patient autonomy",
+    "stimulate students' independence",
+    "empower individuals, families and groups"
+  ],
+  "azure functions": [
+    "operate railway control panels"
+  ],
+  "b2b": [
+    "business to business",
+    "vente entreprises",
+    "commercial btob"
+  ],
+  "b2c": [
+    "business to consumer",
+    "vente particuliers",
+    "commerce détail"
+  ],
+  "backbox (penetration testing tool)": [
+    "tcp/ip"
+  ],
+  "bases de données": [
+    "sql"
+  ],
+  "bash": [
+    "computer programming"
+  ],
+  "bathymetry": [
+    "topographie"
+  ],
+  "battery chemistry": [
+    "node.js"
+  ],
+  "belay techniques": [
+    "scala"
+  ],
+  "below-the-line technique": [
+    "welcome to the jungle"
+  ],
+  "berber": [
+    "droit de la famille"
+  ],
+  "bert": [
+    "press law",
+    "assess environment of animals",
+    "synfig"
+  ],
+  "bim": [
+    "building information modeling",
+    "maquette numérique",
+    "revit",
+    "conception 3d"
+  ],
+  "bim collaborate": [
+    "impart business plans to collaborators",
+    "perform adjustments as the work evolves",
+    "confer with library colleagues"
+  ],
+  "biochimie": [
+    "biological chemistry",
+    "fundamental veterinary sciences",
+    "clinical biochemistry"
+  ],
+  "biological chemistry": [
+    "biochimie"
+  ],
+  "biologie cellulaire": [
+    "teach biology",
+    "biotechnology",
+    "neoplasia"
+  ],
+  "biologie moléculaire": [
+    "molecular biology",
+    "teach biology",
+    "molecular and cellular immunology"
+  ],
+  "biomedical science": [
+    "virologie"
+  ],
+  "biosecurity": [
+    "notion"
+  ],
+  "biotechnology": [
+    "biologie cellulaire"
+  ],
+  "blackarch": [
+    "kali linux",
+    "linux"
+  ],
+  "blast masonry": [
+    "maçonnerie"
+  ],
+  "blended learning": [
+    "e-learning software infrastructure",
+    "learning management systems",
+    "develop e-learning plan"
+  ],
+  "blender": [
+    "operate 3d computer graphics software"
+  ],
+  "bloc opératoire": [
+    "iade",
+    "ibode"
+  ],
+  "blood collection on babies": [
+    "prélèvements sanguins"
+  ],
+  "blood type classification": [
+    "a/b testing"
+  ],
+  "body language": [
+    "express",
+    "express.js"
+  ],
+  "bonnes pratiques d'hygiène": [
+    "follow hygienic work practices",
+    "good manufacturing practices",
+    "good laboratory practice"
+  ],
+  "bonnes pratiques de fabrication": [
+    "good manufacturing practices",
+    "apply gmp",
+    "manage discarded products"
+  ],
+  "bonnes pratiques de laboratoire": [
+    "good laboratory practice",
+    "apply gmp",
+    "good manufacturing practices"
+  ],
+  "bookkeeping regulations": [
+    "comptabilité générale"
+  ],
+  "boxing": [
+    "up selling"
+  ],
+  "bpf": [
+    "good manufacturing practices",
+    "apply gmp",
+    "write batch record documentation"
+  ],
+  "bpl": [
+    "good laboratory practice"
+  ],
+  "build garden masonry": [
+    "maçonnerie"
+  ],
+  "build picture frames": [
+    "structure bois"
+  ],
+  "build set constructions": [
+    "structure bois"
+  ],
+  "building information modeling": [
+    "bim"
+  ],
+  "building systems monitoring technology": [
+    "ventilation mécanique"
+  ],
+  "bun": [
+    "construct greens and grounds"
+  ],
+  "burp suite": [
+    "penetration testing tool",
+    "proxy servers",
+    "develop ict test suite"
+  ],
+  "business law": [
+    "droit administratif",
+    "droit alimentaire",
+    "droit commercial",
+    "droit des affaires",
+    "droit des assurances",
+    "droit des sociétés",
+    "droit du travail",
+    "droit européen",
+    "droit fiscal"
+  ],
+  "business plan": [
+    "impart business plans to collaborators",
+    "develop business plans",
+    "openedge advanced business language"
+  ],
+  "business process modelling": [
+    "uml"
+  ],
+  "business requirements techniques": [
+    "analyse des besoins"
+  ],
+  "business to business": [
+    "b2b"
+  ],
+  "business to consumer": [
+    "b2c"
+  ],
+  "béton armé": [
+    "install tunnel segments",
+    "roofing techniques",
+    "settle concrete"
+  ],
+  "c": [
+    "objective-c",
+    "c#",
+    "c++"
+  ],
+  "c#": [
+    "objective-c",
+    "c++",
+    "c"
+  ],
+  "c++": [
+    "objective-c",
+    "c#",
+    "c"
+  ],
+  "cadre de santé": [
+    "management soignant",
+    "coordination équipe soins",
+    "chef de service"
+  ],
+  "cahier des charges techniques": [
+    "customise drafts",
+    "draft design specifications",
+    "leather finishing technologies"
+  ],
+  "calcul de structures": [
+    "calculate solar panel orientation",
+    "design infrastructure for surface mines",
+    "computer science"
+  ],
+  "calculate betting target odds": [
+    "just-in-time"
+  ],
+  "calculate solar panel orientation": [
+    "calcul de structures"
+  ],
+  "calculate tote price": [
+    "make"
+  ],
+  "calculate value of gems": [
+    "estimatif"
+  ],
+  "calculate wages": [
+    ".net"
+  ],
+  "call routing": [
+    "taxe professionnelle"
+  ],
+  "canva": [
+    "canvas (learning management systems)",
+    "javascript framework",
+    "graphics editor software"
+  ],
+  "canvas (learning management systems)": [
+    "canva"
+  ],
+  "canvassing methods": [
+    "prospection"
+  ],
+  "cao": [
+    "conception assistée ordinateur",
+    "computer aided design",
+    "autocad",
+    "solidworks"
+  ],
+  "carbon": [
+    "organic chemistry",
+    "graphite",
+    "tend lime-kiln"
+  ],
+  "cargo industry": [
+    "fret aérien"
+  ],
+  "carpentry": [
+    "menuiserie"
+  ],
+  "carrelage": [
+    "attach accessories to tile",
+    "plan tiling",
+    "feed the clay mixing machine"
+  ],
+  "carry out cross merchandising": [
+    "cro",
+    "cross selling",
+    "cross-selling"
+  ],
+  "carry out naming strategies": [
+    "deno"
+  ],
+  "carry out repair of motorcycles": [
+    "maintenance mécanique"
+  ],
+  "carry out storage risk management": [
+    "analyse des dangers"
+  ],
+  "carry out wound care": [
+    "pansements",
+    "soins de plaies"
+  ],
+  "cash flow": [
+    "kosher meat",
+    "kosher slaughtering practices",
+    "file-based workflow"
+  ],
+  "cash flow statement": [
+    "tcf"
+  ],
+  "cast cell covers": [
+    "node.js"
+  ],
+  "cathétérisme": [
+    "diagnose heart conditions"
+  ],
+  "certification qualité": [
+    "iso"
+  ],
+  "chai": [
+    "handle harvested fish",
+    "harvest aquatic resources",
+    "install spring suspension"
+  ],
+  "change shelf labels": [
+    "ray"
+  ],
+  "characteristics of waste": [
+    "solid"
+  ],
+  "charges sociales": [
+    "social sciences",
+    "lift heavy weights",
+    "shunt outbound loads"
+  ],
+  "charpente": [
+    "grading systems",
+    "distinguish lumber categories",
+    "place gypsum blocks"
+  ],
+  "charpente métallique": [
+    "manufacturing of metal structures",
+    "distinguish lumber categories",
+    "grading systems"
+  ],
+  "chasse de têtes": [
+    "types of boring heads",
+    "train gun dogs",
+    "hunt animals"
+  ],
+  "chauffage": [
+    "operate water-heating equipment",
+    "manufacturing of heating equipment",
+    "install gas heaters"
+  ],
+  "check accounting records": [
+    "normes comptables",
+    "révision comptable"
+  ],
+  "check deliveries on receipt": [
+    "réception de travaux"
+  ],
+  "check durability of wood materials": [
+    "résistance des matériaux"
+  ],
+  "check for solder defects": [
+    "soudure",
+    "soudure mig"
+  ],
+  "check in luggage": [
+    "gitlab ci",
+    "travis ci"
+  ],
+  "check price accuracy on the shelf": [
+    "étiquetage"
+  ],
+  "chef de service": [
+    "cadre de santé"
+  ],
+  "chimie analytique": [
+    "analytical chemistry",
+    "teach chemistry",
+    "inorganic chemistry"
+  ],
+  "chimie des matériaux": [
+    "solid-state chemistry",
+    "polymer chemistry",
+    "analytical chemistry"
+  ],
+  "chimie inorganique": [
+    "inorganic chemistry",
+    "solid-state chemistry",
+    "teach chemistry"
+  ],
+  "chimie organique": [
+    "organic chemistry",
+    "teach chemistry",
+    "inorganic chemistry"
+  ],
+  "chirurgie": [
+    "ibode",
+    "surgery",
+    "surgical",
+    "bloc opératoire",
+    "operating room"
+  ],
+  "christianity": [
+    "deno"
+  ],
+  "chromatographie": [
+    "high-performance liquid chromatography",
+    "maintain chromotography machinery"
+  ],
+  "chromatographie en phase gazeuse": [
+    "conduct soil sample tests",
+    "laboratory techniques",
+    "examine geochemical samples"
+  ],
+  "ci/cd": [
+    "intégration continue",
+    "continuous integration",
+    "devops",
+    "pipeline",
+    "tend to clients' personal items",
+    "inspire enthusiasm for nature"
+  ],
+  "ciel": [
+    "inspect heavy surface mining equipment",
+    "design infrastructure for surface mines",
+    "plan mine operations"
+  ],
+  "cisco": [
+    "applicant tracking system",
+    "cisco packet tracer"
+  ],
+  "cisco packet tracer": [
+    "cisco",
+    "produce textile designs",
+    "penetration testing tool"
+  ],
+  "civil 3d": [
+    "civil aviation regulations",
+    "civil process order",
+    "officiate civil partnerships"
+  ],
+  "civil aviation regulations": [
+    "civil 3d"
+  ],
+  "civil law": [
+    "droit civil"
+  ],
+  "civil process order": [
+    "civil 3d",
+    "procédure civile"
+  ],
+  "classe inversée": [
+    "reverse engineering",
+    "file documents",
+    "journalistic principles"
+  ],
+  "classify insurance claims": [
+    "gestion de classe"
+  ],
+  "clean architecture": [
+    "define software architecture",
+    "landscape architecture",
+    "manage ict data architecture"
+  ],
+  "clean building facade": [
+    "façades"
+  ],
+  "clean drink dispense lines": [
+    "conduite de travaux"
+  ],
+  "clean painting equipment": [
+    "peinture"
+  ],
+  "clean surfaces": [
+    "revêtements"
+  ],
+  "cleaning products": [
+    "développement produit"
+  ],
+  "client maître ouvrage": [
+    "moa"
+  ],
+  "climatisation": [
+    "operate climate control",
+    "maintain air conditioning systems",
+    "components of air conditioning systems"
+  ],
+  "climbing equipment": [
+    "scala"
+  ],
+  "clinical biochemistry": [
+    "biochimie"
+  ],
+  "clinical immunology": [
+    "immunologie"
+  ],
+  "clinical perfusion": [
+    "pompe à perfusion"
+  ],
+  "clip": [
+    "install carpet gripper adhesive",
+    "screw and plug parquet boards",
+    "manage digital documents"
+  ],
+  "cloud technologies": [
+    "google cloud",
+    "google cloud functions"
+  ],
+  "cmms": [
+    "gmao"
+  ],
+  "coaching": [
+    "subject of coaching",
+    "develop artistic coaching programme",
+    "collaborate with coaching team"
+  ],
+  "codage médical": [
+    "pmsi"
+  ],
+  "codenvy": [
+    "google cloud",
+    "google cloud functions"
+  ],
+  "codes juridiques": [
+    "animal welfare legislation",
+    "assign codes to product items",
+    "numerical sequences"
+  ],
+  "cognitive psychology": [
+    "résolution de problèmes"
+  ],
+  "cold vulcanisation": [
+    "rust"
+  ],
+  "collaborate through digital technologies": [
+    "sap co",
+    "sap fi/co"
+  ],
+  "collaborate with coaching team": [
+    "coaching"
+  ],
+  "collect aquatic resources": [
+    "node.js"
+  ],
+  "collect data using gps": [
+    "applicant tracking system"
+  ],
+  "collect statistics on medical records": [
+    "analyse statistique"
+  ],
+  "collect visitor fees": [
+    "droit européen"
+  ],
+  "colour grading": [
+    "étalonnage"
+  ],
+  "comment drafts": [
+    "rédaction juridique"
+  ],
+  "commerce détail": [
+    "b2c"
+  ],
+  "commerce international": [
+    "international trade",
+    "analyse economic trends"
+  ],
+  "commercial btob": [
+    "b2b"
+  ],
+  "commercial law": [
+    "droit commercial"
+  ],
+  "commissariat aux comptes": [
+    "study court hearings",
+    "prepare trial accounting balances",
+    "follow up accounts receivables"
+  ],
+  "communicate analytical insights": [
+    "comptabilité analytique"
+  ],
+  "communication": [
+    "teach communication sciences",
+    "operate maritime communication equipment"
+  ],
+  "community management": [
+    "manage environmental management system",
+    "manage digital documents",
+    "management department processes",
+    "smm"
+  ],
+  "comparative literature": [
+    "revue de littérature"
+  ],
+  "competition law": [
+    "droit de la concurrence"
+  ],
+  "compile airport certification manuals": [
+    "évaluation et certification"
+  ],
+  "compile data for navigation publications": [
+    "publications scientifiques"
+  ],
+  "compile detailed collection inventory": [
+    "inventaire"
+  ],
+  "complete patient journey records": [
+    "parcours d'intégration"
+  ],
+  "comply with legal regulations": [
+    "veille juridique"
+  ],
+  "components of air conditioning systems": [
+    "climatisation"
+  ],
+  "compose music": [
+    "jetpack compose"
+  ],
+  "compose playlist": [
+    "jetpack compose"
+  ],
+  "compta pro": [
+    "accounting department processes",
+    "draft accounting procedures",
+    "accounting techniques"
+  ],
+  "comptabilité analytique": [
+    "perform cost accounting activities",
+    "accounting",
+    "communicate analytical insights"
+  ],
+  "comptabilité générale": [
+    "accounting",
+    "bookkeeping regulations",
+    "accounting department processes"
+  ],
+  "compte de résultat": [
+    "p&l"
+  ],
+  "computer aided design": [
+    "cao"
+  ],
+  "computer history": [
+    "statuts de société"
+  ],
+  "computer programming": [
+    ".net",
+    "angular",
+    "bash",
+    "fortran",
+    "lua",
+    "opencv",
+    "power bi",
+    "powershell",
+    "shell"
+  ],
+  "computer science": [
+    "calcul de structures"
+  ],
+  "computer vision": [
+    "take artistic vision into account",
+    "define artistic vision",
+    "audiovisual equipment"
+  ],
+  "computerized maintenance management": [
+    "gmao"
+  ],
+  "conception 3d": [
+    "bim"
+  ],
+  "conception assistée ordinateur": [
+    "cao"
+  ],
+  "conception de cours": [
+    "supervise work on design planning",
+    "attend design meetings",
+    "teach design and applied arts principles"
+  ],
+  "conception de supports de formation": [
+    "teach principles of architectural design",
+    "conduct clinical research",
+    "distribute local information materials"
+  ],
+  "conclude business agreements": [
+    "actes notariés",
+    "contrats commerciaux",
+    "contrats d'achat"
+  ],
+  "concurrent estate": [
+    "droit immobilier",
+    "notion"
+  ],
+  "conditionnement": [
+    "packaging engineering",
+    "manage packaging material",
+    "repair vehicle's electrical equipment"
+  ],
+  "conduct aviation auditing": [
+    "audit"
+  ],
+  "conduct clinical research": [
+    "conception de supports de formation"
+  ],
+  "conduct environmental site assessments": [
+    "prospection"
+  ],
+  "conduct financial audits": [
+    "audit financier"
+  ],
+  "conduct fire safety inspections": [
+    "sécurité incendie"
+  ],
+  "conduct fire tests": [
+    "résistance des matériaux"
+  ],
+  "conduct fish populations studies": [
+    "cro"
+  ],
+  "conduct performance tests": [
+    "protocoles expérimentaux"
+  ],
+  "conduct psychological assessement": [
+    "tests psychométriques"
+  ],
+  "conduct public presentations": [
+    "présentation"
+  ],
+  "conduct quality control analysis": [
+    "contrôle qualité"
+  ],
+  "conduct quantitative research": [
+    "pcr quantitative"
+  ],
+  "conduct research interview": [
+    "entretien professionnel"
+  ],
+  "conduct soil sample tests": [
+    "chromatographie en phase gazeuse"
+  ],
+  "conduite de travaux": [
+    "repair pipelines",
+    "perform drainage work",
+    "clean drink dispense lines"
+  ],
+  "confer with library colleagues": [
+    "bim collaborate"
+  ],
+  "confidentialité": [
+    "nda"
+  ],
+  "conformité": [
+    "perform contract compliance audits",
+    "inspect project regulations",
+    "assess construction compliance"
+  ],
+  "confront offenders": [
+    "hugging face"
+  ],
+  "conseil juridique": [
+    "provide legal advice",
+    "provide legal advice on investments",
+    "provide advice on breaches of regulation"
+  ],
+  "consolidation": [
+    "subsidiary operations",
+    "mergers and acquisitions",
+    "team building"
+  ],
+  "consolidation comptes": [
+    "subsidiary operations",
+    "study court hearings",
+    "prepare trial accounting balances"
+  ],
+  "constitutional law": [
+    "droit constitutionnel"
+  ],
+  "construct greens and grounds": [
+    "parcours d'intégration",
+    "bun"
+  ],
+  "consultation methods": [
+    "formulation"
+  ],
+  "contamination exposure regulations": [
+    "expo"
+  ],
+  "content marketing": [
+    "digital marketing techniques",
+    "marketing mix",
+    "evaluate marketing content"
+  ],
+  "contentieux": [
+    "assist with litigation matters"
+  ],
+  "continuous improvement philosophies": [
+    "kaizen",
+    "kanban"
+  ],
+  "continuous integration": [
+    "ci/cd"
+  ],
+  "contract law": [
+    "droit des contrats"
+  ],
+  "contrat service": [
+    "sla"
+  ],
+  "contrats commerciaux": [
+    "conclude business agreements",
+    "negotiate sales contracts",
+    "manage farm products"
+  ],
+  "contrats d'achat": [
+    "negotiate supplier arrangements",
+    "conclude business agreements",
+    "trade ships"
+  ],
+  "contrats de travail": [
+    "negotiate employment agreements",
+    "employment law",
+    "meet contract specifications"
+  ],
+  "control animals in distress": [
+    "maîtrise d'œuvre"
+  ],
+  "control cutterheads": [
+    "lever"
+  ],
+  "control delivered waste": [
+    "réception de travaux"
+  ],
+  "control textile process": [
+    "planification de la production"
+  ],
+  "contrôle de gestion": [
+    "manage gaming cash desk",
+    "internal risk management policy"
+  ],
+  "contrôle des coûts": [
+    "monitor oil rig costs",
+    "monitor mine costs",
+    "monitor well costs"
+  ],
+  "contrôle qualité": [
+    "conduct quality control analysis",
+    "exert quality control to processing food",
+    "quality control systems"
+  ],
+  "contrôle qualité alimentaire": [
+    "exert quality control to processing food",
+    "monitor food production documentation",
+    "supervise food quality"
+  ],
+  "contrôle statistique": [
+    "statistical process control",
+    "lead process optimisation",
+    "statistical quality control"
+  ],
+  "cooperate to resolve information issues": [
+    "google tag manager"
+  ],
+  "coordinate advertising campaigns": [
+    "packer"
+  ],
+  "coordinate launches of new food products": [
+    "développement produit"
+  ],
+  "coordinate performance tours": [
+    "optimisation des tournées"
+  ],
+  "coordinate transportation": [
+    "transport"
+  ],
+  "coordination chantier": [
+    "moe"
+  ],
+  "coordination de chantier": [
+    "handle the disposal of chemicals",
+    "determine fire risks",
+    "maintain the security of machinery"
+  ],
+  "coordination équipe soins": [
+    "cadre de santé"
+  ],
+  "corporate law": [
+    "droit des sociétés"
+  ],
+  "corporate social responsibility": [
+    "rse"
+  ],
+  "cost per click": [
+    "cpc"
+  ],
+  "cost per visit": [
+    "cpv"
+  ],
+  "counsel patient on family concerns": [
+    "éducation patient"
+  ],
+  "coût par clic": [
+    "cpc"
+  ],
+  "coût par visite": [
+    "cpv"
+  ],
+  "cpc": [
+    "coût par clic",
+    "cost per click",
+    "publicité digitale"
+  ],
+  "cpv": [
+    "coût par visite",
+    "cost per visit",
+    "analytics"
+  ],
+  "create 2d painting": [
+    "autocad 2d"
+  ],
+  "create 3d characters": [
+    "autocad 3d"
+  ],
+  "create a financial plan": [
+    "reporting financier"
+  ],
+  "create annual marketing budget": [
+    "entretien annuel"
+  ],
+  "create auction catalogue": [
+    "vente"
+  ],
+  "create autocad drawings": [
+    "autocad",
+    "autocad 2d",
+    "autocad 3d"
+  ],
+  "create crop protection plans": [
+    "red hat"
+  ],
+  "create electrical wiring diagram": [
+    "câblage électrique"
+  ],
+  "create floor plan template": [
+    "plan de formation"
+  ],
+  "create moving images": [
+    "animation de groupe"
+  ],
+  "create subtitles": [
+    "titration"
+  ],
+  "create technical plans": [
+    "plans techniques"
+  ],
+  "create v-shape wrap": [
+    "v-ray",
+    "v"
+  ],
+  "credit card payments": [
+    "gestion paie"
+  ],
+  "crime victims' needs": [
+    "procédure pénale"
+  ],
+  "criminal law": [
+    "droit constitutionnel",
+    "droit pénal",
+    "règlement ce"
+  ],
+  "crm": [
+    "gestion relation client",
+    "customer relationship management",
+    "salesforce",
+    "hubspot"
+  ],
+  "cro": [
+    "crowdsourcing strategy",
+    "conduct fish populations studies",
+    "carry out cross merchandising"
+  ],
+  "cross selling": [
+    "carry out cross merchandising",
+    "cross-selling"
+  ],
+  "cross-selling": [
+    "carry out cross merchandising",
+    "cross selling"
+  ],
+  "crowdsourcing strategy": [
+    "cro",
+    "sourcing"
+  ],
+  "créativité": [
+    "stimulate creativity in the team",
+    "design dolls",
+    "think creatively"
+  ],
+  "csr": [
+    "rse"
+  ],
+  "css": [
+    "style sheet languages",
+    "world wide web consortium standards",
+    "tailwind css"
+  ],
+  "cultivate crops for biomass": [
+    "transformers"
+  ],
+  "culture cellulaire": [
+    "manage bioreactors",
+    "neoplasia",
+    "molecular and cellular immunology"
+  ],
+  "cultured pearls": [
+    "perl"
+  ],
+  "curriculum objectives": [
+    "ingénierie pédagogique"
+  ],
+  "customer relationship management": [
+    "crm",
+    "relation client"
+  ],
+  "customise drafts": [
+    "cahier des charges techniques"
+  ],
+  "customs law": [
+    "transit douanier"
+  ],
+  "câblage électrique": [
+    "create electrical wiring diagram",
+    "electrical wire accessories",
+    "electrical wiring diagrams"
+  ],
+  "daf rh": [
+    "drh"
+  ],
+  "dangers of marshalling activity": [
+    "analyse des dangers"
+  ],
+  "dao": [
+    "dessin assisté ordinateur",
+    "autocad",
+    "plans techniques"
+  ],
+  "data warehouse": [
+    "oracle warehouse builder",
+    "pentaho data integration",
+    "juris data",
+    "render"
+  ],
+  "database": [
+    "sql"
+  ],
+  "database management systems": [
+    "sql",
+    "microsoft dynamics",
+    "oracle",
+    "mysql",
+    "pl/sql",
+    "sql server"
+  ],
+  "dcf": [
+    "discounted cash flow",
+    "flux de trésorerie actualisés",
+    "valorisation"
+  ],
+  "deal with changing operational demand": [
+    "hugging face"
+  ],
+  "deal with emergency care situations": [
+    "soins d'urgence"
+  ],
+  "deal with killing animals processes": [
+    "maîtrise d'œuvre"
+  ],
+  "debt systems": [
+    "due diligence"
+  ],
+  "decide on providing funds": [
+    "fonds de roulement"
+  ],
+  "decorate nails": [
+    ".net core"
+  ],
+  "decorate pastry for special events": [
+    ".net core"
+  ],
+  "decorate textile articles": [
+    ".net core"
+  ],
+  "deep learning": [
+    "e-learning software infrastructure",
+    "learning management systems",
+    "develop e-learning plan"
+  ],
+  "defend human rights": [
+    "droit de la concurrence"
+  ],
+  "define artistic vision": [
+    "computer vision"
+  ],
+  "define set painting methods": [
+    "peinture"
+  ],
+  "define software architecture": [
+    "plans d'architecture",
+    "revit architecture",
+    "clean architecture"
+  ],
+  "delegate emergency care": [
+    "soins d'urgence"
+  ],
+  "deliver pilates exercises": [
+    "sea",
+    "animation de groupe"
+  ],
+  "deliver visual presentation of data": [
+    "présentation"
+  ],
+  "delphi": [
+    "gamemaker studio"
+  ],
+  "deno": [
+    "christianity",
+    "fishing vessels",
+    "carry out naming strategies"
+  ],
+  "design": [
+    "ui/ux"
+  ],
+  "design application interfaces": [
+    "google ads",
+    "google analytics",
+    "google analytics 4",
+    "google classroom",
+    "google tag manager",
+    "api platform",
+    "gemini api",
+    "google colab",
+    "openai api",
+    "windows server"
+  ],
+  "design campaign actions": [
+    "github actions"
+  ],
+  "design digital call to action": [
+    "welcome to the jungle"
+  ],
+  "design dolls": [
+    "créativité"
+  ],
+  "design electrical systems": [
+    "schémas électriques"
+  ],
+  "design engineering components": [
+    "ingénierie pédagogique"
+  ],
+  "design infrastructure for surface mines": [
+    "calcul de structures",
+    "ciel"
+  ],
+  "design interface": [
+    "ui"
+  ],
+  "design patterns": [
+    "draw design sketches",
+    "monitor trends in interior design",
+    "develop a specific interior design"
+  ],
+  "design spatial layout of outdoor areas": [
+    "veille réglementaire"
+  ],
+  "design sprinkler systems": [
+    "séquençage"
+  ],
+  "design thermal requirements": [
+    "réglementation thermique"
+  ],
+  "design ux": [
+    "ux"
+  ],
+  "dessin assisté ordinateur": [
+    "dao"
+  ],
+  "dessins techniques": [
+    "draw up lighting plan",
+    "make accurate drawings",
+    "motor vehicle parts drawings"
+  ],
+  "detect bottlenecks": [
+    "approvisionnement"
+  ],
+  "detect flaws in rails": [
+    "rails",
+    "ruby on rails"
+  ],
+  "detect microorganisms": [
+    "séquençage"
+  ],
+  "detect rail track malfunctions": [
+    "maintenance mécanique"
+  ],
+  "determine eye disease progression": [
+    "echo"
+  ],
+  "determine fire risks": [
+    "coordination de chantier",
+    "suivi de chantier"
+  ],
+  "determine leather goods warehouse layout": [
+    "gestion des entrepôts"
+  ],
+  "determine monetary policy actions": [
+    "plans de masse",
+    "spectrométrie de masse"
+  ],
+  "determine resale value of items": [
+    "event-driven"
+  ],
+  "develop a specific interior design": [
+    "design patterns"
+  ],
+  "develop architectural plans": [
+    "plans d'architecture"
+  ],
+  "develop artistic coaching programme": [
+    "coaching"
+  ],
+  "develop audit plan": [
+    "audit",
+    "audit externe"
+  ],
+  "develop business plans": [
+    "business plan"
+  ],
+  "develop chiropractic treatment plans": [
+    "éducation thérapeutique"
+  ],
+  "develop competition policies": [
+    "fusion-acquisition"
+  ],
+  "develop corporate training programmes": [
+    "formation professionnelle"
+  ],
+  "develop digital educational materials": [
+    "didactique"
+  ],
+  "develop e-learning plan": [
+    "blended learning",
+    "e-learning",
+    "plan de formation",
+    "deep learning",
+    "machine learning",
+    "reinforcement learning",
+    "scikit-learn"
+  ],
+  "develop environmental policy": [
+    "développement durable"
+  ],
+  "develop food safety programmes": [
+    "traçabilité alimentaire"
+  ],
+  "develop game management plans": [
+    "gestion fifo"
+  ],
+  "develop ict test suite": [
+    "burp suite"
+  ],
+  "develop investment portfolio": [
+    "gestion de portefeuille"
+  ],
+  "develop mine rehabilitation plan": [
+    "habilitation b1v",
+    "habilitation b2v",
+    "habilitation bc",
+    "habilitation br"
+  ],
+  "develop osteopathic treatment plans": [
+    "éducation thérapeutique"
+  ],
+  "develop outreach training plans": [
+    "plan de formation"
+  ],
+  "develop product design": [
+    "développement produit"
+  ],
+  "develop programming schedule": [
+    "stable diffusion"
+  ],
+  "develop scientific research protocols": [
+    "recherche scientifique"
+  ],
+  "develop scientific theories": [
+    "publications scientifiques",
+    "rédaction scientifique"
+  ],
+  "develop strategies for accessibility": [
+    "accessibilité pmr"
+  ],
+  "develop strategy to solve problems": [
+    "résolution de problèmes"
+  ],
+  "develop taxation policies": [
+    "liasses fiscales",
+    "optimisation fiscale"
+  ],
+  "develop therapeutic relationships": [
+    "éducation thérapeutique"
+  ],
+  "devis quantitatif": [
+    "quantitative sensory testing",
+    "quote prices",
+    "handle quotes from prospective shippers"
+  ],
+  "devops": [
+    "ci/cd"
+  ],
+  "diagnose brain death": [
+    "ir",
+    "r",
+    "re 2020"
+  ],
+  "diagnose diseases of the vascular system": [
+    "is",
+    "ponction veineuse"
+  ],
+  "diagnose education problems": [
+    "problem solving"
+  ],
+  "diagnose heart conditions": [
+    "cathétérisme",
+    "ecg",
+    "monitoring cardiaque",
+    "echo"
+  ],
+  "diagnostic immunology techniques": [
+    "elisa"
+  ],
+  "didactique": [
+    "develop digital educational materials",
+    "e-learning",
+    "observe teaching activities"
+  ],
+  "digital marketing techniques": [
+    "affiliate marketing",
+    "content marketing",
+    "email marketing",
+    "inbound marketing",
+    "influencer marketing",
+    "salesforce marketing cloud"
+  ],
+  "directeur ressources humaines": [
+    "drh"
+  ],
+  "direction projet": [
+    "moa"
+  ],
+  "direction travaux": [
+    "moe"
+  ],
+  "disassemble mobile devices": [
+    "sass"
+  ],
+  "discounted cash flow": [
+    "dcf"
+  ],
+  "discover acting talent": [
+    "talent acquisition"
+  ],
+  "dispose of soldering waste": [
+    "soudure",
+    "soudure mig",
+    "soudure tig"
+  ],
+  "distinguish lumber categories": [
+    "charpente",
+    "charpente métallique"
+  ],
+  "distribute local information materials": [
+    "conception de supports de formation"
+  ],
+  "dmaic": [
+    "six sigma"
+  ],
+  "dns": [
+    "internet governance"
+  ],
+  "dock operations": [
+    "docker"
+  ],
+  "docker": [
+    "write dock records",
+    "dock operations"
+  ],
+  "document your own practice": [
+    "gestion prévisionnelle emplois"
+  ],
+  "doe": [
+    "quality control systems"
+  ],
+  "dosimetric planning": [
+    "planification"
+  ],
+  "dossier patient électronique": [
+    "patient record storage",
+    "identify patients' medical records",
+    "archive healthcare users' records"
+  ],
+  "douane": [
+    "arrange customs documents",
+    "manage freight payment methods",
+    "handle carriers"
+  ],
+  "draft accounting procedures": [
+    "compta pro",
+    "normes comptables"
+  ],
+  "draft design specifications": [
+    "cahier des charges techniques"
+  ],
+  "draft legislation": [
+    "plu"
+  ],
+  "draw design sketches": [
+    "design patterns"
+  ],
+  "draw up lighting plan": [
+    "dessins techniques"
+  ],
+  "dredging consoles": [
+    "google search console"
+  ],
+  "drg": [
+    "pmsi"
+  ],
+  "drh": [
+    "directeur ressources humaines",
+    "hr director",
+    "daf rh"
+  ],
+  "drive at high speeds": [
+    "vite"
+  ],
+  "drive motor vehicle prototypes": [
+    "protocoles expérimentaux"
+  ],
+  "droit administratif": [
+    "manage administrative systems",
+    "legal studies",
+    "business law"
+  ],
+  "droit alimentaire": [
+    "manage legal personal issues",
+    "legal studies",
+    "business law"
+  ],
+  "droit bancaire": [
+    "resolve banking issues",
+    "solve bank account problems",
+    "legal studies"
+  ],
+  "droit civil": [
+    "civil law",
+    "forensic psychiatry",
+    "legal studies"
+  ],
+  "droit commercial": [
+    "commercial law",
+    "trading law",
+    "business law"
+  ],
+  "droit constitutionnel": [
+    "constitutional law",
+    "criminal law",
+    "legal studies"
+  ],
+  "droit de la concurrence": [
+    "competition law",
+    "promote free trade",
+    "defend human rights"
+  ],
+  "droit de la famille": [
+    "family law",
+    "take pictures",
+    "berber"
+  ],
+  "droit de la propriété intellectuelle": [
+    "intellectual property law",
+    "manage licensing fees",
+    "record corporate property"
+  ],
+  "droit des affaires": [
+    "business law",
+    "legal studies",
+    "trading law"
+  ],
+  "droit des assurances": [
+    "insurance law",
+    "legal studies",
+    "business law"
+  ],
+  "droit des contrats": [
+    "contract law",
+    "property law",
+    "inform on renting agreements"
+  ],
+  "droit des sociétés": [
+    "corporate law",
+    "business law",
+    "public law"
+  ],
+  "droit du travail": [
+    "employment law",
+    "business law",
+    "ensure compliance with gaming laws"
+  ],
+  "droit européen": [
+    "legal studies",
+    "business law",
+    "collect visitor fees"
+  ],
+  "droit fiscal": [
+    "business law",
+    "inform on fiscal duties",
+    "research taxation procedures"
+  ],
+  "droit immobilier": [
+    "concurrent estate",
+    "handle lease agreement administration",
+    "legal studies"
+  ],
+  "droit international": [
+    "international law",
+    "international human rights law",
+    "education law"
+  ],
+  "droit privé": [
+    "manage legal personal issues",
+    "grant concessions",
+    "public service concession"
+  ],
+  "droit public": [
+    "public law",
+    "negotiate exploitation rights",
+    "public service concession"
+  ],
+  "droit pénal": [
+    "criminal law",
+    "forensic psychiatry",
+    "forensic pathology"
+  ],
+  "droits d'enregistrement": [
+    "record corporate property",
+    "operate seismic equipment",
+    "plan audiovisual recording"
+  ],
+  "drug administration regulations": [
+    "fda"
+  ],
+  "drug interaction management": [
+    "gestion équipement médical"
+  ],
+  "drupal": [
+    "html",
+    "php",
+    "tailwind css"
+  ],
+  "due diligence": [
+    "debt systems",
+    "monitor tank thermometer"
+  ],
+  "déclaration préalable": [
+    "take affidavits",
+    "sign income tax returns",
+    "tape transcription"
+  ],
+  "déclarations fiscales": [
+    "inspect tax returns",
+    "research taxation procedures",
+    "prepare tax returns forms"
+  ],
+  "dédouanement": [
+    "manage freight payment methods"
+  ],
+  "dégustation": [
+    "host wine-tasting events",
+    "perform coffee tastings",
+    "wine blending"
+  ],
+  "dépannage électrique": [
+    "troubleshoot website",
+    "troubleshoot",
+    "support audio system installation"
+  ],
+  "développement commercial": [
+    "identify pricing opportunities",
+    "entrepreneurship",
+    "perform business research"
+  ],
+  "développement durable": [
+    "european pesticide legislation",
+    "promote agricultural policies",
+    "develop environmental policy"
+  ],
+  "développement produit": [
+    "develop product design",
+    "cleaning products",
+    "coordinate launches of new food products"
+  ],
+  "e-learning": [
+    "e-learning software infrastructure",
+    "develop e-learning plan",
+    "provide training on e-learning",
+    "didactique"
+  ],
+  "e-learning software infrastructure": [
+    "blended learning",
+    "e-learning",
+    "deep learning",
+    "machine learning",
+    "reinforcement learning",
+    "scikit-learn"
+  ],
+  "e-procurement": [
+    "achats",
+    "gestion des achats"
+  ],
+  "ecg": [
+    "diagnose heart conditions"
+  ],
+  "echo": [
+    "diagnose heart conditions",
+    "interpret urology diagnostic tests",
+    "determine eye disease progression"
+  ],
+  "eclipse": [
+    "manage digital documents"
+  ],
+  "ecology": [
+    "écologie"
+  ],
+  "educate on preventing injuries": [
+    "less"
+  ],
+  "educate public on fire safety": [
+    "sécurité incendie"
+  ],
+  "education law": [
+    "droit international"
+  ],
+  "ehpad": [
+    "établissement hébergement personnes âgées",
+    "maison retraite",
+    "gériatrie"
+  ],
+  "elective astrology": [
+    "astro"
+  ],
+  "electric drives": [
+    "habilitation électrique",
+    "normes électriques"
+  ],
+  "electrical engineering": [
+    "électromagnétisme"
+  ],
+  "electrical safety regulations": [
+    "installation électrique",
+    "maintenance électrique",
+    "normes électriques"
+  ],
+  "electrical wire accessories": [
+    "câblage électrique",
+    "habilitation électrique"
+  ],
+  "electrical wiring diagrams": [
+    "câblage électrique",
+    "schémas électriques"
+  ],
+  "electricity": [
+    "électricité industrielle"
+  ],
+  "electromagnetism": [
+    "électromagnétisme"
+  ],
+  "electronics": [
+    "électronique"
+  ],
+  "elisa": [
+    "diagnostic immunology techniques",
+    "holding company activities"
+  ],
+  "email marketing": [
+    "digital marketing techniques",
+    "marketing mix",
+    "evaluate marketing content"
+  ],
+  "emballage alimentaire": [
+    "assess shelf life of food products",
+    "food engineering",
+    "food and beverage industry"
+  ],
+  "employment law": [
+    "contrats de travail",
+    "droit du travail"
+  ],
+  "empower individuals, families and groups": [
+    "autonomie"
+  ],
+  "enhance website visibility": [
+    "seo"
+  ],
+  "enseignement primaire": [
+    "teach primary education class content",
+    "primary school procedures",
+    "manage packaging material"
+  ],
+  "enseignement secondaire": [
+    "manage secondary school department",
+    "secondary school procedures",
+    "teach secondary education class content"
+  ],
+  "enseignement supérieur": [
+    "publish academic research",
+    "teach further education",
+    "perform military operations"
+  ],
+  "ensure annual safety inspections": [
+    "entretien annuel"
+  ],
+  "ensure compliance with gaming laws": [
+    "droit du travail"
+  ],
+  "enterprise resource planning": [
+    "erp",
+    "sap"
+  ],
+  "entrepreneurship": [
+    "développement commercial",
+    "sage 100 gestion commerciale"
+  ],
+  "entretien annuel": [
+    "plan road fleet maintenance",
+    "ensure annual safety inspections",
+    "create annual marketing budget"
+  ],
+  "entretien professionnel": [
+    "conduct research interview",
+    "provide conservation advice",
+    "music therapy processes"
+  ],
+  "environmental engineering": [
+    "later"
+  ],
+  "environmental impact of tourism": [
+    "évaluation d'impact environnemental"
+  ],
+  "environnement": [
+    "maintain the exercise environment",
+    "utilise exercise environment",
+    "manage environmental impact"
+  ],
+  "erp": [
+    "progiciel gestion intégré",
+    "enterprise resource planning",
+    "sap",
+    "oracle"
+  ],
+  "erp logistique": [
+    "green logistics",
+    "analyse logistic needs",
+    "multimodal transport logistics"
+  ],
+  "escort students on a field trip": [
+    "accompagnement pédagogique"
+  ],
+  "esprit critique": [
+    "address problems critically",
+    "spiritualism",
+    "yoga"
+  ],
+  "establish site security routines": [
+    "protocoles d'hygiène",
+    "protocoles expérimentaux"
+  ],
+  "estimate distances": [
+    "formation à distance"
+  ],
+  "estimatif": [
+    "write research proposals",
+    "calculate value of gems"
+  ],
+  "european pesticide legislation": [
+    "développement durable"
+  ],
+  "evaluate benefit plans": [
+    "plans d'exécution"
+  ],
+  "evaluate marketing content": [
+    "affiliate marketing",
+    "content marketing",
+    "email marketing",
+    "inbound marketing",
+    "influencer marketing"
+  ],
+  "evaluation of psychological performance": [
+    "évaluation formative"
+  ],
+  "event-driven": [
+    "position outriggers",
+    "attend vehicle auctions",
+    "determine resale value of items"
+  ],
+  "examine civil structures": [
+    "maîtrise d'ouvrage"
+  ],
+  "examine geochemical samples": [
+    "chromatographie en phase gazeuse"
+  ],
+  "examine green coffee beans": [
+    "go"
+  ],
+  "examine the new-born infant": [
+    "neon"
+  ],
+  "examine ventilation system": [
+    "sécurité incendie",
+    "ventilation mécanique"
+  ],
+  "execute administration": [
+    "procédure administrative"
+  ],
+  "execute after sales activities": [
+    "vente"
+  ],
+  "execute conversion testing": [
+    "plan d'expérience",
+    "tests psychométriques"
+  ],
+  "execute integration testing": [
+    "parcours d'intégration"
+  ],
+  "exercise neutrality in mediation cases": [
+    "rest"
+  ],
+  "exercise self-control": [
+    "maîtrise d'œuvre"
+  ],
+  "exert quality control to processing food": [
+    "contrôle qualité",
+    "contrôle qualité alimentaire"
+  ],
+  "expo": [
+    "export control principles",
+    "prepare exhibition programs",
+    "contamination exposure regulations"
+  ],
+  "export control principles": [
+    "expo"
+  ],
+  "express": [
+    "understand spoken azerbaijani",
+    "legal terminology",
+    "body language"
+  ],
+  "express.js": [
+    "understand spoken azerbaijani",
+    "legal terminology",
+    "body language"
+  ],
+  "expérience utilisateur": [
+    "ux",
+    "ui/ux"
+  ],
+  "f#": [
+    "ultra-high temperature processing",
+    "query languages",
+    "graphics editor software"
+  ],
+  "facebook ads": [
+    "stay up to date with social media",
+    "apply social media marketing"
+  ],
+  "facebook business manager": [
+    "openedge advanced business language",
+    "stay up to date with social media",
+    "impart business plans to collaborators"
+  ],
+  "facilitate teamwork between students": [
+    "travail en équipe"
+  ],
+  "family law": [
+    "droit de la famille"
+  ],
+  "façades": [
+    "clean building facade",
+    "install facade cladding",
+    "install structural glazing"
+  ],
+  "fda": [
+    "drug administration regulations"
+  ],
+  "feed raw material into plant machinery": [
+    "mécanique industrielle"
+  ],
+  "feed the clay mixing machine": [
+    "carrelage"
+  ],
+  "fiabilité industrielle": [
+    "tpm"
+  ],
+  "figma": [
+    "ui/ux"
+  ],
+  "file documents": [
+    "classe inversée"
+  ],
+  "file-based workflow": [
+    "cash flow"
+  ],
+  "filemaker (database management systems)": [
+    "make"
+  ],
+  "filter paint": [
+    "peinture"
+  ],
+  "financial analysis": [
+    "analyse financière"
+  ],
+  "financial capability": [
+    "gestion budgétaire",
+    "gestion budgétaire chantier"
+  ],
+  "financial forecasting": [
+    "gestion prévisionnelle emplois"
+  ],
+  "firewall": [
+    "protect ict devices"
+  ],
+  "first aid": [
+    "soins de plaies"
+  ],
+  "fiscalité": [
+    "accounting department processes",
+    "advise on tax planning"
+  ],
+  "fish, crustacean and mollusc products": [
+    "rust"
+  ],
+  "fishing vessels": [
+    "deno"
+  ],
+  "flux de trésorerie actualisés": [
+    "dcf"
+  ],
+  "follow airport snow control plan": [
+    "hive"
+  ],
+  "follow clinical guidelines": [
+    "protocoles de soins"
+  ],
+  "follow hygienic work practices": [
+    "bonnes pratiques d'hygiène"
+  ],
+  "follow newspaper house style": [
+    "rédaction scientifique"
+  ],
+  "follow up accounts receivables": [
+    "commissariat aux comptes"
+  ],
+  "follow work schedule": [
+    "planning travaux"
+  ],
+  "follow-up patients with heart attack": [
+    "monitoring cardiaque"
+  ],
+  "fonds de roulement": [
+    "manage stock rotation",
+    "manage cash transportation",
+    "decide on providing funds"
+  ],
+  "food and beverage industry": [
+    "emballage alimentaire",
+    "procédés agroalimentaires"
+  ],
+  "food engineering": [
+    "emballage alimentaire"
+  ],
+  "food hygiene rules": [
+    "règlement ce",
+    "réglementation alimentaire"
+  ],
+  "food labels": [
+    "étiquetage"
+  ],
+  "food policy": [
+    "réglementation alimentaire"
+  ],
+  "food safety standards": [
+    "fssc 22000",
+    "iso 14001",
+    "iso 22000",
+    "iso 27001",
+    "iso 9001",
+    "normes haccp"
+  ],
+  "forensic pathology": [
+    "droit pénal",
+    "procédure pénale"
+  ],
+  "forensic psychiatry": [
+    "droit civil",
+    "droit pénal"
+  ],
+  "forest ecology": [
+    "écologie"
+  ],
+  "form continuous bands": [
+    "formation continue"
+  ],
+  "formation continue": [
+    "form continuous bands"
+  ],
+  "formation professionnelle": [
+    "develop corporate training programmes"
+  ],
+  "formation à distance": [
+    "geographical routes",
+    "read 3d displays",
+    "estimate distances"
+  ],
+  "formulation": [
+    "troubleshoot cosmetics formula issues",
+    "manage advocacy strategies",
+    "consultation methods"
+  ],
+  "fortran": [
+    "computer programming"
+  ],
+  "freight transport methods": [
+    "transport"
+  ],
+  "fret aérien": [
+    "cargo industry",
+    "types of cargo",
+    "manage freight payment methods"
+  ],
+  "fret maritime": [
+    "liaise with port users",
+    "national waterways",
+    "types of cargo"
+  ],
+  "fssc 22000": [
+    "food safety standards"
+  ],
+  "fundamental veterinary sciences": [
+    "biochimie"
+  ],
+  "fusion acquisition": [
+    "m&a"
+  ],
+  "fusion-acquisition": [
+    "mergers and acquisitions",
+    "handle mergers and acquisitions",
+    "develop competition policies"
+  ],
+  "fusions-acquisitions": [
+    "m&a"
+  ],
+  "gaap": [
+    "normes comptables américaines",
+    "generally accepted accounting principles"
+  ],
+  "gamemaker studio": [
+    "is",
+    "delphi",
+    "make",
+    "red hat"
+  ],
+  "gdpr": [
+    "rgpd",
+    "general data protection regulation",
+    "protection données"
+  ],
+  "gemini api": [
+    "design application interfaces",
+    "owasp zap",
+    "mobile device software frameworks"
+  ],
+  "general data protection regulation": [
+    "gdpr"
+  ],
+  "generally accepted accounting principles": [
+    "gaap"
+  ],
+  "generative ai": [
+    "propagate plants",
+    "sanitise winery area",
+    "monitor extraction logging operations"
+  ],
+  "genetics": [
+    "génétique"
+  ],
+  "geographical routes": [
+    "formation à distance"
+  ],
+  "geology": [
+    "solid"
+  ],
+  "gestion budgétaire": [
+    "financial capability",
+    "manage a healthcare unit budget",
+    "serve on academic committee"
+  ],
+  "gestion budgétaire chantier": [
+    "handle the disposal of chemicals",
+    "manage a healthcare unit budget",
+    "financial capability"
+  ],
+  "gestion commandes": [
+    "adv"
+  ],
+  "gestion de classe": [
+    "advise on teaching methods",
+    "manage aspects of airspace management",
+    "classify insurance claims"
+  ],
+  "gestion de portefeuille": [
+    "holding company activities",
+    "develop investment portfolio",
+    "review investment portfolios"
+  ],
+  "gestion de portefeuille clients": [
+    "review investment portfolios",
+    "holding company activities",
+    "handle guest luggage"
+  ],
+  "gestion de projet": [
+    "project management principles",
+    "lean project management",
+    "prince2 project management"
+  ],
+  "gestion des achats": [
+    "e-procurement",
+    "package purchases in bags",
+    "prepare purchasing reportings"
+  ],
+  "gestion des approvisionnements": [
+    "liaise with logistics management teams",
+    "supply chain management",
+    "mass customisation"
+  ],
+  "gestion des entrepôts": [
+    "determine leather goods warehouse layout",
+    "manage a warehouse management system",
+    "manage warehouse operations"
+  ],
+  "gestion des fournisseurs": [
+    "supplier management",
+    "manage localisation",
+    "hardware components suppliers"
+  ],
+  "gestion des stocks": [
+    "inventory management rules",
+    "monitor biomedical equipment stock",
+    "manage warehouse operations"
+  ],
+  "gestion des transporteurs": [
+    "apply transportation management concepts",
+    "transportation engineering",
+    "analyse transport studies"
+  ],
+  "gestion douleur": [
+    "manage acute pain"
+  ],
+  "gestion du contentieux": [
+    "assist with litigation matters",
+    "promote sustainable management",
+    "project management principles"
+  ],
+  "gestion du transport": [
+    "transportation engineering",
+    "apply transportation management concepts",
+    "analyse transport studies"
+  ],
+  "gestion entrepôt": [
+    "wms"
+  ],
+  "gestion fifo": [
+    "project management principles",
+    "oversee animal management",
+    "develop game management plans"
+  ],
+  "gestion flux": [
+    "lean"
+  ],
+  "gestion maintenance assistée ordinateur": [
+    "gmao"
+  ],
+  "gestion paie": [
+    "credit card payments"
+  ],
+  "gestion prévisionnelle emplois": [
+    "financial forecasting",
+    "document your own practice",
+    "plan product management"
+  ],
+  "gestion relation client": [
+    "crm"
+  ],
+  "gestion ressources humaines": [
+    "grh"
+  ],
+  "gestion réseaux sociaux": [
+    "smm"
+  ],
+  "gestion transport": [
+    "tms"
+  ],
+  "gestion équipement médical": [
+    "monitor biomedical equipment stock",
+    "drug interaction management",
+    "manage healthcare staff"
+  ],
+  "gin": [
+    "spirits development"
+  ],
+  "github actions": [
+    "design campaign actions",
+    "translate strategy into operation",
+    "perform improvisation"
+  ],
+  "gitlab": [
+    "gitlab ci"
+  ],
+  "gitlab ci": [
+    "inspire enthusiasm for nature",
+    "shearing of wool",
+    "check in luggage",
+    "gitlab"
+  ],
+  "give care instructions": [
+    "soins de plaies"
+  ],
+  "give constructive feedback": [
+    "évaluation formative"
+  ],
+  "give massages": [
+    "sage"
+  ],
+  "gmao": [
+    "gestion maintenance assistée ordinateur",
+    "computerized maintenance management",
+    "cmms",
+    "maintenance logicielle",
+    "maintenance software",
+    "gestion maintenance"
+  ],
+  "go": [
+    "examine green coffee beans",
+    "types of tyres",
+    "analyse foreign affairs policies"
+  ],
+  "good laboratory practice": [
+    "bonnes pratiques d'hygiène",
+    "bonnes pratiques de laboratoire",
+    "bpl",
+    "laboratoire"
+  ],
+  "good manufacturing practices": [
+    "bonnes pratiques d'hygiène",
+    "bonnes pratiques de fabrication",
+    "bonnes pratiques de laboratoire",
+    "bpf"
+  ],
+  "google ads": [
+    "design application interfaces",
+    "sea",
+    "sem"
+  ],
+  "google analytics": [
+    "design application interfaces"
+  ],
+  "google analytics 4": [
+    "design application interfaces"
+  ],
+  "google classroom": [
+    "design application interfaces"
+  ],
+  "google cloud": [
+    "octopus deploy",
+    "codenvy",
+    "cloud technologies"
+  ],
+  "google cloud functions": [
+    "octopus deploy",
+    "codenvy",
+    "cloud technologies"
+  ],
+  "google colab": [
+    "design application interfaces"
+  ],
+  "google search console": [
+    "dredging consoles",
+    "operate a lighting console",
+    "tunnel boring machine console"
+  ],
+  "google tag manager": [
+    "cooperate to resolve information issues",
+    "design application interfaces",
+    "manage digital documents"
+  ],
+  "grade lumber": [
+    "gros œuvre"
+  ],
+  "grading systems": [
+    "charpente",
+    "charpente métallique"
+  ],
+  "grant concessions": [
+    "droit privé"
+  ],
+  "graphics editor software": [
+    "adobe illustrator",
+    "adobe photoshop",
+    "canva",
+    "sketch",
+    "apache",
+    "apache kafka",
+    "f#",
+    "swift",
+    "xp"
+  ],
+  "graphite": [
+    "carbon"
+  ],
+  "green logistics": [
+    "erp logistique",
+    "logistique internationale",
+    "vertex ai"
+  ],
+  "green water incubation technology": [
+    "vertex ai"
+  ],
+  "grh": [
+    "gestion ressources humaines",
+    "hr management"
+  ],
+  "gros œuvre": [
+    "grade lumber",
+    "monitor pregnancy",
+    "organise parts storage"
+  ],
+  "grovo": [
+    "évaluation des apprentissages"
+  ],
+  "génétique": [
+    "genetics",
+    "liaise with genetic laboratories",
+    "medical genetics"
+  ],
+  "géotechnique": [
+    "manage geotechnical staff",
+    "advise on mining environmental issues",
+    "monitor geotechnical structures"
+  ],
+  "gériatrie": [
+    "ehpad"
+  ],
+  "habilitation b1v": [
+    "manage security clearance",
+    "develop mine rehabilitation plan",
+    "oversee rehabilitation process"
+  ],
+  "habilitation b2v": [
+    "manage security clearance",
+    "develop mine rehabilitation plan",
+    "oversee rehabilitation process"
+  ],
+  "habilitation bc": [
+    "manage security clearance",
+    "develop mine rehabilitation plan",
+    "oversee rehabilitation process"
+  ],
+  "habilitation br": [
+    "manage security clearance",
+    "develop mine rehabilitation plan",
+    "oversee rehabilitation process"
+  ],
+  "habilitation électrique": [
+    "manage security clearance",
+    "electrical wire accessories",
+    "electric drives"
+  ],
+  "haccp": [
+    "hazard analysis critical control points",
+    "sécurité alimentaire",
+    "analyse dangers",
+    "assess haccp implementation in plants",
+    "apply haccp",
+    "audit haccp",
+    "normes haccp"
+  ],
+  "hadoop": [
+    "marklogic"
+  ],
+  "handle carriers": [
+    "douane"
+  ],
+  "handle cash flow": [
+    "trésorerie"
+  ],
+  "handle delivered packages": [
+    "réception de travaux"
+  ],
+  "handle fragile items": [
+    "agile"
+  ],
+  "handle guest luggage": [
+    "gestion de portefeuille clients"
+  ],
+  "handle harvested fish": [
+    "chai"
+  ],
+  "handle lease agreement administration": [
+    "droit immobilier"
+  ],
+  "handle mergers and acquisitions": [
+    "fusion-acquisition",
+    "négociation"
+  ],
+  "handle quotes from prospective shippers": [
+    "devis quantitatif"
+  ],
+  "handle the disposal of chemicals": [
+    "coordination de chantier",
+    "gestion budgétaire chantier",
+    "suivi de chantier"
+  ],
+  "handle tour contract details": [
+    "négociation contractuelle"
+  ],
+  "handle touristic quantitative data": [
+    "pcr quantitative"
+  ],
+  "hardware components suppliers": [
+    "gestion des fournisseurs"
+  ],
+  "harvest aquatic resources": [
+    "chai"
+  ],
+  "harvest cover crops": [
+    "sem"
+  ],
+  "hazard analysis critical control points": [
+    "haccp"
+  ],
+  "health safety environment": [
+    "hse"
+  ],
+  "helm": [
+    "helminthology"
+  ],
+  "helminthology": [
+    "helm"
+  ],
+  "high-performance liquid chromatography": [
+    "chromatographie"
+  ],
+  "hire background musicians": [
+    "accompagnement pédagogique"
+  ],
+  "hive": [
+    "search historical sources in archives",
+    "follow airport snow control plan",
+    "manage archive users guidelines"
+  ],
+  "holding company activities": [
+    "elisa",
+    "gestion de portefeuille",
+    "gestion de portefeuille clients"
+  ],
+  "hono": [
+    "process booking",
+    "negotiate lawyer's fee",
+    "operate record press"
+  ],
+  "hospitalised animal nursing care": [
+    "protocoles de soins"
+  ],
+  "host wine-tasting events": [
+    "dégustation"
+  ],
+  "hr": [
+    "rh"
+  ],
+  "hr director": [
+    "drh"
+  ],
+  "hr management": [
+    "grh"
+  ],
+  "hse": [
+    "hygiène sécurité environnement",
+    "health safety environment",
+    "qhse",
+    "sécurité au travail"
+  ],
+  "html": [
+    "world wide web consortium standards",
+    "javascript framework",
+    "drupal"
+  ],
+  "html5": [
+    "world wide web consortium standards",
+    "php",
+    "javascript framework"
+  ],
+  "http": [
+    "apache tomcat"
+  ],
+  "https": [
+    "apache tomcat"
+  ],
+  "hubspot": [
+    "crm"
+  ],
+  "hugging face": [
+    "deal with changing operational demand",
+    "confront offenders",
+    "address an audience"
+  ],
+  "human resources": [
+    "rh"
+  ],
+  "hunt animals": [
+    "chasse de têtes"
+  ],
+  "hydraulic press parts": [
+    "hydraulique"
+  ],
+  "hydraulics": [
+    "hydraulique"
+  ],
+  "hydraulique": [
+    "hydraulics",
+    "maintain hydraulic press",
+    "hydraulic press parts"
+  ],
+  "hygiène hospitalière": [
+    "maintain personal hygiene standards",
+    "maintain silk worm breeding room",
+    "attend to hygiene"
+  ],
+  "hygiène sécurité environnement": [
+    "hse"
+  ],
+  "ia": [
+    "intelligence artificielle",
+    "artificial intelligence",
+    "ai",
+    "machine learning"
+  ],
+  "iade": [
+    "infirmier anesthésiste",
+    "anesthésie",
+    "bloc opératoire"
+  ],
+  "ibode": [
+    "infirmier bloc opératoire",
+    "chirurgie",
+    "bloc opératoire"
+  ],
+  "ide": [
+    "infirmier diplômé état",
+    "infirmier",
+    "soins infirmiers"
+  ],
+  "idenfify if a company is a going concern": [
+    "rspec"
+  ],
+  "identify accounting errors": [
+    "révision comptable"
+  ],
+  "identify education needs": [
+    "élaboration de programmes"
+  ],
+  "identify patients' medical records": [
+    "dossier patient électronique"
+  ],
+  "identify pricing opportunities": [
+    "développement commercial"
+  ],
+  "identify props": [
+    "lecture de plans"
+  ],
+  "identify suppliers": [
+    "négociation fournisseurs"
+  ],
+  "identify talent in sport": [
+    "talent acquisition"
+  ],
+  "identify the needs of your participants": [
+    "sea"
+  ],
+  "identify with the company's goals": [
+    "objective-c"
+  ],
+  "ifrs": [
+    "normes comptables internationales",
+    "international financial reporting standards",
+    "pre-flight procedures for ifr flights"
+  ],
+  "ifs": [
+    "operate railway control panels"
+  ],
+  "immunologie": [
+    "immunology",
+    "clinical immunology",
+    "molecular and cellular immunology"
+  ],
+  "immunology": [
+    "immunologie"
+  ],
+  "impart business plans to collaborators": [
+    "bim collaborate",
+    "business plan",
+    "facebook business manager"
+  ],
+  "implant microchips in animals": [
+    "électronique"
+  ],
+  "implement biodiversity action plans": [
+    "plan local d'urbanisme"
+  ],
+  "implement data quality processes": [
+    "audit qualité"
+  ],
+  "implement data warehousing techniques": [
+    "olap"
+  ],
+  "implement operational business plans": [
+    "plans d'exécution"
+  ],
+  "implement quality management systems": [
+    "iso 14001",
+    "iso 22000",
+    "iso 27001",
+    "iso 9001"
+  ],
+  "implement soap formula": [
+    "métrés"
+  ],
+  "implement traceability systems": [
+    "traçabilité"
+  ],
+  "implement veterinary clinical governance": [
+    "audit interne"
+  ],
+  "import-export": [
+    "manage import export licenses",
+    "international import export regulations"
+  ],
+  "inbound marketing": [
+    "digital marketing techniques",
+    "marketing mix",
+    "evaluate marketing content"
+  ],
+  "indesign": [
+    "adobe indesign"
+  ],
+  "indicateurs clés": [
+    "kpi"
+  ],
+  "indicateurs de performance": [
+    "kpi",
+    "kpis"
+  ],
+  "infirmier": [
+    "ide"
+  ],
+  "infirmier anesthésiste": [
+    "iade"
+  ],
+  "infirmier bloc opératoire": [
+    "ibode"
+  ],
+  "infirmier diplômé état": [
+    "ide"
+  ],
+  "influencer marketing": [
+    "digital marketing techniques",
+    "marketing mix",
+    "evaluate marketing content"
+  ],
+  "inform on fiscal duties": [
+    "droit fiscal",
+    "liasses fiscales",
+    "optimisation fiscale"
+  ],
+  "inform on renting agreements": [
+    "droit des contrats"
+  ],
+  "inform on water supply": [
+    "approvisionnement"
+  ],
+  "informatica powercenter": [
+    "assessment center",
+    "power bi"
+  ],
+  "ingénierie pédagogique": [
+    "instructional design models",
+    "curriculum objectives",
+    "design engineering components"
+  ],
+  "inorganic chemistry": [
+    "chimie analytique",
+    "chimie inorganique",
+    "chimie organique"
+  ],
+  "insert core structures": [
+    "revit structure",
+    "tekla structures"
+  ],
+  "insert mould structures": [
+    "tekla structures"
+  ],
+  "inspect binding work": [
+    "assemblées générales"
+  ],
+  "inspect building systems": [
+    "électricité bâtiment"
+  ],
+  "inspect carrier documents": [
+    "transit douanier"
+  ],
+  "inspect construction of ships": [
+    "western blot"
+  ],
+  "inspect heavy surface mining equipment": [
+    "ciel"
+  ],
+  "inspect masonry work": [
+    "maîtrise d'ouvrage"
+  ],
+  "inspect project regulations": [
+    "conformité"
+  ],
+  "inspect tax returns": [
+    "déclarations fiscales"
+  ],
+  "inspect taxation documents": [
+    "ir"
+  ],
+  "inspire enthusiasm for nature": [
+    "ci/cd",
+    "gitlab ci",
+    "travis ci"
+  ],
+  "instagram ads": [
+    "stay up to date with social media"
+  ],
+  "install carpet gripper adhesive": [
+    "clip"
+  ],
+  "install deicing boot": [
+    "plans techniques"
+  ],
+  "install electrical equipment in vessels": [
+    "installation électrique"
+  ],
+  "install electricity meter": [
+    "électricité bâtiment"
+  ],
+  "install facade cladding": [
+    "façades"
+  ],
+  "install gas heaters": [
+    "chauffage"
+  ],
+  "install laminate floor": [
+    "m&a"
+  ],
+  "install organs": [
+    "accessibilité pmr"
+  ],
+  "install power lines": [
+    "électricité bâtiment"
+  ],
+  "install signal repeaters": [
+    "sap fi"
+  ],
+  "install spring suspension": [
+    "chai"
+  ],
+  "install structural glazing": [
+    "façades"
+  ],
+  "install tunnel segments": [
+    "béton armé"
+  ],
+  "install water purity mechanism": [
+    "levée de réserves"
+  ],
+  "install wood elements in structures": [
+    "structure bois"
+  ],
+  "installation électrique": [
+    "electrical safety regulations",
+    "manage electricity transmission system",
+    "install electrical equipment in vessels"
+  ],
+  "instructional design models": [
+    "ingénierie pédagogique"
+  ],
+  "instrumentation engineering": [
+    "instrumentation scientifique"
+  ],
+  "instrumentation equipment": [
+    "instrumentation scientifique"
+  ],
+  "instrumentation scientifique": [
+    "instrumentation engineering",
+    "instrumentation equipment",
+    "operate scientific measuring equipment"
+  ],
+  "insurance law": [
+    "droit des assurances"
+  ],
+  "integrate community outreach": [
+    "apprentissage par projet"
+  ],
+  "intellectual property law": [
+    "droit de la propriété intellectuelle"
+  ],
+  "intelligence artificielle": [
+    "ia",
+    "ml"
+  ],
+  "intensive care medicine": [
+    "soins intensifs"
+  ],
+  "interface programmation": [
+    "api"
+  ],
+  "interface utilisateur": [
+    "ui",
+    "ui/ux"
+  ],
+  "internal auditing": [
+    "audit interne"
+  ],
+  "internal risk management policy": [
+    "contrôle de gestion"
+  ],
+  "international financial reporting standards": [
+    "ifrs"
+  ],
+  "international human rights law": [
+    "droit international"
+  ],
+  "international import export regulations": [
+    "import-export"
+  ],
+  "international law": [
+    "droit international"
+  ],
+  "international organization standardization": [
+    "iso"
+  ],
+  "international tariffs": [
+    "transit douanier"
+  ],
+  "international trade": [
+    "commerce international"
+  ],
+  "international waterways": [
+    "voie veineuse"
+  ],
+  "internet governance": [
+    "dns"
+  ],
+  "interpret electrical diagrams": [
+    "schémas électriques"
+  ],
+  "interpret hematological test results": [
+    "prélèvements sanguins"
+  ],
+  "interpret urology diagnostic tests": [
+    "echo"
+  ],
+  "interview focus groups": [
+    "tableau interactif"
+  ],
+  "intracranial hypertension": [
+    "perfusions",
+    "perfusions iv",
+    "pompe à perfusion"
+  ],
+  "intravenous infusion": [
+    "perfusions",
+    "perfusions iv",
+    "pompe à perfusion",
+    "ponction veineuse"
+  ],
+  "intégration continue": [
+    "ci/cd"
+  ],
+  "inventaire": [
+    "compile detailed collection inventory",
+    "maintain inventory of airport operations",
+    "manage pawnshop inventory"
+  ],
+  "inventory management rules": [
+    "gestion des stocks"
+  ],
+  "investigate occupational injuries": [
+    "less"
+  ],
+  "ir": [
+    "diagnose brain death",
+    "sand gemstones",
+    "inspect taxation documents"
+  ],
+  "is": [
+    "gamemaker studio",
+    "oracle warehouse builder",
+    "diagnose diseases of the vascular system"
+  ],
+  "iso": [
+    "norme internationale",
+    "certification qualité",
+    "international organization standardization"
+  ],
+  "iso 14001": [
+    "pallet dimensions",
+    "implement quality management systems",
+    "food safety standards",
+    "iso 27001"
+  ],
+  "iso 22000": [
+    "food safety standards",
+    "pallet dimensions",
+    "implement quality management systems"
+  ],
+  "iso 27001": [
+    "pallet dimensions",
+    "implement quality management systems",
+    "food safety standards",
+    "iso 14001"
+  ],
+  "iso 9001": [
+    "pallet dimensions",
+    "implement quality management systems",
+    "food safety standards"
+  ],
+  "java": [
+    "java (computer programming)",
+    "jboss",
+    "spark"
+  ],
+  "java (computer programming)": [
+    "java"
+  ],
+  "javascript": [
+    "javascript framework",
+    "ajax",
+    "mocha"
+  ],
+  "javascript framework": [
+    "canva",
+    "html",
+    "html5",
+    "javascript",
+    "serverless framework"
+  ],
+  "jboss": [
+    "java",
+    "kali linux",
+    "linux"
+  ],
+  "jetpack compose": [
+    "compose music",
+    "compose playlist",
+    "typesetting machines"
+  ],
+  "joomla": [
+    "php"
+  ],
+  "journalistic principles": [
+    "classe inversée",
+    "rédaction technique"
+  ],
+  "juris data": [
+    "data warehouse",
+    "pentaho data integration",
+    "oracle data integrator"
+  ],
+  "just-in-time": [
+    "manage inventory",
+    "calculate betting target odds",
+    "position musicians"
+  ],
+  "kaizen": [
+    "continuous improvement philosophies",
+    "5s",
+    "lean"
+  ],
+  "kali": [
+    "kali linux"
+  ],
+  "kali linux": [
+    "jboss",
+    "blackarch",
+    "kali",
+    "linux"
+  ],
+  "kanban": [
+    "continuous improvement philosophies"
+  ],
+  "key performance indicators": [
+    "kpi"
+  ],
+  "kosher meat": [
+    "cash flow"
+  ],
+  "kosher slaughtering practices": [
+    "cash flow"
+  ],
+  "kpi": [
+    "indicateurs de performance",
+    "key performance indicators",
+    "indicateurs clés",
+    "kpis"
+  ],
+  "kpis": [
+    "kpi",
+    "indicateurs de performance",
+    "tableaux de bord"
+  ],
+  "laboratoire": [
+    "laboratory equipment",
+    "laboratory-based sciences",
+    "good laboratory practice"
+  ],
+  "laboratory equipment": [
+    "laboratoire"
+  ],
+  "laboratory techniques": [
+    "chromatographie en phase gazeuse"
+  ],
+  "laboratory-based sciences": [
+    "laboratoire"
+  ],
+  "landscape architecture": [
+    "plans d'architecture",
+    "revit architecture",
+    "clean architecture"
+  ],
+  "landscape design": [
+    "sage"
+  ],
+  "later": [
+    "environmental engineering",
+    "sell confectionery products",
+    "types of waste collection vehicles"
+  ],
+  "lead process optimisation": [
+    "contrôle statistique"
+  ],
+  "leadership": [
+    "adapt leadership styles in healthcare",
+    "provide leadership",
+    "leadership in nursing"
+  ],
+  "leadership in nursing": [
+    "leadership"
+  ],
+  "lean": [
+    "lean manufacturing",
+    "amélioration continue",
+    "kaizen",
+    "5s",
+    "gestion flux",
+    "lean project management",
+    "protect ict devices"
+  ],
+  "lean manufacturing": [
+    "lean project management",
+    "protect ict devices",
+    "5s",
+    "lean"
+  ],
+  "lean project management": [
+    "lean",
+    "gestion de projet",
+    "lean manufacturing"
+  ],
+  "lean six sigma": [
+    "six sigma"
+  ],
+  "learning difficulties": [
+    "apprentissage par projet",
+    "évaluation des apprentissages"
+  ],
+  "learning management systems": [
+    "applicant tracking system",
+    "blended learning",
+    "sap successfactors",
+    "système de management",
+    "évaluation des apprentissages",
+    "deep learning",
+    "machine learning",
+    "reinforcement learning",
+    "scikit-learn"
+  ],
+  "learning needs analysis": [
+    "analyse des besoins"
+  ],
+  "leather finishing technologies": [
+    "cahier des charges techniques"
+  ],
+  "lecture de plans": [
+    "teach speed reading",
+    "teach esol literacy class",
+    "identify props"
+  ],
+  "legal studies": [
+    "droit administratif",
+    "droit alimentaire",
+    "droit bancaire",
+    "droit civil",
+    "droit constitutionnel",
+    "droit des affaires",
+    "droit des assurances",
+    "droit européen",
+    "droit immobilier"
+  ],
+  "legal terminology": [
+    "express",
+    "express.js"
+  ],
+  "less": [
+    "investigate occupational injuries",
+    "educate on preventing injuries"
+  ],
+  "lever": [
+    "operate hoists",
+    "apply various lifting techniques",
+    "control cutterheads"
+  ],
+  "levée de réserves": [
+    "manage fuel inventory",
+    "monitor credit institutes",
+    "install water purity mechanism"
+  ],
+  "liaise with auditors": [
+    "normes comptables"
+  ],
+  "liaise with genetic laboratories": [
+    "génétique"
+  ],
+  "liaise with logistics management teams": [
+    "gestion des approvisionnements"
+  ],
+  "liaise with port users": [
+    "fret maritime"
+  ],
+  "liasses fiscales": [
+    "inform on fiscal duties",
+    "develop taxation policies",
+    "advise on tax policy"
+  ],
+  "lift heavy weights": [
+    "charges sociales"
+  ],
+  "linux": [
+    "jboss",
+    "kali linux",
+    "blackarch"
+  ],
+  "logistique entrepôt": [
+    "wms"
+  ],
+  "logistique internationale": [
+    "green logistics",
+    "analyse logistic needs",
+    "multimodal transport logistics"
+  ],
+  "lua": [
+    "computer programming"
+  ],
+  "m&a": [
+    "fusion acquisition",
+    "mergers acquisitions",
+    "fusions-acquisitions",
+    "assess artistic proposal",
+    "study play productions",
+    "install laminate floor"
+  ],
+  "machine learning": [
+    "e-learning software infrastructure",
+    "learning management systems",
+    "develop e-learning plan",
+    "ia",
+    "ml"
+  ],
+  "machinery products": [
+    "veille réglementaire"
+  ],
+  "maintain air conditioning systems": [
+    "climatisation"
+  ],
+  "maintain anaesthetic machinery": [
+    "réanimation"
+  ],
+  "maintain chromotography machinery": [
+    "chromatographie"
+  ],
+  "maintain concentration for long periods": [
+    "rest"
+  ],
+  "maintain database": [
+    "négociation"
+  ],
+  "maintain electromechanical equipment": [
+    "maintenance mécanique"
+  ],
+  "maintain electronic equipment": [
+    "électronique"
+  ],
+  "maintain heat sealing machinery": [
+    "normes électriques"
+  ],
+  "maintain hydraulic press": [
+    "hydraulique"
+  ],
+  "maintain internet protocol configuration": [
+    "tcp/ip"
+  ],
+  "maintain inventory of airport operations": [
+    "inventaire"
+  ],
+  "maintain nuclear reactors": [
+    "react"
+  ],
+  "maintain oil field machinery": [
+    "sass"
+  ],
+  "maintain personal hygiene standards": [
+    "hygiène hospitalière",
+    "norme nfc 15-100",
+    "normes ce",
+    "normes ifrs",
+    "normes parasismiques"
+  ],
+  "maintain pipeline coating properties": [
+    "pip"
+  ],
+  "maintain power plants": [
+    "maintenance électrique"
+  ],
+  "maintain relationship with customers": [
+    "relation client"
+  ],
+  "maintain relationship with suppliers": [
+    "négociation contractuelle",
+    "négociation fournisseurs"
+  ],
+  "maintain silk worm breeding room": [
+    "hygiène hospitalière"
+  ],
+  "maintain the exercise environment": [
+    "environnement"
+  ],
+  "maintain the security of machinery": [
+    "coordination de chantier"
+  ],
+  "maintain vehicle electrical equipment": [
+    "tableaux électriques"
+  ],
+  "maintenance logicielle": [
+    "gmao",
+    "cmms",
+    "gestion maintenance assistée ordinateur"
+  ],
+  "maintenance mécanique": [
+    "detect rail track malfunctions",
+    "carry out repair of motorcycles",
+    "maintain electromechanical equipment"
+  ],
+  "maintenance productive totale": [
+    "tpm"
+  ],
+  "maintenance électrique": [
+    "electrical safety regulations",
+    "maintain power plants",
+    "power plant instrumentation"
+  ],
+  "maison retraite": [
+    "ehpad"
+  ],
+  "make": [
+    "filemaker (database management systems)",
+    "gamemaker studio",
+    "calculate tote price"
+  ],
+  "make abstracts": [
+    "synthèse chimique"
+  ],
+  "make accurate drawings": [
+    "dessins techniques"
+  ],
+  "make recommendations for repairs": [
+    "problem solving"
+  ],
+  "make time-critical decisions": [
+    "soins critiques"
+  ],
+  "manage a healthcare unit budget": [
+    "gestion budgétaire",
+    "gestion budgétaire chantier"
+  ],
+  "manage a warehouse management system": [
+    "gestion des entrepôts"
+  ],
+  "manage acute pain": [
+    "gestion douleur"
+  ],
+  "manage administrative systems": [
+    "droit administratif"
+  ],
+  "manage advocacy strategies": [
+    "formulation"
+  ],
+  "manage animal hygiene": [
+    "protocoles d'hygiène"
+  ],
+  "manage archive users guidelines": [
+    "hive"
+  ],
+  "manage artistic project": [
+    "apprentissage par projet"
+  ],
+  "manage aspects of airspace management": [
+    "gestion de classe"
+  ],
+  "manage athletes touring abroad": [
+    "optimisation des tournées"
+  ],
+  "manage bioreactors": [
+    "culture cellulaire"
+  ],
+  "manage cash flow": [
+    "trésorerie"
+  ],
+  "manage cash transportation": [
+    "fonds de roulement",
+    "transport"
+  ],
+  "manage corrective actions": [
+    "actions correctives"
+  ],
+  "manage digital documents": [
+    "account management",
+    "assessment center",
+    "community management",
+    "google tag manager",
+    "management",
+    "clip",
+    "eclipse"
+  ],
+  "manage discarded products": [
+    "bonnes pratiques de fabrication"
+  ],
+  "manage electricity transmission system": [
+    "installation électrique"
+  ],
+  "manage email hosting service": [
+    "amazon web services"
+  ],
+  "manage emergency care situations": [
+    "soins d'urgence"
+  ],
+  "manage environmental impact": [
+    "environnement",
+    "mesures physiques"
+  ],
+  "manage environmental management system": [
+    "account management",
+    "community management",
+    "management",
+    "management de la qualité",
+    "système de management"
+  ],
+  "manage farm products": [
+    "contrats commerciaux"
+  ],
+  "manage forests": [
+    "sage 100 gestion commerciale"
+  ],
+  "manage freight payment methods": [
+    "douane",
+    "dédouanement",
+    "fret aérien"
+  ],
+  "manage fuel inventory": [
+    "levée de réserves"
+  ],
+  "manage gambling hospitality": [
+    "audit interne"
+  ],
+  "manage gaming cash desk": [
+    "contrôle de gestion"
+  ],
+  "manage geotechnical staff": [
+    "géotechnique"
+  ],
+  "manage groups outdoors": [
+    "active directory"
+  ],
+  "manage health and safety": [
+    "assemblées générales"
+  ],
+  "manage healthcare staff": [
+    "gestion équipement médical"
+  ],
+  "manage ict data architecture": [
+    "revit architecture",
+    "clean architecture"
+  ],
+  "manage ict virtualisation machines": [
+    "vmware"
+  ],
+  "manage import export licenses": [
+    "import-export"
+  ],
+  "manage indoor tanning sessions": [
+    "sea"
+  ],
+  "manage inventory": [
+    "just-in-time"
+  ],
+  "manage legal personal issues": [
+    "droit alimentaire",
+    "droit privé"
+  ],
+  "manage licensing fees": [
+    "droit de la propriété intellectuelle"
+  ],
+  "manage localisation": [
+    "gestion des fournisseurs"
+  ],
+  "manage outdoor resources": [
+    "topographie"
+  ],
+  "manage packaging material": [
+    "conditionnement",
+    "enseignement primaire"
+  ],
+  "manage pain for veterinary patients": [
+    "analgésie"
+  ],
+  "manage pawnshop inventory": [
+    "inventaire"
+  ],
+  "manage payroll reports": [
+    "paie"
+  ],
+  "manage periodic calibration plans": [
+    "étalonnage"
+  ],
+  "manage production systems": [
+    "planification de la production"
+  ],
+  "manage quantitative data": [
+    "pcr quantitative"
+  ],
+  "manage research and development projects": [
+    "r"
+  ],
+  "manage secondary school department": [
+    "enseignement secondaire"
+  ],
+  "manage securities": [
+    "titration"
+  ],
+  "manage securities trading": [
+    "titration"
+  ],
+  "manage security clearance": [
+    "habilitation b1v",
+    "habilitation b2v",
+    "habilitation bc",
+    "habilitation br",
+    "habilitation électrique"
+  ],
+  "manage stock rotation": [
+    "fonds de roulement"
+  ],
+  "manage tender processes": [
+    "appels d'offres"
+  ],
+  "manage the customer experience": [
+    "relation client"
+  ],
+  "manage volunteers": [
+    "recrutement"
+  ],
+  "manage warehouse operations": [
+    "gestion des entrepôts",
+    "gestion des stocks"
+  ],
+  "manage yield": [
+    "3ds max"
+  ],
+  "management": [
+    "manage environmental management system",
+    "manage digital documents",
+    "management department processes"
+  ],
+  "management de la qualité": [
+    "manage environmental management system",
+    "management department processes"
+  ],
+  "management department processes": [
+    "account management",
+    "community management",
+    "management",
+    "management de la qualité"
+  ],
+  "management soignant": [
+    "cadre de santé"
+  ],
+  "manufacturing of heating equipment": [
+    "chauffage"
+  ],
+  "manufacturing of metal structures": [
+    "charpente métallique",
+    "revit structure",
+    "tekla structures"
+  ],
+  "manufacturing plant equipment": [
+    "react",
+    "react native"
+  ],
+  "maquette numérique": [
+    "bim"
+  ],
+  "market participants": [
+    "rspec"
+  ],
+  "marketing management": [
+    "sage 100 gestion commerciale"
+  ],
+  "marketing mix": [
+    "affiliate marketing",
+    "content marketing",
+    "email marketing",
+    "inbound marketing",
+    "influencer marketing",
+    "salesforce marketing cloud"
+  ],
+  "marklogic": [
+    "hadoop"
+  ],
+  "mass customisation": [
+    "gestion des approvisionnements"
+  ],
+  "mass spectrometry": [
+    "plans de masse",
+    "spectrométrie de masse"
+  ],
+  "massage types": [
+    "sage"
+  ],
+  "match frames to pictures": [
+    "tableaux électriques"
+  ],
+  "materials science": [
+    "résistance des matériaux"
+  ],
+  "maven": [
+    "apache maven"
+  ],
+  "maçonnerie": [
+    "build garden masonry",
+    "blast masonry",
+    "operate masonry power saw"
+  ],
+  "maîtrise d'ouvrage": [
+    "move completed works",
+    "inspect masonry work",
+    "examine civil structures",
+    "maîtrise d'œuvre"
+  ],
+  "maîtrise d'œuvre": [
+    "control animals in distress",
+    "exercise self-control",
+    "deal with killing animals processes",
+    "maîtrise d'ouvrage"
+  ],
+  "maîtrise oeuvre": [
+    "moe"
+  ],
+  "maîtrise ouvrage": [
+    "moa"
+  ],
+  "measure the strength of distillation": [
+    "safe"
+  ],
+  "medical genetics": [
+    "génétique"
+  ],
+  "meet contract specifications": [
+    "contrats de travail"
+  ],
+  "meet picking standards": [
+    "norme nfc 15-100",
+    "normes ce",
+    "normes ifrs",
+    "normes parasismiques"
+  ],
+  "meet the requirements of legal bodies": [
+    "veille juridique"
+  ],
+  "menuiserie": [
+    "carpentry",
+    "woodworking tools",
+    "woodworking processes"
+  ],
+  "mergers acquisitions": [
+    "m&a"
+  ],
+  "mergers and acquisitions": [
+    "consolidation",
+    "fusion-acquisition"
+  ],
+  "mesures physiques": [
+    "manage environmental impact",
+    "perform gravity measurements",
+    "analyse client's physical condition"
+  ],
+  "meta ads": [
+    "metasploit",
+    "penetration testing tool",
+    "tend drop forging hammer"
+  ],
+  "metal thermal conductivity": [
+    "réglementation thermique"
+  ],
+  "metasploit": [
+    "penetration testing tool",
+    "meta ads"
+  ],
+  "metrology": [
+    "métrologie"
+  ],
+  "microbiologie": [
+    "microbiology-bacteriology",
+    "parasitology",
+    "microbiology of fresh milk"
+  ],
+  "microbiologie alimentaire": [
+    "microbiology-bacteriology",
+    "parasitology",
+    "microbiology of fresh milk"
+  ],
+  "microbiology of fresh milk": [
+    "microbiologie",
+    "microbiologie alimentaire"
+  ],
+  "microbiology-bacteriology": [
+    "microbiologie",
+    "microbiologie alimentaire"
+  ],
+  "micromechanics": [
+    "sap mm"
+  ],
+  "microsensors": [
+    "sap mm"
+  ],
+  "microsoft access": [
+    "microsoft dynamics"
+  ],
+  "microsoft dynamics": [
+    "microsoft access",
+    "microsoft visio",
+    "database management systems"
+  ],
+  "microsoft visio": [
+    "microsoft dynamics"
+  ],
+  "minerals laws": [
+    "permis de construire"
+  ],
+  "ml": [
+    "machine learning",
+    "apprentissage automatique",
+    "intelligence artificielle"
+  ],
+  "moa": [
+    "maîtrise ouvrage",
+    "direction projet",
+    "client maître ouvrage"
+  ],
+  "mobile device software frameworks": [
+    "api platform",
+    "gemini api",
+    "openai api"
+  ],
+  "mobile operating systems": [
+    "ubuntu"
+  ],
+  "mocha": [
+    "javascript"
+  ],
+  "moderate in negotiations": [
+    "négociation syndicale"
+  ],
+  "moe": [
+    "maîtrise oeuvre",
+    "direction travaux",
+    "coordination chantier"
+  ],
+  "molecular and cellular immunology": [
+    "biologie moléculaire",
+    "culture cellulaire",
+    "immunologie"
+  ],
+  "molecular biology": [
+    "biologie moléculaire"
+  ],
+  "monitor activities": [
+    "organisation"
+  ],
+  "monitor airworthiness certifications": [
+    "évaluation et certification"
+  ],
+  "monitor biomedical equipment stock": [
+    "gestion des stocks",
+    "gestion équipement médical"
+  ],
+  "monitor credit institutes": [
+    "levée de réserves",
+    "trésorerie"
+  ],
+  "monitor extraction logging operations": [
+    "re 2020",
+    "generative ai"
+  ],
+  "monitor financial accounts": [
+    "reporting financier"
+  ],
+  "monitor food production documentation": [
+    "contrôle qualité alimentaire"
+  ],
+  "monitor forest health": [
+    "sanitaire"
+  ],
+  "monitor geotechnical structures": [
+    "géotechnique"
+  ],
+  "monitor manufacturing quality standards": [
+    "normes ce"
+  ],
+  "monitor milk production deviations": [
+    "non-conformités"
+  ],
+  "monitor mine costs": [
+    "contrôle des coûts"
+  ],
+  "monitor oil rig costs": [
+    "contrôle des coûts"
+  ],
+  "monitor pregnancy": [
+    "gros œuvre"
+  ],
+  "monitor service users' health": [
+    "monitoring cardiaque"
+  ],
+  "monitor tank thermometer": [
+    "due diligence"
+  ],
+  "monitor trends in interior design": [
+    "design patterns"
+  ],
+  "monitor utility equipment": [
+    "électricité industrielle"
+  ],
+  "monitor well costs": [
+    "contrôle des coûts"
+  ],
+  "monitoring cardiaque": [
+    "diagnose heart conditions",
+    "follow-up patients with heart attack",
+    "monitor service users' health"
+  ],
+  "motor vehicle parts drawings": [
+    "dessins techniques"
+  ],
+  "move completed works": [
+    "maîtrise d'ouvrage"
+  ],
+  "ms project": [
+    "tune a projector",
+    "operate projector",
+    "operate follow spots"
+  ],
+  "multimodal transport logistics": [
+    "erp logistique",
+    "logistique internationale"
+  ],
+  "music literature": [
+    "revue de littérature"
+  ],
+  "music therapy processes": [
+    "entretien professionnel",
+    "éducation patient"
+  ],
+  "mysql": [
+    "database management systems"
+  ],
+  "mécanique auto": [
+    "operate amusement rides",
+    "automotive engineering",
+    "screw types"
+  ],
+  "mécanique industrielle": [
+    "operate industrial equipment",
+    "assess impact of industrial activities",
+    "feed raw material into plant machinery"
+  ],
+  "mécanique quantique": [
+    "quantum mechanics",
+    "nanoelectronics",
+    "quantum optics"
+  ],
+  "métrologie": [
+    "metrology"
+  ],
+  "métrés": [
+    "test oil samples",
+    "implement soap formula"
+  ],
+  "nanoelectronics": [
+    "mécanique quantique"
+  ],
+  "national waterways": [
+    "fret maritime"
+  ],
+  "natural language processing": [
+    "nlp"
+  ],
+  "navigate european inland waterways": [
+    "voie veineuse"
+  ],
+  "nda": [
+    "accord confidentialité",
+    "non-disclosure agreement",
+    "confidentialité"
+  ],
+  "negotiate employment agreements": [
+    "contrats de travail"
+  ],
+  "negotiate exploitation rights": [
+    "droit public"
+  ],
+  "negotiate lawyer's fee": [
+    "hono"
+  ],
+  "negotiate sales contracts": [
+    "contrats commerciaux"
+  ],
+  "negotiate supplier arrangements": [
+    "contrats d'achat"
+  ],
+  "negotiate terms with suppliers": [
+    "négociation fournisseurs"
+  ],
+  "neon": [
+    "examine the new-born infant",
+    "newborn care",
+    "neonatology"
+  ],
+  "neonatology": [
+    "neon"
+  ],
+  "neoplasia": [
+    "biologie cellulaire",
+    "culture cellulaire"
+  ],
+  "neuroanatomy of animals": [
+    "analyse sensorielle"
+  ],
+  "new relic": [
+    "newsletter analysis"
+  ],
+  "newborn care": [
+    "neon"
+  ],
+  "newsletter analysis": [
+    "analyses microbiologiques",
+    "new relic"
+  ],
+  "nlp": [
+    "traitement langage naturel",
+    "natural language processing",
+    "text mining"
+  ],
+  "nmap": [
+    "penetration testing tool"
+  ],
+  "node.js": [
+    "cast cell covers",
+    "collect aquatic resources",
+    "battery chemistry"
+  ],
+  "non-conformités": [
+    "monitor milk production deviations",
+    "provide advice on breaches of regulation",
+    "operate metal contaminants detector"
+  ],
+  "non-disclosure agreement": [
+    "nda"
+  ],
+  "norme internationale": [
+    "iso"
+  ],
+  "norme nfc 15-100": [
+    "meet picking standards",
+    "maintain personal hygiene standards"
+  ],
+  "normes ce": [
+    "meet picking standards",
+    "monitor manufacturing quality standards",
+    "maintain personal hygiene standards"
+  ],
+  "normes comptables": [
+    "check accounting records",
+    "liaise with auditors",
+    "draft accounting procedures"
+  ],
+  "normes comptables américaines": [
+    "gaap"
+  ],
+  "normes comptables internationales": [
+    "ifrs"
+  ],
+  "normes haccp": [
+    "food safety standards",
+    "assess haccp implementation in plants",
+    "apply haccp",
+    "haccp"
+  ],
+  "normes ifrs": [
+    "meet picking standards",
+    "maintain personal hygiene standards"
+  ],
+  "normes parasismiques": [
+    "meet picking standards",
+    "maintain personal hygiene standards"
+  ],
+  "normes électriques": [
+    "electrical safety regulations",
+    "maintain heat sealing machinery",
+    "electric drives"
+  ],
+  "nose": [
+    "zoonotic diseases",
+    "apply hypno-psychotherapy"
+  ],
+  "nosql": [
+    "sql",
+    "pl/sql"
+  ],
+  "notify supervisor": [
+    "problem solving"
+  ],
+  "notion": [
+    "promote sustainability",
+    "concurrent estate",
+    "biosecurity"
+  ],
+  "nuclear energy": [
+    "react",
+    "react native",
+    "react query"
+  ],
+  "numerical sequences": [
+    "codes juridiques"
+  ],
+  "nx": [
+    "operate railway control panels"
+  ],
+  "négociation": [
+    "perform political negotiation",
+    "maintain database",
+    "handle mergers and acquisitions"
+  ],
+  "négociation contractuelle": [
+    "maintain relationship with suppliers",
+    "perform contract compliance audits",
+    "handle tour contract details",
+    "négociation syndicale"
+  ],
+  "négociation fournisseurs": [
+    "identify suppliers",
+    "maintain relationship with suppliers",
+    "negotiate terms with suppliers"
+  ],
+  "négociation syndicale": [
+    "trade union regulations",
+    "moderate in negotiations",
+    "prepare paychecks",
+    "négociation contractuelle"
+  ],
+  "objective-c": [
+    "provide objective assessments of calls",
+    "identify with the company's goals",
+    "c",
+    "c#",
+    "c++"
+  ],
+  "observe shots": [
+    "vue"
+  ],
+  "observe teaching activities": [
+    "didactique"
+  ],
+  "octopus deploy": [
+    "salesforce marketing cloud",
+    "asp.net",
+    "google cloud",
+    "google cloud functions"
+  ],
+  "offer financial services": [
+    "reporting financier"
+  ],
+  "office administration": [
+    "procédure administrative"
+  ],
+  "officiate civil partnerships": [
+    "civil 3d"
+  ],
+  "olap": [
+    "implement data warehousing techniques",
+    "online analytical processing"
+  ],
+  "online analytical processing": [
+    "olap"
+  ],
+  "openai api": [
+    "design application interfaces",
+    "owasp zap",
+    "mobile device software frameworks"
+  ],
+  "opencv": [
+    "computer programming"
+  ],
+  "openedge advanced business language": [
+    "business plan",
+    "facebook business manager"
+  ],
+  "operate 3d computer graphics software": [
+    "blender"
+  ],
+  "operate a heat treatment process": [
+    "réglementation thermique"
+  ],
+  "operate a lighting console": [
+    "google search console"
+  ],
+  "operate amusement rides": [
+    "mécanique auto"
+  ],
+  "operate broadcast equipment": [
+    "stable diffusion"
+  ],
+  "operate climate control": [
+    "climatisation"
+  ],
+  "operate core drilling equipment": [
+    "teams for education"
+  ],
+  "operate drilling jumbo": [
+    "teams for education"
+  ],
+  "operate follow spots": [
+    "ms project"
+  ],
+  "operate heart-lung machines": [
+    "réanimation cardio-pulmonaire"
+  ],
+  "operate hoists": [
+    "lever"
+  ],
+  "operate industrial equipment": [
+    "mécanique industrielle"
+  ],
+  "operate maritime communication equipment": [
+    "communication"
+  ],
+  "operate masonry power saw": [
+    "maçonnerie"
+  ],
+  "operate material handling equipment": [
+    "assemblées générales"
+  ],
+  "operate metal contaminants detector": [
+    "non-conformités"
+  ],
+  "operate nail gun": [
+    "électromagnétisme"
+  ],
+  "operate optical equipment": [
+    "optique"
+  ],
+  "operate optical measuring equipment": [
+    "vertex ai"
+  ],
+  "operate production drilling machine": [
+    "teams for education"
+  ],
+  "operate projector": [
+    "ms project"
+  ],
+  "operate rail grinder": [
+    "rails",
+    "ruby on rails"
+  ],
+  "operate rail-flaw-detection machine": [
+    "rails"
+  ],
+  "operate railway control panels": [
+    "ifs",
+    "azure functions",
+    "nx"
+  ],
+  "operate record press": [
+    "hono"
+  ],
+  "operate scientific measuring equipment": [
+    "instrumentation scientifique"
+  ],
+  "operate seismic equipment": [
+    "droits d'enregistrement"
+  ],
+  "operate water-heating equipment": [
+    "chauffage"
+  ],
+  "optical character recognition software": [
+    "rt 2012",
+    "sap sd"
+  ],
+  "optics": [
+    "optique"
+  ],
+  "optimisation des tournées": [
+    "manage athletes touring abroad",
+    "coordinate performance tours",
+    "search engine optimisation"
+  ],
+  "optimisation fiscale": [
+    "develop taxation policies",
+    "inform on fiscal duties",
+    "search engine optimisation"
+  ],
+  "optique": [
+    "optics",
+    "quantum optics",
+    "operate optical equipment"
+  ],
+  "oracle": [
+    "database management systems",
+    "oracle relational database",
+    "oracle warehouse builder",
+    "erp"
+  ],
+  "oracle data integrator": [
+    "juris data",
+    "oracle scm"
+  ],
+  "oracle relational database": [
+    "oracle",
+    "oracle scm"
+  ],
+  "oracle scm": [
+    "oracle relational database",
+    "oracle warehouse builder",
+    "oracle data integrator"
+  ],
+  "oracle warehouse builder": [
+    "is",
+    "oracle",
+    "oracle scm",
+    "data warehouse"
+  ],
+  "order management": [
+    "adv"
+  ],
+  "organic chemistry": [
+    "chimie organique",
+    "carbon"
+  ],
+  "organisation": [
+    "represent the organisation",
+    "monitor activities",
+    "adhere to organisational guidelines"
+  ],
+  "organisation poste travail": [
+    "5s"
+  ],
+  "organise compositions": [
+    "redis"
+  ],
+  "organise parts storage": [
+    "gros œuvre"
+  ],
+  "otorhinolaryngologic conditions": [
+    "rhino"
+  ],
+  "otorhinolaryngology": [
+    "rhino"
+  ],
+  "oversee animal management": [
+    "gestion fifo"
+  ],
+  "oversee construction project": [
+    "permis de construire",
+    "plans d'exécution"
+  ],
+  "oversee rehabilitation process": [
+    "habilitation b1v",
+    "habilitation b2v",
+    "habilitation bc",
+    "habilitation br"
+  ],
+  "owasp": [
+    "owasp zap"
+  ],
+  "owasp zap": [
+    "api platform",
+    "gemini api",
+    "openai api",
+    "owasp",
+    "rest"
+  ],
+  "p&l": [
+    "compte de résultat",
+    "profit and loss",
+    "résultat net"
+  ],
+  "package purchases in bags": [
+    "achats",
+    "gestion des achats"
+  ],
+  "packaging engineering": [
+    "conditionnement"
+  ],
+  "packer": [
+    "coordinate advertising campaigns"
+  ],
+  "paie": [
+    "manage payroll reports",
+    "prepare paychecks",
+    "allocate paychecks"
+  ],
+  "pallet dimensions": [
+    "iso 14001",
+    "iso 22000",
+    "iso 27001",
+    "iso 9001"
+  ],
+  "palliative care": [
+    "soins palliatifs"
+  ],
+  "palliative settings": [
+    "soins palliatifs"
+  ],
+  "pansements": [
+    "apply wound dressings",
+    "carry out wound care"
+  ],
+  "parasitology": [
+    "microbiologie",
+    "microbiologie alimentaire"
+  ],
+  "parcours d'intégration": [
+    "complete patient journey records",
+    "construct greens and grounds",
+    "execute integration testing"
+  ],
+  "participate in governmental tenders": [
+    "appels d'offres"
+  ],
+  "patient autonomy": [
+    "autonomie"
+  ],
+  "patient record storage": [
+    "dossier patient électronique"
+  ],
+  "pcr quantitative": [
+    "manage quantitative data",
+    "handle touristic quantitative data",
+    "conduct quantitative research"
+  ],
+  "pedagogy": [
+    "pédagogie"
+  ],
+  "peinture": [
+    "filter paint",
+    "clean painting equipment",
+    "define set painting methods"
+  ],
+  "penetration testing tool": [
+    "meta ads",
+    "système de management",
+    "burp suite",
+    "cisco packet tracer",
+    "metasploit",
+    "nmap"
+  ],
+  "pentaho data integration": [
+    "juris data",
+    "data warehouse"
+  ],
+  "perform adjustments as the work evolves": [
+    "bim collaborate"
+  ],
+  "perform business research": [
+    "développement commercial"
+  ],
+  "perform coffee tastings": [
+    "dégustation"
+  ],
+  "perform contract compliance audits": [
+    "conformité",
+    "négociation contractuelle"
+  ],
+  "perform cost accounting activities": [
+    "comptabilité analytique"
+  ],
+  "perform drainage work": [
+    "conduite de travaux"
+  ],
+  "perform euthanasia on animals": [
+    "sap s/4hana"
+  ],
+  "perform food safety checks": [
+    "réglementation alimentaire"
+  ],
+  "perform gravity measurements": [
+    "mesures physiques"
+  ],
+  "perform improvisation": [
+    "github actions"
+  ],
+  "perform media outlets research": [
+    "plu"
+  ],
+  "perform military operations": [
+    "enseignement supérieur"
+  ],
+  "perform patient activity analyses": [
+    "analyses microbiologiques"
+  ],
+  "perform political negotiation": [
+    "négociation"
+  ],
+  "perform quality audits": [
+    "audit qualité"
+  ],
+  "perform software unit testing": [
+    "vs code"
+  ],
+  "perform stock valuation": [
+    "analyse financière"
+  ],
+  "perform tungsten inert gas welding": [
+    "soudure tig"
+  ],
+  "perform venepuncture procedures": [
+    "ponction veineuse",
+    "voie veineuse"
+  ],
+  "perform virological test": [
+    "virologie"
+  ],
+  "perfusions": [
+    "prepare intravenous packs",
+    "intravenous infusion",
+    "intracranial hypertension"
+  ],
+  "perfusions iv": [
+    "prepare intravenous packs",
+    "intravenous infusion",
+    "intracranial hypertension"
+  ],
+  "perl": [
+    "cultured pearls",
+    "assemble jewellery parts"
+  ],
+  "permis de construire": [
+    "prepare building permit applications",
+    "minerals laws",
+    "oversee construction project"
+  ],
+  "personal development": [
+    "talent acquisition"
+  ],
+  "personnel": [
+    "rh"
+  ],
+  "php": [
+    "drupal",
+    "joomla",
+    "html5"
+  ],
+  "physiology of hearing": [
+    "audit externe"
+  ],
+  "pip": [
+    "maintain pipeline coating properties",
+    "survey sites for pipeline installation",
+    "produce smoking pipe parts"
+  ],
+  "pipeline": [
+    "ci/cd"
+  ],
+  "pl/sql": [
+    "sql",
+    "nosql",
+    "database management systems"
+  ],
+  "place gypsum blocks": [
+    "charpente"
+  ],
+  "plan audiovisual recording": [
+    "droits d'enregistrement"
+  ],
+  "plan d'expérience": [
+    "execute conversion testing",
+    "plan music therapy sessions",
+    "advise on lesson plans"
+  ],
+  "plan de formation": [
+    "develop e-learning plan",
+    "develop outreach training plans",
+    "create floor plan template"
+  ],
+  "plan haccp": [
+    "assess haccp implementation in plants",
+    "apply haccp",
+    "apply risk management processes"
+  ],
+  "plan local d'urbanisme": [
+    "zoning codes",
+    "implement biodiversity action plans",
+    "assist with plant propagation"
+  ],
+  "plan marketing campaign": [
+    "social media marketing"
+  ],
+  "plan mine operations": [
+    "ciel"
+  ],
+  "plan music therapy sessions": [
+    "plan d'expérience"
+  ],
+  "plan product management": [
+    "gestion prévisionnelle emplois"
+  ],
+  "plan retail space": [
+    "vente"
+  ],
+  "plan road fleet maintenance": [
+    "entretien annuel"
+  ],
+  "plan schedule": [
+    "planning travaux"
+  ],
+  "plan shots": [
+    "vue"
+  ],
+  "plan teamwork": [
+    "travail en équipe"
+  ],
+  "plan tiling": [
+    "carrelage"
+  ],
+  "planification": [
+    "dosimetric planning",
+    "assist in library facility planning",
+    "aquaculture production planning software"
+  ],
+  "planification de la production": [
+    "aquaculture production planning software",
+    "manage production systems",
+    "control textile process"
+  ],
+  "planification industrielle commerciale": [
+    "s&op"
+  ],
+  "planning travaux": [
+    "follow work schedule",
+    "plan schedule",
+    "adhere to transportation work schedule"
+  ],
+  "plans d'architecture": [
+    "develop architectural plans",
+    "define software architecture",
+    "landscape architecture"
+  ],
+  "plans d'exécution": [
+    "oversee construction project",
+    "implement operational business plans",
+    "evaluate benefit plans"
+  ],
+  "plans de coupe": [
+    "protect trees"
+  ],
+  "plans de masse": [
+    "mass spectrometry",
+    "determine monetary policy actions",
+    "aerodynamics"
+  ],
+  "plans techniques": [
+    "create technical plans",
+    "align components",
+    "install deicing boot",
+    "dao"
+  ],
+  "play framework": [
+    "ajax framework",
+    "sports ethics",
+    "samurai web testing framework"
+  ],
+  "plomberie": [
+    "plumbing tools",
+    "sell hardware",
+    "repair plumbing systems"
+  ],
+  "plu": [
+    "draft legislation",
+    "sanding grits",
+    "perform media outlets research"
+  ],
+  "plumbing tools": [
+    "plomberie"
+  ],
+  "pmsi": [
+    "programme médicalisation systèmes information",
+    "codage médical",
+    "drg"
+  ],
+  "politics": [
+    "statuts de société"
+  ],
+  "polymer chemistry": [
+    "chimie des matériaux",
+    "synthèse chimique"
+  ],
+  "pompe à perfusion": [
+    "intravenous infusion",
+    "intracranial hypertension",
+    "clinical perfusion"
+  ],
+  "ponction veineuse": [
+    "perform venepuncture procedures",
+    "diagnose diseases of the vascular system",
+    "intravenous infusion"
+  ],
+  "position musicians": [
+    "just-in-time"
+  ],
+  "position outriggers": [
+    "event-driven"
+  ],
+  "post-process medical images": [
+    "soins post-opératoires"
+  ],
+  "post-secondary school procedures": [
+    "accompagnement pédagogique"
+  ],
+  "postgres": [
+    "postgresql"
+  ],
+  "postgresql": [
+    "postgres"
+  ],
+  "postpartum period": [
+    "six sigma"
+  ],
+  "power bi": [
+    "audio editing software",
+    "informatica powercenter",
+    "computer programming"
+  ],
+  "power plant instrumentation": [
+    "maintenance électrique"
+  ],
+  "powershell": [
+    "computer programming"
+  ],
+  "practical lexicography": [
+    "rédaction d'actes",
+    "rédaction juridique",
+    "rédaction scientifique"
+  ],
+  "pre-flight procedures for ifr flights": [
+    "ifrs"
+  ],
+  "prepare audit activities": [
+    "audit",
+    "audit externe",
+    "évaluation et certification"
+  ],
+  "prepare board for soldering": [
+    "soudure"
+  ],
+  "prepare building permit applications": [
+    "permis de construire"
+  ],
+  "prepare deck equipment": [
+    "western blot"
+  ],
+  "prepare exhibition programs": [
+    "expo"
+  ],
+  "prepare financial auditing reports": [
+    "audit financier"
+  ],
+  "prepare financial projections": [
+    "analyse financière"
+  ],
+  "prepare health documentation": [
+    "sanitaire"
+  ],
+  "prepare intravenous packs": [
+    "perfusions",
+    "perfusions iv"
+  ],
+  "prepare oils": [
+    "suivi individualisé"
+  ],
+  "prepare paychecks": [
+    "négociation syndicale",
+    "paie"
+  ],
+  "prepare planting area": [
+    "sem"
+  ],
+  "prepare purchasing reportings": [
+    "achats",
+    "gestion des achats"
+  ],
+  "prepare tax returns forms": [
+    "déclarations fiscales"
+  ],
+  "prepare trial accounting balances": [
+    "commissariat aux comptes",
+    "consolidation comptes"
+  ],
+  "prescribe healthcare products": [
+    "protocoles de soins"
+  ],
+  "press law": [
+    "bert"
+  ],
+  "primary school procedures": [
+    "enseignement primaire"
+  ],
+  "prince2 project management": [
+    "gestion de projet"
+  ],
+  "problem solving": [
+    "make recommendations for repairs",
+    "notify supervisor",
+    "diagnose education problems"
+  ],
+  "procedural law": [
+    "procédure civile",
+    "procédure pénale"
+  ],
+  "process booking": [
+    "hono"
+  ],
+  "process qualitative information": [
+    "tableau"
+  ],
+  "procédure administrative": [
+    "office administration",
+    "support people with hearing impairment",
+    "execute administration"
+  ],
+  "procédure civile": [
+    "civil process order",
+    "procedural law",
+    "apply military aviation regulations"
+  ],
+  "procédure pénale": [
+    "procedural law",
+    "crime victims' needs",
+    "forensic pathology"
+  ],
+  "procédés agroalimentaires": [
+    "apply food technology principles",
+    "food and beverage industry",
+    "types of metal manufacturing processes"
+  ],
+  "produce smoking pipe parts": [
+    "pip"
+  ],
+  "produce textile designs": [
+    "cisco packet tracer"
+  ],
+  "product comprehension": [
+    "veille réglementaire"
+  ],
+  "profit and loss": [
+    "p&l"
+  ],
+  "progiciel gestion intégré": [
+    "erp",
+    "sap"
+  ],
+  "programme médicalisation systèmes information": [
+    "pmsi"
+  ],
+  "project management principles": [
+    "gestion de projet",
+    "gestion du contentieux",
+    "gestion fifo"
+  ],
+  "promote agricultural policies": [
+    "développement durable"
+  ],
+  "promote free trade": [
+    "droit de la concurrence"
+  ],
+  "promote social awareness": [
+    "relations sociales"
+  ],
+  "promote sustainability": [
+    "notion"
+  ],
+  "promote sustainable management": [
+    "gestion du contentieux"
+  ],
+  "propagate plants": [
+    "generative ai"
+  ],
+  "property law": [
+    "droit des contrats"
+  ],
+  "prospect new regional contracts": [
+    "appels d'offres"
+  ],
+  "prospection": [
+    "canvassing methods",
+    "telemarketing",
+    "conduct environmental site assessments"
+  ],
+  "protect ict devices": [
+    "lean",
+    "lean manufacturing",
+    "firewall"
+  ],
+  "protect trees": [
+    "plans de coupe"
+  ],
+  "protection données": [
+    "gdpr"
+  ],
+  "protection données personnelles": [
+    "rgpd"
+  ],
+  "protocoles d'hygiène": [
+    "manage animal hygiene",
+    "establish site security routines"
+  ],
+  "protocoles de soins": [
+    "hospitalised animal nursing care",
+    "follow clinical guidelines",
+    "prescribe healthcare products"
+  ],
+  "protocoles expérimentaux": [
+    "drive motor vehicle prototypes",
+    "establish site security routines",
+    "conduct performance tests"
+  ],
+  "provide advice on breaches of regulation": [
+    "actions correctives",
+    "conseil juridique",
+    "non-conformités"
+  ],
+  "provide conservation advice": [
+    "entretien professionnel"
+  ],
+  "provide customer follow-up services": [
+    "suivi de chantier"
+  ],
+  "provide customised products": [
+    "suivi individualisé"
+  ],
+  "provide first aid": [
+    "réanimation cardio-pulmonaire"
+  ],
+  "provide food labelling expertise": [
+    "étiquetage"
+  ],
+  "provide leadership": [
+    "leadership"
+  ],
+  "provide legal advice": [
+    "conseil juridique"
+  ],
+  "provide legal advice on investments": [
+    "conseil juridique",
+    "rédaction juridique"
+  ],
+  "provide objective assessments of calls": [
+    "objective-c"
+  ],
+  "provide palliative care": [
+    "soins palliatifs"
+  ],
+  "provide stabilisation care in emergency": [
+    "réanimation cardio-pulmonaire"
+  ],
+  "provide training on e-learning": [
+    "e-learning"
+  ],
+  "proxy servers": [
+    "burp suite"
+  ],
+  "prélèvements sanguins": [
+    "blood collection on babies",
+    "interpret hematological test results",
+    "techniques of blood-sampling"
+  ],
+  "présentation": [
+    "deliver visual presentation of data",
+    "conduct public presentations",
+    "theatre techniques"
+  ],
+  "public law": [
+    "droit des sociétés",
+    "droit public"
+  ],
+  "public service concession": [
+    "droit privé",
+    "droit public"
+  ],
+  "publications scientifiques": [
+    "synthesise research publications",
+    "develop scientific theories",
+    "compile data for navigation publications"
+  ],
+  "publicité digitale": [
+    "cpc"
+  ],
+  "publish academic research": [
+    "enseignement supérieur"
+  ],
+  "python": [
+    "python (computer programming)"
+  ],
+  "python (computer programming)": [
+    "python"
+  ],
+  "pédagogie": [
+    "pedagogy",
+    "apply freinet teaching strategies",
+    "social pedagogy"
+  ],
+  "pédagogie active": [
+    "apply freinet teaching strategies",
+    "types of music therapies",
+    "social pedagogy"
+  ],
+  "pédagogie différenciée": [
+    "apply freinet teaching strategies",
+    "social pedagogy",
+    "theatre pedagogy"
+  ],
+  "qhse": [
+    "qualité hygiène sécurité environnement",
+    "hse",
+    "quality health safety"
+  ],
+  "qt": [
+    "tools for ict test automation"
+  ],
+  "quality control systems": [
+    "contrôle qualité",
+    "doe"
+  ],
+  "quality health safety": [
+    "qhse"
+  ],
+  "qualité": [
+    "six sigma"
+  ],
+  "qualité hygiène sécurité environnement": [
+    "qhse"
+  ],
+  "quantitative sensory testing": [
+    "devis quantitatif"
+  ],
+  "quantum mechanics": [
+    "mécanique quantique"
+  ],
+  "quantum optics": [
+    "mécanique quantique",
+    "optique"
+  ],
+  "query languages": [
+    "f#",
+    "xp"
+  ],
+  "quote prices": [
+    "devis quantitatif"
+  ],
+  "r": [
+    "manage research and development projects",
+    "diagnose brain death"
+  ],
+  "rag": [
+    "rage (digital game creation systems)",
+    "zoonotic diseases"
+  ],
+  "rage (digital game creation systems)": [
+    "rag"
+  ],
+  "rails": [
+    "detect flaws in rails",
+    "operate rail grinder",
+    "operate rail-flaw-detection machine"
+  ],
+  "ray": [
+    "change shelf labels",
+    "sand gemstones",
+    "remove wax from honeycombs"
+  ],
+  "re 2020": [
+    "diagnose brain death",
+    "sanitise winery area",
+    "monitor extraction logging operations"
+  ],
+  "react": [
+    "nuclear energy",
+    "manufacturing plant equipment",
+    "maintain nuclear reactors"
+  ],
+  "react native": [
+    "assist with plant propagation",
+    "nuclear energy",
+    "manufacturing plant equipment"
+  ],
+  "react query": [
+    "xquery",
+    "sql",
+    "nuclear energy"
+  ],
+  "read 3d displays": [
+    "formation à distance"
+  ],
+  "recherche scientifique": [
+    "scientific research methodology",
+    "develop scientific research protocols",
+    "write scientific papers"
+  ],
+  "record corporate property": [
+    "droit de la propriété intellectuelle",
+    "droits d'enregistrement"
+  ],
+  "record drilling": [
+    "render"
+  ],
+  "recruit members": [
+    "recrutement"
+  ],
+  "recruit personnel": [
+    "recrutement"
+  ],
+  "recrutement": [
+    "recruit members",
+    "recruit personnel",
+    "manage volunteers"
+  ],
+  "red hat": [
+    "gamemaker studio",
+    "create crop protection plans",
+    "advise on utility consumption"
+  ],
+  "redis": [
+    "redistribute wagered money",
+    "organise compositions"
+  ],
+  "redistribute wagered money": [
+    "redis"
+  ],
+  "register deeds": [
+    "actes notariés"
+  ],
+  "regulations on substances": [
+    "règlement ce"
+  ],
+  "reinforcement learning": [
+    "e-learning software infrastructure",
+    "learning management systems",
+    "develop e-learning plan"
+  ],
+  "relation client": [
+    "customer relationship management",
+    "manage the customer experience",
+    "maintain relationship with customers"
+  ],
+  "relations sociales": [
+    "promote social awareness",
+    "social sciences",
+    "study relationships between characters"
+  ],
+  "remove wax from honeycombs": [
+    "ray"
+  ],
+  "render": [
+    "record drilling",
+    "supervise art gallery staff",
+    "data warehouse"
+  ],
+  "rentabilité": [
+    "roi"
+  ],
+  "repair pipelines": [
+    "conduite de travaux"
+  ],
+  "repair plumbing systems": [
+    "plomberie"
+  ],
+  "repair vehicle's electrical equipment": [
+    "conditionnement"
+  ],
+  "reporting financier": [
+    "monitor financial accounts",
+    "offer financial services",
+    "create a financial plan"
+  ],
+  "represent the organisation": [
+    "organisation"
+  ],
+  "request for quotation": [
+    "rfq"
+  ],
+  "requêtes sql": [
+    "sql"
+  ],
+  "research new cooking methods": [
+    "technologie alimentaire"
+  ],
+  "research taxation procedures": [
+    "droit fiscal",
+    "déclarations fiscales"
+  ],
+  "resolve banking issues": [
+    "droit bancaire"
+  ],
+  "respect data protection principles": [
+    "veille juridique"
+  ],
+  "responsabilité sociale entreprise": [
+    "rse"
+  ],
+  "ressources humaines": [
+    "rh"
+  ],
+  "rest": [
+    "owasp zap",
+    "exercise neutrality in mediation cases",
+    "maintain concentration for long periods"
+  ],
+  "rest api": [
+    "api"
+  ],
+  "resuscitation": [
+    "réanimation"
+  ],
+  "retour investissement": [
+    "roi"
+  ],
+  "return on investment": [
+    "roi"
+  ],
+  "reverse engineering": [
+    "classe inversée"
+  ],
+  "review investment portfolios": [
+    "gestion de portefeuille",
+    "gestion de portefeuille clients"
+  ],
+  "revit": [
+    "treat vehicle fabrics",
+    "bim"
+  ],
+  "revit architecture": [
+    "define software architecture",
+    "landscape architecture",
+    "manage ict data architecture"
+  ],
+  "revit mep": [
+    "treat vehicle fabrics"
+  ],
+  "revit structure": [
+    "treat vehicle fabrics",
+    "manufacturing of metal structures",
+    "insert core structures"
+  ],
+  "revue de littérature": [
+    "music literature",
+    "teach principles of literature",
+    "comparative literature"
+  ],
+  "revêtements": [
+    "clean surfaces",
+    "apply optical coating",
+    "wall and floor coverings industry"
+  ],
+  "rfq": [
+    "request for quotation",
+    "appel offres",
+    "sourcing",
+    "achats"
+  ],
+  "rgpd": [
+    "règlement général protection données",
+    "gdpr",
+    "protection données personnelles"
+  ],
+  "rh": [
+    "ressources humaines",
+    "human resources",
+    "hr",
+    "personnel"
+  ],
+  "rhino": [
+    "otorhinolaryngologic conditions",
+    "otorhinolaryngology"
+  ],
+  "robot framework": [
+    "assemble robots",
+    "ajax framework",
+    "robotics"
+  ],
+  "robotics": [
+    "robot framework"
+  ],
+  "roi": [
+    "retour investissement",
+    "return on investment",
+    "rentabilité"
+  ],
+  "roofing techniques": [
+    "béton armé"
+  ],
+  "rse": [
+    "responsabilité sociale entreprise",
+    "csr",
+    "corporate social responsibility"
+  ],
+  "rspec": [
+    "adapt to changes on a boat",
+    "market participants",
+    "idenfify if a company is a going concern"
+  ],
+  "rt 2012": [
+    "optical character recognition software"
+  ],
+  "ruby": [
+    "ruby (computer programming)"
+  ],
+  "ruby (computer programming)": [
+    "ruby",
+    "ruby on rails"
+  ],
+  "ruby on rails": [
+    "ruby (computer programming)",
+    "detect flaws in rails",
+    "operate rail grinder"
+  ],
+  "rust": [
+    "apply rubber patches",
+    "cold vulcanisation",
+    "fish, crustacean and mollusc products"
+  ],
+  "règlement ce": [
+    "food hygiene rules",
+    "regulations on substances",
+    "criminal law"
+  ],
+  "règlement général protection données": [
+    "rgpd"
+  ],
+  "réanimation": [
+    "resuscitation",
+    "anaesthetics",
+    "maintain anaesthetic machinery"
+  ],
+  "réanimation cardio-pulmonaire": [
+    "provide first aid",
+    "operate heart-lung machines",
+    "provide stabilisation care in emergency"
+  ],
+  "réception de travaux": [
+    "control delivered waste",
+    "check deliveries on receipt",
+    "handle delivered packages"
+  ],
+  "rédaction d'actes": [
+    "screenwriting theories",
+    "practical lexicography",
+    "advise on legislative acts"
+  ],
+  "rédaction juridique": [
+    "provide legal advice on investments",
+    "comment drafts",
+    "practical lexicography"
+  ],
+  "rédaction scientifique": [
+    "practical lexicography",
+    "follow newspaper house style",
+    "develop scientific theories"
+  ],
+  "rédaction technique": [
+    "writing techniques",
+    "screenwriting theories",
+    "journalistic principles"
+  ],
+  "référencement": [
+    "seo"
+  ],
+  "référencement naturel": [
+    "seo"
+  ],
+  "référencement payant": [
+    "sea",
+    "sem"
+  ],
+  "réglementation alimentaire": [
+    "food hygiene rules",
+    "perform food safety checks",
+    "food policy"
+  ],
+  "réglementation thermique": [
+    "operate a heat treatment process",
+    "design thermal requirements",
+    "metal thermal conductivity"
+  ],
+  "résistance des matériaux": [
+    "check durability of wood materials",
+    "conduct fire tests",
+    "materials science"
+  ],
+  "résolution de problèmes": [
+    "cognitive psychology",
+    "solve technical problems",
+    "develop strategy to solve problems"
+  ],
+  "résultat net": [
+    "p&l"
+  ],
+  "révision comptable": [
+    "identify accounting errors",
+    "check accounting records",
+    "suggest revision"
+  ],
+  "s&op": [
+    "sales and operations planning",
+    "planification industrielle commerciale",
+    "supply chain"
+  ],
+  "safe": [
+    "measure the strength of distillation",
+    "spirit taxation regulations"
+  ],
+  "sage": [
+    "landscape design",
+    "give massages",
+    "massage types"
+  ],
+  "sage 100 gestion commerciale": [
+    "entrepreneurship",
+    "marketing management",
+    "manage forests"
+  ],
+  "sales and operations planning": [
+    "s&op"
+  ],
+  "salesforce": [
+    "crm"
+  ],
+  "salesforce marketing cloud": [
+    "octopus deploy",
+    "digital marketing techniques",
+    "marketing mix"
+  ],
+  "samurai web testing framework": [
+    "a/b testing",
+    "play framework",
+    "serverless framework"
+  ],
+  "sand gemstones": [
+    "ir",
+    "ray"
+  ],
+  "sanding grits": [
+    "plu"
+  ],
+  "sanitaire": [
+    "prepare health documentation",
+    "sanitary technology",
+    "monitor forest health"
+  ],
+  "sanitary technology": [
+    "sanitaire"
+  ],
+  "sanitise winery area": [
+    "re 2020",
+    "generative ai"
+  ],
+  "sap": [
+    "erp",
+    "progiciel gestion intégré",
+    "enterprise resource planning"
+  ],
+  "sap co": [
+    "collaborate through digital technologies"
+  ],
+  "sap fi": [
+    "install signal repeaters",
+    "advise on clay products handling"
+  ],
+  "sap fi/co": [
+    "collaborate through digital technologies"
+  ],
+  "sap mm": [
+    "micromechanics",
+    "microsensors"
+  ],
+  "sap s/4hana": [
+    "thanatology",
+    "apply psychoanalysis",
+    "perform euthanasia on animals"
+  ],
+  "sap sd": [
+    "systems development life-cycle",
+    "optical character recognition software"
+  ],
+  "sap successfactors": [
+    "learning management systems"
+  ],
+  "sas": [
+    "sass"
+  ],
+  "sass": [
+    "maintain oil field machinery",
+    "disassemble mobile devices",
+    "sas"
+  ],
+  "scala": [
+    "climbing equipment",
+    "belay techniques"
+  ],
+  "schémas électriques": [
+    "electrical wiring diagrams",
+    "interpret electrical diagrams",
+    "design electrical systems"
+  ],
+  "scientific research methodology": [
+    "recherche scientifique"
+  ],
+  "scikit-learn": [
+    "learning management systems",
+    "e-learning software infrastructure",
+    "develop e-learning plan"
+  ],
+  "screenwriting theories": [
+    "rédaction d'actes",
+    "rédaction technique"
+  ],
+  "screw and plug parquet boards": [
+    "clip"
+  ],
+  "screw types": [
+    "mécanique auto"
+  ],
+  "scrum": [
+    "software design methodologies"
+  ],
+  "sea": [
+    "référencement payant",
+    "search engine advertising",
+    "google ads",
+    "identify the needs of your participants",
+    "deliver pilates exercises",
+    "manage indoor tanning sessions",
+    "sem"
+  ],
+  "search engine advertising": [
+    "sea"
+  ],
+  "search engine marketing": [
+    "sem"
+  ],
+  "search engine optimisation": [
+    "seo",
+    "sem",
+    "optimisation des tournées",
+    "optimisation fiscale"
+  ],
+  "search engine optimization": [
+    "seo"
+  ],
+  "search historical sources in archives": [
+    "hive"
+  ],
+  "secondary school procedures": [
+    "enseignement secondaire"
+  ],
+  "select tactics for a football match": [
+    "up selling",
+    "up-selling"
+  ],
+  "selenium": [
+    "tools for ict test automation"
+  ],
+  "sell confectionery products": [
+    "later"
+  ],
+  "sell hardware": [
+    "plomberie"
+  ],
+  "sem": [
+    "search engine marketing",
+    "référencement payant",
+    "google ads",
+    "sea",
+    "search engine optimisation",
+    "harvest cover crops",
+    "prepare planting area"
+  ],
+  "sensors": [
+    "six sigma"
+  ],
+  "seo": [
+    "référencement naturel",
+    "search engine optimization",
+    "référencement",
+    "search engine optimisation",
+    "enhance website visibility"
+  ],
+  "serve on academic committee": [
+    "gestion budgétaire"
+  ],
+  "serverless": [
+    "serverless framework"
+  ],
+  "serverless framework": [
+    "ajax framework",
+    "samurai web testing framework",
+    "javascript framework",
+    "serverless"
+  ],
+  "service level agreement": [
+    "sla"
+  ],
+  "settle concrete": [
+    "béton armé"
+  ],
+  "shearing of wool": [
+    "gitlab ci",
+    "travis ci"
+  ],
+  "shell": [
+    "computer programming"
+  ],
+  "shunt outbound loads": [
+    "charges sociales"
+  ],
+  "sign income tax returns": [
+    "déclaration préalable"
+  ],
+  "six sigma": [
+    "lean six sigma",
+    "amélioration processus",
+    "dmaic",
+    "qualité",
+    "postpartum period",
+    "sensors"
+  ],
+  "sketch": [
+    "sketchbook pro",
+    "graphics editor software"
+  ],
+  "sketchbook pro": [
+    "sketch"
+  ],
+  "sla": [
+    "accord niveau service",
+    "service level agreement",
+    "contrat service"
+  ],
+  "smm": [
+    "social media marketing",
+    "gestion réseaux sociaux",
+    "community management"
+  ],
+  "social entreprise": [
+    "sprout social"
+  ],
+  "social media marketing": [
+    "social media marketing techniques",
+    "plan marketing campaign",
+    "apply social media marketing",
+    "smm"
+  ],
+  "social media marketing techniques": [
+    "social media marketing"
+  ],
+  "social pedagogy": [
+    "pédagogie",
+    "pédagogie active",
+    "pédagogie différenciée"
+  ],
+  "social sciences": [
+    "charges sociales",
+    "relations sociales",
+    "sprout social"
+  ],
+  "social work theory": [
+    "sprout social"
+  ],
+  "software components libraries": [
+    "amazon web services"
+  ],
+  "software design methodologies": [
+    "v-ray",
+    "scrum",
+    "v"
+  ],
+  "software interaction design": [
+    "tableau interactif"
+  ],
+  "soins critiques": [
+    "acute care",
+    "make time-critical decisions",
+    "audit haccp"
+  ],
+  "soins d'urgence": [
+    "manage emergency care situations",
+    "deal with emergency care situations",
+    "delegate emergency care"
+  ],
+  "soins de plaies": [
+    "first aid",
+    "give care instructions",
+    "carry out wound care"
+  ],
+  "soins infirmiers": [
+    "ide"
+  ],
+  "soins intensifs": [
+    "intensive care medicine",
+    "acute care",
+    "administer anaesthetics to patients"
+  ],
+  "soins palliatifs": [
+    "palliative care",
+    "palliative settings",
+    "provide palliative care"
+  ],
+  "soins post-opératoires": [
+    "acute care",
+    "post-process medical images",
+    "adhere to standard procedures"
+  ],
+  "solid": [
+    "solid-state chemistry",
+    "geology",
+    "characteristics of waste"
+  ],
+  "solid-state chemistry": [
+    "chimie des matériaux",
+    "chimie inorganique",
+    "solid"
+  ],
+  "solidworks": [
+    "cao"
+  ],
+  "solve bank account problems": [
+    "droit bancaire"
+  ],
+  "solve technical problems": [
+    "résolution de problèmes"
+  ],
+  "soudure": [
+    "dispose of soldering waste",
+    "check for solder defects",
+    "prepare board for soldering"
+  ],
+  "soudure mig": [
+    "welding techniques",
+    "dispose of soldering waste",
+    "check for solder defects"
+  ],
+  "soudure tig": [
+    "welding techniques",
+    "perform tungsten inert gas welding",
+    "dispose of soldering waste"
+  ],
+  "sourcing": [
+    "crowdsourcing strategy",
+    "rfq"
+  ],
+  "spark": [
+    "apache spark",
+    "java"
+  ],
+  "spectrométrie de masse": [
+    "mass spectrometry",
+    "determine monetary policy actions",
+    "aerodynamics"
+  ],
+  "spirit taxation regulations": [
+    "safe"
+  ],
+  "spirits development": [
+    "gin"
+  ],
+  "spiritualism": [
+    "esprit critique"
+  ],
+  "sports ethics": [
+    "play framework"
+  ],
+  "sprout social": [
+    "social sciences",
+    "social work theory",
+    "social entreprise"
+  ],
+  "sql": [
+    "bases de données",
+    "requêtes sql",
+    "structured query language",
+    "database",
+    "database management systems",
+    "nosql",
+    "sql server",
+    "pl/sql",
+    "react query",
+    "tanstack query"
+  ],
+  "sql server": [
+    "database management systems",
+    "sql"
+  ],
+  "ssis": [
+    "attend performances",
+    "assist in maritime rescue operations",
+    "supervise physiotherapist assistants"
+  ],
+  "stable diffusion": [
+    "troubleshoot cosmetics formula issues",
+    "operate broadcast equipment",
+    "develop programming schedule"
+  ],
+  "statistical analysis system software": [
+    "analyse statistique"
+  ],
+  "statistical process control": [
+    "contrôle statistique"
+  ],
+  "statistical quality control": [
+    "contrôle statistique"
+  ],
+  "statuts de société": [
+    "architecture regulations",
+    "politics",
+    "computer history"
+  ],
+  "stay up to date with social media": [
+    "facebook ads",
+    "facebook business manager",
+    "instagram ads",
+    "twitter ads"
+  ],
+  "stimulate creativity in the team": [
+    "créativité"
+  ],
+  "stimulate students' independence": [
+    "autonomie"
+  ],
+  "stop speeding vehicles": [
+    "vite"
+  ],
+  "structure bois": [
+    "build set constructions",
+    "build picture frames",
+    "install wood elements in structures"
+  ],
+  "structured query language": [
+    "sql"
+  ],
+  "study court hearings": [
+    "commissariat aux comptes",
+    "consolidation comptes"
+  ],
+  "study play productions": [
+    "m&a"
+  ],
+  "study relationships between characters": [
+    "relations sociales"
+  ],
+  "style sheet languages": [
+    "css",
+    "tailwind css"
+  ],
+  "subject of coaching": [
+    "coaching"
+  ],
+  "subsidiary operations": [
+    "consolidation",
+    "consolidation comptes"
+  ],
+  "suggest revision": [
+    "révision comptable"
+  ],
+  "suivi de chantier": [
+    "handle the disposal of chemicals",
+    "determine fire risks",
+    "provide customer follow-up services"
+  ],
+  "suivi individualisé": [
+    "apply case management",
+    "provide customised products",
+    "prepare oils"
+  ],
+  "supervise art gallery staff": [
+    "render"
+  ],
+  "supervise food quality": [
+    "contrôle qualité alimentaire"
+  ],
+  "supervise physiotherapist assistants": [
+    "ssis"
+  ],
+  "supervise work on design planning": [
+    "conception de cours"
+  ],
+  "supplier management": [
+    "gestion des fournisseurs"
+  ],
+  "supply chain": [
+    "s&op"
+  ],
+  "supply chain management": [
+    "gestion des approvisionnements"
+  ],
+  "support audio system installation": [
+    "dépannage électrique"
+  ],
+  "support people with hearing impairment": [
+    "procédure administrative"
+  ],
+  "surgery": [
+    "chirurgie",
+    "surgical",
+    "bloc opératoire"
+  ],
+  "surgical asepsis": [
+    "asepsie"
+  ],
+  "survey sites for pipeline installation": [
+    "pip"
+  ],
+  "suspend animals": [
+    "transformers"
+  ],
+  "swift": [
+    "swift (computer programming)",
+    "graphics editor software"
+  ],
+  "swift (computer programming)": [
+    "swift"
+  ],
+  "synfig": [
+    "autocad 2d",
+    "bert"
+  ],
+  "synthesise research publications": [
+    "publications scientifiques"
+  ],
+  "synthetic fertilisers": [
+    "synthèse chimique"
+  ],
+  "synthèse chimique": [
+    "synthetic fertilisers",
+    "polymer chemistry",
+    "make abstracts"
+  ],
+  "systems development life-cycle": [
+    "sap sd"
+  ],
+  "système de management": [
+    "manage environmental management system",
+    "learning management systems",
+    "penetration testing tool"
+  ],
+  "sécurité alimentaire": [
+    "haccp"
+  ],
+  "sécurité au travail": [
+    "hse"
+  ],
+  "sécurité incendie": [
+    "examine ventilation system",
+    "educate public on fire safety",
+    "conduct fire safety inspections"
+  ],
+  "séquençage": [
+    "design sprinkler systems",
+    "detect microorganisms"
+  ],
+  "tableau": [
+    "assess customers",
+    "process qualitative information",
+    "wire security sensors"
+  ],
+  "tableau de flux trésorerie": [
+    "tcf"
+  ],
+  "tableau interactif": [
+    "software interaction design",
+    "assess customers",
+    "interview focus groups"
+  ],
+  "tableaux de bord": [
+    "kpis"
+  ],
+  "tableaux électriques": [
+    "maintain vehicle electrical equipment",
+    "tabulate survey results",
+    "match frames to pictures"
+  ],
+  "tabulate survey results": [
+    "tableaux électriques"
+  ],
+  "tailwind css": [
+    "css",
+    "style sheet languages",
+    "drupal"
+  ],
+  "take affidavits": [
+    "déclaration préalable"
+  ],
+  "take artistic vision into account": [
+    "computer vision"
+  ],
+  "take pictures": [
+    "droit de la famille"
+  ],
+  "talent acquisition": [
+    "identify talent in sport",
+    "discover acting talent",
+    "personal development"
+  ],
+  "tanstack query": [
+    "xquery",
+    "sql"
+  ],
+  "tape transcription": [
+    "déclaration préalable"
+  ],
+  "taxe professionnelle": [
+    "value-added tax law",
+    "call routing",
+    "audit closed vehicle rental contracts"
+  ],
+  "taxe valeur ajoutée": [
+    "tva"
+  ],
+  "tcf": [
+    "tableau de flux trésorerie",
+    "cash flow statement"
+  ],
+  "tcp/ip": [
+    "maintain internet protocol configuration",
+    "wireshark",
+    "backbox (penetration testing tool)"
+  ],
+  "teach biology": [
+    "biologie cellulaire",
+    "biologie moléculaire"
+  ],
+  "teach chemistry": [
+    "chimie analytique",
+    "chimie inorganique",
+    "chimie organique"
+  ],
+  "teach communication sciences": [
+    "communication"
+  ],
+  "teach dance": [
+    "welcome to the jungle"
+  ],
+  "teach design and applied arts principles": [
+    "conception de cours"
+  ],
+  "teach esol literacy class": [
+    "lecture de plans"
+  ],
+  "teach further education": [
+    "enseignement supérieur"
+  ],
+  "teach primary education class content": [
+    "enseignement primaire"
+  ],
+  "teach principles of architectural design": [
+    "conception de supports de formation"
+  ],
+  "teach principles of literature": [
+    "revue de littérature"
+  ],
+  "teach secondary education class content": [
+    "enseignement secondaire"
+  ],
+  "teach space science": [
+    "astro"
+  ],
+  "teach speed reading": [
+    "lecture de plans"
+  ],
+  "team building": [
+    "consolidation"
+  ],
+  "teams for education": [
+    "operate drilling jumbo",
+    "operate core drilling equipment",
+    "operate production drilling machine"
+  ],
+  "teamwork principles": [
+    "travail en équipe"
+  ],
+  "techniques of blood-sampling": [
+    "prélèvements sanguins"
+  ],
+  "technologie alimentaire": [
+    "apply food technology principles",
+    "research new cooking methods",
+    "advise on food preservation"
+  ],
+  "tekla structures": [
+    "manufacturing of metal structures",
+    "insert core structures",
+    "insert mould structures"
+  ],
+  "telemarketing": [
+    "prospection"
+  ],
+  "tend drop forging hammer": [
+    "meta ads"
+  ],
+  "tend lime-kiln": [
+    "carbon"
+  ],
+  "tend meat processing production machines": [
+    "transformers"
+  ],
+  "tend notching machines": [
+    "v-ray",
+    "v"
+  ],
+  "tend to clients' personal items": [
+    "ci/cd"
+  ],
+  "test chemical auxiliaries": [
+    "analyse des dangers"
+  ],
+  "test oil samples": [
+    "métrés"
+  ],
+  "tests psychométriques": [
+    "conduct psychological assessement",
+    "adapt hearing tests",
+    "execute conversion testing"
+  ],
+  "text mining": [
+    "nlp"
+  ],
+  "thanatology": [
+    "sap s/4hana"
+  ],
+  "theatre pedagogy": [
+    "pédagogie différenciée"
+  ],
+  "theatre techniques": [
+    "présentation"
+  ],
+  "thermodynamics": [
+    "thermodynamique"
+  ],
+  "thermodynamique": [
+    "thermodynamics"
+  ],
+  "think creatively": [
+    "créativité"
+  ],
+  "titration": [
+    "create subtitles",
+    "manage securities",
+    "manage securities trading"
+  ],
+  "tms": [
+    "transport management system",
+    "gestion transport",
+    "affrètement",
+    "assemble printed circuit boards"
+  ],
+  "tools for ict test automation": [
+    "qt",
+    "selenium"
+  ],
+  "topographie": [
+    "topography",
+    "bathymetry",
+    "manage outdoor resources"
+  ],
+  "topography": [
+    "topographie"
+  ],
+  "total productive maintenance": [
+    "tpm"
+  ],
+  "tpm": [
+    "total productive maintenance",
+    "maintenance productive totale",
+    "fiabilité industrielle"
+  ],
+  "trace meat products": [
+    "traçabilité"
+  ],
+  "traceability in food industry": [
+    "traçabilité",
+    "traçabilité alimentaire"
+  ],
+  "trade ships": [
+    "contrats d'achat"
+  ],
+  "trade union regulations": [
+    "négociation syndicale"
+  ],
+  "trading law": [
+    "droit commercial",
+    "droit des affaires"
+  ],
+  "train gun dogs": [
+    "chasse de têtes"
+  ],
+  "traitement langage naturel": [
+    "nlp"
+  ],
+  "transformers": [
+    "cultivate crops for biomass",
+    "suspend animals",
+    "tend meat processing production machines"
+  ],
+  "transit douanier": [
+    "international tariffs",
+    "customs law",
+    "inspect carrier documents"
+  ],
+  "translate strategy into operation": [
+    "github actions"
+  ],
+  "transport": [
+    "coordinate transportation",
+    "manage cash transportation",
+    "freight transport methods"
+  ],
+  "transport management system": [
+    "tms"
+  ],
+  "transportation engineering": [
+    "gestion des transporteurs",
+    "gestion du transport"
+  ],
+  "travail en équipe": [
+    "plan teamwork",
+    "facilitate teamwork between students",
+    "teamwork principles"
+  ],
+  "travis ci": [
+    "inspire enthusiasm for nature",
+    "shearing of wool",
+    "check in luggage"
+  ],
+  "traçabilité": [
+    "trace meat products",
+    "implement traceability systems",
+    "traceability in food industry"
+  ],
+  "traçabilité alimentaire": [
+    "traceability in food industry",
+    "develop food safety programmes",
+    "animal food products"
+  ],
+  "treat vehicle fabrics": [
+    "revit",
+    "revit mep",
+    "revit structure"
+  ],
+  "troubleshoot": [
+    "dépannage électrique"
+  ],
+  "troubleshoot cosmetics formula issues": [
+    "formulation",
+    "stable diffusion"
+  ],
+  "troubleshoot website": [
+    "dépannage électrique"
+  ],
+  "trésorerie": [
+    "manage cash flow",
+    "handle cash flow",
+    "monitor credit institutes"
+  ],
+  "tune a projector": [
+    "ms project"
+  ],
+  "tunnel boring machine console": [
+    "google search console"
+  ],
+  "tva": [
+    "taxe valeur ajoutée",
+    "vat",
+    "value added tax"
+  ],
+  "twitter ads": [
+    "stay up to date with social media",
+    "apply social media marketing"
+  ],
+  "type at speed": [
+    "vite"
+  ],
+  "types of boring heads": [
+    "chasse de têtes"
+  ],
+  "types of cargo": [
+    "fret aérien",
+    "fret maritime"
+  ],
+  "types of cylindrical grinding processes": [
+    "assessment center"
+  ],
+  "types of metal manufacturing processes": [
+    "procédés agroalimentaires"
+  ],
+  "types of music therapies": [
+    "pédagogie active",
+    "active directory"
+  ],
+  "types of tyres": [
+    "go"
+  ],
+  "types of waste collection vehicles": [
+    "later"
+  ],
+  "typesetting machines": [
+    "jetpack compose"
+  ],
+  "ubuntu": [
+    "mobile operating systems"
+  ],
+  "ui": [
+    "interface utilisateur",
+    "user interface",
+    "design interface"
+  ],
+  "ui/ux": [
+    "interface utilisateur",
+    "expérience utilisateur",
+    "design",
+    "figma"
+  ],
+  "ultra-high temperature processing": [
+    "f#"
+  ],
+  "uml": [
+    "unified modelling language",
+    "business process modelling"
+  ],
+  "understand spoken azerbaijani": [
+    "express",
+    "express.js"
+  ],
+  "unified modelling language": [
+    "uml"
+  ],
+  "up selling": [
+    "select tactics for a football match",
+    "boxing"
+  ],
+  "up-selling": [
+    "select tactics for a football match",
+    "upselling"
+  ],
+  "upselling": [
+    "up-selling"
+  ],
+  "urban planning": [
+    "urbanisme"
+  ],
+  "urban planning law": [
+    "urbanisme"
+  ],
+  "urbanisme": [
+    "urban planning",
+    "urban planning law",
+    "zoning codes"
+  ],
+  "user experience": [
+    "ux"
+  ],
+  "user interface": [
+    "ui"
+  ],
+  "utilise exercise environment": [
+    "environnement"
+  ],
+  "ux": [
+    "expérience utilisateur",
+    "user experience",
+    "design ux"
+  ],
+  "v": [
+    "create v-shape wrap",
+    "software design methodologies",
+    "tend notching machines"
+  ],
+  "v-ray": [
+    "create v-shape wrap",
+    "software design methodologies",
+    "tend notching machines"
+  ],
+  "valorisation": [
+    "dcf"
+  ],
+  "value added tax": [
+    "tva"
+  ],
+  "value-added tax law": [
+    "taxe professionnelle"
+  ],
+  "vat": [
+    "tva"
+  ],
+  "veille juridique": [
+    "comply with legal regulations",
+    "meet the requirements of legal bodies",
+    "respect data protection principles"
+  ],
+  "veille réglementaire": [
+    "design spatial layout of outdoor areas",
+    "product comprehension",
+    "machinery products"
+  ],
+  "vente": [
+    "create auction catalogue",
+    "execute after sales activities",
+    "plan retail space"
+  ],
+  "vente entreprises": [
+    "b2b"
+  ],
+  "vente particuliers": [
+    "b2c"
+  ],
+  "ventilation mécanique": [
+    "ventilation systems",
+    "building systems monitoring technology",
+    "examine ventilation system"
+  ],
+  "ventilation systems": [
+    "ventilation mécanique"
+  ],
+  "vertex ai": [
+    "operate optical measuring equipment",
+    "green water incubation technology",
+    "green logistics"
+  ],
+  "virologie": [
+    "virology",
+    "biomedical science",
+    "perform virological test"
+  ],
+  "virology": [
+    "virologie"
+  ],
+  "visual studio .net": [
+    ".net"
+  ],
+  "vite": [
+    "type at speed",
+    "stop speeding vehicles",
+    "drive at high speeds"
+  ],
+  "vmware": [
+    "manage ict virtualisation machines"
+  ],
+  "voie veineuse": [
+    "perform venepuncture procedures",
+    "international waterways",
+    "navigate european inland waterways"
+  ],
+  "vs code": [
+    "assign codes to product items",
+    "perform software unit testing"
+  ],
+  "vue": [
+    "plan shots",
+    "observe shots",
+    "analyse fish samples for diagnosis"
+  ],
+  "wall and floor coverings industry": [
+    "revêtements"
+  ],
+  "warehouse management system": [
+    "wms"
+  ],
+  "web service": [
+    "api"
+  ],
+  "weigh shipments": [
+    "3ds max"
+  ],
+  "welcome to the jungle": [
+    "below-the-line technique",
+    "design digital call to action",
+    "teach dance"
+  ],
+  "welding techniques": [
+    "soudure mig",
+    "soudure tig"
+  ],
+  "western blot": [
+    "inspect construction of ships",
+    "prepare deck equipment"
+  ],
+  "windows phone": [
+    "windows server"
+  ],
+  "windows server": [
+    "windows phone",
+    "design application interfaces"
+  ],
+  "wine blending": [
+    "dégustation"
+  ],
+  "wire security sensors": [
+    "tableau"
+  ],
+  "wireshark": [
+    "tcp/ip"
+  ],
+  "wms": [
+    "warehouse management system",
+    "gestion entrepôt",
+    "logistique entrepôt"
+  ],
+  "woodworking processes": [
+    "menuiserie",
+    "ébénisterie"
+  ],
+  "woodworking tools": [
+    "menuiserie"
+  ],
+  "work within communities": [
+    "active directory"
+  ],
+  "world wide web consortium standards": [
+    "css",
+    "html",
+    "html5"
+  ],
+  "write batch record documentation": [
+    "bpf"
+  ],
+  "write calibration report": [
+    "étalonnage"
+  ],
+  "write dock records": [
+    "docker"
+  ],
+  "write research proposals": [
+    "estimatif"
+  ],
+  "write scientific papers": [
+    "recherche scientifique"
+  ],
+  "writing techniques": [
+    "rédaction technique"
+  ],
+  "xp": [
+    "query languages",
+    "graphics editor software"
+  ],
+  "xquery": [
+    "react query",
+    "tanstack query"
+  ],
+  "yoga": [
+    "esprit critique"
+  ],
+  "zoning codes": [
+    "plan local d'urbanisme",
+    "urbanisme"
+  ],
+  "zoonotic diseases": [
+    "nose",
+    "rag"
+  ],
+  "ébénisterie": [
+    "woodworking processes"
+  ],
+  "écologie": [
+    "ecology",
+    "aquatic ecology",
+    "forest ecology"
+  ],
+  "éducation patient": [
+    "counsel patient on family concerns",
+    "music therapy processes",
+    "apply techniques of occupational therapy"
+  ],
+  "éducation thérapeutique": [
+    "develop therapeutic relationships",
+    "develop chiropractic treatment plans",
+    "develop osteopathic treatment plans"
+  ],
+  "élaboration de programmes": [
+    "advise on curriculum development",
+    "assist employee health programmes",
+    "identify education needs"
+  ],
+  "électricité bâtiment": [
+    "inspect building systems",
+    "install power lines",
+    "install electricity meter"
+  ],
+  "électricité industrielle": [
+    "monitor utility equipment",
+    "assess power needs",
+    "electricity"
+  ],
+  "électromagnétisme": [
+    "electromagnetism",
+    "electrical engineering",
+    "operate nail gun"
+  ],
+  "électronique": [
+    "electronics",
+    "implant microchips in animals",
+    "maintain electronic equipment"
+  ],
+  "établissement hébergement personnes âgées": [
+    "ehpad"
+  ],
+  "étalonnage": [
+    "write calibration report",
+    "colour grading",
+    "manage periodic calibration plans"
+  ],
+  "étiquetage": [
+    "check price accuracy on the shelf",
+    "food labels",
+    "provide food labelling expertise"
+  ],
+  "évaluation d'impact environnemental": [
+    "assess groundwater environmental impact",
+    "environmental impact of tourism"
+  ],
+  "évaluation des apprentissages": [
+    "learning difficulties",
+    "grovo",
+    "learning management systems"
+  ],
+  "évaluation et certification": [
+    "compile airport certification manuals",
+    "monitor airworthiness certifications",
+    "prepare audit activities"
+  ],
+  "évaluation formative": [
+    "give constructive feedback",
+    "assessment processes",
+    "evaluation of psychological performance"
+  ]
+}

@@ -1,0 +1,441 @@
+offre,candidat,sem_bge,comp_bge,exp_bge,form_bge,sem_v2,skills_raw,edu_gap,edu_domain_compat,exp_domain_ratio,label
+Développeur Python FastAPI,Dev Python Senior,0.729,1.0,0.953,0.278,0.729,1.0,0.0,1.0,1.0,0.95
+Développeur Python FastAPI,Dev React Junior,0.513,0.679,0.278,0.284,0.513,0.1667,0.4,1.0,0.2,0.0622
+Développeur Python FastAPI,Data Scientist ML,0.511,0.787,0.863,0.275,0.511,0.3333,0.0,1.0,1.0,0.3867
+Développeur Python FastAPI,DevOps AWS Senior,0.514,0.679,0.815,0.277,0.514,0.3333,0.0,1.0,0.55,0.3867
+Développeur Python FastAPI,Dev Java Spring,0.56,0.772,0.867,0.284,0.56,0.5,0.0,1.0,1.0,0.75
+Développeur Python FastAPI,Comptable Senior,0.5,0.0,0.232,0.152,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur Python FastAPI,Auditeur Junior,0.5,0.0,0.163,0.15,0.5,0.0,0.0,0.45,0.05,0.02
+Développeur Python FastAPI,Analyste Financier,0.5,0.0,0.172,0.154,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Python FastAPI,Chargée RH,0.501,0.0,0.222,0.155,0.501,0.0,0.4,0.45,0.05,0.02
+Développeur Python FastAPI,DRH Expérimenté,0.503,0.0,0.238,0.149,0.503,0.0,0.0,0.45,0.05,0.0225
+Développeur Python FastAPI,Marketing Digital Manager,0.5,0.117,0.265,0.143,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Python FastAPI,Responsable Logistique,0.501,0.0,0.226,0.215,0.501,0.0,0.0,0.75,0.05,0.0375
+Développeur Python FastAPI,Acheteur Junior,0.502,0.0,0.166,0.152,0.502,0.0,0.4,0.45,0.05,0.02
+Développeur Python FastAPI,Infirmier IDE,0.5,0.0,0.22,0.128,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Python FastAPI,Pharmacien,0.5,0.0,0.164,0.147,0.5,0.0,0.0,0.45,0.05,0.02
+Développeur Python FastAPI,Juriste Droit,0.5,0.0,0.219,0.149,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur Python FastAPI,Ingénieur Génie Civil,0.5,0.299,0.36,0.156,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur Python FastAPI,Dev Python (pour poste Finance),0.728,0.887,0.916,0.286,0.728,0.8333,0.0,1.0,1.0,0.9166
+Développeur Python FastAPI,Comptable (pour poste IT),0.505,0.0,0.214,0.152,0.505,0.0,0.0,0.45,0.05,0.0225
+Développeur Python FastAPI,Infirmier (pour poste Dev),0.5,0.0,0.218,0.128,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Python FastAPI,Stage Informatique,0.564,0.507,0.142,0.282,0.564,0.3333,0.2,1.0,0.5,0.1749
+Développeur Python FastAPI,Juriste (pour poste RH),0.5,0.0,0.214,0.277,0.5,0.0,0.0,1.0,0.05,0.0225
+Développeur React Frontend,Dev Python Senior,0.563,0.588,0.717,0.271,0.563,0.1667,-0.4,1.0,0.2875,0.1633
+Développeur React Frontend,Dev React Junior,0.707,0.7,0.565,0.286,0.707,1.0,0.0,1.0,1.0,0.86
+Développeur React Frontend,Data Scientist ML,0.507,0.534,0.465,0.268,0.507,0.0,-0.4,1.0,0.05,0.05
+Développeur React Frontend,DevOps AWS Senior,0.519,0.534,0.496,0.268,0.519,0.1667,-0.4,1.0,0.05,0.1633
+Développeur React Frontend,Dev Java Spring,0.626,0.534,0.495,0.286,0.626,0.1667,-0.4,1.0,0.05,0.1633
+Développeur React Frontend,Comptable Senior,0.5,0.0,0.235,0.146,0.5,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Auditeur Junior,0.5,0.0,0.216,0.144,0.5,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Analyste Financier,0.5,0.0,0.21,0.151,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur React Frontend,Chargée RH,0.502,0.0,0.23,0.157,0.502,0.0,0.0,0.45,0.05,0.0225
+Développeur React Frontend,DRH Expérimenté,0.509,0.0,0.251,0.147,0.509,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Marketing Digital Manager,0.502,0.117,0.276,0.149,0.502,0.0,0.0,0.45,0.05,0.0225
+Développeur React Frontend,Responsable Logistique,0.5,0.0,0.234,0.207,0.5,0.0,-0.4,0.75,0.05,0.0375
+Développeur React Frontend,Acheteur Junior,0.503,0.0,0.219,0.151,0.503,0.0,0.0,0.45,0.05,0.0375
+Développeur React Frontend,Infirmier IDE,0.5,0.0,0.23,0.13,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur React Frontend,Pharmacien,0.5,0.0,0.215,0.148,0.5,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Juriste Droit,0.5,0.0,0.232,0.146,0.5,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Ingénieur Génie Civil,0.5,0.0,0.236,0.16,0.5,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Dev Python (pour poste Finance),0.562,0.534,0.576,0.282,0.562,0.1667,-0.4,1.0,0.05,0.1633
+Développeur React Frontend,Comptable (pour poste IT),0.508,0.0,0.221,0.146,0.508,0.0,-0.4,0.45,0.05,0.0225
+Développeur React Frontend,Infirmier (pour poste Dev),0.5,0.0,0.228,0.13,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur React Frontend,Stage Informatique,0.61,0.4,0.161,0.279,0.61,0.5,-0.2,1.0,0.5,0.47
+Développeur React Frontend,Juriste (pour poste RH),0.5,0.0,0.231,0.278,0.5,0.0,-0.4,1.0,0.05,0.0225
+Data Scientist Python ML,Dev Python Senior,0.567,0.59,0.886,0.283,0.567,0.3333,0.0,1.0,0.8875,0.3867
+Data Scientist Python ML,Dev React Junior,0.513,0.412,0.219,0.291,0.513,0.0,0.4,1.0,0.05,0.02
+Data Scientist Python ML,Data Scientist ML,0.73,0.848,0.939,0.279,0.73,1.0,0.0,1.0,1.0,0.95
+Data Scientist Python ML,DevOps AWS Senior,0.509,0.465,0.835,0.282,0.509,0.1667,0.0,1.0,0.55,0.1633
+Data Scientist Python ML,Dev Java Spring,0.508,0.523,0.737,0.292,0.508,0.1667,0.0,1.0,0.55,0.1633
+Data Scientist Python ML,Comptable Senior,0.504,0.0,0.238,0.156,0.504,0.0,0.0,0.45,0.05,0.0225
+Data Scientist Python ML,Auditeur Junior,0.502,0.0,0.168,0.155,0.502,0.0,0.0,0.45,0.05,0.02
+Data Scientist Python ML,Analyste Financier,0.5,0.0,0.18,0.154,0.5,0.0,0.4,0.45,0.05,0.02
+Data Scientist Python ML,Chargée RH,0.506,0.0,0.226,0.161,0.506,0.0,0.4,0.45,0.05,0.02
+Data Scientist Python ML,DRH Expérimenté,0.527,0.0,0.239,0.156,0.527,0.0,0.0,0.45,0.05,0.0225
+Data Scientist Python ML,Marketing Digital Manager,0.501,0.0,0.218,0.154,0.501,0.0,0.4,0.45,0.05,0.02
+Data Scientist Python ML,Responsable Logistique,0.509,0.0,0.236,0.224,0.509,0.0,0.0,0.75,0.05,0.0375
+Data Scientist Python ML,Acheteur Junior,0.51,0.0,0.173,0.156,0.51,0.0,0.4,0.45,0.05,0.02
+Data Scientist Python ML,Infirmier IDE,0.5,0.0,0.217,0.132,0.5,0.0,0.4,0.45,0.05,0.02
+Data Scientist Python ML,Pharmacien,0.5,0.0,0.171,0.152,0.5,0.0,0.0,0.45,0.05,0.02
+Data Scientist Python ML,Juriste Droit,0.5,0.0,0.224,0.155,0.5,0.0,0.0,0.45,0.05,0.0225
+Data Scientist Python ML,Ingénieur Génie Civil,0.5,0.412,0.461,0.159,0.5,0.0,0.0,0.45,0.05,0.0225
+Data Scientist Python ML,Dev Python (pour poste Finance),0.58,0.59,0.867,0.294,0.58,0.3333,0.0,1.0,1.0,0.3867
+Data Scientist Python ML,Comptable (pour poste IT),0.538,0.0,0.22,0.156,0.538,0.0,0.0,0.45,0.05,0.0225
+Data Scientist Python ML,Infirmier (pour poste Dev),0.5,0.0,0.212,0.132,0.5,0.0,0.4,0.45,0.05,0.02
+Data Scientist Python ML,Stage Informatique,0.652,0.387,0.124,0.289,0.652,0.3333,0.2,1.0,0.5,0.1749
+Data Scientist Python ML,Juriste (pour poste RH),0.5,0.0,0.225,0.285,0.5,0.0,0.0,1.0,0.05,0.0225
+DevOps Engineer Cloud,Dev Python Senior,0.506,0.72,0.689,0.279,0.506,0.2857,0.0,1.0,0.55,0.3729
+DevOps Engineer Cloud,Dev React Junior,0.53,0.583,0.213,0.294,0.53,0.1429,0.4,1.0,0.05,0.0551
+DevOps Engineer Cloud,Data Scientist ML,0.501,0.628,0.544,0.276,0.501,0.1429,0.0,1.0,0.55,0.1404
+DevOps Engineer Cloud,DevOps AWS Senior,0.729,0.954,0.938,0.28,0.729,1.0,0.0,1.0,1.0,0.95
+DevOps Engineer Cloud,Dev Java Spring,0.512,0.628,0.674,0.295,0.512,0.2857,0.0,1.0,0.55,0.3729
+DevOps Engineer Cloud,Comptable Senior,0.501,0.0,0.225,0.152,0.501,0.0,0.0,0.45,0.05,0.0225
+DevOps Engineer Cloud,Auditeur Junior,0.5,0.0,0.137,0.149,0.5,0.0,0.0,0.45,0.05,0.02
+DevOps Engineer Cloud,Analyste Financier,0.5,0.0,0.137,0.153,0.5,0.0,0.4,0.45,0.05,0.02
+DevOps Engineer Cloud,Chargée RH,0.501,0.0,0.188,0.161,0.501,0.0,0.4,0.45,0.05,0.02
+DevOps Engineer Cloud,DRH Expérimenté,0.509,0.0,0.234,0.152,0.509,0.0,0.0,0.45,0.05,0.0225
+DevOps Engineer Cloud,Marketing Digital Manager,0.5,0.1,0.217,0.153,0.5,0.0,0.4,0.45,0.05,0.02
+DevOps Engineer Cloud,Responsable Logistique,0.501,0.0,0.231,0.216,0.501,0.0,0.0,0.75,0.05,0.0375
+DevOps Engineer Cloud,Acheteur Junior,0.502,0.0,0.137,0.158,0.502,0.0,0.4,0.45,0.05,0.02
+DevOps Engineer Cloud,Infirmier IDE,0.5,0.0,0.19,0.135,0.5,0.0,0.4,0.45,0.05,0.02
+DevOps Engineer Cloud,Pharmacien,0.5,0.0,0.14,0.152,0.5,0.0,0.0,0.45,0.05,0.02
+DevOps Engineer Cloud,Juriste Droit,0.5,0.0,0.18,0.15,0.5,0.0,0.0,0.45,0.05,0.02
+DevOps Engineer Cloud,Ingénieur Génie Civil,0.5,0.194,0.326,0.163,0.5,0.0,0.0,0.45,0.05,0.0225
+DevOps Engineer Cloud,Dev Python (pour poste Finance),0.503,0.628,0.529,0.29,0.503,0.2857,0.0,1.0,0.55,0.3323
+DevOps Engineer Cloud,Comptable (pour poste IT),0.511,0.0,0.209,0.152,0.511,0.0,0.0,0.45,0.05,0.0225
+DevOps Engineer Cloud,Infirmier (pour poste Dev),0.5,0.0,0.183,0.135,0.5,0.0,0.4,0.45,0.05,0.02
+DevOps Engineer Cloud,Stage Informatique,0.534,0.12,0.072,0.286,0.534,0.1429,0.2,1.0,0.5,0.061
+DevOps Engineer Cloud,Juriste (pour poste RH),0.5,0.0,0.185,0.275,0.5,0.0,0.0,1.0,0.05,0.02
+Développeur Java Spring Boot,Dev Python Senior,0.569,0.82,0.897,0.28,0.569,0.4286,0.0,1.0,1.0,0.7143
+Développeur Java Spring Boot,Dev React Junior,0.511,0.734,0.272,0.287,0.511,0.1429,0.4,1.0,0.2,0.0598
+Développeur Java Spring Boot,Data Scientist ML,0.502,0.677,0.848,0.273,0.502,0.1429,0.0,1.0,1.0,0.16
+Développeur Java Spring Boot,DevOps AWS Senior,0.51,0.651,0.859,0.278,0.51,0.2857,0.0,1.0,1.0,0.3729
+Développeur Java Spring Boot,Dev Java Spring,0.728,0.954,0.928,0.289,0.728,1.0,0.0,1.0,1.0,0.95
+Développeur Java Spring Boot,Comptable Senior,0.5,0.0,0.229,0.15,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur Java Spring Boot,Auditeur Junior,0.5,0.0,0.158,0.149,0.5,0.0,0.0,0.45,0.05,0.02
+Développeur Java Spring Boot,Analyste Financier,0.5,0.0,0.159,0.152,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Java Spring Boot,Chargée RH,0.5,0.0,0.224,0.155,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Java Spring Boot,DRH Expérimenté,0.502,0.0,0.237,0.148,0.502,0.0,0.0,0.45,0.05,0.0225
+Développeur Java Spring Boot,Marketing Digital Manager,0.5,0.1,0.259,0.15,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Java Spring Boot,Responsable Logistique,0.501,0.0,0.229,0.217,0.501,0.0,0.0,0.75,0.05,0.0375
+Développeur Java Spring Boot,Acheteur Junior,0.501,0.0,0.167,0.154,0.501,0.0,0.4,0.45,0.05,0.02
+Développeur Java Spring Boot,Infirmier IDE,0.5,0.0,0.217,0.132,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Java Spring Boot,Pharmacien,0.5,0.0,0.162,0.146,0.5,0.0,0.0,0.45,0.05,0.02
+Développeur Java Spring Boot,Juriste Droit,0.5,0.0,0.22,0.152,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur Java Spring Boot,Ingénieur Génie Civil,0.5,0.097,0.266,0.156,0.5,0.0,0.0,0.45,0.05,0.0225
+Développeur Java Spring Boot,Dev Python (pour poste Finance),0.57,0.734,0.871,0.289,0.57,0.4286,0.0,1.0,1.0,0.7143
+Développeur Java Spring Boot,Comptable (pour poste IT),0.503,0.0,0.212,0.15,0.503,0.0,0.0,0.45,0.05,0.0225
+Développeur Java Spring Boot,Infirmier (pour poste Dev),0.5,0.0,0.211,0.132,0.5,0.0,0.4,0.45,0.05,0.02
+Développeur Java Spring Boot,Stage Informatique,0.524,0.297,0.119,0.282,0.524,0.1429,0.2,1.0,0.5,0.061
+Développeur Java Spring Boot,Juriste (pour poste RH),0.5,0.0,0.216,0.28,0.5,0.0,0.0,1.0,0.05,0.0225
+Cybersécurité Analyste,Dev Python Senior,0.502,0.447,0.871,0.28,0.502,0.3333,0.0,1.0,1.0,0.3867
+Cybersécurité Analyste,Dev React Junior,0.506,0.34,0.178,0.298,0.506,0.1667,0.4,1.0,0.05,0.0622
+Cybersécurité Analyste,Data Scientist ML,0.508,0.393,0.761,0.278,0.508,0.1667,0.0,1.0,1.0,0.1633
+Cybersécurité Analyste,DevOps AWS Senior,0.508,0.393,0.762,0.28,0.508,0.3333,0.0,1.0,1.0,0.3867
+Cybersécurité Analyste,Dev Java Spring,0.501,0.34,0.444,0.294,0.501,0.1667,0.0,1.0,0.2,0.1633
+Cybersécurité Analyste,Comptable Senior,0.501,0.0,0.232,0.147,0.501,0.0,0.0,0.45,0.05,0.0225
+Cybersécurité Analyste,Auditeur Junior,0.503,0.0,0.165,0.151,0.503,0.0,0.0,0.45,0.05,0.02
+Cybersécurité Analyste,Analyste Financier,0.504,0.0,0.171,0.159,0.504,0.0,0.4,0.45,0.05,0.02
+Cybersécurité Analyste,Chargée RH,0.504,0.0,0.229,0.161,0.504,0.0,0.4,0.45,0.05,0.02
+Cybersécurité Analyste,DRH Expérimenté,0.511,0.0,0.233,0.147,0.511,0.0,0.0,0.45,0.05,0.0225
+Cybersécurité Analyste,Marketing Digital Manager,0.501,0.233,0.321,0.155,0.501,0.0,0.4,0.45,0.05,0.02
+Cybersécurité Analyste,Responsable Logistique,0.501,0.0,0.232,0.216,0.501,0.0,0.0,0.75,0.05,0.0375
+Cybersécurité Analyste,Acheteur Junior,0.509,0.0,0.166,0.161,0.509,0.0,0.4,0.45,0.05,0.02
+Cybersécurité Analyste,Infirmier IDE,0.5,0.0,0.22,0.131,0.5,0.0,0.4,0.45,0.05,0.02
+Cybersécurité Analyste,Pharmacien,0.5,0.0,0.161,0.146,0.5,0.0,0.0,0.45,0.05,0.02
+Cybersécurité Analyste,Juriste Droit,0.5,0.0,0.22,0.149,0.5,0.0,0.0,0.45,0.05,0.0225
+Cybersécurité Analyste,Ingénieur Génie Civil,0.5,0.113,0.282,0.16,0.5,0.0,0.0,0.45,0.05,0.0225
+Cybersécurité Analyste,Dev Python (pour poste Finance),0.507,0.393,0.742,0.289,0.507,0.3333,0.0,1.0,1.0,0.3867
+Cybersécurité Analyste,Comptable (pour poste IT),0.503,0.0,0.212,0.147,0.503,0.0,0.0,0.45,0.05,0.0225
+Cybersécurité Analyste,Infirmier (pour poste Dev),0.5,0.0,0.218,0.131,0.5,0.0,0.4,0.45,0.05,0.02
+Cybersécurité Analyste,Stage Informatique,0.54,0.28,0.11,0.285,0.54,0.3333,0.2,1.0,0.5,0.1749
+Cybersécurité Analyste,Juriste (pour poste RH),0.5,0.0,0.221,0.278,0.5,0.0,0.0,1.0,0.05,0.0225
+Comptable Contrôleur de Gestion,Dev Python Senior,0.501,0.0,0.231,0.148,0.501,0.0,0.0,0.45,0.05,0.0225
+Comptable Contrôleur de Gestion,Dev React Junior,0.509,0.0,0.105,0.157,0.509,0.0,0.4,0.45,0.05,0.02
+Comptable Contrôleur de Gestion,Data Scientist ML,0.509,0.0,0.218,0.139,0.509,0.0,0.0,0.45,0.05,0.0225
+Comptable Contrôleur de Gestion,DevOps AWS Senior,0.503,0.0,0.235,0.145,0.503,0.0,0.0,0.45,0.05,0.0225
+Comptable Contrôleur de Gestion,Dev Java Spring,0.501,0.0,0.209,0.157,0.501,0.0,0.0,0.45,0.05,0.0225
+Comptable Contrôleur de Gestion,Comptable Senior,0.723,0.85,0.907,0.291,0.723,1.0,0.0,1.0,1.0,0.95
+Comptable Contrôleur de Gestion,Auditeur Junior,0.593,0.447,0.624,0.28,0.593,0.3333,0.0,1.0,1.0,0.3325
+Comptable Contrôleur de Gestion,Analyste Financier,0.548,0.727,0.492,0.288,0.548,0.5,0.4,1.0,0.55,0.4094
+Comptable Contrôleur de Gestion,Chargée RH,0.527,0.34,0.377,0.221,0.527,0.1667,0.4,0.75,0.05,0.0749
+Comptable Contrôleur de Gestion,DRH Expérimenté,0.57,0.227,0.356,0.222,0.57,0.0,0.0,0.75,0.05,0.0375
+Comptable Contrôleur de Gestion,Marketing Digital Manager,0.504,0.113,0.262,0.219,0.504,0.1667,0.4,0.75,0.05,0.0749
+Comptable Contrôleur de Gestion,Responsable Logistique,0.515,0.447,0.85,0.215,0.515,0.3333,0.0,0.75,1.0,0.29
+Comptable Contrôleur de Gestion,Acheteur Junior,0.557,0.447,0.609,0.285,0.557,0.3333,0.4,1.0,1.0,0.152
+Comptable Contrôleur de Gestion,Infirmier IDE,0.5,0.0,0.22,0.122,0.5,0.0,0.4,0.45,0.05,0.02
+Comptable Contrôleur de Gestion,Pharmacien,0.501,0.0,0.174,0.141,0.501,0.0,0.0,0.45,0.05,0.02
+Comptable Contrôleur de Gestion,Juriste Droit,0.506,0.0,0.216,0.214,0.506,0.0,0.0,0.75,0.05,0.0375
+Comptable Contrôleur de Gestion,Ingénieur Génie Civil,0.5,0.0,0.233,0.162,0.5,0.0,0.0,0.45,0.05,0.0225
+Comptable Contrôleur de Gestion,Dev Python (pour poste Finance),0.502,0.0,0.214,0.155,0.502,0.0,0.0,0.45,0.05,0.0225
+Comptable Contrôleur de Gestion,Comptable (pour poste IT),0.729,0.833,0.88,0.291,0.729,0.8333,0.0,1.0,1.0,0.9166
+Comptable Contrôleur de Gestion,Infirmier (pour poste Dev),0.5,0.0,0.218,0.122,0.5,0.0,0.4,0.45,0.05,0.02
+Comptable Contrôleur de Gestion,Stage Informatique,0.543,0.0,0.055,0.157,0.543,0.0,0.2,0.45,0.5,0.02
+Comptable Contrôleur de Gestion,Juriste (pour poste RH),0.505,0.0,0.226,0.151,0.505,0.0,0.0,0.45,0.05,0.0375
+Auditeur Financier,Dev Python Senior,0.501,0.0,0.233,0.144,0.501,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,Dev React Junior,0.519,0.0,0.131,0.16,0.519,0.0,0.4,0.45,0.05,0.02
+Auditeur Financier,Data Scientist ML,0.517,0.0,0.222,0.141,0.517,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,DevOps AWS Senior,0.508,0.0,0.241,0.141,0.508,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,Dev Java Spring,0.501,0.0,0.214,0.159,0.501,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,Comptable Senior,0.592,0.672,0.873,0.292,0.592,0.4,0.0,1.0,1.0,0.7
+Auditeur Financier,Auditeur Junior,0.724,1.0,0.917,0.295,0.724,1.0,0.0,1.0,1.0,0.95
+Auditeur Financier,Analyste Financier,0.651,0.608,0.546,0.29,0.651,0.2,0.4,1.0,0.2,0.2138
+Auditeur Financier,Chargée RH,0.531,0.136,0.289,0.22,0.531,0.2,0.4,0.75,0.05,0.1604
+Auditeur Financier,DRH Expérimenté,0.576,0.0,0.247,0.215,0.576,0.0,0.0,0.75,0.05,0.0375
+Auditeur Financier,Marketing Digital Manager,0.511,0.136,0.278,0.216,0.511,0.2,0.4,0.75,0.05,0.1604
+Auditeur Financier,Responsable Logistique,0.525,0.608,0.633,0.209,0.525,0.2,0.0,0.75,0.2,0.261
+Auditeur Financier,Acheteur Junior,0.578,0.608,0.518,0.279,0.578,0.2,0.4,1.0,0.2,0.1604
+Auditeur Financier,Infirmier IDE,0.5,0.0,0.226,0.122,0.5,0.0,0.4,0.45,0.05,0.02
+Auditeur Financier,Pharmacien,0.501,0.0,0.221,0.14,0.501,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,Juriste Droit,0.515,0.0,0.219,0.218,0.515,0.0,0.0,0.75,0.05,0.0375
+Auditeur Financier,Ingénieur Génie Civil,0.5,0.12,0.288,0.156,0.5,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,Dev Python (pour poste Finance),0.504,0.0,0.212,0.154,0.504,0.0,0.0,0.45,0.05,0.0225
+Auditeur Financier,Comptable (pour poste IT),0.636,0.672,0.849,0.292,0.636,0.4,0.0,1.0,1.0,0.7
+Auditeur Financier,Infirmier (pour poste Dev),0.501,0.0,0.227,0.122,0.501,0.0,0.4,0.45,0.05,0.02
+Auditeur Financier,Stage Informatique,0.585,0.0,0.048,0.155,0.585,0.0,0.2,0.45,0.5,0.02
+Auditeur Financier,Juriste (pour poste RH),0.514,0.0,0.229,0.147,0.514,0.0,0.0,0.45,0.05,0.0375
+Analyste Financier Junior,Dev Python Senior,0.502,0.0,0.268,0.271,0.502,0.0,-0.4,1.0,0.05,0.0225
+Analyste Financier Junior,Dev React Junior,0.511,0.0,0.216,0.283,0.511,0.0,0.0,1.0,0.05,0.0225
+Analyste Financier Junior,Data Scientist ML,0.513,0.0,0.249,0.271,0.513,0.0,-0.4,1.0,0.05,0.0225
+Analyste Financier Junior,DevOps AWS Senior,0.503,0.0,0.269,0.272,0.503,0.0,-0.4,1.0,0.05,0.0225
+Analyste Financier Junior,Dev Java Spring,0.502,0.0,0.246,0.283,0.502,0.0,-0.4,1.0,0.05,0.0225
+Analyste Financier Junior,Comptable Senior,0.549,0.6,0.891,0.161,0.549,0.6,-0.4,0.45,0.55,0.8
+Analyste Financier Junior,Auditeur Junior,0.573,0.2,0.453,0.162,0.573,0.2,-0.4,0.45,0.2,0.348
+Analyste Financier Junior,Analyste Financier,0.731,1.0,0.92,0.158,0.731,1.0,0.0,0.45,1.0,0.95
+Analyste Financier Junior,Chargée RH,0.529,0.408,0.484,0.151,0.529,0.2,0.0,0.45,0.05,0.261
+Analyste Financier Junior,DRH Expérimenté,0.553,0.272,0.431,0.15,0.553,0.0,-0.4,0.45,0.05,0.0375
+Analyste Financier Junior,Marketing Digital Manager,0.505,0.136,0.298,0.149,0.505,0.2,0.0,0.45,0.05,0.261
+Analyste Financier Junior,Responsable Logistique,0.511,0.2,0.591,0.212,0.511,0.2,-0.4,0.75,0.2,0.261
+Analyste Financier Junior,Acheteur Junior,0.529,0.2,0.431,0.147,0.529,0.2,0.0,0.45,0.2,0.261
+Analyste Financier Junior,Infirmier IDE,0.5,0.0,0.243,0.123,0.5,0.0,0.0,0.45,0.05,0.0225
+Analyste Financier Junior,Pharmacien,0.506,0.0,0.233,0.138,0.506,0.0,-0.4,0.45,0.05,0.0225
+Analyste Financier Junior,Juriste Droit,0.505,0.0,0.24,0.146,0.505,0.0,-0.4,0.45,0.05,0.0375
+Analyste Financier Junior,Ingénieur Génie Civil,0.5,0.0,0.255,0.154,0.5,0.0,-0.4,0.45,0.05,0.0225
+Analyste Financier Junior,Dev Python (pour poste Finance),0.503,0.0,0.241,0.282,0.503,0.0,-0.4,1.0,0.05,0.0225
+Analyste Financier Junior,Comptable (pour poste IT),0.623,0.6,0.865,0.161,0.623,0.6,-0.4,0.45,0.55,0.8
+Analyste Financier Junior,Infirmier (pour poste Dev),0.501,0.0,0.241,0.123,0.501,0.0,0.0,0.45,0.05,0.0225
+Analyste Financier Junior,Stage Informatique,0.542,0.0,0.048,0.284,0.542,0.0,-0.2,1.0,0.5,0.02
+Analyste Financier Junior,Juriste (pour poste RH),0.506,0.0,0.239,0.272,0.506,0.0,-0.4,1.0,0.05,0.0375
+Responsable Trésorerie,Dev Python Senior,0.501,0.0,0.195,0.148,0.501,0.0,0.0,0.45,0.05,0.02
+Responsable Trésorerie,Dev React Junior,0.511,0.0,0.09,0.161,0.511,0.0,0.4,0.45,0.05,0.02
+Responsable Trésorerie,Data Scientist ML,0.518,0.0,0.161,0.142,0.518,0.0,0.0,0.45,0.05,0.02
+Responsable Trésorerie,DevOps AWS Senior,0.505,0.0,0.229,0.148,0.505,0.0,0.0,0.45,0.05,0.0225
+Responsable Trésorerie,Dev Java Spring,0.502,0.0,0.182,0.16,0.502,0.0,0.0,0.45,0.05,0.02
+Responsable Trésorerie,Comptable Senior,0.598,0.6,0.742,0.29,0.598,0.6,0.0,1.0,1.0,0.744
+Responsable Trésorerie,Auditeur Junior,0.556,0.536,0.428,0.276,0.556,0.4,0.0,1.0,1.0,0.532
+Responsable Trésorerie,Analyste Financier,0.525,0.672,0.449,0.286,0.525,0.4,0.4,1.0,1.0,0.3197
+Responsable Trésorerie,Chargée RH,0.554,0.136,0.219,0.227,0.554,0.2,0.4,0.75,0.05,0.1253
+Responsable Trésorerie,DRH Expérimenté,0.605,0.0,0.282,0.222,0.605,0.0,0.0,0.75,0.2,0.0375
+Responsable Trésorerie,Marketing Digital Manager,0.502,0.136,0.187,0.218,0.502,0.2,0.4,0.75,0.05,0.1253
+Responsable Trésorerie,Responsable Logistique,0.599,0.536,0.878,0.216,0.599,0.4,0.0,0.75,1.0,0.525
+Responsable Trésorerie,Acheteur Junior,0.552,0.536,0.435,0.284,0.552,0.4,0.4,1.0,1.0,0.2398
+Responsable Trésorerie,Infirmier IDE,0.5,0.0,0.16,0.123,0.5,0.0,0.4,0.45,0.05,0.02
+Responsable Trésorerie,Pharmacien,0.501,0.0,0.123,0.147,0.501,0.0,0.0,0.45,0.05,0.02
+Responsable Trésorerie,Juriste Droit,0.511,0.0,0.153,0.218,0.511,0.0,0.0,0.75,0.05,0.0291
+Responsable Trésorerie,Ingénieur Génie Civil,0.5,0.0,0.189,0.162,0.5,0.0,0.0,0.45,0.05,0.02
+Responsable Trésorerie,Dev Python (pour poste Finance),0.504,0.0,0.153,0.156,0.504,0.0,0.0,0.45,0.05,0.02
+Responsable Trésorerie,Comptable (pour poste IT),0.661,0.6,0.725,0.29,0.661,0.6,0.0,1.0,1.0,0.744
+Responsable Trésorerie,Infirmier (pour poste Dev),0.5,0.0,0.157,0.123,0.5,0.0,0.4,0.45,0.05,0.02
+Responsable Trésorerie,Stage Informatique,0.556,0.0,0.055,0.155,0.556,0.0,0.2,0.45,0.5,0.02
+Responsable Trésorerie,Juriste (pour poste RH),0.509,0.0,0.162,0.153,0.509,0.0,0.0,0.45,0.05,0.0291
+Chargé RH Recrutement,Dev Python Senior,0.5,0.0,0.239,0.146,0.5,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,Dev React Junior,0.503,0.0,0.145,0.161,0.503,0.0,0.0,0.45,0.05,0.02
+Chargé RH Recrutement,Data Scientist ML,0.504,0.0,0.226,0.146,0.504,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,DevOps AWS Senior,0.503,0.0,0.245,0.152,0.503,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,Dev Java Spring,0.501,0.0,0.227,0.162,0.501,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,Comptable Senior,0.507,0.167,0.408,0.219,0.507,0.1667,-0.4,0.75,0.2,0.1225
+Chargé RH Recrutement,Auditeur Junior,0.51,0.167,0.346,0.215,0.51,0.1667,-0.4,0.75,0.2,0.1225
+Chargé RH Recrutement,Analyste Financier,0.503,0.167,0.342,0.221,0.503,0.1667,0.0,0.75,0.2,0.1225
+Chargé RH Recrutement,Chargée RH,0.729,0.727,0.909,0.294,0.729,1.0,0.0,1.0,1.0,0.95
+Chargé RH Recrutement,DRH Expérimenté,0.54,0.167,0.496,0.287,0.54,0.1667,-0.4,1.0,0.2,0.1633
+Chargé RH Recrutement,Marketing Digital Manager,0.502,0.113,0.276,0.229,0.502,0.1667,0.0,0.75,0.05,0.1225
+Chargé RH Recrutement,Responsable Logistique,0.527,0.257,0.653,0.152,0.527,0.1667,-0.4,0.45,0.55,0.0735
+Chargé RH Recrutement,Acheteur Junior,0.515,0.257,0.504,0.226,0.515,0.1667,0.0,0.75,0.55,0.0735
+Chargé RH Recrutement,Infirmier IDE,0.501,0.0,0.228,0.133,0.501,0.0,0.0,0.45,0.05,0.0225
+Chargé RH Recrutement,Pharmacien,0.501,0.0,0.222,0.149,0.501,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,Juriste Droit,0.505,0.0,0.231,0.218,0.505,0.0,-0.4,0.75,0.05,0.0375
+Chargé RH Recrutement,Ingénieur Génie Civil,0.5,0.0,0.24,0.16,0.5,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,Dev Python (pour poste Finance),0.501,0.0,0.223,0.155,0.501,0.0,-0.4,0.45,0.05,0.0225
+Chargé RH Recrutement,Comptable (pour poste IT),0.513,0.167,0.394,0.219,0.513,0.1667,-0.4,0.75,0.2,0.1225
+Chargé RH Recrutement,Infirmier (pour poste Dev),0.502,0.0,0.228,0.133,0.502,0.0,0.0,0.45,0.05,0.0225
+Chargé RH Recrutement,Stage Informatique,0.508,0.0,0.061,0.152,0.508,0.0,-0.2,0.45,0.5,0.02
+Chargé RH Recrutement,Juriste (pour poste RH),0.506,0.0,0.237,0.153,0.506,0.0,-0.4,0.45,0.05,0.0375
+DRH Responsable RH,Dev Python Senior,0.501,0.0,0.0,0.148,0.501,0.0,0.0,0.45,0.05,0.02
+DRH Responsable RH,Dev React Junior,0.503,0.0,0.092,0.16,0.503,0.0,0.4,0.45,0.05,0.02
+DRH Responsable RH,Data Scientist ML,0.504,0.0,0.151,0.144,0.504,0.0,0.0,0.45,0.05,0.02
+DRH Responsable RH,DevOps AWS Senior,0.506,0.0,0.225,0.151,0.506,0.0,0.0,0.45,0.05,0.0225
+DRH Responsable RH,Dev Java Spring,0.501,0.0,0.183,0.157,0.501,0.0,0.0,0.45,0.05,0.02
+DRH Responsable RH,Comptable Senior,0.51,0.0,0.197,0.225,0.51,0.0,0.0,0.75,0.05,0.0333
+DRH Responsable RH,Auditeur Junior,0.511,0.0,0.12,0.216,0.511,0.0,0.0,0.75,0.05,0.0249
+DRH Responsable RH,Analyste Financier,0.504,0.0,0.117,0.227,0.504,0.0,0.4,0.75,0.05,0.02
+DRH Responsable RH,Chargée RH,0.613,0.433,0.576,0.292,0.613,0.3333,0.4,1.0,1.0,0.1949
+DRH Responsable RH,DRH Expérimenté,0.73,1.0,0.936,0.292,0.73,1.0,0.0,1.0,1.0,0.95
+DRH Responsable RH,Marketing Digital Manager,0.503,0.1,0.187,0.225,0.503,0.0,0.4,0.75,0.05,0.02
+DRH Responsable RH,Responsable Logistique,0.563,0.0,0.232,0.148,0.563,0.0,0.0,0.45,0.05,0.0225
+DRH Responsable RH,Acheteur Junior,0.511,0.0,0.124,0.231,0.511,0.0,0.4,0.75,0.05,0.02
+DRH Responsable RH,Infirmier IDE,0.502,0.0,0.162,0.122,0.502,0.0,0.4,0.45,0.05,0.02
+DRH Responsable RH,Pharmacien,0.5,0.0,0.135,0.156,0.5,0.0,0.0,0.45,0.05,0.02
+DRH Responsable RH,Juriste Droit,0.513,0.113,0.209,0.224,0.513,0.0,0.0,0.75,0.05,0.0291
+DRH Responsable RH,Ingénieur Génie Civil,0.501,0.0,0.202,0.161,0.501,0.0,0.0,0.45,0.05,0.02
+DRH Responsable RH,Dev Python (pour poste Finance),0.502,0.0,0.152,0.157,0.502,0.0,0.0,0.45,0.05,0.02
+DRH Responsable RH,Comptable (pour poste IT),0.514,0.0,0.183,0.225,0.514,0.0,0.0,0.75,0.05,0.0333
+DRH Responsable RH,Infirmier (pour poste Dev),0.502,0.0,0.157,0.122,0.502,0.0,0.4,0.45,0.05,0.02
+DRH Responsable RH,Stage Informatique,0.52,0.0,0.0,0.156,0.52,0.0,0.2,0.45,0.5,0.02
+DRH Responsable RH,Juriste (pour poste RH),0.525,0.167,0.255,0.16,0.525,0.1667,0.0,0.45,0.05,0.099
+Responsable Marketing Digital,Dev Python Senior,0.5,0.0,0.241,0.268,0.5,0.0,-0.4,1.0,0.05,0.0225
+Responsable Marketing Digital,Dev React Junior,0.517,0.0,0.144,0.284,0.517,0.0,0.0,1.0,0.05,0.02
+Responsable Marketing Digital,Data Scientist ML,0.502,0.0,0.222,0.273,0.502,0.0,-0.4,1.0,0.05,0.0225
+Responsable Marketing Digital,DevOps AWS Senior,0.502,0.0,0.245,0.273,0.502,0.0,-0.4,1.0,0.05,0.0225
+Responsable Marketing Digital,Dev Java Spring,0.501,0.0,0.224,0.284,0.501,0.0,-0.4,1.0,0.05,0.0225
+Responsable Marketing Digital,Comptable Senior,0.503,0.0,0.241,0.157,0.503,0.0,-0.4,0.45,0.05,0.0375
+Responsable Marketing Digital,Auditeur Junior,0.501,0.0,0.222,0.152,0.501,0.0,-0.4,0.45,0.05,0.0375
+Responsable Marketing Digital,Analyste Financier,0.5,0.0,0.216,0.151,0.5,0.0,0.0,0.45,0.05,0.0375
+Responsable Marketing Digital,Chargée RH,0.511,0.0,0.238,0.156,0.511,0.0,0.0,0.45,0.05,0.0375
+Responsable Marketing Digital,DRH Expérimenté,0.544,0.12,0.448,0.153,0.544,0.0,-0.4,0.45,0.2,0.0375
+Responsable Marketing Digital,Marketing Digital Manager,0.726,0.84,0.912,0.164,0.726,1.0,0.0,0.45,1.0,0.95
+Responsable Marketing Digital,Responsable Logistique,0.504,0.0,0.245,0.215,0.504,0.0,-0.4,0.75,0.05,0.0225
+Responsable Marketing Digital,Acheteur Junior,0.51,0.0,0.217,0.152,0.51,0.0,0.0,0.45,0.05,0.0225
+Responsable Marketing Digital,Infirmier IDE,0.5,0.0,0.222,0.127,0.5,0.0,0.0,0.45,0.05,0.0225
+Responsable Marketing Digital,Pharmacien,0.5,0.0,0.22,0.147,0.5,0.0,-0.4,0.45,0.05,0.0225
+Responsable Marketing Digital,Juriste Droit,0.502,0.0,0.232,0.152,0.502,0.0,-0.4,0.45,0.05,0.0225
+Responsable Marketing Digital,Ingénieur Génie Civil,0.5,0.0,0.233,0.153,0.5,0.0,-0.4,0.45,0.05,0.0225
+Responsable Marketing Digital,Dev Python (pour poste Finance),0.5,0.0,0.222,0.283,0.5,0.0,-0.4,1.0,0.05,0.0225
+Responsable Marketing Digital,Comptable (pour poste IT),0.51,0.0,0.225,0.157,0.51,0.0,-0.4,0.45,0.05,0.0375
+Responsable Marketing Digital,Infirmier (pour poste Dev),0.5,0.0,0.223,0.127,0.5,0.0,0.0,0.45,0.05,0.0225
+Responsable Marketing Digital,Stage Informatique,0.529,0.0,0.057,0.281,0.529,0.0,-0.2,1.0,0.5,0.02
+Responsable Marketing Digital,Juriste (pour poste RH),0.501,0.0,0.235,0.286,0.501,0.0,-0.4,1.0,0.05,0.0225
+Chef de Projet Communication,Dev Python Senior,0.5,0.0,0.234,0.147,0.5,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,Dev React Junior,0.503,0.0,0.115,0.16,0.503,0.0,0.4,0.45,0.05,0.02
+Chef de Projet Communication,Data Scientist ML,0.501,0.0,0.216,0.14,0.501,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,DevOps AWS Senior,0.501,0.0,0.229,0.145,0.501,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,Dev Java Spring,0.5,0.0,0.216,0.161,0.5,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,Comptable Senior,0.5,0.2,0.521,0.22,0.5,0.2,0.0,0.75,0.55,0.261
+Chef de Projet Communication,Auditeur Junior,0.503,0.2,0.333,0.218,0.503,0.2,0.0,0.75,0.55,0.2204
+Chef de Projet Communication,Analyste Financier,0.5,0.2,0.333,0.222,0.5,0.2,0.4,0.75,0.55,0.1311
+Chef de Projet Communication,Chargée RH,0.503,0.272,0.356,0.226,0.503,0.4,0.4,0.75,0.05,0.3305
+Chef de Projet Communication,DRH Expérimenté,0.511,0.0,0.243,0.22,0.511,0.0,0.0,0.75,0.05,0.0375
+Chef de Projet Communication,Marketing Digital Manager,0.504,0.136,0.283,0.291,0.504,0.2,0.4,1.0,0.05,0.2138
+Chef de Projet Communication,Responsable Logistique,0.501,0.2,0.565,0.144,0.501,0.2,0.0,0.45,0.55,0.1566
+Chef de Projet Communication,Acheteur Junior,0.505,0.2,0.336,0.224,0.505,0.2,0.4,0.75,0.55,0.0787
+Chef de Projet Communication,Infirmier IDE,0.5,0.0,0.223,0.123,0.5,0.0,0.4,0.45,0.05,0.02
+Chef de Projet Communication,Pharmacien,0.5,0.0,0.165,0.148,0.5,0.0,0.0,0.45,0.05,0.02
+Chef de Projet Communication,Juriste Droit,0.501,0.12,0.277,0.152,0.501,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,Ingénieur Génie Civil,0.5,0.0,0.231,0.162,0.5,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,Dev Python (pour poste Finance),0.5,0.0,0.214,0.156,0.5,0.0,0.0,0.45,0.05,0.0225
+Chef de Projet Communication,Comptable (pour poste IT),0.502,0.2,0.501,0.22,0.502,0.2,0.0,0.75,0.55,0.261
+Chef de Projet Communication,Infirmier (pour poste Dev),0.5,0.0,0.221,0.123,0.5,0.0,0.4,0.45,0.05,0.02
+Chef de Projet Communication,Stage Informatique,0.505,0.0,0.053,0.156,0.505,0.0,0.2,0.45,0.5,0.02
+Chef de Projet Communication,Juriste (pour poste RH),0.501,0.12,0.285,0.153,0.501,0.0,0.0,0.45,0.05,0.0225
+Responsable Logistique Supply Chain,Dev Python Senior,0.501,0.0,0.229,0.224,0.501,0.0,0.0,0.75,0.05,0.0375
+Responsable Logistique Supply Chain,Dev React Junior,0.507,0.0,0.096,0.238,0.507,0.0,0.4,0.75,0.05,0.02
+Responsable Logistique Supply Chain,Data Scientist ML,0.511,0.0,0.183,0.219,0.511,0.0,0.0,0.75,0.05,0.0323
+Responsable Logistique Supply Chain,DevOps AWS Senior,0.507,0.0,0.235,0.224,0.507,0.0,0.0,0.75,0.05,0.0375
+Responsable Logistique Supply Chain,Dev Java Spring,0.502,0.0,0.218,0.232,0.502,0.0,0.0,0.75,0.05,0.0375
+Responsable Logistique Supply Chain,Comptable Senior,0.579,0.333,0.724,0.228,0.579,0.3333,0.0,0.75,1.0,0.29
+Responsable Logistique Supply Chain,Auditeur Junior,0.558,0.28,0.259,0.219,0.558,0.1667,0.0,0.75,0.2,0.0931
+Responsable Logistique Supply Chain,Analyste Financier,0.519,0.28,0.262,0.23,0.519,0.1667,0.4,0.75,0.2,0.0537
+Responsable Logistique Supply Chain,Chargée RH,0.596,0.22,0.319,0.166,0.596,0.1667,0.4,0.45,0.2,0.0386
+Responsable Logistique Supply Chain,DRH Expérimenté,0.586,0.0,0.295,0.157,0.586,0.0,0.0,0.45,0.05,0.0225
+Responsable Logistique Supply Chain,Marketing Digital Manager,0.51,0.113,0.217,0.161,0.51,0.1667,0.4,0.45,0.05,0.0386
+Responsable Logistique Supply Chain,Responsable Logistique,0.728,1.0,0.936,0.297,0.728,1.0,0.0,1.0,1.0,0.95
+Responsable Logistique Supply Chain,Acheteur Junior,0.67,0.62,0.524,0.245,0.67,0.5,0.4,0.75,1.0,0.3758
+Responsable Logistique Supply Chain,Infirmier IDE,0.5,0.0,0.183,0.127,0.5,0.0,0.4,0.45,0.05,0.02
+Responsable Logistique Supply Chain,Pharmacien,0.501,0.0,0.15,0.153,0.501,0.0,0.0,0.45,0.05,0.02
+Responsable Logistique Supply Chain,Juriste Droit,0.513,0.0,0.188,0.153,0.513,0.0,0.0,0.45,0.05,0.02
+Responsable Logistique Supply Chain,Ingénieur Génie Civil,0.503,0.0,0.229,0.228,0.503,0.0,0.0,0.75,0.05,0.0375
+Responsable Logistique Supply Chain,Dev Python (pour poste Finance),0.502,0.0,0.178,0.229,0.502,0.0,0.0,0.75,0.05,0.0323
+Responsable Logistique Supply Chain,Comptable (pour poste IT),0.624,0.333,0.702,0.228,0.624,0.3333,0.0,0.75,1.0,0.29
+Responsable Logistique Supply Chain,Infirmier (pour poste Dev),0.5,0.0,0.179,0.127,0.5,0.0,0.4,0.45,0.05,0.02
+Responsable Logistique Supply Chain,Stage Informatique,0.573,0.0,0.057,0.228,0.573,0.0,0.2,0.75,0.5,0.02
+Responsable Logistique Supply Chain,Juriste (pour poste RH),0.507,0.0,0.187,0.221,0.507,0.0,0.0,0.75,0.05,0.02
+Acheteur Approvisionneur,Dev Python Senior,0.501,0.0,0.24,0.273,0.501,0.0,-0.4,1.0,0.05,0.0375
+Acheteur Approvisionneur,Dev React Junior,0.508,0.0,0.133,0.288,0.508,0.0,0.0,1.0,0.05,0.027
+Acheteur Approvisionneur,Data Scientist ML,0.505,0.0,0.229,0.27,0.505,0.0,-0.4,1.0,0.05,0.0375
+Acheteur Approvisionneur,DevOps AWS Senior,0.503,0.0,0.244,0.274,0.503,0.0,-0.4,1.0,0.05,0.0375
+Acheteur Approvisionneur,Dev Java Spring,0.501,0.0,0.228,0.286,0.501,0.0,-0.4,1.0,0.05,0.0375
+Acheteur Approvisionneur,Comptable Senior,0.523,0.4,0.783,0.155,0.523,0.4,-0.4,0.45,1.0,0.525
+Acheteur Approvisionneur,Auditeur Junior,0.561,0.336,0.44,0.153,0.561,0.2,-0.4,0.45,0.2,0.261
+Acheteur Approvisionneur,Analyste Financier,0.515,0.336,0.447,0.156,0.515,0.2,0.0,0.45,0.2,0.261
+Acheteur Approvisionneur,Chargée RH,0.521,0.264,0.434,0.159,0.521,0.2,0.0,0.45,0.2,0.1566
+Acheteur Approvisionneur,DRH Expérimenté,0.535,0.0,0.252,0.149,0.535,0.0,-0.4,0.45,0.05,0.0225
+Acheteur Approvisionneur,Marketing Digital Manager,0.505,0.136,0.279,0.157,0.505,0.2,0.0,0.45,0.05,0.1566
+Acheteur Approvisionneur,Responsable Logistique,0.569,0.78,0.885,0.22,0.569,0.6,-0.4,0.75,1.0,0.8
+Acheteur Approvisionneur,Acheteur Junior,0.729,1.0,0.916,0.157,0.729,1.0,0.0,0.45,1.0,0.95
+Acheteur Approvisionneur,Infirmier IDE,0.5,0.0,0.225,0.127,0.5,0.0,0.0,0.45,0.05,0.0225
+Acheteur Approvisionneur,Pharmacien,0.502,0.0,0.23,0.152,0.502,0.0,-0.4,0.45,0.05,0.0225
+Acheteur Approvisionneur,Juriste Droit,0.515,0.2,0.585,0.154,0.515,0.2,-0.4,0.45,1.0,0.1566
+Acheteur Approvisionneur,Ingénieur Génie Civil,0.5,0.0,0.237,0.16,0.5,0.0,-0.4,0.45,0.05,0.0375
+Acheteur Approvisionneur,Dev Python (pour poste Finance),0.501,0.0,0.226,0.283,0.501,0.0,-0.4,1.0,0.05,0.0375
+Acheteur Approvisionneur,Comptable (pour poste IT),0.557,0.4,0.76,0.155,0.557,0.4,-0.4,0.45,1.0,0.525
+Acheteur Approvisionneur,Infirmier (pour poste Dev),0.5,0.0,0.221,0.127,0.5,0.0,0.0,0.45,0.05,0.0225
+Acheteur Approvisionneur,Stage Informatique,0.562,0.0,0.055,0.281,0.562,0.0,-0.2,1.0,0.5,0.02
+Acheteur Approvisionneur,Juriste (pour poste RH),0.507,0.0,0.235,0.275,0.507,0.0,-0.4,1.0,0.05,0.0225
+Infirmier Soins Intensifs,Dev Python Senior,0.5,0.0,0.234,0.142,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Dev React Junior,0.5,0.0,0.14,0.163,0.5,0.0,0.0,0.45,0.05,0.02
+Infirmier Soins Intensifs,Data Scientist ML,0.5,0.0,0.219,0.146,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,DevOps AWS Senior,0.5,0.0,0.248,0.142,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Dev Java Spring,0.5,0.0,0.225,0.167,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Comptable Senior,0.5,0.0,0.233,0.144,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Auditeur Junior,0.501,0.0,0.213,0.138,0.501,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Analyste Financier,0.5,0.0,0.21,0.148,0.5,0.0,0.0,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Chargée RH,0.503,0.0,0.221,0.156,0.503,0.0,0.0,0.45,0.05,0.0225
+Infirmier Soins Intensifs,DRH Expérimenté,0.519,0.0,0.251,0.153,0.519,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Marketing Digital Manager,0.5,0.0,0.213,0.143,0.5,0.0,0.0,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Responsable Logistique,0.501,0.0,0.234,0.139,0.501,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Acheteur Junior,0.502,0.0,0.214,0.152,0.502,0.0,0.0,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Infirmier IDE,0.727,1.0,0.937,0.275,0.727,1.0,0.0,1.0,1.0,0.95
+Infirmier Soins Intensifs,Pharmacien,0.501,0.368,0.393,0.275,0.501,0.0,-0.4,1.0,0.05,0.05
+Infirmier Soins Intensifs,Juriste Droit,0.501,0.0,0.221,0.147,0.501,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Ingénieur Génie Civil,0.5,0.0,0.23,0.159,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Dev Python (pour poste Finance),0.5,0.0,0.217,0.158,0.5,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Comptable (pour poste IT),0.503,0.0,0.221,0.144,0.503,0.0,-0.4,0.45,0.05,0.0225
+Infirmier Soins Intensifs,Infirmier (pour poste Dev),0.727,0.844,0.928,0.275,0.727,0.8,0.0,1.0,1.0,0.9
+Infirmier Soins Intensifs,Stage Informatique,0.51,0.0,0.047,0.155,0.51,0.0,-0.2,0.45,0.5,0.02
+Infirmier Soins Intensifs,Juriste (pour poste RH),0.502,0.0,0.227,0.149,0.502,0.0,-0.4,0.45,0.05,0.0225
+Pharmacien Officine,Dev Python Senior,0.501,0.0,0.256,0.152,0.501,0.0,0.0,0.45,0.05,0.0225
+Pharmacien Officine,Dev React Junior,0.512,0.0,0.213,0.158,0.512,0.0,0.4,0.45,0.05,0.02
+Pharmacien Officine,Data Scientist ML,0.505,0.0,0.237,0.145,0.505,0.0,0.0,0.45,0.05,0.0225
+Pharmacien Officine,DevOps AWS Senior,0.503,0.0,0.264,0.147,0.503,0.0,0.0,0.45,0.05,0.0225
+Pharmacien Officine,Dev Java Spring,0.5,0.0,0.243,0.153,0.5,0.0,0.0,0.45,0.05,0.0225
+Pharmacien Officine,Comptable Senior,0.518,0.0,0.257,0.278,0.518,0.0,0.0,1.0,0.05,0.0225
+Pharmacien Officine,Auditeur Junior,0.544,0.0,0.226,0.272,0.544,0.0,0.0,1.0,0.05,0.0225
+Pharmacien Officine,Analyste Financier,0.511,0.0,0.225,0.281,0.511,0.0,0.4,1.0,0.05,0.02
+Pharmacien Officine,Chargée RH,0.542,0.0,0.236,0.224,0.542,0.0,0.4,0.75,0.05,0.02
+Pharmacien Officine,DRH Expérimenté,0.625,0.0,0.294,0.225,0.625,0.0,0.0,0.75,0.2,0.0225
+Pharmacien Officine,Marketing Digital Manager,0.504,0.0,0.232,0.22,0.504,0.0,0.4,0.75,0.05,0.02
+Pharmacien Officine,Responsable Logistique,0.515,0.0,0.267,0.219,0.515,0.0,0.0,0.75,0.05,0.0225
+Pharmacien Officine,Acheteur Junior,0.618,0.0,0.236,0.285,0.618,0.0,0.4,1.0,0.05,0.02
+Pharmacien Officine,Infirmier IDE,0.519,0.028,0.2,0.129,0.519,0.0,0.4,0.45,0.2,0.0297
+Pharmacien Officine,Pharmacien,0.728,1.0,0.92,0.164,0.728,1.0,0.0,0.45,1.0,0.95
+Pharmacien Officine,Juriste Droit,0.523,0.15,0.323,0.223,0.523,0.0,0.0,0.75,0.05,0.0225
+Pharmacien Officine,Ingénieur Génie Civil,0.5,0.0,0.257,0.152,0.5,0.0,0.0,0.45,0.05,0.0225
+Pharmacien Officine,Dev Python (pour poste Finance),0.501,0.0,0.231,0.156,0.501,0.0,0.0,0.45,0.05,0.0225
+Pharmacien Officine,Comptable (pour poste IT),0.615,0.0,0.242,0.278,0.615,0.0,0.0,1.0,0.05,0.0225
+Pharmacien Officine,Infirmier (pour poste Dev),0.56,0.028,0.194,0.129,0.56,0.0,0.4,0.45,0.2,0.0297
+Pharmacien Officine,Stage Informatique,0.577,0.0,0.037,0.155,0.577,0.0,0.2,0.45,0.5,0.02
+Pharmacien Officine,Juriste (pour poste RH),0.521,0.15,0.32,0.149,0.521,0.0,0.0,0.45,0.05,0.0225
+Juriste Droit des Affaires,Dev Python Senior,0.5,0.0,0.232,0.145,0.5,0.0,0.0,1.0,0.05,0.0225
+Juriste Droit des Affaires,Dev React Junior,0.5,0.0,0.11,0.164,0.5,0.0,0.4,1.0,0.05,0.02
+Juriste Droit des Affaires,Data Scientist ML,0.5,0.0,0.217,0.142,0.5,0.0,0.0,1.0,0.05,0.0225
+Juriste Droit des Affaires,DevOps AWS Senior,0.5,0.0,0.226,0.147,0.5,0.0,0.0,1.0,0.05,0.0225
+Juriste Droit des Affaires,Dev Java Spring,0.5,0.0,0.217,0.156,0.5,0.0,0.0,1.0,0.05,0.0225
+Juriste Droit des Affaires,Comptable Senior,0.5,0.0,0.22,0.153,0.5,0.0,0.0,0.45,0.05,0.0225
+Juriste Droit des Affaires,Auditeur Junior,0.504,0.0,0.161,0.148,0.504,0.0,0.0,0.45,0.05,0.02
+Juriste Droit des Affaires,Analyste Financier,0.5,0.0,0.158,0.155,0.5,0.0,0.4,0.45,0.05,0.02
+Juriste Droit des Affaires,Chargée RH,0.501,0.0,0.216,0.228,0.501,0.0,0.4,0.45,0.05,0.0222
+Juriste Droit des Affaires,DRH Expérimenté,0.552,0.2,0.446,0.214,0.552,0.0,0.0,0.45,0.2,0.0375
+Juriste Droit des Affaires,Marketing Digital Manager,0.5,0.0,0.21,0.156,0.5,0.0,0.4,0.45,0.05,0.02
+Juriste Droit des Affaires,Responsable Logistique,0.5,0.0,0.224,0.145,0.5,0.0,0.0,0.75,0.05,0.0225
+Juriste Droit des Affaires,Acheteur Junior,0.511,0.2,0.411,0.16,0.511,0.2,0.4,0.45,1.0,0.0787
+Juriste Droit des Affaires,Infirmier IDE,0.5,0.0,0.219,0.122,0.5,0.0,0.4,0.45,0.05,0.02
+Juriste Droit des Affaires,Pharmacien,0.5,0.0,0.171,0.156,0.5,0.0,0.0,0.45,0.05,0.02
+Juriste Droit des Affaires,Juriste Droit,0.73,1.0,0.91,0.296,0.73,1.0,0.0,0.45,1.0,0.95
+Juriste Droit des Affaires,Ingénieur Génie Civil,0.5,0.0,0.224,0.158,0.5,0.0,0.0,0.45,0.05,0.0225
+Juriste Droit des Affaires,Dev Python (pour poste Finance),0.5,0.0,0.214,0.158,0.5,0.0,0.0,1.0,0.05,0.0225
+Juriste Droit des Affaires,Comptable (pour poste IT),0.5,0.0,0.207,0.153,0.5,0.0,0.0,0.45,0.05,0.0225
+Juriste Droit des Affaires,Infirmier (pour poste Dev),0.5,0.0,0.214,0.122,0.5,0.0,0.4,0.45,0.05,0.02
+Juriste Droit des Affaires,Stage Informatique,0.505,0.0,0.052,0.156,0.505,0.0,0.2,1.0,0.5,0.02
+Juriste Droit des Affaires,Juriste (pour poste RH),0.553,0.52,0.689,0.163,0.553,0.2,0.0,1.0,0.55,0.348
+Ingénieur Génie Civil BTP,Dev Python Senior,0.5,0.0,0.229,0.158,0.5,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Dev React Junior,0.515,0.0,0.111,0.16,0.515,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Data Scientist ML,0.504,0.0,0.214,0.145,0.504,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,DevOps AWS Senior,0.507,0.0,0.24,0.147,0.507,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Dev Java Spring,0.52,0.0,0.211,0.169,0.52,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Comptable Senior,0.502,0.004,0.238,0.152,0.502,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Auditeur Junior,0.517,0.004,0.168,0.148,0.517,0.0,0.0,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Analyste Financier,0.501,0.004,0.163,0.158,0.501,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Chargée RH,0.509,0.0,0.224,0.155,0.509,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,DRH Expérimenté,0.585,0.0,0.245,0.151,0.585,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Marketing Digital Manager,0.501,0.0,0.213,0.149,0.501,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Responsable Logistique,0.505,0.004,0.228,0.216,0.505,0.0,0.0,0.75,0.05,0.0375
+Ingénieur Génie Civil BTP,Acheteur Junior,0.527,0.004,0.165,0.16,0.527,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Infirmier IDE,0.501,0.0,0.224,0.129,0.501,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Pharmacien,0.5,0.0,0.167,0.143,0.5,0.0,0.0,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Juriste Droit,0.502,0.0,0.218,0.147,0.502,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Ingénieur Génie Civil,0.728,1.0,0.925,0.316,0.728,1.0,0.0,1.0,1.0,0.95
+Ingénieur Génie Civil BTP,Dev Python (pour poste Finance),0.501,0.0,0.209,0.157,0.501,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Comptable (pour poste IT),0.522,0.004,0.221,0.152,0.522,0.0,0.0,0.45,0.05,0.0225
+Ingénieur Génie Civil BTP,Infirmier (pour poste Dev),0.501,0.0,0.222,0.129,0.501,0.0,0.4,0.45,0.05,0.02
+Ingénieur Génie Civil BTP,Stage Informatique,0.602,0.0,0.054,0.157,0.602,0.0,0.2,0.45,0.5,0.02
+Ingénieur Génie Civil BTP,Juriste (pour poste RH),0.503,0.0,0.231,0.149,0.503,0.0,0.0,0.45,0.05,0.0225

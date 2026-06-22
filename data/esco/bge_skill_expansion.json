@@ -1,0 +1,98 @@
+{
+  "sql": [
+    "sql server"
+  ],
+  "sass": [
+    "sas"
+  ],
+  "elysia": [
+    "elisa"
+  ],
+  "postgresql": [
+    "postgres"
+  ],
+  "postgres": [
+    "postgresql"
+  ],
+  "sql server": [
+    "sql"
+  ],
+  "gitlab ci": [
+    "gitlab"
+  ],
+  "serverless framework": [
+    "serverless"
+  ],
+  "gitlab": [
+    "gitlab ci"
+  ],
+  "openapi": [
+    "openai api"
+  ],
+  "openai api": [
+    "openapi"
+  ],
+  "serverless": [
+    "serverless framework"
+  ],
+  "up-selling": [
+    "upselling"
+  ],
+  "cross-selling": [
+    "cross selling"
+  ],
+  "upselling": [
+    "up-selling"
+  ],
+  "cross selling": [
+    "cross-selling"
+  ],
+  "b2b": [
+    "b2c"
+  ],
+  "b2c": [
+    "b2b"
+  ],
+  "adobe indesign": [
+    "indesign"
+  ],
+  "sketch": [
+    "sketchup"
+  ],
+  "normes haccp": [
+    "haccp"
+  ],
+  "négociation syndicale": [
+    "négociation contractuelle"
+  ],
+  "négociation contractuelle": [
+    "négociation syndicale"
+  ],
+  "iso 27001": [
+    "iso 14001"
+  ],
+  "sketchup": [
+    "sketch"
+  ],
+  "indesign": [
+    "adobe indesign"
+  ],
+  "maîtrise d'œuvre": [
+    "maîtrise d'ouvrage"
+  ],
+  "maîtrise d'ouvrage": [
+    "maîtrise d'œuvre"
+  ],
+  "elisa": [
+    "elysia"
+  ],
+  "sas": [
+    "sass"
+  ],
+  "iso 14001": [
+    "iso 27001"
+  ],
+  "haccp": [
+    "normes haccp"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "version": "TalentMatch-MLP v4.0 — Universal 50 domaines — 7 features",
+  "date": "2026-05-26 13:58",
+  "base_model": "BAAI/bge-m3 + BAAI/bge-reranker-v2-m3",
+  "architecture": "7 → 64 → 32 → 1",
+  "features": [
+    "sem_bge",
+    "comp_bge",
+    "exp_bge",
+    "form_bge",
+    "skills_raw",
+    "edu_gap_norm",
+    "domain_compat_score"
+  ],
+  "dataset": {
+    "source": "Dataset universel synthétique 50 domaines professionnels",
+    "csv": "C:\\Users\\youssef\\Desktop\\3s-talentmatch\\data\\mlp_training_universal\\dataset.csv",
+    "total": 2915,
+    "train": 2332,
+    "val": 583,
+    "same": 2385,
+    "adjacent": 318,
+    "different": 212
+  },
+  "hyperparametres": {
+    "epochs": 300,
+    "batch_size": 32,
+    "lr": 0.001,
+    "optimizer": "Adam + CosineAnnealingLR",
+    "sampling": "WeightedRandomSampler (adjacent×2.5, different×2.0)"
+  },
+  "evaluation": {
+    "best_val_loss": 0.000166,
+    "mae_final_pct": 1.04,
+    "accuracy_categorie": 0.9444,
+    "mae_by_domain_type": {
+      "same": 0.0105,
+      "adjacent": 0.0114,
+      "different": 0.0087
+    }
+  }
+}

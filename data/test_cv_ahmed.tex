@@ -1,0 +1,140 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[top=1.5cm, bottom=1.5cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{parskip}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% Couleurs
+\definecolor{primary}{RGB}{20,60,120}
+\definecolor{secondary}{RGB}{80,80,80}
+\definecolor{lightgray}{RGB}{240,240,240}
+\definecolor{accent}{RGB}{0,120,215}
+
+% Commande section
+\newcommand{\cvsection}[1]{%
+    \vspace{6pt}%
+    {\color{primary}\large\bfseries #1}%
+    \vspace{1pt}%
+    {\color{primary}\hrule height 1.2pt}%
+    \vspace{4pt}%
+}
+
+% Commande entrée expérience/formation
+\newcommand{\cventry}[4]{%
+    \textbf{#1} \hfill \textcolor{secondary}{\small #2}\\%
+    \textit{\textcolor{secondary}{#3}} \hfill \textcolor{secondary}{\small\faMapMarker*\ #4}%
+    \vspace{1pt}%
+}
+
+\begin{document}
+
+% ════════════════════════════════════════════════════════════════
+% EN-TÊTE
+% ════════════════════════════════════════════════════════════════
+\begin{center}
+    {\Huge\bfseries\color{primary} Ahmed Ben Salah}\\[5pt]
+    {\large\color{secondary} Ingénieur Logiciel Full Stack \& DevOps}\\[6pt]
+    \textcolor{secondary}{
+        \faEnvelope\ \texttt{ahmed.bensalah@gmail.com}
+        \quad\textbf{·}\quad
+        \faPhone\ +216 55 987 654
+        \quad\textbf{·}\quad
+        \faLinkedin\ \href{https://linkedin.com/in/ahmedbensalah}{linkedin.com/in/ahmedbensalah}
+        \quad\textbf{·}\quad
+        \faGithub\ \href{https://github.com/ahmedbensalah}{github.com/ahmedbensalah}
+    }
+\end{center}
+
+\vspace{2pt}
+{\color{primary}\hrule height 2pt}
+\vspace{8pt}
+
+% ════════════════════════════════════════════════════════════════
+% COMPÉTENCES TECHNIQUES
+% ════════════════════════════════════════════════════════════════
+\cvsection{Compétences Techniques}
+
+\begin{tabular}{@{}lp{13cm}}
+    \textbf{Langages}        & Pyhton, JavaScrip, Java, C++, SQL, Bash \\[2pt]
+    \textbf{Frameworks}      & Djnago REST, Reactjs, Sprinng Boot, Vuejs, Node.js \\[2pt]
+    \textbf{Bases de données}& MySQL, Mongoo DB, Postgress, Rediss, Oracle \\[2pt]
+    \textbf{DevOps / Cloud}  & Doker, Kubrnetes, AWS, Ansible, Terraform, Jenkins \\[2pt]
+    \textbf{Outils}          & Git, GitHub, Figma, VS Code, Jira, SonarQube \\
+\end{tabular}
+
+% ════════════════════════════════════════════════════════════════
+% EXPÉRIENCES PROFESSIONNELLES
+% ════════════════════════════════════════════════════════════════
+\cvsection{Expériences Professionnelles}
+
+\cventry{Développeur Backend Senior}{Jan 2022 -- Déc 2024}{TechCorp Tunisia}{Tunis, Tunisie}
+\begin{itemize}[leftmargin=1.2em, itemsep=0pt, topsep=2pt]
+    \item Conception et développement d'APIs REST avec Python Django et PostgreSQL
+    \item Migration base de données Oracle vers PostgreSQL (50+ tables, zéro downtime)
+    \item Mise en place pipeline CI/CD complet avec Jenkins, Docker et Kubernetes
+    \item Optimisation des performances API : réduction de 40\% du temps de réponse
+\end{itemize}
+
+\vspace{5pt}
+\cventry{Ingénieur DevOps}{Mar 2020 -- Déc 2022}{Vermeg Tunis}{Tunis, Tunisie}
+\begin{itemize}[leftmargin=1.2em, itemsep=0pt, topsep=2pt]
+    \item Orchestration d'infrastructure Kubernetes sur AWS (30 microservices)
+    \item Automatisation des déploiements avec Ansible et Terraform
+    \item Mise en place monitoring avec Grafana, Prometheus et ELK Stack
+    \item Réduction de 60\% du temps de déploiement grâce à l'automatisation
+\end{itemize}
+
+\vspace{5pt}
+\cventry{Stage PFE -- Développeur Full Stack}{Fév 2019 -- Juin 2020}{Startup Innovate}{Sousse, Tunisie}
+\begin{itemize}[leftmargin=1.2em, itemsep=0pt, topsep=2pt]
+    \item Développement d'une plateforme e-commerce avec React et Node.js
+    \item Intégration système de paiement Stripe et gestion des abonnements
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════════
+% FORMATIONS
+% ════════════════════════════════════════════════════════════════
+\cvsection{Formations}
+
+\cventry{Master en Génie Logiciel et Intelligence Artificielle}{2022 -- 2024}{ESPRIT}{Tunis, Tunisie}
+
+\vspace{5pt}
+\cventry{Licence en Informatique}{2018 -- 2022}{FST Sousse 2022}{Sousse, Tunisie}
+
+\vspace{5pt}
+\cventry{Baccalauréat Sciences de l'Informatique -- Mention Bien}{2018}{Lycée Bourguiba}{Monastir, Tunisie}
+
+% ════════════════════════════════════════════════════════════════
+% LANGUES & CERTIFICATIONS  (2 colonnes)
+% ════════════════════════════════════════════════════════════════
+\vspace{4pt}
+\begin{minipage}[t]{0.48\textwidth}
+\cvsection{Langues}
+\begin{tabular}{@{}ll}
+    Arabe   & \textit{native} \\
+    Français & \textit{courant} \\
+    Anglais  & \textit{intermediate} \\
+    Allemand & \\
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\cvsection{Certifications}
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+    \item AWS Certified Solutions Architect (2023)
+    \item Google Cloud Professional Data Engineer (2022)
+\end{itemize}
+\end{minipage}
+
+\end{document}

@@ -1,0 +1,1381 @@
+offre,candidat,sem_bge,comp_bge,exp_bge,form_bge,sem_v2,skills_raw,edu_gap,label
+Ingénieur Backend Python FastAPI,Senior Backend Python FastAPI,0.724,0.85,0.464,0.0,0.724,1.0,0.0,0.95
+Ingénieur Backend Python FastAPI,Mid Backend Python Django,0.675,0.862,0.383,0.0,0.675,0.75,0.0,0.7792
+Ingénieur Backend Python FastAPI,Junior Python Flask,0.568,0.6,0.301,0.0,0.568,0.25,0.4,0.1472
+Ingénieur Backend Python FastAPI,Python Data + Backend,0.717,0.712,0.411,0.0,0.717,0.625,0.0,0.7937
+Ingénieur Backend Python FastAPI,Senior Java Spring Boot,0.57,0.375,0.278,0.0,0.57,0.375,0.0,0.6562
+Ingénieur Backend Python FastAPI,Mid Java Spring,0.576,0.613,0.315,0.0,0.576,0.5,0.0,0.725
+Ingénieur Backend Python FastAPI,Junior Java Angular Stage,0.557,0.362,0.232,0.0,0.557,0.25,0.2,0.1571
+Ingénieur Backend Python FastAPI,Senior Node.js Express,0.58,0.588,0.307,0.0,0.58,0.5,0.4,0.4644
+Ingénieur Backend Python FastAPI,Full Stack Node React,0.575,0.613,0.31,0.0,0.575,0.5,0.0,0.725
+Ingénieur Backend Python FastAPI,Développeur PHP Laravel Senior,0.526,0.375,0.27,0.0,0.526,0.375,0.4,0.4149
+Ingénieur Backend Python FastAPI,Junior PHP Symfony,0.531,0.125,0.156,0.0,0.531,0.125,0.4,0.0588
+Ingénieur Backend Python FastAPI,Développeur .NET C# Senior,0.533,0.375,0.275,0.0,0.533,0.375,0.0,0.6562
+Ingénieur Backend Python FastAPI,Senior Frontend React,0.524,0.25,0.24,0.0,0.524,0.25,0.4,0.2192
+Ingénieur Backend Python FastAPI,Mid Frontend React Redux,0.527,0.25,0.231,0.0,0.527,0.25,0.0,0.3025
+Ingénieur Backend Python FastAPI,Junior Frontend JavaScript,0.539,0.125,0.176,0.0,0.539,0.125,0.6,0.0383
+Ingénieur Backend Python FastAPI,Senior Angular TypeScript,0.536,0.338,0.241,0.0,0.536,0.25,0.0,0.3525
+Ingénieur Backend Python FastAPI,Développeur Flutter Senior,0.511,0.25,0.209,0.0,0.511,0.25,0.4,0.2192
+Ingénieur Backend Python FastAPI,Développeur Android Kotlin,0.51,0.25,0.209,0.0,0.51,0.25,0.0,0.3525
+Ingénieur Backend Python FastAPI,Junior Mobile React Native,0.535,0.25,0.186,0.0,0.535,0.25,0.4,0.1472
+Ingénieur Backend Python FastAPI,Senior Data Scientist,0.533,0.562,0.32,0.0,0.533,0.25,0.0,0.3525
+Ingénieur Backend Python FastAPI,ML Engineer MLOps,0.542,0.488,0.303,0.0,0.542,0.375,0.0,0.6562
+Ingénieur Backend Python FastAPI,Data Analyst Junior,0.513,0.475,0.303,0.0,0.513,0.25,0.4,0.1472
+Ingénieur Backend Python FastAPI,Data Analyst Senior BI,0.512,0.475,0.322,0.0,0.512,0.25,0.0,0.3525
+Ingénieur Backend Python FastAPI,Data Engineer Spark,0.578,0.6,0.331,0.0,0.578,0.375,0.0,0.6562
+Ingénieur Backend Python FastAPI,Stage Data Science,0.597,0.475,0.284,0.0,0.597,0.25,0.2,0.1571
+Ingénieur Backend Python FastAPI,Senior DevOps AWS,0.535,0.25,0.226,0.0,0.535,0.25,0.0,0.3525
+Ingénieur Backend Python FastAPI,Ingénieur Cloud Azure,0.558,0.25,0.238,0.0,0.558,0.25,0.0,0.3525
+Ingénieur Backend Python FastAPI,SRE Kubernetes Linux,0.569,0.488,0.315,0.0,0.569,0.375,0.0,0.6562
+Ingénieur Backend Python FastAPI,Junior DevOps CI/CD,0.562,0.25,0.236,0.0,0.562,0.25,0.0,0.2525
+Ingénieur Backend Python FastAPI,Analyste Sécurité Pentester,0.505,0.238,0.225,0.0,0.505,0.125,0.0,0.1556
+Ingénieur Backend Python FastAPI,Analyste SOC SIEM,0.504,0.0,0.148,0.0,0.504,0.0,0.0,0.044
+Ingénieur Backend Python FastAPI,Ingénieur QA Automation,0.561,0.488,0.321,0.0,0.561,0.375,0.0,0.6562
+Ingénieur Backend Python FastAPI,Designer UX/UI Figma,0.503,0.0,0.115,0.0,0.503,0.0,0.4,0.032
+Ingénieur Backend Python FastAPI,Chef de Projet IT Scrum,0.506,0.0,0.137,0.0,0.506,0.0,0.0,0.054
+Ingénieur Backend Python FastAPI,Marketing Digital Expert,0.508,0.088,0.145,0.0,0.508,0.0,0.4,0.032
+Ingénieur Backend Python FastAPI,Commercial B2B Salesforce,0.51,0.0,0.128,0.0,0.51,0.0,0.4,0.032
+Ingénieur Backend Python FastAPI,Junior Marketing Digital,0.509,0.088,0.143,0.0,0.509,0.0,0.4,0.02
+Ingénieur Backend Python FastAPI,Comptable Confirmé SAP,0.501,0.0,0.127,0.0,0.501,0.0,0.0,0.054
+Ingénieur Backend Python FastAPI,Contrôleur de Gestion,0.502,0.0,0.142,0.0,0.502,0.0,0.0,0.054
+Ingénieur Backend Python FastAPI,Chargé RH Recrutement IT,0.507,0.0,0.139,0.0,0.507,0.0,0.4,0.032
+Ingénieur Backend Python FastAPI,Médecin Généraliste,0.5,0.0,0.105,0.0,0.5,0.0,-0.6,0.054
+Ingénieur Backend Python FastAPI,Enseignant Mathématiques,0.5,0.0,0.106,0.0,0.5,0.0,0.0,0.054
+Ingénieur Backend Python FastAPI,Juriste Droit des Affaires,0.5,0.0,0.132,0.0,0.5,0.0,0.0,0.054
+Ingénieur Backend Python FastAPI,Ingénieur Civil BTP,0.501,0.0,0.138,0.0,0.501,0.0,0.0,0.054
+Ingénieur Backend Python FastAPI,Commercial Vente Retail,0.503,0.0,0.115,0.0,0.503,0.0,0.4,0.032
+Ingénieur Backend Python FastAPI,Étudiant Première Année,0.567,0.238,0.185,0.0,0.567,0.125,0.8,0.02
+Développeur Backend Python Django,Senior Backend Python FastAPI,0.645,0.85,0.4,0.0,0.645,0.75,0.0,0.8625
+Développeur Backend Python Django,Mid Backend Python Django,0.725,1.0,0.447,0.0,0.725,1.0,0.0,0.95
+Développeur Backend Python Django,Junior Python Flask,0.506,0.6,0.314,0.0,0.506,0.25,0.4,0.1652
+Développeur Backend Python Django,Python Data + Backend,0.626,0.7,0.381,0.0,0.626,0.5,0.0,0.725
+Développeur Backend Python Django,Senior Java Spring Boot,0.511,0.375,0.272,0.0,0.511,0.375,0.0,0.6562
+Développeur Backend Python Django,Mid Java Spring,0.513,0.5,0.336,0.0,0.513,0.5,0.0,0.725
+Développeur Backend Python Django,Junior Java Angular Stage,0.511,0.362,0.237,0.0,0.511,0.25,0.2,0.1571
+Développeur Backend Python Django,Senior Node.js Express,0.515,0.588,0.334,0.0,0.515,0.5,0.4,0.4644
+Développeur Backend Python Django,Full Stack Node React,0.51,0.5,0.335,0.0,0.51,0.5,0.0,0.725
+Développeur Backend Python Django,Développeur PHP Laravel Senior,0.564,0.375,0.299,0.0,0.564,0.375,0.4,0.4149
+Développeur Backend Python Django,Junior PHP Symfony,0.506,0.125,0.169,0.0,0.506,0.125,0.4,0.0678
+Développeur Backend Python Django,Développeur .NET C# Senior,0.558,0.375,0.291,0.0,0.558,0.375,0.0,0.6562
+Développeur Backend Python Django,Senior Frontend React,0.507,0.25,0.241,0.0,0.507,0.25,0.4,0.2192
+Développeur Backend Python Django,Mid Frontend React Redux,0.505,0.25,0.236,0.0,0.505,0.25,0.0,0.3525
+Développeur Backend Python Django,Junior Frontend JavaScript,0.505,0.125,0.194,0.0,0.505,0.125,0.6,0.0452
+Développeur Backend Python Django,Senior Angular TypeScript,0.507,0.338,0.263,0.0,0.507,0.25,0.0,0.3525
+Développeur Backend Python Django,Développeur Flutter Senior,0.521,0.25,0.216,0.0,0.521,0.25,0.4,0.2192
+Développeur Backend Python Django,Développeur Android Kotlin,0.518,0.25,0.218,0.0,0.518,0.25,0.0,0.3525
+Développeur Backend Python Django,Junior Mobile React Native,0.506,0.25,0.2,0.0,0.506,0.25,0.4,0.1652
+Développeur Backend Python Django,Senior Data Scientist,0.504,0.562,0.336,0.0,0.504,0.25,0.0,0.3525
+Développeur Backend Python Django,ML Engineer MLOps,0.507,0.488,0.301,0.0,0.507,0.375,0.0,0.6562
+Développeur Backend Python Django,Data Analyst Junior,0.502,0.475,0.312,0.0,0.502,0.25,0.4,0.1652
+Développeur Backend Python Django,Data Analyst Senior BI,0.501,0.475,0.312,0.0,0.501,0.25,0.0,0.3525
+Développeur Backend Python Django,Data Engineer Spark,0.508,0.6,0.321,0.0,0.508,0.375,0.0,0.6562
+Développeur Backend Python Django,Stage Data Science,0.511,0.475,0.289,0.0,0.511,0.25,0.2,0.1571
+Développeur Backend Python Django,Senior DevOps AWS,0.508,0.25,0.238,0.0,0.508,0.25,0.0,0.3525
+Développeur Backend Python Django,Ingénieur Cloud Azure,0.503,0.25,0.217,0.0,0.503,0.25,0.0,0.3525
+Développeur Backend Python Django,SRE Kubernetes Linux,0.51,0.488,0.312,0.0,0.51,0.375,0.0,0.6562
+Développeur Backend Python Django,Junior DevOps CI/CD,0.514,0.25,0.257,0.0,0.514,0.25,0.0,0.2775
+Développeur Backend Python Django,Analyste Sécurité Pentester,0.501,0.238,0.223,0.0,0.501,0.125,0.0,0.1556
+Développeur Backend Python Django,Analyste SOC SIEM,0.5,0.0,0.141,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Python Django,Ingénieur QA Automation,0.513,0.488,0.305,0.0,0.513,0.375,0.0,0.6562
+Développeur Backend Python Django,Designer UX/UI Figma,0.501,0.0,0.106,0.0,0.501,0.0,0.4,0.032
+Développeur Backend Python Django,Chef de Projet IT Scrum,0.502,0.0,0.136,0.0,0.502,0.0,0.0,0.054
+Développeur Backend Python Django,Marketing Digital Expert,0.501,0.088,0.151,0.0,0.501,0.0,0.4,0.032
+Développeur Backend Python Django,Commercial B2B Salesforce,0.501,0.0,0.126,0.0,0.501,0.0,0.4,0.032
+Développeur Backend Python Django,Junior Marketing Digital,0.501,0.088,0.149,0.0,0.501,0.0,0.4,0.0212
+Développeur Backend Python Django,Comptable Confirmé SAP,0.5,0.0,0.127,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Python Django,Contrôleur de Gestion,0.5,0.0,0.135,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Python Django,Chargé RH Recrutement IT,0.5,0.0,0.135,0.0,0.5,0.0,0.4,0.032
+Développeur Backend Python Django,Médecin Généraliste,0.5,0.0,0.102,0.0,0.5,0.0,-0.6,0.054
+Développeur Backend Python Django,Enseignant Mathématiques,0.5,0.0,0.118,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Python Django,Juriste Droit des Affaires,0.5,0.0,0.129,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Python Django,Ingénieur Civil BTP,0.5,0.0,0.133,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Python Django,Commercial Vente Retail,0.5,0.0,0.119,0.0,0.5,0.0,0.4,0.032
+Développeur Backend Python Django,Étudiant Première Année,0.506,0.238,0.182,0.0,0.506,0.125,0.8,0.02
+Développeur Backend Java Spring Boot,Senior Backend Python FastAPI,0.52,0.488,0.358,0.0,0.52,0.375,0.0,0.6562
+Développeur Backend Java Spring Boot,Mid Backend Python Django,0.518,0.6,0.359,0.0,0.518,0.375,0.0,0.5312
+Développeur Backend Java Spring Boot,Junior Python Flask,0.504,0.488,0.29,0.0,0.504,0.25,0.4,0.1382
+Développeur Backend Java Spring Boot,Python Data + Backend,0.555,0.338,0.294,0.0,0.555,0.25,0.0,0.315
+Développeur Backend Java Spring Boot,Senior Java Spring Boot,0.712,0.85,0.413,0.0,0.712,0.875,0.0,0.9313
+Développeur Backend Java Spring Boot,Mid Java Spring,0.678,0.862,0.402,0.0,0.678,0.75,0.0,0.8
+Développeur Backend Java Spring Boot,Junior Java Angular Stage,0.574,0.725,0.311,0.0,0.574,0.5,0.2,0.3828
+Développeur Backend Java Spring Boot,Senior Node.js Express,0.509,0.375,0.287,0.0,0.509,0.375,0.4,0.4149
+Développeur Backend Java Spring Boot,Full Stack Node React,0.509,0.6,0.315,0.0,0.509,0.375,0.0,0.5938
+Développeur Backend Java Spring Boot,Développeur PHP Laravel Senior,0.566,0.588,0.35,0.0,0.566,0.5,0.4,0.4194
+Développeur Backend Java Spring Boot,Junior PHP Symfony,0.507,0.338,0.229,0.0,0.507,0.25,0.4,0.1382
+Développeur Backend Java Spring Boot,Développeur .NET C# Senior,0.54,0.375,0.304,0.0,0.54,0.375,0.0,0.6562
+Développeur Backend Java Spring Boot,Senior Frontend React,0.506,0.338,0.254,0.0,0.506,0.25,0.4,0.1922
+Développeur Backend Java Spring Boot,Mid Frontend React Redux,0.503,0.338,0.246,0.0,0.503,0.25,0.0,0.2775
+Développeur Backend Java Spring Boot,Junior Frontend JavaScript,0.51,0.212,0.228,0.0,0.51,0.125,0.6,0.0349
+Développeur Backend Java Spring Boot,Senior Angular TypeScript,0.506,0.338,0.251,0.0,0.506,0.25,0.0,0.3525
+Développeur Backend Java Spring Boot,Développeur Flutter Senior,0.519,0.362,0.262,0.0,0.519,0.25,0.4,0.1922
+Développeur Backend Java Spring Boot,Développeur Android Kotlin,0.51,0.362,0.266,0.0,0.51,0.25,0.0,0.315
+Développeur Backend Java Spring Boot,Junior Mobile React Native,0.505,0.338,0.233,0.0,0.505,0.25,0.4,0.1382
+Développeur Backend Java Spring Boot,Senior Data Scientist,0.501,0.325,0.259,0.0,0.501,0.125,0.0,0.1556
+Développeur Backend Java Spring Boot,ML Engineer MLOps,0.504,0.375,0.275,0.0,0.504,0.375,0.0,0.5938
+Développeur Backend Java Spring Boot,Data Analyst Junior,0.501,0.238,0.212,0.0,0.501,0.125,0.4,0.0543
+Développeur Backend Java Spring Boot,Data Analyst Senior BI,0.501,0.238,0.217,0.0,0.501,0.125,0.0,0.1556
+Développeur Backend Java Spring Boot,Data Engineer Spark,0.504,0.362,0.272,0.0,0.504,0.25,0.0,0.3525
+Développeur Backend Java Spring Boot,Stage Data Science,0.504,0.238,0.197,0.0,0.504,0.125,0.2,0.0604
+Développeur Backend Java Spring Boot,Senior DevOps AWS,0.511,0.375,0.3,0.0,0.511,0.375,0.0,0.6562
+Développeur Backend Java Spring Boot,Ingénieur Cloud Azure,0.504,0.375,0.269,0.0,0.504,0.375,0.0,0.6562
+Développeur Backend Java Spring Boot,SRE Kubernetes Linux,0.514,0.375,0.28,0.0,0.514,0.375,0.0,0.6562
+Développeur Backend Java Spring Boot,Junior DevOps CI/CD,0.527,0.375,0.311,0.0,0.527,0.375,0.0,0.4688
+Développeur Backend Java Spring Boot,Analyste Sécurité Pentester,0.501,0.0,0.144,0.0,0.501,0.0,0.0,0.0465
+Développeur Backend Java Spring Boot,Analyste SOC SIEM,0.501,0.0,0.147,0.0,0.501,0.0,0.0,0.039
+Développeur Backend Java Spring Boot,Ingénieur QA Automation,0.505,0.6,0.319,0.0,0.505,0.375,0.0,0.5938
+Développeur Backend Java Spring Boot,Designer UX/UI Figma,0.501,0.0,0.106,0.0,0.501,0.0,0.4,0.0266
+Développeur Backend Java Spring Boot,Chef de Projet IT Scrum,0.502,0.0,0.144,0.0,0.502,0.0,0.0,0.054
+Développeur Backend Java Spring Boot,Marketing Digital Expert,0.501,0.088,0.147,0.0,0.501,0.0,0.4,0.0266
+Développeur Backend Java Spring Boot,Commercial B2B Salesforce,0.501,0.0,0.132,0.0,0.501,0.0,0.4,0.032
+Développeur Backend Java Spring Boot,Junior Marketing Digital,0.502,0.088,0.149,0.0,0.502,0.0,0.4,0.02
+Développeur Backend Java Spring Boot,Comptable Confirmé SAP,0.5,0.0,0.133,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Java Spring Boot,Contrôleur de Gestion,0.5,0.0,0.133,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Java Spring Boot,Chargé RH Recrutement IT,0.501,0.0,0.136,0.0,0.501,0.0,0.4,0.0266
+Développeur Backend Java Spring Boot,Médecin Généraliste,0.5,0.0,0.11,0.0,0.5,0.0,-0.6,0.054
+Développeur Backend Java Spring Boot,Enseignant Mathématiques,0.5,0.0,0.119,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Java Spring Boot,Juriste Droit des Affaires,0.5,0.0,0.141,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Java Spring Boot,Ingénieur Civil BTP,0.5,0.0,0.136,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Java Spring Boot,Commercial Vente Retail,0.5,0.0,0.119,0.0,0.5,0.0,0.4,0.032
+Développeur Backend Java Spring Boot,Étudiant Première Année,0.503,0.0,0.111,0.0,0.503,0.0,0.8,0.02
+Développeur Backend Node.js,Senior Backend Python FastAPI,0.551,0.725,0.346,0.0,0.551,0.5,-0.4,0.725
+Développeur Backend Node.js,Mid Backend Python Django,0.564,0.613,0.355,0.0,0.564,0.5,-0.4,0.6417
+Développeur Backend Node.js,Junior Python Flask,0.503,0.362,0.241,0.0,0.503,0.125,0.0,0.1056
+Développeur Backend Node.js,Python Data + Backend,0.554,0.338,0.275,0.0,0.554,0.25,-0.4,0.3525
+Développeur Backend Node.js,Senior Java Spring Boot,0.522,0.375,0.273,0.0,0.522,0.5,-0.4,0.725
+Développeur Backend Node.js,Mid Java Spring,0.519,0.488,0.338,0.0,0.519,0.375,-0.4,0.6562
+Développeur Backend Node.js,Junior Java Angular Stage,0.514,0.25,0.205,0.0,0.514,0.25,-0.2,0.2025
+Développeur Backend Node.js,Senior Node.js Express,0.713,0.85,0.421,0.0,0.713,1.0,0.0,0.95
+Développeur Backend Node.js,Full Stack Node React,0.586,0.738,0.391,0.0,0.586,0.75,-0.4,0.8625
+Développeur Backend Node.js,Développeur PHP Laravel Senior,0.581,0.6,0.332,0.0,0.581,0.375,0.0,0.6562
+Développeur Backend Node.js,Junior PHP Symfony,0.505,0.35,0.222,0.0,0.505,0.125,0.0,0.1056
+Développeur Backend Node.js,Développeur .NET C# Senior,0.593,0.375,0.294,0.0,0.593,0.375,-0.4,0.6562
+Développeur Backend Node.js,Senior Frontend React,0.514,0.475,0.341,0.0,0.514,0.375,0.0,0.6562
+Développeur Backend Node.js,Mid Frontend React Redux,0.514,0.475,0.336,0.0,0.514,0.375,-0.4,0.5729
+Développeur Backend Node.js,Junior Frontend JavaScript,0.509,0.35,0.275,0.0,0.509,0.125,0.2,0.0754
+Développeur Backend Node.js,Senior Angular TypeScript,0.513,0.562,0.331,0.0,0.513,0.375,-0.4,0.6562
+Développeur Backend Node.js,Développeur Flutter Senior,0.529,0.25,0.228,0.0,0.529,0.25,0.0,0.3525
+Développeur Backend Node.js,Développeur Android Kotlin,0.533,0.25,0.222,0.0,0.533,0.25,-0.4,0.3525
+Développeur Backend Node.js,Junior Mobile React Native,0.509,0.475,0.306,0.0,0.509,0.25,0.0,0.2525
+Développeur Backend Node.js,Senior Data Scientist,0.503,0.212,0.2,0.0,0.503,0.125,-0.4,0.1556
+Développeur Backend Node.js,ML Engineer MLOps,0.504,0.25,0.213,0.0,0.504,0.25,-0.4,0.3525
+Développeur Backend Node.js,Data Analyst Junior,0.501,0.125,0.166,0.0,0.501,0.125,0.0,0.1056
+Développeur Backend Node.js,Data Analyst Senior BI,0.501,0.125,0.165,0.0,0.501,0.125,-0.4,0.1556
+Développeur Backend Node.js,Data Engineer Spark,0.506,0.25,0.218,0.0,0.506,0.25,-0.4,0.3525
+Développeur Backend Node.js,Stage Data Science,0.505,0.125,0.152,0.0,0.505,0.125,-0.2,0.0806
+Développeur Backend Node.js,Senior DevOps AWS,0.516,0.25,0.234,0.0,0.516,0.25,-0.4,0.3525
+Développeur Backend Node.js,Ingénieur Cloud Azure,0.506,0.25,0.212,0.0,0.506,0.25,-0.4,0.3525
+Développeur Backend Node.js,SRE Kubernetes Linux,0.506,0.25,0.219,0.0,0.506,0.25,-0.4,0.3525
+Développeur Backend Node.js,Junior DevOps CI/CD,0.518,0.25,0.253,0.0,0.518,0.25,-0.4,0.2525
+Développeur Backend Node.js,Analyste Sécurité Pentester,0.501,0.0,0.134,0.0,0.501,0.0,-0.4,0.054
+Développeur Backend Node.js,Analyste SOC SIEM,0.501,0.0,0.138,0.0,0.501,0.0,-0.4,0.044
+Développeur Backend Node.js,Ingénieur QA Automation,0.504,0.25,0.208,0.0,0.504,0.25,-0.4,0.3525
+Développeur Backend Node.js,Designer UX/UI Figma,0.503,0.0,0.111,0.0,0.503,0.0,0.0,0.054
+Développeur Backend Node.js,Chef de Projet IT Scrum,0.504,0.0,0.135,0.0,0.504,0.0,-0.4,0.054
+Développeur Backend Node.js,Marketing Digital Expert,0.502,0.088,0.16,0.0,0.502,0.0,0.0,0.054
+Développeur Backend Node.js,Commercial B2B Salesforce,0.501,0.0,0.126,0.0,0.501,0.0,0.0,0.054
+Développeur Backend Node.js,Junior Marketing Digital,0.504,0.088,0.146,0.0,0.504,0.0,0.0,0.034
+Développeur Backend Node.js,Comptable Confirmé SAP,0.5,0.0,0.121,0.0,0.5,0.0,-0.4,0.054
+Développeur Backend Node.js,Contrôleur de Gestion,0.5,0.0,0.125,0.0,0.5,0.0,-0.4,0.054
+Développeur Backend Node.js,Chargé RH Recrutement IT,0.501,0.0,0.128,0.0,0.501,0.0,0.0,0.054
+Développeur Backend Node.js,Médecin Généraliste,0.5,0.0,0.096,0.0,0.5,0.0,-1.0,0.054
+Développeur Backend Node.js,Enseignant Mathématiques,0.5,0.0,0.109,0.0,0.5,0.0,-0.4,0.054
+Développeur Backend Node.js,Juriste Droit des Affaires,0.5,0.0,0.134,0.0,0.5,0.0,-0.4,0.054
+Développeur Backend Node.js,Ingénieur Civil BTP,0.5,0.0,0.13,0.0,0.5,0.0,-0.4,0.054
+Développeur Backend Node.js,Commercial Vente Retail,0.5,0.0,0.116,0.0,0.5,0.0,0.0,0.054
+Développeur Backend Node.js,Étudiant Première Année,0.503,0.0,0.108,0.0,0.503,0.0,0.4,0.02
+Développeur PHP Laravel,Senior Backend Python FastAPI,0.509,0.7,0.344,0.0,0.509,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Mid Backend Python Django,0.514,0.686,0.365,0.0,0.514,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Junior Python Flask,0.506,0.557,0.337,0.0,0.506,0.2857,0.0,0.2893
+Développeur PHP Laravel,Python Data + Backend,0.509,0.386,0.301,0.0,0.509,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Senior Java Spring Boot,0.522,0.714,0.342,0.0,0.522,0.5714,-0.4,0.7643
+Développeur PHP Laravel,Mid Java Spring,0.516,0.829,0.363,0.0,0.516,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Junior Java Angular Stage,0.511,0.557,0.288,0.0,0.511,0.2857,-0.2,0.2143
+Développeur PHP Laravel,Senior Node.js Express,0.512,0.429,0.347,0.0,0.512,0.4286,0.0,0.6857
+Développeur PHP Laravel,Full Stack Node React,0.508,0.829,0.338,0.0,0.508,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Développeur PHP Laravel Senior,0.727,0.85,0.447,0.0,0.727,1.0,0.0,0.95
+Développeur PHP Laravel,Junior PHP Symfony,0.523,0.7,0.325,0.0,0.523,0.5714,0.0,0.6393
+Développeur PHP Laravel,Développeur .NET C# Senior,0.543,0.429,0.362,0.0,0.543,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Senior Frontend React,0.51,0.429,0.337,0.0,0.51,0.4286,0.0,0.6857
+Développeur PHP Laravel,Mid Frontend React Redux,0.507,0.429,0.321,0.0,0.507,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Junior Frontend JavaScript,0.514,0.286,0.278,0.0,0.514,0.2857,0.2,0.2194
+Développeur PHP Laravel,Senior Angular TypeScript,0.51,0.529,0.334,0.0,0.51,0.4286,-0.4,0.6857
+Développeur PHP Laravel,Développeur Flutter Senior,0.529,0.286,0.264,0.0,0.529,0.2857,0.0,0.3643
+Développeur PHP Laravel,Développeur Android Kotlin,0.523,0.286,0.249,0.0,0.523,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Junior Mobile React Native,0.506,0.429,0.311,0.0,0.506,0.4286,0.0,0.5607
+Développeur PHP Laravel,Senior Data Scientist,0.502,0.371,0.27,0.0,0.502,0.1429,-0.4,0.1586
+Développeur PHP Laravel,ML Engineer MLOps,0.505,0.286,0.245,0.0,0.505,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Data Analyst Junior,0.501,0.271,0.221,0.0,0.501,0.1429,0.0,0.1211
+Développeur PHP Laravel,Data Analyst Senior BI,0.501,0.271,0.224,0.0,0.501,0.1429,-0.4,0.1586
+Développeur PHP Laravel,Data Engineer Spark,0.505,0.414,0.318,0.0,0.505,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Stage Data Science,0.504,0.271,0.198,0.0,0.504,0.1429,-0.2,0.0836
+Développeur PHP Laravel,Senior DevOps AWS,0.511,0.286,0.256,0.0,0.511,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Ingénieur Cloud Azure,0.504,0.286,0.24,0.0,0.504,0.2857,-0.4,0.3643
+Développeur PHP Laravel,SRE Kubernetes Linux,0.508,0.286,0.246,0.0,0.508,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Junior DevOps CI/CD,0.516,0.286,0.273,0.0,0.516,0.2857,-0.4,0.2893
+Développeur PHP Laravel,Analyste Sécurité Pentester,0.501,0.0,0.149,0.0,0.501,0.0,-0.4,0.054
+Développeur PHP Laravel,Analyste SOC SIEM,0.501,0.0,0.14,0.0,0.501,0.0,-0.4,0.054
+Développeur PHP Laravel,Ingénieur QA Automation,0.504,0.429,0.313,0.0,0.504,0.2857,-0.4,0.3643
+Développeur PHP Laravel,Designer UX/UI Figma,0.502,0.0,0.122,0.0,0.502,0.0,0.0,0.054
+Développeur PHP Laravel,Chef de Projet IT Scrum,0.502,0.0,0.142,0.0,0.502,0.0,-0.4,0.054
+Développeur PHP Laravel,Marketing Digital Expert,0.502,0.1,0.168,0.0,0.502,0.0,0.0,0.054
+Développeur PHP Laravel,Commercial B2B Salesforce,0.501,0.0,0.134,0.0,0.501,0.0,0.0,0.054
+Développeur PHP Laravel,Junior Marketing Digital,0.502,0.1,0.163,0.0,0.502,0.0,0.0,0.039
+Développeur PHP Laravel,Comptable Confirmé SAP,0.5,0.0,0.131,0.0,0.5,0.0,-0.4,0.054
+Développeur PHP Laravel,Contrôleur de Gestion,0.5,0.0,0.132,0.0,0.5,0.0,-0.4,0.054
+Développeur PHP Laravel,Chargé RH Recrutement IT,0.501,0.0,0.146,0.0,0.501,0.0,0.0,0.054
+Développeur PHP Laravel,Médecin Généraliste,0.5,0.0,0.112,0.0,0.5,0.0,-1.0,0.054
+Développeur PHP Laravel,Enseignant Mathématiques,0.5,0.0,0.114,0.0,0.5,0.0,-0.4,0.054
+Développeur PHP Laravel,Juriste Droit des Affaires,0.5,0.0,0.147,0.0,0.5,0.0,-0.4,0.054
+Développeur PHP Laravel,Ingénieur Civil BTP,0.5,0.0,0.137,0.0,0.5,0.0,-0.4,0.054
+Développeur PHP Laravel,Commercial Vente Retail,0.5,0.0,0.123,0.0,0.5,0.0,0.0,0.054
+Développeur PHP Laravel,Étudiant Première Année,0.505,0.0,0.119,0.0,0.505,0.0,0.4,0.02
+Développeur .NET C# Backend,Senior Backend Python FastAPI,0.516,0.375,0.304,0.0,0.516,0.375,0.0,0.6562
+Développeur .NET C# Backend,Mid Backend Python Django,0.511,0.5,0.336,0.0,0.511,0.375,0.0,0.5729
+Développeur .NET C# Backend,Junior Python Flask,0.501,0.375,0.244,0.0,0.501,0.25,0.4,0.1472
+Développeur .NET C# Backend,Python Data + Backend,0.525,0.338,0.277,0.0,0.525,0.25,0.0,0.3525
+Développeur .NET C# Backend,Senior Java Spring Boot,0.507,0.375,0.279,0.0,0.507,0.375,0.0,0.6562
+Développeur .NET C# Backend,Mid Java Spring,0.506,0.5,0.343,0.0,0.506,0.375,0.0,0.6562
+Développeur .NET C# Backend,Junior Java Angular Stage,0.508,0.375,0.246,0.0,0.508,0.375,0.2,0.3223
+Développeur .NET C# Backend,Senior Node.js Express,0.509,0.375,0.29,0.0,0.509,0.375,0.4,0.4149
+Développeur .NET C# Backend,Full Stack Node React,0.508,0.5,0.333,0.0,0.508,0.375,0.0,0.6562
+Développeur .NET C# Backend,Développeur PHP Laravel Senior,0.535,0.375,0.297,0.0,0.535,0.375,0.4,0.4149
+Développeur .NET C# Backend,Junior PHP Symfony,0.502,0.125,0.156,0.0,0.502,0.125,0.4,0.0588
+Développeur .NET C# Backend,Développeur .NET C# Senior,0.73,0.85,0.45,0.0,0.73,1.0,0.0,0.95
+Développeur .NET C# Backend,Senior Frontend React,0.504,0.25,0.233,0.0,0.504,0.25,0.4,0.2192
+Développeur .NET C# Backend,Mid Frontend React Redux,0.503,0.25,0.232,0.0,0.503,0.25,0.0,0.3025
+Développeur .NET C# Backend,Junior Frontend JavaScript,0.503,0.125,0.192,0.0,0.503,0.125,0.6,0.0383
+Développeur .NET C# Backend,Senior Angular TypeScript,0.503,0.338,0.273,0.0,0.503,0.25,0.0,0.3525
+Développeur .NET C# Backend,Développeur Flutter Senior,0.542,0.25,0.232,0.0,0.542,0.25,0.4,0.2192
+Développeur .NET C# Backend,Développeur Android Kotlin,0.513,0.25,0.222,0.0,0.513,0.25,0.0,0.3525
+Développeur .NET C# Backend,Junior Mobile React Native,0.502,0.25,0.214,0.0,0.502,0.25,0.4,0.1472
+Développeur .NET C# Backend,Senior Data Scientist,0.501,0.338,0.252,0.0,0.501,0.25,0.0,0.3525
+Développeur .NET C# Backend,ML Engineer MLOps,0.502,0.25,0.227,0.0,0.502,0.25,0.0,0.3525
+Développeur .NET C# Backend,Data Analyst Junior,0.5,0.25,0.206,0.0,0.5,0.25,0.4,0.1472
+Développeur .NET C# Backend,Data Analyst Senior BI,0.5,0.25,0.217,0.0,0.5,0.25,0.0,0.3525
+Développeur .NET C# Backend,Data Engineer Spark,0.502,0.375,0.277,0.0,0.502,0.375,0.0,0.6562
+Développeur .NET C# Backend,Stage Data Science,0.502,0.25,0.178,0.0,0.502,0.25,0.2,0.1571
+Développeur .NET C# Backend,Senior DevOps AWS,0.504,0.25,0.24,0.0,0.504,0.25,0.0,0.3525
+Développeur .NET C# Backend,Ingénieur Cloud Azure,0.508,0.375,0.298,0.0,0.508,0.375,0.0,0.6562
+Développeur .NET C# Backend,SRE Kubernetes Linux,0.503,0.25,0.214,0.0,0.503,0.25,0.0,0.3525
+Développeur .NET C# Backend,Junior DevOps CI/CD,0.511,0.25,0.247,0.0,0.511,0.25,0.0,0.2525
+Développeur .NET C# Backend,Analyste Sécurité Pentester,0.5,0.0,0.138,0.0,0.5,0.0,0.0,0.054
+Développeur .NET C# Backend,Analyste SOC SIEM,0.5,0.0,0.144,0.0,0.5,0.0,0.0,0.044
+Développeur .NET C# Backend,Ingénieur QA Automation,0.501,0.25,0.22,0.0,0.501,0.25,0.0,0.3525
+Développeur .NET C# Backend,Designer UX/UI Figma,0.501,0.0,0.114,0.0,0.501,0.0,0.4,0.032
+Développeur .NET C# Backend,Chef de Projet IT Scrum,0.501,0.0,0.136,0.0,0.501,0.0,0.0,0.054
+Développeur .NET C# Backend,Marketing Digital Expert,0.5,0.088,0.154,0.0,0.5,0.0,0.4,0.032
+Développeur .NET C# Backend,Commercial B2B Salesforce,0.5,0.0,0.134,0.0,0.5,0.0,0.4,0.032
+Développeur .NET C# Backend,Junior Marketing Digital,0.501,0.088,0.139,0.0,0.501,0.0,0.4,0.02
+Développeur .NET C# Backend,Comptable Confirmé SAP,0.5,0.0,0.13,0.0,0.5,0.0,0.0,0.054
+Développeur .NET C# Backend,Contrôleur de Gestion,0.5,0.0,0.141,0.0,0.5,0.0,0.0,0.054
+Développeur .NET C# Backend,Chargé RH Recrutement IT,0.501,0.0,0.14,0.0,0.501,0.0,0.4,0.032
+Développeur .NET C# Backend,Médecin Généraliste,0.5,0.0,0.103,0.0,0.5,0.0,-0.6,0.054
+Développeur .NET C# Backend,Enseignant Mathématiques,0.5,0.0,0.111,0.0,0.5,0.0,0.0,0.054
+Développeur .NET C# Backend,Juriste Droit des Affaires,0.5,0.0,0.136,0.0,0.5,0.0,0.0,0.054
+Développeur .NET C# Backend,Ingénieur Civil BTP,0.5,0.0,0.134,0.0,0.5,0.0,0.0,0.054
+Développeur .NET C# Backend,Commercial Vente Retail,0.5,0.0,0.124,0.0,0.5,0.0,0.4,0.032
+Développeur .NET C# Backend,Étudiant Première Année,0.502,0.0,0.112,0.0,0.502,0.0,0.8,0.02
+Développeur Frontend React TypeScript,Senior Backend Python FastAPI,0.51,0.375,0.299,0.0,0.51,0.25,-0.4,0.3525
+Développeur Frontend React TypeScript,Mid Backend Python Django,0.509,0.25,0.248,0.0,0.509,0.25,-0.4,0.3525
+Développeur Frontend React TypeScript,Junior Python Flask,0.506,0.613,0.305,0.0,0.506,0.375,0.0,0.5312
+Développeur Frontend React TypeScript,Python Data + Backend,0.509,0.212,0.229,0.0,0.509,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,Senior Java Spring Boot,0.523,0.488,0.321,0.0,0.523,0.375,-0.4,0.6562
+Développeur Frontend React TypeScript,Mid Java Spring,0.511,0.375,0.292,0.0,0.511,0.25,-0.4,0.3525
+Développeur Frontend React TypeScript,Junior Java Angular Stage,0.512,0.375,0.263,0.0,0.512,0.25,-0.2,0.2025
+Développeur Frontend React TypeScript,Senior Node.js Express,0.518,0.362,0.293,0.0,0.518,0.375,0.0,0.6562
+Développeur Frontend React TypeScript,Full Stack Node React,0.542,0.862,0.35,0.0,0.542,0.5,-0.4,0.725
+Développeur Frontend React TypeScript,Développeur PHP Laravel Senior,0.546,0.375,0.286,0.0,0.546,0.375,0.0,0.6562
+Développeur Frontend React TypeScript,Junior PHP Symfony,0.514,0.613,0.294,0.0,0.514,0.5,0.0,0.6
+Développeur Frontend React TypeScript,Développeur .NET C# Senior,0.56,0.25,0.246,0.0,0.56,0.25,-0.4,0.3525
+Développeur Frontend React TypeScript,Senior Frontend React,0.726,0.85,0.418,0.0,0.726,1.0,0.0,0.95
+Développeur Frontend React TypeScript,Mid Frontend React Redux,0.708,0.75,0.415,0.0,0.708,0.875,-0.4,0.9313
+Développeur Frontend React TypeScript,Junior Frontend JavaScript,0.574,0.613,0.364,0.0,0.574,0.5,0.2,0.4693
+Développeur Frontend React TypeScript,Senior Angular TypeScript,0.58,0.85,0.343,0.0,0.58,0.75,-0.4,0.8625
+Développeur Frontend React TypeScript,Développeur Flutter Senior,0.524,0.25,0.239,0.0,0.524,0.25,0.0,0.3525
+Développeur Frontend React TypeScript,Développeur Android Kotlin,0.535,0.25,0.232,0.0,0.535,0.25,-0.4,0.3525
+Développeur Frontend React TypeScript,Junior Mobile React Native,0.531,0.5,0.348,0.0,0.531,0.5,0.0,0.6
+Développeur Frontend React TypeScript,Senior Data Scientist,0.502,0.125,0.178,0.0,0.502,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,ML Engineer MLOps,0.505,0.125,0.167,0.0,0.505,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,Data Analyst Junior,0.501,0.125,0.172,0.0,0.501,0.125,0.0,0.1181
+Développeur Frontend React TypeScript,Data Analyst Senior BI,0.501,0.125,0.17,0.0,0.501,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,Data Engineer Spark,0.504,0.125,0.172,0.0,0.504,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,Stage Data Science,0.503,0.125,0.157,0.0,0.503,0.125,-0.2,0.0806
+Développeur Frontend React TypeScript,Senior DevOps AWS,0.509,0.125,0.183,0.0,0.509,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,Ingénieur Cloud Azure,0.504,0.125,0.169,0.0,0.504,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,SRE Kubernetes Linux,0.506,0.125,0.174,0.0,0.506,0.125,-0.4,0.1556
+Développeur Frontend React TypeScript,Junior DevOps CI/CD,0.515,0.125,0.206,0.0,0.515,0.125,-0.4,0.1181
+Développeur Frontend React TypeScript,Analyste Sécurité Pentester,0.5,0.0,0.128,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Analyste SOC SIEM,0.5,0.0,0.138,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Ingénieur QA Automation,0.508,0.375,0.262,0.0,0.508,0.25,-0.4,0.3525
+Développeur Frontend React TypeScript,Designer UX/UI Figma,0.51,0.362,0.216,0.0,0.51,0.25,0.0,0.3525
+Développeur Frontend React TypeScript,Chef de Projet IT Scrum,0.503,0.0,0.14,0.0,0.503,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Marketing Digital Expert,0.503,0.088,0.159,0.0,0.503,0.0,0.0,0.054
+Développeur Frontend React TypeScript,Commercial B2B Salesforce,0.501,0.0,0.132,0.0,0.501,0.0,0.0,0.054
+Développeur Frontend React TypeScript,Junior Marketing Digital,0.503,0.088,0.155,0.0,0.503,0.0,0.0,0.039
+Développeur Frontend React TypeScript,Comptable Confirmé SAP,0.5,0.0,0.123,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Contrôleur de Gestion,0.5,0.0,0.133,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Chargé RH Recrutement IT,0.501,0.0,0.14,0.0,0.501,0.0,0.0,0.054
+Développeur Frontend React TypeScript,Médecin Généraliste,0.5,0.0,0.105,0.0,0.5,0.0,-1.0,0.054
+Développeur Frontend React TypeScript,Enseignant Mathématiques,0.5,0.0,0.106,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Juriste Droit des Affaires,0.5,0.0,0.142,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Ingénieur Civil BTP,0.5,0.0,0.138,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend React TypeScript,Commercial Vente Retail,0.5,0.0,0.123,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend React TypeScript,Étudiant Première Année,0.515,0.362,0.222,0.0,0.515,0.25,0.4,0.0882
+Développeur Frontend Angular,Senior Backend Python FastAPI,0.512,0.375,0.294,0.0,0.512,0.25,0.0,0.3525
+Développeur Frontend Angular,Mid Backend Python Django,0.51,0.25,0.255,0.0,0.51,0.25,0.0,0.3025
+Développeur Frontend Angular,Junior Python Flask,0.504,0.5,0.296,0.0,0.504,0.375,0.4,0.2949
+Développeur Frontend Angular,Python Data + Backend,0.518,0.212,0.232,0.0,0.518,0.125,0.0,0.1556
+Développeur Frontend Angular,Senior Java Spring Boot,0.528,0.613,0.324,0.0,0.528,0.5,0.0,0.725
+Développeur Frontend Angular,Mid Java Spring,0.518,0.375,0.285,0.0,0.518,0.25,0.0,0.3525
+Développeur Frontend Angular,Junior Java Angular Stage,0.543,0.613,0.316,0.0,0.543,0.375,0.2,0.3223
+Développeur Frontend Angular,Senior Node.js Express,0.518,0.362,0.301,0.0,0.518,0.375,0.4,0.4149
+Développeur Frontend Angular,Full Stack Node React,0.516,0.738,0.339,0.0,0.516,0.375,0.0,0.6562
+Développeur Frontend Angular,Développeur PHP Laravel Senior,0.572,0.375,0.304,0.0,0.572,0.375,0.4,0.4149
+Développeur Frontend Angular,Junior PHP Symfony,0.511,0.5,0.273,0.0,0.511,0.5,0.4,0.3444
+Développeur Frontend Angular,Développeur .NET C# Senior,0.582,0.25,0.262,0.0,0.582,0.25,0.0,0.3525
+Développeur Frontend Angular,Senior Frontend React,0.523,0.738,0.359,0.0,0.523,0.75,0.4,0.5634
+Développeur Frontend Angular,Mid Frontend React Redux,0.517,0.613,0.345,0.0,0.517,0.625,0.0,0.7104
+Développeur Frontend Angular,Junior Frontend JavaScript,0.546,0.5,0.354,0.0,0.546,0.5,0.6,0.2411
+Développeur Frontend Angular,Senior Angular TypeScript,0.684,0.85,0.414,0.0,0.684,1.0,0.0,0.95
+Développeur Frontend Angular,Développeur Flutter Senior,0.522,0.25,0.235,0.0,0.522,0.25,0.4,0.2192
+Développeur Frontend Angular,Développeur Android Kotlin,0.522,0.25,0.217,0.0,0.522,0.25,0.0,0.3525
+Développeur Frontend Angular,Junior Mobile React Native,0.506,0.375,0.262,0.0,0.506,0.375,0.4,0.2949
+Développeur Frontend Angular,Senior Data Scientist,0.502,0.125,0.186,0.0,0.502,0.125,0.0,0.1556
+Développeur Frontend Angular,ML Engineer MLOps,0.506,0.125,0.18,0.0,0.506,0.125,0.0,0.1556
+Développeur Frontend Angular,Data Analyst Junior,0.501,0.125,0.169,0.0,0.501,0.125,0.4,0.0588
+Développeur Frontend Angular,Data Analyst Senior BI,0.501,0.125,0.171,0.0,0.501,0.125,0.0,0.1556
+Développeur Frontend Angular,Data Engineer Spark,0.505,0.125,0.181,0.0,0.505,0.125,0.0,0.1556
+Développeur Frontend Angular,Stage Data Science,0.503,0.125,0.157,0.0,0.503,0.125,0.2,0.0604
+Développeur Frontend Angular,Senior DevOps AWS,0.513,0.125,0.194,0.0,0.513,0.125,0.0,0.1556
+Développeur Frontend Angular,Ingénieur Cloud Azure,0.505,0.125,0.192,0.0,0.505,0.125,0.0,0.1556
+Développeur Frontend Angular,SRE Kubernetes Linux,0.51,0.125,0.177,0.0,0.51,0.125,0.0,0.1556
+Développeur Frontend Angular,Junior DevOps CI/CD,0.526,0.125,0.213,0.0,0.526,0.125,0.0,0.1056
+Développeur Frontend Angular,Analyste Sécurité Pentester,0.5,0.0,0.135,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Angular,Analyste SOC SIEM,0.5,0.0,0.138,0.0,0.5,0.0,0.0,0.044
+Développeur Frontend Angular,Ingénieur QA Automation,0.504,0.375,0.248,0.0,0.504,0.25,0.0,0.3525
+Développeur Frontend Angular,Designer UX/UI Figma,0.505,0.25,0.193,0.0,0.505,0.25,0.4,0.2192
+Développeur Frontend Angular,Chef de Projet IT Scrum,0.503,0.0,0.137,0.0,0.503,0.0,0.0,0.054
+Développeur Frontend Angular,Marketing Digital Expert,0.501,0.088,0.16,0.0,0.501,0.0,0.4,0.032
+Développeur Frontend Angular,Commercial B2B Salesforce,0.502,0.0,0.127,0.0,0.502,0.0,0.4,0.032
+Développeur Frontend Angular,Junior Marketing Digital,0.503,0.088,0.155,0.0,0.503,0.0,0.4,0.02
+Développeur Frontend Angular,Comptable Confirmé SAP,0.5,0.0,0.124,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Angular,Contrôleur de Gestion,0.501,0.0,0.137,0.0,0.501,0.0,0.0,0.054
+Développeur Frontend Angular,Chargé RH Recrutement IT,0.501,0.0,0.133,0.0,0.501,0.0,0.4,0.032
+Développeur Frontend Angular,Médecin Généraliste,0.5,0.0,0.101,0.0,0.5,0.0,-0.6,0.054
+Développeur Frontend Angular,Enseignant Mathématiques,0.5,0.0,0.111,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Angular,Juriste Droit des Affaires,0.5,0.0,0.14,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Angular,Ingénieur Civil BTP,0.5,0.0,0.14,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Angular,Commercial Vente Retail,0.5,0.0,0.124,0.0,0.5,0.0,0.4,0.032
+Développeur Frontend Angular,Étudiant Première Année,0.514,0.25,0.2,0.0,0.514,0.25,0.8,0.0586
+Développeur Frontend Vue.js,Senior Backend Python FastAPI,0.503,0.429,0.328,0.0,0.503,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Mid Backend Python Django,0.503,0.286,0.26,0.0,0.503,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Junior Python Flask,0.501,0.7,0.308,0.0,0.501,0.4286,0.0,0.5607
+Développeur Frontend Vue.js,Python Data + Backend,0.503,0.243,0.243,0.0,0.503,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,Senior Java Spring Boot,0.504,0.557,0.318,0.0,0.504,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Mid Java Spring,0.503,0.429,0.341,0.0,0.503,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Junior Java Angular Stage,0.504,0.429,0.299,0.0,0.504,0.2857,-0.2,0.2143
+Développeur Frontend Vue.js,Senior Node.js Express,0.503,0.414,0.333,0.0,0.503,0.2857,0.0,0.3643
+Développeur Frontend Vue.js,Full Stack Node React,0.503,0.971,0.316,0.0,0.503,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Développeur PHP Laravel Senior,0.524,0.529,0.354,0.0,0.524,0.4286,0.0,0.6857
+Développeur Frontend Vue.js,Junior PHP Symfony,0.505,0.7,0.306,0.0,0.505,0.5714,0.0,0.6393
+Développeur Frontend Vue.js,Développeur .NET C# Senior,0.538,0.286,0.254,0.0,0.538,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Senior Frontend React,0.525,0.85,0.378,0.0,0.525,0.8571,0.0,0.9214
+Développeur Frontend Vue.js,Mid Frontend React Redux,0.522,0.843,0.368,0.0,0.522,0.7143,-0.4,0.8429
+Développeur Frontend Vue.js,Junior Frontend JavaScript,0.56,0.843,0.391,0.0,0.56,0.7143,0.2,0.5731
+Développeur Frontend Vue.js,Senior Angular TypeScript,0.507,0.85,0.324,0.0,0.507,0.7143,-0.4,0.8429
+Développeur Frontend Vue.js,Développeur Flutter Senior,0.51,0.286,0.248,0.0,0.51,0.2857,0.0,0.3643
+Développeur Frontend Vue.js,Développeur Android Kotlin,0.513,0.286,0.238,0.0,0.513,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Junior Mobile React Native,0.502,0.429,0.309,0.0,0.502,0.4286,0.0,0.5607
+Développeur Frontend Vue.js,Senior Data Scientist,0.501,0.143,0.189,0.0,0.501,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,ML Engineer MLOps,0.502,0.143,0.173,0.0,0.502,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,Data Analyst Junior,0.5,0.143,0.181,0.0,0.5,0.1429,0.0,0.1211
+Développeur Frontend Vue.js,Data Analyst Senior BI,0.5,0.143,0.182,0.0,0.5,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,Data Engineer Spark,0.502,0.143,0.179,0.0,0.502,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,Stage Data Science,0.501,0.143,0.166,0.0,0.501,0.1429,-0.2,0.0836
+Développeur Frontend Vue.js,Senior DevOps AWS,0.504,0.143,0.192,0.0,0.504,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,Ingénieur Cloud Azure,0.502,0.143,0.181,0.0,0.502,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,SRE Kubernetes Linux,0.502,0.143,0.184,0.0,0.502,0.1429,-0.4,0.1586
+Développeur Frontend Vue.js,Junior DevOps CI/CD,0.505,0.143,0.2,0.0,0.505,0.1429,-0.4,0.1211
+Développeur Frontend Vue.js,Analyste Sécurité Pentester,0.5,0.0,0.128,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Analyste SOC SIEM,0.5,0.0,0.135,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Ingénieur QA Automation,0.502,0.429,0.312,0.0,0.502,0.2857,-0.4,0.3643
+Développeur Frontend Vue.js,Designer UX/UI Figma,0.502,0.414,0.267,0.0,0.502,0.2857,0.0,0.3643
+Développeur Frontend Vue.js,Chef de Projet IT Scrum,0.501,0.0,0.14,0.0,0.501,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Marketing Digital Expert,0.501,0.1,0.155,0.0,0.501,0.0,0.0,0.054
+Développeur Frontend Vue.js,Commercial B2B Salesforce,0.501,0.0,0.135,0.0,0.501,0.0,0.0,0.054
+Développeur Frontend Vue.js,Junior Marketing Digital,0.502,0.1,0.154,0.0,0.502,0.0,0.0,0.039
+Développeur Frontend Vue.js,Comptable Confirmé SAP,0.5,0.0,0.128,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Contrôleur de Gestion,0.5,0.0,0.139,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Chargé RH Recrutement IT,0.5,0.0,0.134,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Vue.js,Médecin Généraliste,0.5,0.0,0.11,0.0,0.5,0.0,-1.0,0.054
+Développeur Frontend Vue.js,Enseignant Mathématiques,0.5,0.0,0.106,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Juriste Droit des Affaires,0.5,0.0,0.146,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Ingénieur Civil BTP,0.5,0.0,0.142,0.0,0.5,0.0,-0.4,0.054
+Développeur Frontend Vue.js,Commercial Vente Retail,0.5,0.0,0.125,0.0,0.5,0.0,0.0,0.054
+Développeur Frontend Vue.js,Étudiant Première Année,0.509,0.414,0.274,0.0,0.509,0.2857,0.4,0.0967
+Développeur Full Stack React Node.js,Senior Backend Python FastAPI,0.504,0.613,0.239,0.0,0.504,0.5,0.0,0.725
+Développeur Full Stack React Node.js,Mid Backend Python Django,0.507,0.5,0.249,0.0,0.507,0.5,0.0,0.6417
+Développeur Full Stack React Node.js,Junior Python Flask,0.501,0.362,0.148,0.0,0.501,0.125,0.4,0.0588
+Développeur Full Stack React Node.js,Python Data + Backend,0.503,0.462,0.332,0.0,0.503,0.375,0.0,0.6562
+Développeur Full Stack React Node.js,Senior Java Spring Boot,0.507,0.488,0.329,0.0,0.507,0.5,0.0,0.725
+Développeur Full Stack React Node.js,Mid Java Spring,0.508,0.5,0.258,0.0,0.508,0.5,0.0,0.725
+Développeur Full Stack React Node.js,Junior Java Angular Stage,0.504,0.362,0.254,0.0,0.504,0.25,0.2,0.1571
+Développeur Full Stack React Node.js,Senior Node.js Express,0.676,0.825,0.304,0.0,0.676,0.75,0.4,0.5634
+Développeur Full Stack React Node.js,Full Stack Node React,0.725,0.875,0.453,0.0,0.725,1.0,0.0,0.95
+Développeur Full Stack React Node.js,Développeur PHP Laravel Senior,0.528,0.488,0.233,0.0,0.528,0.375,0.4,0.4149
+Développeur Full Stack React Node.js,Junior PHP Symfony,0.502,0.238,0.098,0.0,0.502,0.125,0.4,0.0588
+Développeur Full Stack React Node.js,Développeur .NET C# Senior,0.533,0.375,0.212,0.0,0.533,0.375,0.0,0.6562
+Développeur Full Stack React Node.js,Senior Frontend React,0.51,0.488,0.252,0.0,0.51,0.5,0.4,0.4644
+Développeur Full Stack React Node.js,Mid Frontend React Redux,0.51,0.488,0.252,0.0,0.51,0.5,0.0,0.6417
+Développeur Full Stack React Node.js,Junior Frontend JavaScript,0.502,0.238,0.136,0.0,0.502,0.125,0.6,0.0383
+Développeur Full Stack React Node.js,Senior Angular TypeScript,0.503,0.562,0.252,0.0,0.503,0.375,0.0,0.6562
+Développeur Full Stack React Node.js,Développeur Flutter Senior,0.508,0.25,0.137,0.0,0.508,0.25,0.4,0.2192
+Développeur Full Stack React Node.js,Développeur Android Kotlin,0.513,0.25,0.129,0.0,0.513,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,Junior Mobile React Native,0.507,0.488,0.228,0.0,0.507,0.375,0.4,0.2949
+Développeur Full Stack React Node.js,Senior Data Scientist,0.501,0.325,0.243,0.0,0.501,0.125,0.0,0.1556
+Développeur Full Stack React Node.js,ML Engineer MLOps,0.501,0.25,0.113,0.0,0.501,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,Data Analyst Junior,0.5,0.238,0.102,0.0,0.5,0.125,0.4,0.0588
+Développeur Full Stack React Node.js,Data Analyst Senior BI,0.5,0.238,0.1,0.0,0.5,0.125,0.0,0.1556
+Développeur Full Stack React Node.js,Data Engineer Spark,0.502,0.362,0.261,0.0,0.502,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,Stage Data Science,0.502,0.238,0.183,0.0,0.502,0.125,0.2,0.0604
+Développeur Full Stack React Node.js,Senior DevOps AWS,0.504,0.25,0.237,0.0,0.504,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,Ingénieur Cloud Azure,0.502,0.25,0.216,0.0,0.502,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,SRE Kubernetes Linux,0.503,0.25,0.217,0.0,0.503,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,Junior DevOps CI/CD,0.506,0.25,0.257,0.0,0.506,0.25,0.0,0.2525
+Développeur Full Stack React Node.js,Analyste Sécurité Pentester,0.5,0.0,0.137,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Analyste SOC SIEM,0.5,0.0,0.143,0.0,0.5,0.0,0.0,0.044
+Développeur Full Stack React Node.js,Ingénieur QA Automation,0.501,0.25,0.215,0.0,0.501,0.25,0.0,0.3525
+Développeur Full Stack React Node.js,Designer UX/UI Figma,0.501,0.0,0.112,0.0,0.501,0.0,0.4,0.032
+Développeur Full Stack React Node.js,Chef de Projet IT Scrum,0.501,0.0,0.139,0.0,0.501,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Marketing Digital Expert,0.501,0.088,0.162,0.0,0.501,0.0,0.4,0.032
+Développeur Full Stack React Node.js,Commercial B2B Salesforce,0.5,0.0,0.124,0.0,0.5,0.0,0.4,0.032
+Développeur Full Stack React Node.js,Junior Marketing Digital,0.501,0.088,0.147,0.0,0.501,0.0,0.4,0.02
+Développeur Full Stack React Node.js,Comptable Confirmé SAP,0.5,0.0,0.128,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Contrôleur de Gestion,0.5,0.0,0.127,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Chargé RH Recrutement IT,0.5,0.0,0.13,0.0,0.5,0.0,0.4,0.032
+Développeur Full Stack React Node.js,Médecin Généraliste,0.5,0.0,0.103,0.0,0.5,0.0,-0.6,0.054
+Développeur Full Stack React Node.js,Enseignant Mathématiques,0.5,0.0,0.115,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Juriste Droit des Affaires,0.5,0.0,0.142,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Ingénieur Civil BTP,0.5,0.0,0.133,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack React Node.js,Commercial Vente Retail,0.5,0.0,0.112,0.0,0.5,0.0,0.4,0.032
+Développeur Full Stack React Node.js,Étudiant Première Année,0.501,0.0,0.108,0.0,0.501,0.0,0.8,0.02
+Développeur Mobile Flutter,Senior Backend Python FastAPI,0.506,0.286,0.247,0.0,0.506,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Mid Backend Python Django,0.506,0.286,0.248,0.0,0.506,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Junior Python Flask,0.503,0.286,0.242,0.0,0.503,0.1429,0.0,0.1211
+Développeur Mobile Flutter,Python Data + Backend,0.509,0.243,0.227,0.0,0.509,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,Senior Java Spring Boot,0.513,0.414,0.303,0.0,0.513,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Mid Java Spring,0.511,0.414,0.325,0.0,0.511,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Junior Java Angular Stage,0.51,0.414,0.289,0.0,0.51,0.2857,-0.2,0.2143
+Développeur Mobile Flutter,Senior Node.js Express,0.513,0.286,0.244,0.0,0.513,0.2857,0.0,0.3643
+Développeur Mobile Flutter,Full Stack Node React,0.511,0.286,0.251,0.0,0.511,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Développeur PHP Laravel Senior,0.531,0.286,0.258,0.0,0.531,0.2857,0.0,0.3643
+Développeur Mobile Flutter,Junior PHP Symfony,0.504,0.143,0.18,0.0,0.504,0.1429,0.0,0.1211
+Développeur Mobile Flutter,Développeur .NET C# Senior,0.541,0.286,0.255,0.0,0.541,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Senior Frontend React,0.509,0.286,0.256,0.0,0.509,0.2857,0.0,0.3643
+Développeur Mobile Flutter,Mid Frontend React Redux,0.507,0.286,0.254,0.0,0.507,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Junior Frontend JavaScript,0.507,0.143,0.197,0.0,0.507,0.1429,0.2,0.0889
+Développeur Mobile Flutter,Senior Angular TypeScript,0.507,0.286,0.233,0.0,0.507,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Développeur Flutter Senior,0.728,0.85,0.449,0.0,0.728,1.0,0.0,0.95
+Développeur Mobile Flutter,Développeur Android Kotlin,0.603,0.571,0.33,0.0,0.603,0.5714,-0.4,0.7643
+Développeur Mobile Flutter,Junior Mobile React Native,0.552,0.429,0.35,0.0,0.552,0.4286,0.0,0.5607
+Développeur Mobile Flutter,Senior Data Scientist,0.501,0.143,0.176,0.0,0.501,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,ML Engineer MLOps,0.506,0.143,0.181,0.0,0.506,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,Data Analyst Junior,0.5,0.143,0.167,0.0,0.5,0.1429,0.0,0.1211
+Développeur Mobile Flutter,Data Analyst Senior BI,0.5,0.143,0.165,0.0,0.5,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,Data Engineer Spark,0.502,0.143,0.18,0.0,0.502,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,Stage Data Science,0.505,0.143,0.156,0.0,0.505,0.1429,-0.2,0.0836
+Développeur Mobile Flutter,Senior DevOps AWS,0.513,0.143,0.19,0.0,0.513,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,Ingénieur Cloud Azure,0.502,0.143,0.192,0.0,0.502,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,SRE Kubernetes Linux,0.506,0.143,0.183,0.0,0.506,0.1429,-0.4,0.1586
+Développeur Mobile Flutter,Junior DevOps CI/CD,0.517,0.143,0.189,0.0,0.517,0.1429,-0.4,0.1211
+Développeur Mobile Flutter,Analyste Sécurité Pentester,0.501,0.0,0.137,0.0,0.501,0.0,-0.4,0.054
+Développeur Mobile Flutter,Analyste SOC SIEM,0.501,0.0,0.145,0.0,0.501,0.0,-0.4,0.054
+Développeur Mobile Flutter,Ingénieur QA Automation,0.503,0.414,0.294,0.0,0.503,0.2857,-0.4,0.3643
+Développeur Mobile Flutter,Designer UX/UI Figma,0.506,0.0,0.12,0.0,0.506,0.0,0.0,0.054
+Développeur Mobile Flutter,Chef de Projet IT Scrum,0.504,0.0,0.138,0.0,0.504,0.0,-0.4,0.054
+Développeur Mobile Flutter,Marketing Digital Expert,0.505,0.1,0.154,0.0,0.505,0.0,0.0,0.054
+Développeur Mobile Flutter,Commercial B2B Salesforce,0.501,0.0,0.116,0.0,0.501,0.0,0.0,0.054
+Développeur Mobile Flutter,Junior Marketing Digital,0.505,0.1,0.143,0.0,0.505,0.0,0.0,0.039
+Développeur Mobile Flutter,Comptable Confirmé SAP,0.5,0.0,0.117,0.0,0.5,0.0,-0.4,0.054
+Développeur Mobile Flutter,Contrôleur de Gestion,0.5,0.0,0.125,0.0,0.5,0.0,-0.4,0.054
+Développeur Mobile Flutter,Chargé RH Recrutement IT,0.502,0.0,0.132,0.0,0.502,0.0,0.0,0.054
+Développeur Mobile Flutter,Médecin Généraliste,0.5,0.0,0.105,0.0,0.5,0.0,-1.0,0.054
+Développeur Mobile Flutter,Enseignant Mathématiques,0.5,0.0,0.1,0.0,0.5,0.0,-0.4,0.054
+Développeur Mobile Flutter,Juriste Droit des Affaires,0.5,0.0,0.135,0.0,0.5,0.0,-0.4,0.054
+Développeur Mobile Flutter,Ingénieur Civil BTP,0.5,0.0,0.13,0.0,0.5,0.0,-0.4,0.054
+Développeur Mobile Flutter,Commercial Vente Retail,0.5,0.0,0.102,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Flutter,Étudiant Première Année,0.505,0.0,0.105,0.0,0.505,0.0,0.4,0.02
+Développeur Mobile Android Kotlin,Senior Backend Python FastAPI,0.502,0.286,0.224,0.0,0.502,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Mid Backend Python Django,0.503,0.286,0.222,0.0,0.503,0.2857,0.0,0.3143
+Développeur Mobile Android Kotlin,Junior Python Flask,0.501,0.286,0.192,0.0,0.501,0.1429,0.4,0.0609
+Développeur Mobile Android Kotlin,Python Data + Backend,0.502,0.243,0.199,0.0,0.502,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,Senior Java Spring Boot,0.505,0.414,0.271,0.0,0.505,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Mid Java Spring,0.504,0.414,0.285,0.0,0.504,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Junior Java Angular Stage,0.504,0.414,0.247,0.0,0.504,0.2857,0.2,0.1674
+Développeur Mobile Android Kotlin,Senior Node.js Express,0.506,0.286,0.216,0.0,0.506,0.2857,0.4,0.2277
+Développeur Mobile Android Kotlin,Full Stack Node React,0.504,0.286,0.223,0.0,0.504,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Développeur PHP Laravel Senior,0.509,0.286,0.228,0.0,0.509,0.2857,0.4,0.2277
+Développeur Mobile Android Kotlin,Junior PHP Symfony,0.501,0.143,0.159,0.0,0.501,0.1429,0.4,0.0609
+Développeur Mobile Android Kotlin,Développeur .NET C# Senior,0.511,0.286,0.225,0.0,0.511,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Senior Frontend React,0.503,0.286,0.226,0.0,0.503,0.2857,0.4,0.2277
+Développeur Mobile Android Kotlin,Mid Frontend React Redux,0.503,0.286,0.218,0.0,0.503,0.2857,0.0,0.3143
+Développeur Mobile Android Kotlin,Junior Frontend JavaScript,0.502,0.143,0.18,0.0,0.502,0.1429,0.6,0.0399
+Développeur Mobile Android Kotlin,Senior Angular TypeScript,0.502,0.286,0.203,0.0,0.502,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Développeur Flutter Senior,0.538,0.7,0.318,0.0,0.538,0.5714,0.4,0.4927
+Développeur Mobile Android Kotlin,Développeur Android Kotlin,0.729,1.0,0.452,0.0,0.729,1.0,0.0,0.95
+Développeur Mobile Android Kotlin,Junior Mobile React Native,0.539,0.429,0.317,0.0,0.539,0.4286,0.4,0.3161
+Développeur Mobile Android Kotlin,Senior Data Scientist,0.5,0.143,0.153,0.0,0.5,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,ML Engineer MLOps,0.502,0.143,0.164,0.0,0.502,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,Data Analyst Junior,0.5,0.143,0.147,0.0,0.5,0.1429,0.4,0.0609
+Développeur Mobile Android Kotlin,Data Analyst Senior BI,0.5,0.143,0.147,0.0,0.5,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,Data Engineer Spark,0.501,0.143,0.161,0.0,0.501,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,Stage Data Science,0.501,0.143,0.133,0.0,0.501,0.1429,0.2,0.063
+Développeur Mobile Android Kotlin,Senior DevOps AWS,0.503,0.143,0.183,0.0,0.503,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,Ingénieur Cloud Azure,0.501,0.143,0.172,0.0,0.501,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,SRE Kubernetes Linux,0.503,0.143,0.172,0.0,0.503,0.1429,0.0,0.1586
+Développeur Mobile Android Kotlin,Junior DevOps CI/CD,0.505,0.143,0.201,0.0,0.505,0.1429,0.0,0.1086
+Développeur Mobile Android Kotlin,Analyste Sécurité Pentester,0.5,0.0,0.13,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Analyste SOC SIEM,0.5,0.0,0.134,0.0,0.5,0.0,0.0,0.044
+Développeur Mobile Android Kotlin,Ingénieur QA Automation,0.501,0.414,0.274,0.0,0.501,0.2857,0.0,0.3643
+Développeur Mobile Android Kotlin,Designer UX/UI Figma,0.501,0.0,0.106,0.0,0.501,0.0,0.4,0.032
+Développeur Mobile Android Kotlin,Chef de Projet IT Scrum,0.5,0.0,0.123,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Marketing Digital Expert,0.501,0.1,0.141,0.0,0.501,0.0,0.4,0.032
+Développeur Mobile Android Kotlin,Commercial B2B Salesforce,0.5,0.0,0.106,0.0,0.5,0.0,0.4,0.032
+Développeur Mobile Android Kotlin,Junior Marketing Digital,0.501,0.1,0.144,0.0,0.501,0.0,0.4,0.02
+Développeur Mobile Android Kotlin,Comptable Confirmé SAP,0.5,0.0,0.113,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Contrôleur de Gestion,0.5,0.0,0.113,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Chargé RH Recrutement IT,0.5,0.0,0.121,0.0,0.5,0.0,0.4,0.032
+Développeur Mobile Android Kotlin,Médecin Généraliste,0.5,0.0,0.097,0.0,0.5,0.0,-0.6,0.054
+Développeur Mobile Android Kotlin,Enseignant Mathématiques,0.5,0.0,0.098,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Juriste Droit des Affaires,0.5,0.0,0.118,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Ingénieur Civil BTP,0.5,0.0,0.131,0.0,0.5,0.0,0.0,0.054
+Développeur Mobile Android Kotlin,Commercial Vente Retail,0.5,0.0,0.103,0.0,0.5,0.0,0.4,0.032
+Développeur Mobile Android Kotlin,Étudiant Première Année,0.501,0.0,0.106,0.0,0.501,0.0,0.8,0.02
+Data Scientist Machine Learning,Senior Backend Python FastAPI,0.538,0.588,0.242,0.0,0.538,0.25,0.0,0.3525
+Data Scientist Machine Learning,Mid Backend Python Django,0.548,0.6,0.25,0.0,0.548,0.25,0.0,0.3525
+Data Scientist Machine Learning,Junior Python Flask,0.523,0.6,0.201,0.0,0.523,0.375,0.4,0.3249
+Data Scientist Machine Learning,Python Data + Backend,0.696,0.85,0.389,0.0,0.696,0.625,0.0,0.7937
+Data Scientist Machine Learning,Senior Java Spring Boot,0.531,0.238,0.241,0.0,0.531,0.125,0.0,0.1556
+Data Scientist Machine Learning,Mid Java Spring,0.539,0.25,0.131,0.0,0.539,0.125,0.0,0.1556
+Data Scientist Machine Learning,Junior Java Angular Stage,0.514,0.25,0.201,0.0,0.514,0.25,0.2,0.1571
+Data Scientist Machine Learning,Senior Node.js Express,0.526,0.212,0.103,0.0,0.526,0.125,0.4,0.0948
+Data Scientist Machine Learning,Full Stack Node React,0.54,0.25,0.207,0.0,0.54,0.125,0.0,0.1556
+Data Scientist Machine Learning,Développeur PHP Laravel Senior,0.507,0.238,0.103,0.0,0.507,0.125,0.4,0.0948
+Data Scientist Machine Learning,Junior PHP Symfony,0.506,0.238,0.095,0.0,0.506,0.125,0.4,0.0678
+Data Scientist Machine Learning,Développeur .NET C# Senior,0.526,0.25,0.127,0.0,0.526,0.25,0.0,0.3525
+Data Scientist Machine Learning,Senior Frontend React,0.507,0.125,0.072,0.0,0.507,0.125,0.4,0.0948
+Data Scientist Machine Learning,Mid Frontend React Redux,0.508,0.125,0.064,0.0,0.508,0.125,0.0,0.1556
+Data Scientist Machine Learning,Junior Frontend JavaScript,0.505,0.125,0.067,0.0,0.505,0.125,0.6,0.0452
+Data Scientist Machine Learning,Senior Angular TypeScript,0.508,0.125,0.081,0.0,0.508,0.125,0.0,0.1556
+Data Scientist Machine Learning,Développeur Flutter Senior,0.509,0.125,0.06,0.0,0.509,0.125,0.4,0.0948
+Data Scientist Machine Learning,Développeur Android Kotlin,0.502,0.125,0.049,0.0,0.502,0.125,0.0,0.1556
+Data Scientist Machine Learning,Junior Mobile React Native,0.515,0.125,0.04,0.0,0.515,0.125,0.4,0.0678
+Data Scientist Machine Learning,Senior Data Scientist,0.73,0.85,0.438,0.0,0.73,1.0,0.0,0.95
+Data Scientist Machine Learning,ML Engineer MLOps,0.629,0.588,0.251,0.0,0.629,0.25,0.0,0.3525
+Data Scientist Machine Learning,Data Analyst Junior,0.674,0.862,0.277,0.0,0.674,0.75,0.4,0.4734
+Data Scientist Machine Learning,Data Analyst Senior BI,0.623,0.613,0.254,0.0,0.623,0.5,0.0,0.725
+Data Scientist Machine Learning,Data Engineer Spark,0.63,0.6,0.343,0.0,0.63,0.375,0.0,0.6562
+Data Scientist Machine Learning,Stage Data Science,0.73,0.75,0.386,0.0,0.73,0.75,0.2,0.5038
+Data Scientist Machine Learning,Senior DevOps AWS,0.524,0.125,0.185,0.0,0.524,0.125,0.0,0.1556
+Data Scientist Machine Learning,Ingénieur Cloud Azure,0.514,0.125,0.186,0.0,0.514,0.125,0.0,0.1556
+Data Scientist Machine Learning,SRE Kubernetes Linux,0.552,0.475,0.31,0.0,0.552,0.25,0.0,0.3525
+Data Scientist Machine Learning,Junior DevOps CI/CD,0.543,0.125,0.202,0.0,0.543,0.125,0.0,0.1181
+Data Scientist Machine Learning,Analyste Sécurité Pentester,0.503,0.35,0.252,0.0,0.503,0.125,0.0,0.1556
+Data Scientist Machine Learning,Analyste SOC SIEM,0.505,0.0,0.152,0.0,0.505,0.0,0.0,0.054
+Data Scientist Machine Learning,Ingénieur QA Automation,0.518,0.475,0.318,0.0,0.518,0.25,0.0,0.3525
+Data Scientist Machine Learning,Designer UX/UI Figma,0.501,0.0,0.114,0.0,0.501,0.0,0.4,0.032
+Data Scientist Machine Learning,Chef de Projet IT Scrum,0.504,0.0,0.142,0.0,0.504,0.0,0.0,0.054
+Data Scientist Machine Learning,Marketing Digital Expert,0.503,0.088,0.16,0.0,0.503,0.0,0.4,0.032
+Data Scientist Machine Learning,Commercial B2B Salesforce,0.503,0.0,0.139,0.0,0.503,0.0,0.4,0.032
+Data Scientist Machine Learning,Junior Marketing Digital,0.506,0.088,0.16,0.0,0.506,0.0,0.4,0.0212
+Data Scientist Machine Learning,Comptable Confirmé SAP,0.501,0.0,0.143,0.0,0.501,0.0,0.0,0.054
+Data Scientist Machine Learning,Contrôleur de Gestion,0.501,0.0,0.147,0.0,0.501,0.0,0.0,0.054
+Data Scientist Machine Learning,Chargé RH Recrutement IT,0.506,0.0,0.132,0.0,0.506,0.0,0.4,0.032
+Data Scientist Machine Learning,Médecin Généraliste,0.5,0.0,0.116,0.0,0.5,0.0,-0.6,0.054
+Data Scientist Machine Learning,Enseignant Mathématiques,0.504,0.0,0.132,0.0,0.504,0.0,0.0,0.054
+Data Scientist Machine Learning,Juriste Droit des Affaires,0.5,0.0,0.138,0.0,0.5,0.0,0.0,0.054
+Data Scientist Machine Learning,Ingénieur Civil BTP,0.5,0.0,0.137,0.0,0.5,0.0,0.0,0.054
+Data Scientist Machine Learning,Commercial Vente Retail,0.502,0.0,0.127,0.0,0.502,0.0,0.4,0.032
+Data Scientist Machine Learning,Étudiant Première Année,0.53,0.35,0.232,0.0,0.53,0.125,0.8,0.02
+Ingénieur Machine Learning MLOps,Senior Backend Python FastAPI,0.521,0.462,0.234,0.0,0.521,0.375,0.0,0.6562
+Ingénieur Machine Learning MLOps,Mid Backend Python Django,0.523,0.375,0.186,0.0,0.523,0.375,0.0,0.5729
+Ingénieur Machine Learning MLOps,Junior Python Flask,0.521,0.25,0.105,0.0,0.521,0.25,0.4,0.1472
+Ingénieur Machine Learning MLOps,Python Data + Backend,0.576,0.375,0.298,0.0,0.576,0.375,0.0,0.6562
+Ingénieur Machine Learning MLOps,Senior Java Spring Boot,0.537,0.462,0.337,0.0,0.537,0.375,0.0,0.6562
+Ingénieur Machine Learning MLOps,Mid Java Spring,0.539,0.25,0.122,0.0,0.539,0.25,0.0,0.3525
+Ingénieur Machine Learning MLOps,Junior Java Angular Stage,0.53,0.125,0.159,0.0,0.53,0.125,0.2,0.0604
+Ingénieur Machine Learning MLOps,Senior Node.js Express,0.525,0.25,0.104,0.0,0.525,0.25,0.4,0.2192
+Ingénieur Machine Learning MLOps,Full Stack Node React,0.532,0.25,0.202,0.0,0.532,0.25,0.0,0.3525
+Ingénieur Machine Learning MLOps,Développeur PHP Laravel Senior,0.504,0.25,0.116,0.0,0.504,0.25,0.4,0.2192
+Ingénieur Machine Learning MLOps,Junior PHP Symfony,0.508,0.125,0.057,0.0,0.508,0.125,0.4,0.0588
+Ingénieur Machine Learning MLOps,Développeur .NET C# Senior,0.511,0.25,0.127,0.0,0.511,0.25,0.0,0.3525
+Ingénieur Machine Learning MLOps,Senior Frontend React,0.514,0.125,0.062,0.0,0.514,0.125,0.4,0.0948
+Ingénieur Machine Learning MLOps,Mid Frontend React Redux,0.512,0.125,0.059,0.0,0.512,0.125,0.0,0.1306
+Ingénieur Machine Learning MLOps,Junior Frontend JavaScript,0.512,0.125,0.064,0.0,0.512,0.125,0.6,0.0383
+Ingénieur Machine Learning MLOps,Senior Angular TypeScript,0.511,0.212,0.106,0.0,0.511,0.125,0.0,0.1556
+Ingénieur Machine Learning MLOps,Développeur Flutter Senior,0.505,0.125,0.064,0.0,0.505,0.125,0.4,0.0948
+Ingénieur Machine Learning MLOps,Développeur Android Kotlin,0.502,0.125,0.063,0.0,0.502,0.125,0.0,0.1556
+Ingénieur Machine Learning MLOps,Junior Mobile React Native,0.529,0.125,0.04,0.0,0.529,0.125,0.4,0.0588
+Ingénieur Machine Learning MLOps,Senior Data Scientist,0.574,0.462,0.361,0.0,0.574,0.375,0.0,0.6562
+Ingénieur Machine Learning MLOps,ML Engineer MLOps,0.73,1.0,0.343,0.0,0.73,1.0,0.0,0.95
+Ingénieur Machine Learning MLOps,Data Analyst Junior,0.51,0.25,0.11,0.0,0.51,0.25,0.4,0.1472
+Ingénieur Machine Learning MLOps,Data Analyst Senior BI,0.515,0.25,0.125,0.0,0.515,0.25,0.0,0.3525
+Ingénieur Machine Learning MLOps,Data Engineer Spark,0.58,0.5,0.334,0.0,0.58,0.5,0.0,0.725
+Ingénieur Machine Learning MLOps,Stage Data Science,0.628,0.25,0.214,0.0,0.628,0.25,0.2,0.1571
+Ingénieur Machine Learning MLOps,Senior DevOps AWS,0.574,0.625,0.339,0.0,0.574,0.625,0.0,0.7937
+Ingénieur Machine Learning MLOps,Ingénieur Cloud Azure,0.664,0.625,0.347,0.0,0.664,0.5,0.0,0.725
+Ingénieur Machine Learning MLOps,SRE Kubernetes Linux,0.581,0.625,0.337,0.0,0.581,0.625,0.0,0.7937
+Ingénieur Machine Learning MLOps,Junior DevOps CI/CD,0.595,0.625,0.338,0.0,0.595,0.5,0.0,0.5583
+Ingénieur Machine Learning MLOps,Analyste Sécurité Pentester,0.501,0.125,0.189,0.0,0.501,0.125,0.0,0.1556
+Ingénieur Machine Learning MLOps,Analyste SOC SIEM,0.501,0.0,0.156,0.0,0.501,0.0,0.0,0.044
+Ingénieur Machine Learning MLOps,Ingénieur QA Automation,0.6,0.375,0.288,0.0,0.6,0.375,0.0,0.6562
+Ingénieur Machine Learning MLOps,Designer UX/UI Figma,0.501,0.0,0.117,0.0,0.501,0.0,0.4,0.032
+Ingénieur Machine Learning MLOps,Chef de Projet IT Scrum,0.504,0.0,0.144,0.0,0.504,0.0,0.0,0.054
+Ingénieur Machine Learning MLOps,Marketing Digital Expert,0.503,0.088,0.162,0.0,0.503,0.0,0.4,0.032
+Ingénieur Machine Learning MLOps,Commercial B2B Salesforce,0.504,0.0,0.139,0.0,0.504,0.0,0.4,0.032
+Ingénieur Machine Learning MLOps,Junior Marketing Digital,0.507,0.088,0.157,0.0,0.507,0.0,0.4,0.02
+Ingénieur Machine Learning MLOps,Comptable Confirmé SAP,0.5,0.0,0.133,0.0,0.5,0.0,0.0,0.054
+Ingénieur Machine Learning MLOps,Contrôleur de Gestion,0.501,0.0,0.141,0.0,0.501,0.0,0.0,0.054
+Ingénieur Machine Learning MLOps,Chargé RH Recrutement IT,0.506,0.0,0.137,0.0,0.506,0.0,0.4,0.032
+Ingénieur Machine Learning MLOps,Médecin Généraliste,0.5,0.0,0.113,0.0,0.5,0.0,-0.6,0.054
+Ingénieur Machine Learning MLOps,Enseignant Mathématiques,0.501,0.0,0.128,0.0,0.501,0.0,0.0,0.054
+Ingénieur Machine Learning MLOps,Juriste Droit des Affaires,0.5,0.0,0.131,0.0,0.5,0.0,0.0,0.054
+Ingénieur Machine Learning MLOps,Ingénieur Civil BTP,0.5,0.0,0.158,0.0,0.5,0.0,0.0,0.054
+Ingénieur Machine Learning MLOps,Commercial Vente Retail,0.502,0.0,0.119,0.0,0.502,0.0,0.4,0.032
+Ingénieur Machine Learning MLOps,Étudiant Première Année,0.531,0.125,0.164,0.0,0.531,0.125,0.8,0.02
+Data Analyst BI,Senior Backend Python FastAPI,0.536,0.543,0.35,0.0,0.536,0.2857,-0.4,0.3643
+Data Analyst BI,Mid Backend Python Django,0.537,0.557,0.33,0.0,0.537,0.2857,-0.4,0.3643
+Data Analyst BI,Junior Python Flask,0.554,0.557,0.324,0.0,0.554,0.4286,0.0,0.5607
+Data Analyst BI,Python Data + Backend,0.621,0.557,0.369,0.0,0.621,0.4286,-0.4,0.6857
+Data Analyst BI,Senior Java Spring Boot,0.525,0.271,0.237,0.0,0.525,0.1429,-0.4,0.1586
+Data Analyst BI,Mid Java Spring,0.535,0.286,0.234,0.0,0.535,0.1429,-0.4,0.1586
+Data Analyst BI,Junior Java Angular Stage,0.522,0.286,0.208,0.0,0.522,0.2857,-0.2,0.2143
+Data Analyst BI,Senior Node.js Express,0.52,0.243,0.209,0.0,0.52,0.1429,0.0,0.1586
+Data Analyst BI,Full Stack Node React,0.537,0.286,0.208,0.0,0.537,0.1429,-0.4,0.1586
+Data Analyst BI,Développeur PHP Laravel Senior,0.502,0.271,0.218,0.0,0.502,0.1429,0.0,0.1586
+Data Analyst BI,Junior PHP Symfony,0.512,0.271,0.215,0.0,0.512,0.1429,0.0,0.1211
+Data Analyst BI,Développeur .NET C# Senior,0.51,0.286,0.237,0.0,0.51,0.2857,-0.4,0.3643
+Data Analyst BI,Senior Frontend React,0.516,0.143,0.178,0.0,0.516,0.1429,0.0,0.1586
+Data Analyst BI,Mid Frontend React Redux,0.513,0.143,0.163,0.0,0.513,0.1429,-0.4,0.1586
+Data Analyst BI,Junior Frontend JavaScript,0.511,0.143,0.184,0.0,0.511,0.1429,0.2,0.0889
+Data Analyst BI,Senior Angular TypeScript,0.514,0.143,0.171,0.0,0.514,0.1429,-0.4,0.1586
+Data Analyst BI,Développeur Flutter Senior,0.503,0.143,0.164,0.0,0.503,0.1429,0.0,0.1586
+Data Analyst BI,Développeur Android Kotlin,0.502,0.143,0.155,0.0,0.502,0.1429,-0.4,0.1586
+Data Analyst BI,Junior Mobile React Native,0.525,0.143,0.144,0.0,0.525,0.1429,0.0,0.1211
+Data Analyst BI,Senior Data Scientist,0.584,0.571,0.364,0.0,0.584,0.5714,-0.4,0.7643
+Data Analyst BI,ML Engineer MLOps,0.514,0.414,0.298,0.0,0.514,0.2857,-0.4,0.3643
+Data Analyst BI,Data Analyst Junior,0.711,0.986,0.425,0.0,0.711,0.8571,0.0,0.7964
+Data Analyst BI,Data Analyst Senior BI,0.729,0.85,0.427,0.0,0.729,1.0,-0.4,0.95
+Data Analyst BI,Data Engineer Spark,0.533,0.557,0.331,0.0,0.533,0.4286,-0.4,0.6857
+Data Analyst BI,Stage Data Science,0.654,0.571,0.341,0.0,0.654,0.5714,-0.2,0.5143
+Data Analyst BI,Senior DevOps AWS,0.524,0.143,0.184,0.0,0.524,0.1429,-0.4,0.1586
+Data Analyst BI,Ingénieur Cloud Azure,0.504,0.143,0.189,0.0,0.504,0.1429,-0.4,0.1586
+Data Analyst BI,SRE Kubernetes Linux,0.53,0.414,0.301,0.0,0.53,0.2857,-0.4,0.3643
+Data Analyst BI,Junior DevOps CI/CD,0.529,0.143,0.192,0.0,0.529,0.1429,-0.4,0.1211
+Data Analyst BI,Analyste Sécurité Pentester,0.508,0.271,0.245,0.0,0.508,0.1429,-0.4,0.1586
+Data Analyst BI,Analyste SOC SIEM,0.523,0.0,0.147,0.0,0.523,0.0,-0.4,0.054
+Data Analyst BI,Ingénieur QA Automation,0.512,0.414,0.325,0.0,0.512,0.2857,-0.4,0.3643
+Data Analyst BI,Designer UX/UI Figma,0.504,0.0,0.125,0.0,0.504,0.0,0.0,0.054
+Data Analyst BI,Chef de Projet IT Scrum,0.504,0.0,0.133,0.0,0.504,0.0,-0.4,0.054
+Data Analyst BI,Marketing Digital Expert,0.518,0.243,0.222,0.0,0.518,0.1429,0.0,0.1586
+Data Analyst BI,Commercial B2B Salesforce,0.528,0.143,0.201,0.0,0.528,0.1429,0.0,0.1586
+Data Analyst BI,Junior Marketing Digital,0.528,0.243,0.209,0.0,0.528,0.1429,0.0,0.1211
+Data Analyst BI,Comptable Confirmé SAP,0.509,0.143,0.201,0.0,0.509,0.1429,-0.4,0.1586
+Data Analyst BI,Contrôleur de Gestion,0.52,0.414,0.348,0.0,0.52,0.2857,-0.4,0.3643
+Data Analyst BI,Chargé RH Recrutement IT,0.524,0.143,0.182,0.0,0.524,0.1429,0.0,0.1586
+Data Analyst BI,Médecin Généraliste,0.5,0.0,0.117,0.0,0.5,0.0,-1.0,0.054
+Data Analyst BI,Enseignant Mathématiques,0.508,0.143,0.163,0.0,0.508,0.1429,-0.4,0.1586
+Data Analyst BI,Juriste Droit des Affaires,0.5,0.0,0.133,0.0,0.5,0.0,-0.4,0.054
+Data Analyst BI,Ingénieur Civil BTP,0.5,0.0,0.137,0.0,0.5,0.0,-0.4,0.054
+Data Analyst BI,Commercial Vente Retail,0.516,0.143,0.185,0.0,0.516,0.1429,0.0,0.1586
+Data Analyst BI,Étudiant Première Année,0.539,0.271,0.213,0.0,0.539,0.1429,0.4,0.0314
+Data Engineer Big Data,Senior Backend Python FastAPI,0.594,0.488,0.253,0.0,0.594,0.375,0.0,0.6562
+Data Engineer Big Data,Mid Backend Python Django,0.603,0.5,0.227,0.0,0.603,0.375,0.0,0.5312
+Data Engineer Big Data,Junior Python Flask,0.553,0.375,0.155,0.0,0.553,0.375,0.4,0.2799
+Data Engineer Big Data,Python Data + Backend,0.689,0.488,0.352,0.0,0.689,0.375,0.0,0.5938
+Data Engineer Big Data,Senior Java Spring Boot,0.532,0.362,0.279,0.0,0.532,0.25,0.0,0.3525
+Data Engineer Big Data,Mid Java Spring,0.555,0.375,0.169,0.0,0.555,0.25,0.0,0.315
+Data Engineer Big Data,Junior Java Angular Stage,0.523,0.25,0.193,0.0,0.523,0.25,0.2,0.1571
+Data Engineer Big Data,Senior Node.js Express,0.531,0.338,0.148,0.0,0.531,0.25,0.4,0.2192
+Data Engineer Big Data,Full Stack Node React,0.561,0.375,0.249,0.0,0.561,0.25,0.0,0.315
+Data Engineer Big Data,Développeur PHP Laravel Senior,0.51,0.362,0.158,0.0,0.51,0.25,0.4,0.1922
+Data Engineer Big Data,Junior PHP Symfony,0.511,0.238,0.093,0.0,0.511,0.125,0.4,0.0543
+Data Engineer Big Data,Développeur .NET C# Senior,0.521,0.375,0.191,0.0,0.521,0.375,0.0,0.6562
+Data Engineer Big Data,Senior Frontend React,0.511,0.125,0.068,0.0,0.511,0.125,0.4,0.0813
+Data Engineer Big Data,Mid Frontend React Redux,0.506,0.125,0.056,0.0,0.506,0.125,0.0,0.1181
+Data Engineer Big Data,Junior Frontend JavaScript,0.508,0.125,0.067,0.0,0.508,0.125,0.6,0.0349
+Data Engineer Big Data,Senior Angular TypeScript,0.514,0.212,0.104,0.0,0.514,0.125,0.0,0.1556
+Data Engineer Big Data,Développeur Flutter Senior,0.505,0.125,0.069,0.0,0.505,0.125,0.4,0.0813
+Data Engineer Big Data,Développeur Android Kotlin,0.501,0.125,0.064,0.0,0.501,0.125,0.0,0.1369
+Data Engineer Big Data,Junior Mobile React Native,0.51,0.125,0.05,0.0,0.51,0.125,0.4,0.0543
+Data Engineer Big Data,Senior Data Scientist,0.624,0.462,0.361,0.0,0.624,0.375,0.0,0.6562
+Data Engineer Big Data,ML Engineer MLOps,0.626,0.5,0.245,0.0,0.626,0.5,0.0,0.6625
+Data Engineer Big Data,Data Analyst Junior,0.558,0.375,0.182,0.0,0.558,0.375,0.4,0.2799
+Data Engineer Big Data,Data Analyst Senior BI,0.579,0.375,0.205,0.0,0.579,0.375,0.0,0.6562
+Data Engineer Big Data,Data Engineer Spark,0.731,1.0,0.442,0.0,0.731,1.0,0.0,0.95
+Data Engineer Big Data,Stage Data Science,0.669,0.375,0.26,0.0,0.669,0.375,0.2,0.3223
+Data Engineer Big Data,Senior DevOps AWS,0.551,0.375,0.295,0.0,0.551,0.375,0.0,0.6562
+Data Engineer Big Data,Ingénieur Cloud Azure,0.538,0.375,0.299,0.0,0.538,0.25,0.0,0.3525
+Data Engineer Big Data,SRE Kubernetes Linux,0.557,0.375,0.269,0.0,0.557,0.375,0.0,0.6562
+Data Engineer Big Data,Junior DevOps CI/CD,0.545,0.375,0.273,0.0,0.545,0.25,0.0,0.24
+Data Engineer Big Data,Analyste Sécurité Pentester,0.503,0.125,0.182,0.0,0.503,0.125,0.0,0.1369
+Data Engineer Big Data,Analyste SOC SIEM,0.504,0.0,0.143,0.0,0.504,0.0,0.0,0.039
+Data Engineer Big Data,Ingénieur QA Automation,0.54,0.25,0.233,0.0,0.54,0.25,0.0,0.315
+Data Engineer Big Data,Designer UX/UI Figma,0.5,0.0,0.119,0.0,0.5,0.0,0.4,0.0266
+Data Engineer Big Data,Chef de Projet IT Scrum,0.503,0.0,0.142,0.0,0.503,0.0,0.0,0.054
+Data Engineer Big Data,Marketing Digital Expert,0.502,0.088,0.156,0.0,0.502,0.0,0.4,0.0266
+Data Engineer Big Data,Commercial B2B Salesforce,0.506,0.0,0.14,0.0,0.506,0.0,0.4,0.032
+Data Engineer Big Data,Junior Marketing Digital,0.505,0.088,0.149,0.0,0.505,0.0,0.4,0.02
+Data Engineer Big Data,Comptable Confirmé SAP,0.501,0.0,0.145,0.0,0.501,0.0,0.0,0.054
+Data Engineer Big Data,Contrôleur de Gestion,0.502,0.0,0.145,0.0,0.502,0.0,0.0,0.054
+Data Engineer Big Data,Chargé RH Recrutement IT,0.513,0.0,0.14,0.0,0.513,0.0,0.4,0.0266
+Data Engineer Big Data,Médecin Généraliste,0.5,0.0,0.103,0.0,0.5,0.0,-0.6,0.054
+Data Engineer Big Data,Enseignant Mathématiques,0.5,0.0,0.119,0.0,0.5,0.0,0.0,0.054
+Data Engineer Big Data,Juriste Droit des Affaires,0.5,0.0,0.127,0.0,0.5,0.0,0.0,0.054
+Data Engineer Big Data,Ingénieur Civil BTP,0.5,0.0,0.144,0.0,0.5,0.0,0.0,0.054
+Data Engineer Big Data,Commercial Vente Retail,0.502,0.0,0.119,0.0,0.502,0.0,0.4,0.032
+Data Engineer Big Data,Étudiant Première Année,0.523,0.125,0.159,0.0,0.523,0.125,0.8,0.02
+Ingénieur DevOps AWS,Senior Backend Python FastAPI,0.523,0.338,0.171,0.0,0.523,0.25,0.0,0.3525
+Ingénieur DevOps AWS,Mid Backend Python Django,0.522,0.25,0.131,0.0,0.522,0.25,0.0,0.2775
+Ingénieur DevOps AWS,Junior Python Flask,0.514,0.125,0.057,0.0,0.514,0.125,0.4,0.0543
+Ingénieur DevOps AWS,Python Data + Backend,0.557,0.25,0.229,0.0,0.557,0.25,0.0,0.315
+Ingénieur DevOps AWS,Senior Java Spring Boot,0.561,0.462,0.342,0.0,0.561,0.375,0.0,0.6562
+Ingénieur DevOps AWS,Mid Java Spring,0.542,0.25,0.126,0.0,0.542,0.25,0.0,0.315
+Ingénieur DevOps AWS,Junior Java Angular Stage,0.528,0.125,0.167,0.0,0.528,0.125,0.2,0.0604
+Ingénieur DevOps AWS,Senior Node.js Express,0.556,0.25,0.126,0.0,0.556,0.25,0.4,0.2192
+Ingénieur DevOps AWS,Full Stack Node React,0.559,0.25,0.215,0.0,0.559,0.25,0.0,0.315
+Ingénieur DevOps AWS,Développeur PHP Laravel Senior,0.512,0.25,0.124,0.0,0.512,0.25,0.4,0.1922
+Ingénieur DevOps AWS,Junior PHP Symfony,0.516,0.125,0.05,0.0,0.516,0.125,0.4,0.0543
+Ingénieur DevOps AWS,Développeur .NET C# Senior,0.527,0.25,0.139,0.0,0.527,0.25,0.0,0.3525
+Ingénieur DevOps AWS,Senior Frontend React,0.537,0.125,0.076,0.0,0.537,0.125,0.4,0.0813
+Ingénieur DevOps AWS,Mid Frontend React Redux,0.536,0.125,0.063,0.0,0.536,0.125,0.0,0.1181
+Ingénieur DevOps AWS,Junior Frontend JavaScript,0.534,0.125,0.074,0.0,0.534,0.125,0.6,0.0349
+Ingénieur DevOps AWS,Senior Angular TypeScript,0.533,0.212,0.116,0.0,0.533,0.125,0.0,0.1556
+Ingénieur DevOps AWS,Développeur Flutter Senior,0.506,0.125,0.082,0.0,0.506,0.125,0.4,0.0813
+Ingénieur DevOps AWS,Développeur Android Kotlin,0.508,0.125,0.079,0.0,0.508,0.125,0.0,0.1369
+Ingénieur DevOps AWS,Junior Mobile React Native,0.533,0.125,0.052,0.0,0.533,0.125,0.4,0.0543
+Ingénieur DevOps AWS,Senior Data Scientist,0.506,0.212,0.21,0.0,0.506,0.125,0.0,0.1556
+Ingénieur DevOps AWS,ML Engineer MLOps,0.619,0.625,0.229,0.0,0.619,0.625,0.0,0.7312
+Ingénieur DevOps AWS,Data Analyst Junior,0.503,0.125,0.057,0.0,0.503,0.125,0.4,0.0543
+Ingénieur DevOps AWS,Data Analyst Senior BI,0.503,0.125,0.068,0.0,0.503,0.125,0.0,0.1556
+Ingénieur DevOps AWS,Data Engineer Spark,0.557,0.375,0.278,0.0,0.557,0.375,0.0,0.6562
+Ingénieur DevOps AWS,Stage Data Science,0.534,0.125,0.159,0.0,0.534,0.125,0.2,0.0604
+Ingénieur DevOps AWS,Senior DevOps AWS,0.726,0.85,0.439,0.0,0.726,1.0,0.0,0.95
+Ingénieur DevOps AWS,Ingénieur Cloud Azure,0.719,0.875,0.39,0.0,0.719,0.75,0.0,0.8625
+Ingénieur DevOps AWS,SRE Kubernetes Linux,0.704,0.625,0.366,0.0,0.704,0.625,0.0,0.7937
+Ingénieur DevOps AWS,Junior DevOps CI/CD,0.709,1.0,0.387,0.0,0.709,0.75,0.0,0.675
+Ingénieur DevOps AWS,Analyste Sécurité Pentester,0.509,0.125,0.191,0.0,0.509,0.125,0.0,0.1369
+Ingénieur DevOps AWS,Analyste SOC SIEM,0.506,0.125,0.195,0.0,0.506,0.125,0.0,0.1181
+Ingénieur DevOps AWS,Ingénieur QA Automation,0.612,0.25,0.238,0.0,0.612,0.25,0.0,0.315
+Ingénieur DevOps AWS,Designer UX/UI Figma,0.504,0.0,0.119,0.0,0.504,0.0,0.4,0.0266
+Ingénieur DevOps AWS,Chef de Projet IT Scrum,0.511,0.0,0.154,0.0,0.511,0.0,0.0,0.054
+Ingénieur DevOps AWS,Marketing Digital Expert,0.508,0.088,0.154,0.0,0.508,0.0,0.4,0.0266
+Ingénieur DevOps AWS,Commercial B2B Salesforce,0.513,0.0,0.133,0.0,0.513,0.0,0.4,0.032
+Ingénieur DevOps AWS,Junior Marketing Digital,0.51,0.088,0.144,0.0,0.51,0.0,0.4,0.02
+Ingénieur DevOps AWS,Comptable Confirmé SAP,0.502,0.0,0.127,0.0,0.502,0.0,0.0,0.054
+Ingénieur DevOps AWS,Contrôleur de Gestion,0.503,0.0,0.129,0.0,0.503,0.0,0.0,0.054
+Ingénieur DevOps AWS,Chargé RH Recrutement IT,0.506,0.0,0.139,0.0,0.506,0.0,0.4,0.0266
+Ingénieur DevOps AWS,Médecin Généraliste,0.5,0.0,0.106,0.0,0.5,0.0,-0.6,0.054
+Ingénieur DevOps AWS,Enseignant Mathématiques,0.501,0.0,0.115,0.0,0.501,0.0,0.0,0.054
+Ingénieur DevOps AWS,Juriste Droit des Affaires,0.5,0.0,0.136,0.0,0.5,0.0,0.0,0.054
+Ingénieur DevOps AWS,Ingénieur Civil BTP,0.507,0.0,0.158,0.0,0.507,0.0,0.0,0.054
+Ingénieur DevOps AWS,Commercial Vente Retail,0.504,0.0,0.109,0.0,0.504,0.0,0.4,0.032
+Ingénieur DevOps AWS,Étudiant Première Année,0.518,0.0,0.115,0.0,0.518,0.0,0.8,0.02
+Ingénieur Cloud Azure,Senior Backend Python FastAPI,0.507,0.338,0.165,0.0,0.507,0.25,0.0,0.3525
+Ingénieur Cloud Azure,Mid Backend Python Django,0.507,0.25,0.117,0.0,0.507,0.25,0.0,0.3025
+Ingénieur Cloud Azure,Junior Python Flask,0.502,0.125,0.056,0.0,0.502,0.125,0.4,0.0588
+Ingénieur Cloud Azure,Python Data + Backend,0.516,0.25,0.227,0.0,0.516,0.25,0.0,0.3525
+Ingénieur Cloud Azure,Senior Java Spring Boot,0.515,0.462,0.332,0.0,0.515,0.375,0.0,0.6562
+Ingénieur Cloud Azure,Mid Java Spring,0.515,0.25,0.117,0.0,0.515,0.25,0.0,0.3525
+Ingénieur Cloud Azure,Junior Java Angular Stage,0.508,0.125,0.167,0.0,0.508,0.125,0.2,0.0604
+Ingénieur Cloud Azure,Senior Node.js Express,0.515,0.25,0.105,0.0,0.515,0.25,0.4,0.2192
+Ingénieur Cloud Azure,Full Stack Node React,0.52,0.25,0.2,0.0,0.52,0.25,0.0,0.3525
+Ingénieur Cloud Azure,Développeur PHP Laravel Senior,0.504,0.25,0.113,0.0,0.504,0.25,0.4,0.2192
+Ingénieur Cloud Azure,Junior PHP Symfony,0.503,0.125,0.041,0.0,0.503,0.125,0.4,0.0588
+Ingénieur Cloud Azure,Développeur .NET C# Senior,0.516,0.375,0.187,0.0,0.516,0.375,0.0,0.6562
+Ingénieur Cloud Azure,Senior Frontend React,0.505,0.125,0.064,0.0,0.505,0.125,0.4,0.0948
+Ingénieur Cloud Azure,Mid Frontend React Redux,0.503,0.125,0.059,0.0,0.503,0.125,0.0,0.1306
+Ingénieur Cloud Azure,Junior Frontend JavaScript,0.506,0.125,0.063,0.0,0.506,0.125,0.6,0.0383
+Ingénieur Cloud Azure,Senior Angular TypeScript,0.505,0.212,0.113,0.0,0.505,0.125,0.0,0.1556
+Ingénieur Cloud Azure,Développeur Flutter Senior,0.502,0.125,0.083,0.0,0.502,0.125,0.4,0.0948
+Ingénieur Cloud Azure,Développeur Android Kotlin,0.501,0.125,0.072,0.0,0.501,0.125,0.0,0.1556
+Ingénieur Cloud Azure,Junior Mobile React Native,0.505,0.125,0.038,0.0,0.505,0.125,0.4,0.0588
+Ingénieur Cloud Azure,Senior Data Scientist,0.502,0.212,0.208,0.0,0.502,0.125,0.0,0.1556
+Ingénieur Cloud Azure,ML Engineer MLOps,0.564,0.5,0.227,0.0,0.564,0.5,0.0,0.725
+Ingénieur Cloud Azure,Data Analyst Junior,0.501,0.125,0.06,0.0,0.501,0.125,0.4,0.0588
+Ingénieur Cloud Azure,Data Analyst Senior BI,0.501,0.125,0.072,0.0,0.501,0.125,0.0,0.1556
+Ingénieur Cloud Azure,Data Engineer Spark,0.531,0.25,0.234,0.0,0.531,0.25,0.0,0.3525
+Ingénieur Cloud Azure,Stage Data Science,0.506,0.125,0.158,0.0,0.506,0.125,0.2,0.0604
+Ingénieur Cloud Azure,Senior DevOps AWS,0.648,0.75,0.363,0.0,0.648,0.75,0.0,0.8625
+Ingénieur Cloud Azure,Ingénieur Cloud Azure,0.731,1.0,0.453,0.0,0.731,1.0,0.0,0.95
+Ingénieur Cloud Azure,SRE Kubernetes Linux,0.567,0.625,0.34,0.0,0.567,0.625,0.0,0.7937
+Ingénieur Cloud Azure,Junior DevOps CI/CD,0.618,0.75,0.349,0.0,0.618,0.625,0.0,0.6271
+Ingénieur Cloud Azure,Analyste Sécurité Pentester,0.502,0.125,0.185,0.0,0.502,0.125,0.0,0.1556
+Ingénieur Cloud Azure,Analyste SOC SIEM,0.502,0.125,0.194,0.0,0.502,0.125,0.0,0.1306
+Ingénieur Cloud Azure,Ingénieur QA Automation,0.563,0.25,0.245,0.0,0.563,0.25,0.0,0.3525
+Ingénieur Cloud Azure,Designer UX/UI Figma,0.501,0.0,0.12,0.0,0.501,0.0,0.4,0.032
+Ingénieur Cloud Azure,Chef de Projet IT Scrum,0.502,0.0,0.154,0.0,0.502,0.0,0.0,0.054
+Ingénieur Cloud Azure,Marketing Digital Expert,0.501,0.088,0.156,0.0,0.501,0.0,0.4,0.032
+Ingénieur Cloud Azure,Commercial B2B Salesforce,0.501,0.0,0.136,0.0,0.501,0.0,0.4,0.032
+Ingénieur Cloud Azure,Junior Marketing Digital,0.502,0.088,0.134,0.0,0.502,0.0,0.4,0.02
+Ingénieur Cloud Azure,Comptable Confirmé SAP,0.5,0.0,0.128,0.0,0.5,0.0,0.0,0.054
+Ingénieur Cloud Azure,Contrôleur de Gestion,0.501,0.0,0.142,0.0,0.501,0.0,0.0,0.054
+Ingénieur Cloud Azure,Chargé RH Recrutement IT,0.504,0.0,0.144,0.0,0.504,0.0,0.4,0.032
+Ingénieur Cloud Azure,Médecin Généraliste,0.5,0.0,0.108,0.0,0.5,0.0,-0.6,0.054
+Ingénieur Cloud Azure,Enseignant Mathématiques,0.5,0.0,0.114,0.0,0.5,0.0,0.0,0.054
+Ingénieur Cloud Azure,Juriste Droit des Affaires,0.5,0.0,0.131,0.0,0.5,0.0,0.0,0.054
+Ingénieur Cloud Azure,Ingénieur Civil BTP,0.5,0.0,0.155,0.0,0.5,0.0,0.0,0.054
+Ingénieur Cloud Azure,Commercial Vente Retail,0.501,0.0,0.119,0.0,0.501,0.0,0.4,0.032
+Ingénieur Cloud Azure,Étudiant Première Année,0.505,0.0,0.111,0.0,0.505,0.0,0.8,0.02
+Ingénieur SRE Site Reliability,Senior Backend Python FastAPI,0.514,0.462,0.236,0.0,0.514,0.375,0.0,0.6562
+Ingénieur SRE Site Reliability,Mid Backend Python Django,0.513,0.375,0.181,0.0,0.513,0.375,0.0,0.5312
+Ingénieur SRE Site Reliability,Junior Python Flask,0.506,0.25,0.09,0.0,0.506,0.25,0.4,0.1382
+Ingénieur SRE Site Reliability,Python Data + Backend,0.532,0.375,0.276,0.0,0.532,0.375,0.0,0.5938
+Ingénieur SRE Site Reliability,Senior Java Spring Boot,0.514,0.462,0.334,0.0,0.514,0.375,0.0,0.6562
+Ingénieur SRE Site Reliability,Mid Java Spring,0.509,0.25,0.113,0.0,0.509,0.25,0.0,0.315
+Ingénieur SRE Site Reliability,Junior Java Angular Stage,0.505,0.125,0.154,0.0,0.505,0.125,0.2,0.0604
+Ingénieur SRE Site Reliability,Senior Node.js Express,0.517,0.25,0.11,0.0,0.517,0.25,0.4,0.2192
+Ingénieur SRE Site Reliability,Full Stack Node React,0.514,0.25,0.199,0.0,0.514,0.25,0.0,0.315
+Ingénieur SRE Site Reliability,Développeur PHP Laravel Senior,0.502,0.25,0.118,0.0,0.502,0.25,0.4,0.1922
+Ingénieur SRE Site Reliability,Junior PHP Symfony,0.505,0.125,0.046,0.0,0.505,0.125,0.4,0.0543
+Ingénieur SRE Site Reliability,Développeur .NET C# Senior,0.504,0.25,0.125,0.0,0.504,0.25,0.0,0.3525
+Ingénieur SRE Site Reliability,Senior Frontend React,0.512,0.125,0.075,0.0,0.512,0.125,0.4,0.0813
+Ingénieur SRE Site Reliability,Mid Frontend React Redux,0.507,0.125,0.059,0.0,0.507,0.125,0.0,0.1181
+Ingénieur SRE Site Reliability,Junior Frontend JavaScript,0.508,0.125,0.066,0.0,0.508,0.125,0.6,0.0349
+Ingénieur SRE Site Reliability,Senior Angular TypeScript,0.51,0.212,0.101,0.0,0.51,0.125,0.0,0.1556
+Ingénieur SRE Site Reliability,Développeur Flutter Senior,0.501,0.125,0.07,0.0,0.501,0.125,0.4,0.0813
+Ingénieur SRE Site Reliability,Développeur Android Kotlin,0.501,0.125,0.065,0.0,0.501,0.125,0.0,0.1369
+Ingénieur SRE Site Reliability,Junior Mobile React Native,0.507,0.125,0.043,0.0,0.507,0.125,0.4,0.0543
+Ingénieur SRE Site Reliability,Senior Data Scientist,0.503,0.338,0.244,0.0,0.503,0.25,0.0,0.3525
+Ingénieur SRE Site Reliability,ML Engineer MLOps,0.555,0.625,0.216,0.0,0.555,0.625,0.0,0.7312
+Ingénieur SRE Site Reliability,Data Analyst Junior,0.501,0.25,0.093,0.0,0.501,0.25,0.4,0.1382
+Ingénieur SRE Site Reliability,Data Analyst Senior BI,0.501,0.25,0.107,0.0,0.501,0.25,0.0,0.3525
+Ingénieur SRE Site Reliability,Data Engineer Spark,0.523,0.375,0.253,0.0,0.523,0.375,0.0,0.6562
+Ingénieur SRE Site Reliability,Stage Data Science,0.52,0.25,0.196,0.0,0.52,0.25,0.2,0.1571
+Ingénieur SRE Site Reliability,Senior DevOps AWS,0.532,0.8,0.373,0.0,0.532,0.625,0.0,0.7937
+Ingénieur SRE Site Reliability,Ingénieur Cloud Azure,0.665,0.625,0.336,0.0,0.665,0.625,0.0,0.7937
+Ingénieur SRE Site Reliability,SRE Kubernetes Linux,0.731,1.0,0.444,0.0,0.731,1.0,0.0,0.95
+Ingénieur SRE Site Reliability,Junior DevOps CI/CD,0.567,0.625,0.334,0.0,0.567,0.625,0.0,0.6062
+Ingénieur SRE Site Reliability,Analyste Sécurité Pentester,0.503,0.25,0.236,0.0,0.503,0.25,0.0,0.315
+Ingénieur SRE Site Reliability,Analyste SOC SIEM,0.501,0.125,0.198,0.0,0.501,0.125,0.0,0.1181
+Ingénieur SRE Site Reliability,Ingénieur QA Automation,0.59,0.375,0.292,0.0,0.59,0.375,0.0,0.5938
+Ingénieur SRE Site Reliability,Designer UX/UI Figma,0.501,0.0,0.12,0.0,0.501,0.0,0.4,0.0266
+Ingénieur SRE Site Reliability,Chef de Projet IT Scrum,0.503,0.0,0.154,0.0,0.503,0.0,0.0,0.054
+Ingénieur SRE Site Reliability,Marketing Digital Expert,0.501,0.088,0.147,0.0,0.501,0.0,0.4,0.0266
+Ingénieur SRE Site Reliability,Commercial B2B Salesforce,0.501,0.0,0.132,0.0,0.501,0.0,0.4,0.032
+Ingénieur SRE Site Reliability,Junior Marketing Digital,0.501,0.088,0.137,0.0,0.501,0.0,0.4,0.02
+Ingénieur SRE Site Reliability,Comptable Confirmé SAP,0.5,0.0,0.126,0.0,0.5,0.0,0.0,0.054
+Ingénieur SRE Site Reliability,Contrôleur de Gestion,0.501,0.0,0.129,0.0,0.501,0.0,0.0,0.054
+Ingénieur SRE Site Reliability,Chargé RH Recrutement IT,0.502,0.0,0.144,0.0,0.502,0.0,0.4,0.0266
+Ingénieur SRE Site Reliability,Médecin Généraliste,0.5,0.0,0.109,0.0,0.5,0.0,-0.6,0.054
+Ingénieur SRE Site Reliability,Enseignant Mathématiques,0.5,0.0,0.115,0.0,0.5,0.0,0.0,0.054
+Ingénieur SRE Site Reliability,Juriste Droit des Affaires,0.5,0.0,0.136,0.0,0.5,0.0,0.0,0.054
+Ingénieur SRE Site Reliability,Ingénieur Civil BTP,0.502,0.0,0.155,0.0,0.502,0.0,0.0,0.054
+Ingénieur SRE Site Reliability,Commercial Vente Retail,0.5,0.0,0.119,0.0,0.5,0.0,0.4,0.032
+Ingénieur SRE Site Reliability,Étudiant Première Année,0.511,0.125,0.147,0.0,0.511,0.125,0.8,0.02
+Analyste Cybersécurité Pentester,Senior Backend Python FastAPI,0.581,0.143,0.21,0.0,0.581,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Mid Backend Python Django,0.565,0.143,0.204,0.0,0.565,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Junior Python Flask,0.575,0.143,0.182,0.0,0.575,0.1429,0.4,0.0699
+Analyste Cybersécurité Pentester,Python Data + Backend,0.624,0.143,0.202,0.0,0.624,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Senior Java Spring Boot,0.56,0.0,0.142,0.0,0.56,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Mid Java Spring,0.556,0.0,0.137,0.0,0.556,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Junior Java Angular Stage,0.546,0.0,0.117,0.0,0.546,0.0,0.2,0.02
+Analyste Cybersécurité Pentester,Senior Node.js Express,0.543,0.0,0.127,0.0,0.543,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Full Stack Node React,0.587,0.0,0.123,0.0,0.587,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Développeur PHP Laravel Senior,0.506,0.0,0.132,0.0,0.506,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Junior PHP Symfony,0.538,0.0,0.11,0.0,0.538,0.0,0.4,0.0212
+Analyste Cybersécurité Pentester,Développeur .NET C# Senior,0.522,0.0,0.139,0.0,0.522,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Senior Frontend React,0.552,0.0,0.123,0.0,0.552,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Mid Frontend React Redux,0.538,0.0,0.122,0.0,0.538,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Junior Frontend JavaScript,0.522,0.0,0.126,0.0,0.522,0.0,0.6,0.02
+Analyste Cybersécurité Pentester,Senior Angular TypeScript,0.537,0.0,0.131,0.0,0.537,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Développeur Flutter Senior,0.511,0.0,0.126,0.0,0.511,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Développeur Android Kotlin,0.505,0.0,0.134,0.0,0.505,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Junior Mobile React Native,0.548,0.0,0.109,0.0,0.548,0.0,0.4,0.0212
+Analyste Cybersécurité Pentester,Senior Data Scientist,0.533,0.143,0.197,0.0,0.533,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,ML Engineer MLOps,0.525,0.143,0.192,0.0,0.525,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Data Analyst Junior,0.589,0.143,0.198,0.0,0.589,0.1429,0.4,0.0699
+Analyste Cybersécurité Pentester,Data Analyst Senior BI,0.571,0.143,0.203,0.0,0.571,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Data Engineer Spark,0.542,0.143,0.182,0.0,0.542,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Stage Data Science,0.599,0.143,0.178,0.0,0.599,0.1429,0.2,0.063
+Analyste Cybersécurité Pentester,Senior DevOps AWS,0.604,0.286,0.24,0.0,0.604,0.2857,0.0,0.3643
+Analyste Cybersécurité Pentester,Ingénieur Cloud Azure,0.525,0.286,0.232,0.0,0.525,0.2857,0.0,0.3643
+Analyste Cybersécurité Pentester,SRE Kubernetes Linux,0.607,0.429,0.334,0.0,0.607,0.4286,0.0,0.6857
+Analyste Cybersécurité Pentester,Junior DevOps CI/CD,0.623,0.286,0.237,0.0,0.623,0.2857,0.0,0.2893
+Analyste Cybersécurité Pentester,Analyste Sécurité Pentester,0.73,1.0,0.471,0.0,0.73,1.0,0.0,0.95
+Analyste Cybersécurité Pentester,Analyste SOC SIEM,0.648,0.571,0.328,0.0,0.648,0.5714,0.0,0.7643
+Analyste Cybersécurité Pentester,Ingénieur QA Automation,0.521,0.143,0.201,0.0,0.521,0.1429,0.0,0.1586
+Analyste Cybersécurité Pentester,Designer UX/UI Figma,0.503,0.0,0.111,0.0,0.503,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Chef de Projet IT Scrum,0.519,0.0,0.131,0.0,0.519,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Marketing Digital Expert,0.554,0.0,0.123,0.0,0.554,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Commercial B2B Salesforce,0.534,0.0,0.123,0.0,0.534,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Junior Marketing Digital,0.585,0.1,0.145,0.0,0.585,0.0,0.4,0.0212
+Analyste Cybersécurité Pentester,Comptable Confirmé SAP,0.503,0.0,0.132,0.0,0.503,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Contrôleur de Gestion,0.511,0.0,0.141,0.0,0.511,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Chargé RH Recrutement IT,0.547,0.0,0.13,0.0,0.547,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Médecin Généraliste,0.501,0.0,0.103,0.0,0.501,0.0,-0.6,0.054
+Analyste Cybersécurité Pentester,Enseignant Mathématiques,0.501,0.0,0.111,0.0,0.501,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Juriste Droit des Affaires,0.5,0.0,0.139,0.0,0.5,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Ingénieur Civil BTP,0.5,0.0,0.128,0.0,0.5,0.0,0.0,0.054
+Analyste Cybersécurité Pentester,Commercial Vente Retail,0.532,0.0,0.112,0.0,0.532,0.0,0.4,0.032
+Analyste Cybersécurité Pentester,Étudiant Première Année,0.56,0.143,0.148,0.0,0.56,0.1429,0.8,0.02
+Analyste SOC Cybersécurité,Senior Backend Python FastAPI,0.502,0.143,0.207,0.0,0.502,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Mid Backend Python Django,0.502,0.143,0.186,0.0,0.502,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Junior Python Flask,0.502,0.143,0.179,0.0,0.502,0.1429,0.4,0.0699
+Analyste SOC Cybersécurité,Python Data + Backend,0.506,0.143,0.193,0.0,0.506,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Senior Java Spring Boot,0.504,0.143,0.204,0.0,0.504,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Mid Java Spring,0.505,0.143,0.184,0.0,0.505,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Junior Java Angular Stage,0.502,0.143,0.171,0.0,0.502,0.1429,0.2,0.063
+Analyste SOC Cybersécurité,Senior Node.js Express,0.504,0.143,0.179,0.0,0.504,0.1429,0.4,0.0969
+Analyste SOC Cybersécurité,Full Stack Node React,0.508,0.143,0.175,0.0,0.508,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Développeur PHP Laravel Senior,0.5,0.143,0.173,0.0,0.5,0.1429,0.4,0.0969
+Analyste SOC Cybersécurité,Junior PHP Symfony,0.501,0.143,0.162,0.0,0.501,0.1429,0.4,0.0699
+Analyste SOC Cybersécurité,Développeur .NET C# Senior,0.501,0.143,0.194,0.0,0.501,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Senior Frontend React,0.502,0.143,0.186,0.0,0.502,0.1429,0.4,0.0969
+Analyste SOC Cybersécurité,Mid Frontend React Redux,0.502,0.143,0.172,0.0,0.502,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Junior Frontend JavaScript,0.501,0.143,0.171,0.0,0.501,0.1429,0.6,0.0468
+Analyste SOC Cybersécurité,Senior Angular TypeScript,0.501,0.143,0.18,0.0,0.501,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Développeur Flutter Senior,0.501,0.143,0.185,0.0,0.501,0.1429,0.4,0.0969
+Analyste SOC Cybersécurité,Développeur Android Kotlin,0.5,0.143,0.177,0.0,0.5,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Junior Mobile React Native,0.503,0.143,0.158,0.0,0.503,0.1429,0.4,0.0699
+Analyste SOC Cybersécurité,Senior Data Scientist,0.502,0.143,0.197,0.0,0.502,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,ML Engineer MLOps,0.501,0.143,0.186,0.0,0.501,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Data Analyst Junior,0.506,0.143,0.185,0.0,0.506,0.1429,0.4,0.0699
+Analyste SOC Cybersécurité,Data Analyst Senior BI,0.505,0.143,0.183,0.0,0.505,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Data Engineer Spark,0.501,0.143,0.178,0.0,0.501,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Stage Data Science,0.505,0.143,0.164,0.0,0.505,0.1429,0.2,0.063
+Analyste SOC Cybersécurité,Senior DevOps AWS,0.51,0.286,0.248,0.0,0.51,0.2857,0.0,0.3643
+Analyste SOC Cybersécurité,Ingénieur Cloud Azure,0.501,0.286,0.239,0.0,0.501,0.2857,0.0,0.3643
+Analyste SOC Cybersécurité,SRE Kubernetes Linux,0.513,0.286,0.263,0.0,0.513,0.2857,0.0,0.3643
+Analyste SOC Cybersécurité,Junior DevOps CI/CD,0.513,0.286,0.259,0.0,0.513,0.2857,0.0,0.2893
+Analyste SOC Cybersécurité,Analyste Sécurité Pentester,0.576,0.429,0.329,0.0,0.576,0.4286,0.0,0.6857
+Analyste SOC Cybersécurité,Analyste SOC SIEM,0.729,0.857,0.45,0.0,0.729,0.8571,0.0,0.9214
+Analyste SOC Cybersécurité,Ingénieur QA Automation,0.501,0.143,0.198,0.0,0.501,0.1429,0.0,0.1586
+Analyste SOC Cybersécurité,Designer UX/UI Figma,0.5,0.0,0.113,0.0,0.5,0.0,0.4,0.032
+Analyste SOC Cybersécurité,Chef de Projet IT Scrum,0.501,0.0,0.145,0.0,0.501,0.0,0.0,0.054
+Analyste SOC Cybersécurité,Marketing Digital Expert,0.501,0.1,0.158,0.0,0.501,0.0,0.4,0.032
+Analyste SOC Cybersécurité,Commercial B2B Salesforce,0.501,0.0,0.133,0.0,0.501,0.0,0.4,0.032
+Analyste SOC Cybersécurité,Junior Marketing Digital,0.501,0.2,0.166,0.0,0.501,0.0,0.4,0.0212
+Analyste SOC Cybersécurité,Comptable Confirmé SAP,0.5,0.0,0.126,0.0,0.5,0.0,0.0,0.054
+Analyste SOC Cybersécurité,Contrôleur de Gestion,0.501,0.0,0.137,0.0,0.501,0.0,0.0,0.054
+Analyste SOC Cybersécurité,Chargé RH Recrutement IT,0.502,0.0,0.137,0.0,0.502,0.0,0.4,0.032
+Analyste SOC Cybersécurité,Médecin Généraliste,0.5,0.0,0.108,0.0,0.5,0.0,-0.6,0.054
+Analyste SOC Cybersécurité,Enseignant Mathématiques,0.5,0.0,0.103,0.0,0.5,0.0,0.0,0.054
+Analyste SOC Cybersécurité,Juriste Droit des Affaires,0.5,0.0,0.137,0.0,0.5,0.0,0.0,0.054
+Analyste SOC Cybersécurité,Ingénieur Civil BTP,0.5,0.0,0.137,0.0,0.5,0.0,0.0,0.054
+Analyste SOC Cybersécurité,Commercial Vente Retail,0.501,0.0,0.114,0.0,0.501,0.0,0.4,0.032
+Analyste SOC Cybersécurité,Étudiant Première Année,0.502,0.0,0.113,0.0,0.502,0.0,0.8,0.02
+Ingénieur QA Automation,Senior Backend Python FastAPI,0.537,0.671,0.342,0.0,0.537,0.5714,0.0,0.7643
+Ingénieur QA Automation,Mid Backend Python Django,0.518,0.529,0.338,0.0,0.518,0.4286,0.0,0.6857
+Ingénieur QA Automation,Junior Python Flask,0.51,0.429,0.288,0.0,0.51,0.2857,0.4,0.1737
+Ingénieur QA Automation,Python Data + Backend,0.524,0.386,0.279,0.0,0.524,0.2857,0.0,0.3643
+Ingénieur QA Automation,Senior Java Spring Boot,0.525,0.529,0.34,0.0,0.525,0.4286,0.0,0.6857
+Ingénieur QA Automation,Mid Java Spring,0.523,0.429,0.319,0.0,0.523,0.4286,0.0,0.6857
+Ingénieur QA Automation,Junior Java Angular Stage,0.526,0.429,0.3,0.0,0.526,0.4286,0.2,0.3482
+Ingénieur QA Automation,Senior Node.js Express,0.512,0.286,0.214,0.0,0.512,0.2857,0.4,0.2277
+Ingénieur QA Automation,Full Stack Node React,0.507,0.286,0.213,0.0,0.507,0.2857,0.0,0.3643
+Ingénieur QA Automation,Développeur PHP Laravel Senior,0.504,0.386,0.25,0.0,0.504,0.2857,0.4,0.2277
+Ingénieur QA Automation,Junior PHP Symfony,0.505,0.243,0.196,0.0,0.505,0.1429,0.4,0.0699
+Ingénieur QA Automation,Développeur .NET C# Senior,0.506,0.286,0.232,0.0,0.506,0.2857,0.0,0.3643
+Ingénieur QA Automation,Senior Frontend React,0.506,0.386,0.258,0.0,0.506,0.2857,0.4,0.2277
+Ingénieur QA Automation,Mid Frontend React Redux,0.504,0.386,0.247,0.0,0.504,0.2857,0.0,0.3643
+Ingénieur QA Automation,Junior Frontend JavaScript,0.506,0.243,0.207,0.0,0.506,0.1429,0.6,0.0468
+Ingénieur QA Automation,Senior Angular TypeScript,0.507,0.286,0.21,0.0,0.507,0.2857,0.0,0.3643
+Ingénieur QA Automation,Développeur Flutter Senior,0.502,0.414,0.265,0.0,0.502,0.2857,0.4,0.2277
+Ingénieur QA Automation,Développeur Android Kotlin,0.502,0.414,0.279,0.0,0.502,0.2857,0.0,0.3643
+Ingénieur QA Automation,Junior Mobile React Native,0.506,0.386,0.225,0.0,0.506,0.2857,0.4,0.1737
+Ingénieur QA Automation,Senior Data Scientist,0.506,0.286,0.237,0.0,0.506,0.2857,0.0,0.3643
+Ingénieur QA Automation,ML Engineer MLOps,0.536,0.429,0.297,0.0,0.536,0.4286,0.0,0.6857
+Ingénieur QA Automation,Data Analyst Junior,0.508,0.286,0.232,0.0,0.508,0.2857,0.4,0.1737
+Ingénieur QA Automation,Data Analyst Senior BI,0.503,0.286,0.233,0.0,0.503,0.2857,0.0,0.3643
+Ingénieur QA Automation,Data Engineer Spark,0.522,0.286,0.218,0.0,0.522,0.2857,0.0,0.3643
+Ingénieur QA Automation,Stage Data Science,0.52,0.286,0.216,0.0,0.52,0.2857,0.2,0.1674
+Ingénieur QA Automation,Senior DevOps AWS,0.513,0.286,0.246,0.0,0.513,0.2857,0.0,0.3643
+Ingénieur QA Automation,Ingénieur Cloud Azure,0.562,0.286,0.247,0.0,0.562,0.2857,0.0,0.3643
+Ingénieur QA Automation,SRE Kubernetes Linux,0.518,0.429,0.326,0.0,0.518,0.4286,0.0,0.6857
+Ingénieur QA Automation,Junior DevOps CI/CD,0.525,0.286,0.267,0.0,0.525,0.2857,0.0,0.2893
+Ingénieur QA Automation,Analyste Sécurité Pentester,0.501,0.143,0.197,0.0,0.501,0.1429,0.0,0.1586
+Ingénieur QA Automation,Analyste SOC SIEM,0.501,0.0,0.153,0.0,0.501,0.0,0.0,0.054
+Ingénieur QA Automation,Ingénieur QA Automation,0.73,1.0,0.465,0.0,0.73,1.0,0.0,0.95
+Ingénieur QA Automation,Designer UX/UI Figma,0.5,0.0,0.122,0.0,0.5,0.0,0.4,0.032
+Ingénieur QA Automation,Chef de Projet IT Scrum,0.501,0.0,0.147,0.0,0.501,0.0,0.0,0.054
+Ingénieur QA Automation,Marketing Digital Expert,0.5,0.1,0.146,0.0,0.5,0.0,0.4,0.032
+Ingénieur QA Automation,Commercial B2B Salesforce,0.501,0.0,0.135,0.0,0.501,0.0,0.4,0.032
+Ingénieur QA Automation,Junior Marketing Digital,0.501,0.1,0.149,0.0,0.501,0.0,0.4,0.0212
+Ingénieur QA Automation,Comptable Confirmé SAP,0.501,0.0,0.14,0.0,0.501,0.0,0.0,0.054
+Ingénieur QA Automation,Contrôleur de Gestion,0.501,0.0,0.143,0.0,0.501,0.0,0.0,0.054
+Ingénieur QA Automation,Chargé RH Recrutement IT,0.502,0.0,0.141,0.0,0.502,0.0,0.4,0.032
+Ingénieur QA Automation,Médecin Généraliste,0.5,0.0,0.116,0.0,0.5,0.0,-0.6,0.054
+Ingénieur QA Automation,Enseignant Mathématiques,0.5,0.0,0.11,0.0,0.5,0.0,0.0,0.054
+Ingénieur QA Automation,Juriste Droit des Affaires,0.5,0.0,0.139,0.0,0.5,0.0,0.0,0.054
+Ingénieur QA Automation,Ingénieur Civil BTP,0.502,0.0,0.159,0.0,0.502,0.0,0.0,0.054
+Ingénieur QA Automation,Commercial Vente Retail,0.5,0.0,0.125,0.0,0.5,0.0,0.4,0.032
+Ingénieur QA Automation,Étudiant Première Année,0.509,0.143,0.155,0.0,0.509,0.1429,0.8,0.02
+Développeur Full Stack Java Angular Stage,Senior Backend Python FastAPI,0.511,0.633,0.716,0.0,0.511,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Mid Backend Python Django,0.51,0.65,0.73,0.0,0.51,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Junior Python Flask,0.504,0.65,0.699,0.0,0.504,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Python Data + Backend,0.52,0.433,0.808,0.0,0.52,0.1667,0.0,0.1625
+Développeur Full Stack Java Angular Stage,Senior Java Spring Boot,0.641,0.983,0.86,0.0,0.641,0.8333,0.0,0.9083
+Développeur Full Stack Java Angular Stage,Mid Java Spring,0.594,0.833,0.777,0.0,0.594,0.6667,0.0,0.8167
+Développeur Full Stack Java Angular Stage,Junior Java Angular Stage,0.728,1.0,0.886,0.0,0.728,1.0,0.2,0.8448
+Développeur Full Stack Java Angular Stage,Senior Node.js Express,0.515,0.6,0.725,0.0,0.515,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Full Stack Node React,0.56,0.8,0.87,0.0,0.56,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Développeur PHP Laravel Senior,0.526,0.6,0.722,0.0,0.526,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Junior PHP Symfony,0.506,0.433,0.665,0.0,0.506,0.1667,0.4,0.0997
+Développeur Full Stack Java Angular Stage,Développeur .NET C# Senior,0.535,0.5,0.75,0.0,0.535,0.5,0.0,0.725
+Développeur Full Stack Java Angular Stage,Senior Frontend React,0.511,0.6,0.715,0.0,0.511,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Mid Frontend React Redux,0.507,0.6,0.706,0.0,0.507,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Junior Frontend JavaScript,0.511,0.283,0.537,0.0,0.511,0.1667,0.6,0.0696
+Développeur Full Stack Java Angular Stage,Senior Angular TypeScript,0.542,0.5,0.744,0.0,0.542,0.5,0.0,0.725
+Développeur Full Stack Java Angular Stage,Développeur Flutter Senior,0.519,0.483,0.732,0.0,0.519,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Développeur Android Kotlin,0.514,0.483,0.704,0.0,0.514,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Junior Mobile React Native,0.506,0.45,0.699,0.0,0.506,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Senior Data Scientist,0.503,0.333,0.654,0.0,0.503,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,ML Engineer MLOps,0.504,0.167,0.413,0.0,0.504,0.1667,0.0,0.1625
+Développeur Full Stack Java Angular Stage,Data Analyst Junior,0.501,0.333,0.544,0.0,0.501,0.3333,0.4,0.239
+Développeur Full Stack Java Angular Stage,Data Analyst Senior BI,0.501,0.333,0.541,0.0,0.501,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Data Engineer Spark,0.505,0.333,0.663,0.0,0.505,0.3333,0.0,0.38
+Développeur Full Stack Java Angular Stage,Stage Data Science,0.549,0.333,0.634,0.0,0.549,0.3333,0.2,0.3133
+Développeur Full Stack Java Angular Stage,Senior DevOps AWS,0.509,0.167,0.542,0.0,0.509,0.1667,0.0,0.1625
+Développeur Full Stack Java Angular Stage,Ingénieur Cloud Azure,0.502,0.167,0.522,0.0,0.502,0.1667,0.0,0.1625
+Développeur Full Stack Java Angular Stage,SRE Kubernetes Linux,0.509,0.167,0.502,0.0,0.509,0.1667,0.0,0.1625
+Développeur Full Stack Java Angular Stage,Junior DevOps CI/CD,0.516,0.167,0.549,0.0,0.516,0.1667,0.0,0.1625
+Développeur Full Stack Java Angular Stage,Analyste Sécurité Pentester,0.5,0.0,0.383,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Analyste SOC SIEM,0.5,0.0,0.39,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Ingénieur QA Automation,0.504,0.65,0.8,0.0,0.504,0.5,0.0,0.725
+Développeur Full Stack Java Angular Stage,Designer UX/UI Figma,0.501,0.0,0.357,0.0,0.501,0.0,0.4,0.032
+Développeur Full Stack Java Angular Stage,Chef de Projet IT Scrum,0.501,0.0,0.393,0.0,0.501,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Marketing Digital Expert,0.501,0.117,0.45,0.0,0.501,0.0,0.4,0.032
+Développeur Full Stack Java Angular Stage,Commercial B2B Salesforce,0.501,0.0,0.364,0.0,0.501,0.0,0.4,0.032
+Développeur Full Stack Java Angular Stage,Junior Marketing Digital,0.502,0.117,0.452,0.0,0.502,0.0,0.4,0.032
+Développeur Full Stack Java Angular Stage,Comptable Confirmé SAP,0.5,0.0,0.373,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Contrôleur de Gestion,0.5,0.0,0.369,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Chargé RH Recrutement IT,0.501,0.0,0.38,0.0,0.501,0.0,0.4,0.032
+Développeur Full Stack Java Angular Stage,Médecin Généraliste,0.5,0.0,0.355,0.0,0.5,0.0,-0.6,0.054
+Développeur Full Stack Java Angular Stage,Enseignant Mathématiques,0.5,0.0,0.362,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Juriste Droit des Affaires,0.5,0.0,0.381,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Ingénieur Civil BTP,0.5,0.0,0.381,0.0,0.5,0.0,0.0,0.054
+Développeur Full Stack Java Angular Stage,Commercial Vente Retail,0.5,0.0,0.348,0.0,0.5,0.0,0.4,0.032
+Développeur Full Stack Java Angular Stage,Étudiant Première Année,0.506,0.0,0.358,0.0,0.506,0.0,0.8,0.02
+Stage Développeur Data Science Python,Senior Backend Python FastAPI,0.516,0.783,0.838,0.0,0.516,0.3333,-0.2,0.38
+Stage Développeur Data Science Python,Mid Backend Python Django,0.516,0.8,0.857,0.0,0.516,0.3333,-0.2,0.38
+Stage Développeur Data Science Python,Junior Python Flask,0.532,0.8,0.817,0.0,0.532,0.5,0.2,0.594
+Stage Développeur Data Science Python,Python Data + Backend,0.628,0.967,0.86,0.0,0.628,0.6667,-0.2,0.8167
+Stage Développeur Data Science Python,Senior Java Spring Boot,0.508,0.317,0.676,0.0,0.508,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Mid Java Spring,0.508,0.333,0.683,0.0,0.508,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Junior Java Angular Stage,0.527,0.333,0.675,0.0,0.527,0.3333,0.0,0.38
+Stage Développeur Data Science Python,Senior Node.js Express,0.503,0.283,0.626,0.0,0.503,0.1667,0.2,0.1298
+Stage Développeur Data Science Python,Full Stack Node React,0.509,0.333,0.647,0.0,0.509,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Développeur PHP Laravel Senior,0.509,0.317,0.654,0.0,0.509,0.1667,0.2,0.1298
+Stage Développeur Data Science Python,Junior PHP Symfony,0.504,0.317,0.644,0.0,0.504,0.1667,0.2,0.1298
+Stage Développeur Data Science Python,Développeur .NET C# Senior,0.52,0.333,0.674,0.0,0.52,0.3333,-0.2,0.38
+Stage Développeur Data Science Python,Senior Frontend React,0.502,0.167,0.52,0.0,0.502,0.1667,0.2,0.1298
+Stage Développeur Data Science Python,Mid Frontend React Redux,0.502,0.167,0.503,0.0,0.502,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Junior Frontend JavaScript,0.503,0.167,0.515,0.0,0.503,0.1667,0.4,0.0954
+Stage Développeur Data Science Python,Senior Angular TypeScript,0.502,0.167,0.524,0.0,0.502,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Développeur Flutter Senior,0.52,0.167,0.528,0.0,0.52,0.1667,0.2,0.1298
+Stage Développeur Data Science Python,Développeur Android Kotlin,0.508,0.167,0.513,0.0,0.508,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Junior Mobile React Native,0.504,0.167,0.49,0.0,0.504,0.1667,0.2,0.1298
+Stage Développeur Data Science Python,Senior Data Scientist,0.681,0.85,0.873,0.0,0.681,1.0,-0.2,0.95
+Stage Développeur Data Science Python,ML Engineer MLOps,0.509,0.783,0.805,0.0,0.509,0.3333,-0.2,0.38
+Stage Développeur Data Science Python,Data Analyst Junior,0.545,0.983,0.866,0.0,0.545,0.8333,0.2,0.7553
+Stage Développeur Data Science Python,Data Analyst Senior BI,0.512,0.817,0.845,0.0,0.512,0.6667,-0.2,0.8167
+Stage Développeur Data Science Python,Data Engineer Spark,0.527,0.8,0.824,0.0,0.527,0.5,-0.2,0.725
+Stage Développeur Data Science Python,Stage Data Science,0.729,1.0,0.902,0.0,0.729,1.0,0.0,0.95
+Stage Développeur Data Science Python,Senior DevOps AWS,0.505,0.167,0.536,0.0,0.505,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Ingénieur Cloud Azure,0.501,0.167,0.516,0.0,0.501,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,SRE Kubernetes Linux,0.511,0.633,0.807,0.0,0.511,0.3333,-0.2,0.38
+Stage Développeur Data Science Python,Junior DevOps CI/CD,0.507,0.167,0.54,0.0,0.507,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Analyste Sécurité Pentester,0.5,0.467,0.795,0.0,0.5,0.1667,-0.2,0.1625
+Stage Développeur Data Science Python,Analyste SOC SIEM,0.5,0.0,0.391,0.0,0.5,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Ingénieur QA Automation,0.502,0.633,0.819,0.0,0.502,0.3333,-0.2,0.38
+Stage Développeur Data Science Python,Designer UX/UI Figma,0.5,0.0,0.365,0.0,0.5,0.0,0.2,0.0422
+Stage Développeur Data Science Python,Chef de Projet IT Scrum,0.501,0.0,0.393,0.0,0.501,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Marketing Digital Expert,0.5,0.117,0.46,0.0,0.5,0.0,0.2,0.0422
+Stage Développeur Data Science Python,Commercial B2B Salesforce,0.501,0.0,0.372,0.0,0.501,0.0,0.2,0.0422
+Stage Développeur Data Science Python,Junior Marketing Digital,0.501,0.117,0.462,0.0,0.501,0.0,0.2,0.0422
+Stage Développeur Data Science Python,Comptable Confirmé SAP,0.5,0.0,0.389,0.0,0.5,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Contrôleur de Gestion,0.501,0.0,0.382,0.0,0.501,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Chargé RH Recrutement IT,0.5,0.0,0.38,0.0,0.5,0.0,0.2,0.0422
+Stage Développeur Data Science Python,Médecin Généraliste,0.5,0.0,0.361,0.0,0.5,0.0,-0.8,0.054
+Stage Développeur Data Science Python,Enseignant Mathématiques,0.5,0.0,0.379,0.0,0.5,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Juriste Droit des Affaires,0.5,0.0,0.379,0.0,0.5,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Ingénieur Civil BTP,0.5,0.0,0.382,0.0,0.5,0.0,-0.2,0.054
+Stage Développeur Data Science Python,Commercial Vente Retail,0.5,0.0,0.36,0.0,0.5,0.0,0.2,0.0422
+Stage Développeur Data Science Python,Étudiant Première Année,0.51,0.467,0.749,0.0,0.51,0.1667,0.6,0.0646
+Designer UX/UI,Senior Backend Python FastAPI,0.509,0.0,0.145,0.0,0.509,0.0,-0.4,0.054
+Designer UX/UI,Mid Backend Python Django,0.517,0.0,0.126,0.0,0.517,0.0,-0.4,0.054
+Designer UX/UI,Junior Python Flask,0.512,0.286,0.215,0.0,0.512,0.2857,0.0,0.2893
+Designer UX/UI,Python Data + Backend,0.517,0.0,0.134,0.0,0.517,0.0,-0.4,0.054
+Designer UX/UI,Senior Java Spring Boot,0.527,0.0,0.136,0.0,0.527,0.0,-0.4,0.054
+Designer UX/UI,Mid Java Spring,0.53,0.0,0.12,0.0,0.53,0.0,-0.4,0.054
+Designer UX/UI,Junior Java Angular Stage,0.52,0.0,0.118,0.0,0.52,0.0,-0.2,0.024
+Designer UX/UI,Senior Node.js Express,0.533,0.0,0.132,0.0,0.533,0.0,0.0,0.054
+Designer UX/UI,Full Stack Node React,0.541,0.286,0.194,0.0,0.541,0.0,-0.4,0.054
+Designer UX/UI,Développeur PHP Laravel Senior,0.508,0.0,0.138,0.0,0.508,0.0,0.0,0.054
+Designer UX/UI,Junior PHP Symfony,0.52,0.286,0.231,0.0,0.52,0.2857,0.0,0.2893
+Designer UX/UI,Développeur .NET C# Senior,0.522,0.0,0.135,0.0,0.522,0.0,-0.4,0.054
+Designer UX/UI,Senior Frontend React,0.555,0.671,0.333,0.0,0.555,0.2857,0.0,0.3643
+Designer UX/UI,Mid Frontend React Redux,0.546,0.143,0.17,0.0,0.546,0.1429,-0.4,0.1586
+Designer UX/UI,Junior Frontend JavaScript,0.548,0.286,0.236,0.0,0.548,0.2857,0.2,0.2194
+Designer UX/UI,Senior Angular TypeScript,0.537,0.286,0.229,0.0,0.537,0.2857,-0.4,0.3643
+Designer UX/UI,Développeur Flutter Senior,0.533,0.0,0.13,0.0,0.533,0.0,0.0,0.054
+Designer UX/UI,Développeur Android Kotlin,0.516,0.0,0.115,0.0,0.516,0.0,-0.4,0.054
+Designer UX/UI,Junior Mobile React Native,0.538,0.0,0.12,0.0,0.538,0.0,0.0,0.039
+Designer UX/UI,Senior Data Scientist,0.502,0.0,0.132,0.0,0.502,0.0,-0.4,0.054
+Designer UX/UI,ML Engineer MLOps,0.512,0.0,0.134,0.0,0.512,0.0,-0.4,0.054
+Designer UX/UI,Data Analyst Junior,0.502,0.0,0.132,0.0,0.502,0.0,0.0,0.039
+Designer UX/UI,Data Analyst Senior BI,0.501,0.0,0.136,0.0,0.501,0.0,-0.4,0.054
+Designer UX/UI,Data Engineer Spark,0.509,0.0,0.128,0.0,0.509,0.0,-0.4,0.054
+Designer UX/UI,Stage Data Science,0.512,0.0,0.121,0.0,0.512,0.0,-0.2,0.024
+Designer UX/UI,Senior DevOps AWS,0.536,0.0,0.136,0.0,0.536,0.0,-0.4,0.054
+Designer UX/UI,Ingénieur Cloud Azure,0.518,0.0,0.139,0.0,0.518,0.0,-0.4,0.054
+Designer UX/UI,SRE Kubernetes Linux,0.522,0.0,0.141,0.0,0.522,0.0,-0.4,0.054
+Designer UX/UI,Junior DevOps CI/CD,0.558,0.0,0.134,0.0,0.558,0.0,-0.4,0.039
+Designer UX/UI,Analyste Sécurité Pentester,0.5,0.0,0.121,0.0,0.5,0.0,-0.4,0.054
+Designer UX/UI,Analyste SOC SIEM,0.503,0.0,0.131,0.0,0.503,0.0,-0.4,0.054
+Designer UX/UI,Ingénieur QA Automation,0.505,0.0,0.147,0.0,0.505,0.0,-0.4,0.054
+Designer UX/UI,Designer UX/UI Figma,0.73,1.0,0.438,0.0,0.73,1.0,0.0,0.95
+Designer UX/UI,Chef de Projet IT Scrum,0.51,0.0,0.143,0.0,0.51,0.0,-0.4,0.054
+Designer UX/UI,Marketing Digital Expert,0.522,0.0,0.137,0.0,0.522,0.0,0.0,0.054
+Designer UX/UI,Commercial B2B Salesforce,0.515,0.0,0.14,0.0,0.515,0.0,0.0,0.054
+Designer UX/UI,Junior Marketing Digital,0.522,0.0,0.145,0.0,0.522,0.0,0.0,0.039
+Designer UX/UI,Comptable Confirmé SAP,0.5,0.0,0.126,0.0,0.5,0.0,-0.4,0.054
+Designer UX/UI,Contrôleur de Gestion,0.502,0.0,0.134,0.0,0.502,0.0,-0.4,0.054
+Designer UX/UI,Chargé RH Recrutement IT,0.508,0.0,0.13,0.0,0.508,0.0,0.0,0.054
+Designer UX/UI,Médecin Généraliste,0.5,0.0,0.115,0.0,0.5,0.0,-1.0,0.054
+Designer UX/UI,Enseignant Mathématiques,0.502,0.0,0.111,0.0,0.502,0.0,-0.4,0.054
+Designer UX/UI,Juriste Droit des Affaires,0.5,0.0,0.134,0.0,0.5,0.0,-0.4,0.054
+Designer UX/UI,Ingénieur Civil BTP,0.5,0.0,0.142,0.0,0.5,0.0,-0.4,0.054
+Designer UX/UI,Commercial Vente Retail,0.513,0.0,0.133,0.0,0.513,0.0,0.0,0.054
+Designer UX/UI,Étudiant Première Année,0.584,0.286,0.222,0.0,0.584,0.2857,0.4,0.0967
+Chef de Projet IT Agile,Senior Backend Python FastAPI,0.502,0.0,0.058,0.0,0.502,0.0,0.0,0.054
+Chef de Projet IT Agile,Mid Backend Python Django,0.502,0.0,0.047,0.0,0.502,0.0,0.0,0.039
+Chef de Projet IT Agile,Junior Python Flask,0.501,0.0,0.036,0.0,0.501,0.0,0.4,0.02
+Chef de Projet IT Agile,Python Data + Backend,0.506,0.0,0.143,0.0,0.506,0.0,0.0,0.0465
+Chef de Projet IT Agile,Senior Java Spring Boot,0.503,0.0,0.158,0.0,0.503,0.0,0.0,0.054
+Chef de Projet IT Agile,Mid Java Spring,0.505,0.0,0.046,0.0,0.505,0.0,0.0,0.0465
+Chef de Projet IT Agile,Junior Java Angular Stage,0.503,0.0,0.14,0.0,0.503,0.0,0.2,0.02
+Chef de Projet IT Agile,Senior Node.js Express,0.502,0.0,0.041,0.0,0.502,0.0,0.4,0.032
+Chef de Projet IT Agile,Full Stack Node React,0.504,0.0,0.131,0.0,0.504,0.0,0.0,0.0465
+Chef de Projet IT Agile,Développeur PHP Laravel Senior,0.5,0.0,0.039,0.0,0.5,0.0,0.4,0.0266
+Chef de Projet IT Agile,Junior PHP Symfony,0.501,0.0,0.03,0.0,0.501,0.0,0.4,0.02
+Chef de Projet IT Agile,Développeur .NET C# Senior,0.501,0.0,0.054,0.0,0.501,0.0,0.0,0.054
+Chef de Projet IT Agile,Senior Frontend React,0.501,0.0,0.046,0.0,0.501,0.0,0.4,0.0266
+Chef de Projet IT Agile,Mid Frontend React Redux,0.501,0.0,0.034,0.0,0.501,0.0,0.0,0.039
+Chef de Projet IT Agile,Junior Frontend JavaScript,0.501,0.0,0.045,0.0,0.501,0.0,0.6,0.02
+Chef de Projet IT Agile,Senior Angular TypeScript,0.501,0.0,0.044,0.0,0.501,0.0,0.0,0.054
+Chef de Projet IT Agile,Développeur Flutter Senior,0.5,0.117,0.07,0.0,0.5,0.0,0.4,0.0266
+Chef de Projet IT Agile,Développeur Android Kotlin,0.5,0.0,0.027,0.0,0.5,0.0,0.0,0.0465
+Chef de Projet IT Agile,Junior Mobile React Native,0.501,0.0,0.017,0.0,0.501,0.0,0.4,0.02
+Chef de Projet IT Agile,Senior Data Scientist,0.5,0.0,0.138,0.0,0.5,0.0,0.0,0.054
+Chef de Projet IT Agile,ML Engineer MLOps,0.501,0.0,0.041,0.0,0.501,0.0,0.0,0.0465
+Chef de Projet IT Agile,Data Analyst Junior,0.501,0.0,0.033,0.0,0.501,0.0,0.4,0.02
+Chef de Projet IT Agile,Data Analyst Senior BI,0.501,0.0,0.041,0.0,0.501,0.0,0.0,0.054
+Chef de Projet IT Agile,Data Engineer Spark,0.501,0.0,0.137,0.0,0.501,0.0,0.0,0.054
+Chef de Projet IT Agile,Stage Data Science,0.504,0.0,0.12,0.0,0.504,0.0,0.2,0.02
+Chef de Projet IT Agile,Senior DevOps AWS,0.504,0.0,0.153,0.0,0.504,0.0,0.0,0.054
+Chef de Projet IT Agile,Ingénieur Cloud Azure,0.5,0.0,0.16,0.0,0.5,0.0,0.0,0.054
+Chef de Projet IT Agile,SRE Kubernetes Linux,0.504,0.117,0.188,0.0,0.504,0.0,0.0,0.054
+Chef de Projet IT Agile,Junior DevOps CI/CD,0.504,0.0,0.16,0.0,0.504,0.0,0.0,0.0315
+Chef de Projet IT Agile,Analyste Sécurité Pentester,0.5,0.0,0.137,0.0,0.5,0.0,0.0,0.0465
+Chef de Projet IT Agile,Analyste SOC SIEM,0.5,0.0,0.147,0.0,0.5,0.0,0.0,0.039
+Chef de Projet IT Agile,Ingénieur QA Automation,0.502,0.0,0.156,0.0,0.502,0.0,0.0,0.0465
+Chef de Projet IT Agile,Designer UX/UI Figma,0.5,0.0,0.126,0.0,0.5,0.0,0.4,0.0266
+Chef de Projet IT Agile,Chef de Projet IT Scrum,0.728,1.0,0.452,0.0,0.728,1.0,0.0,0.95
+Chef de Projet IT Agile,Marketing Digital Expert,0.501,0.167,0.171,0.0,0.501,0.1667,0.4,0.0862
+Chef de Projet IT Agile,Commercial B2B Salesforce,0.5,0.0,0.135,0.0,0.5,0.0,0.4,0.032
+Chef de Projet IT Agile,Junior Marketing Digital,0.501,0.167,0.167,0.0,0.501,0.1667,0.4,0.0592
+Chef de Projet IT Agile,Comptable Confirmé SAP,0.5,0.0,0.145,0.0,0.5,0.0,0.0,0.054
+Chef de Projet IT Agile,Contrôleur de Gestion,0.504,0.0,0.16,0.0,0.504,0.0,0.0,0.054
+Chef de Projet IT Agile,Chargé RH Recrutement IT,0.507,0.0,0.164,0.0,0.507,0.0,0.4,0.0266
+Chef de Projet IT Agile,Médecin Généraliste,0.5,0.0,0.12,0.0,0.5,0.0,-0.6,0.054
+Chef de Projet IT Agile,Enseignant Mathématiques,0.5,0.0,0.122,0.0,0.5,0.0,0.0,0.054
+Chef de Projet IT Agile,Juriste Droit des Affaires,0.5,0.0,0.149,0.0,0.5,0.0,0.0,0.054
+Chef de Projet IT Agile,Ingénieur Civil BTP,0.5,0.007,0.173,0.0,0.5,0.0,0.0,0.054
+Chef de Projet IT Agile,Commercial Vente Retail,0.5,0.0,0.128,0.0,0.5,0.0,0.4,0.032
+Chef de Projet IT Agile,Étudiant Première Année,0.502,0.0,0.113,0.0,0.502,0.0,0.8,0.02
+Responsable Marketing Digital,Senior Backend Python FastAPI,0.501,0.0,0.142,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Mid Backend Python Django,0.501,0.0,0.136,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Junior Python Flask,0.502,0.0,0.124,0.0,0.502,0.0,0.0,0.039
+Responsable Marketing Digital,Python Data + Backend,0.504,0.0,0.144,0.0,0.504,0.0,-0.4,0.054
+Responsable Marketing Digital,Senior Java Spring Boot,0.502,0.0,0.139,0.0,0.502,0.0,-0.4,0.054
+Responsable Marketing Digital,Mid Java Spring,0.503,0.0,0.128,0.0,0.503,0.0,-0.4,0.054
+Responsable Marketing Digital,Junior Java Angular Stage,0.502,0.0,0.114,0.0,0.502,0.0,-0.2,0.024
+Responsable Marketing Digital,Senior Node.js Express,0.502,0.0,0.132,0.0,0.502,0.0,0.0,0.054
+Responsable Marketing Digital,Full Stack Node React,0.509,0.0,0.138,0.0,0.509,0.0,-0.4,0.054
+Responsable Marketing Digital,Développeur PHP Laravel Senior,0.5,0.0,0.141,0.0,0.5,0.0,0.0,0.054
+Responsable Marketing Digital,Junior PHP Symfony,0.502,0.0,0.121,0.0,0.502,0.0,0.0,0.039
+Responsable Marketing Digital,Développeur .NET C# Senior,0.501,0.0,0.142,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Senior Frontend React,0.504,0.0,0.144,0.0,0.504,0.0,0.0,0.054
+Responsable Marketing Digital,Mid Frontend React Redux,0.504,0.0,0.135,0.0,0.504,0.0,-0.4,0.054
+Responsable Marketing Digital,Junior Frontend JavaScript,0.505,0.0,0.141,0.0,0.505,0.0,0.2,0.0273
+Responsable Marketing Digital,Senior Angular TypeScript,0.502,0.0,0.138,0.0,0.502,0.0,-0.4,0.054
+Responsable Marketing Digital,Développeur Flutter Senior,0.502,0.0,0.131,0.0,0.502,0.0,0.0,0.054
+Responsable Marketing Digital,Développeur Android Kotlin,0.5,0.0,0.124,0.0,0.5,0.0,-0.4,0.054
+Responsable Marketing Digital,Junior Mobile React Native,0.505,0.0,0.129,0.0,0.505,0.0,0.0,0.039
+Responsable Marketing Digital,Senior Data Scientist,0.501,0.0,0.13,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,ML Engineer MLOps,0.501,0.0,0.142,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Data Analyst Junior,0.501,0.0,0.134,0.0,0.501,0.0,0.0,0.039
+Responsable Marketing Digital,Data Analyst Senior BI,0.501,0.0,0.142,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Data Engineer Spark,0.501,0.0,0.124,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Stage Data Science,0.506,0.0,0.11,0.0,0.506,0.0,-0.2,0.024
+Responsable Marketing Digital,Senior DevOps AWS,0.501,0.0,0.137,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Ingénieur Cloud Azure,0.5,0.0,0.136,0.0,0.5,0.0,-0.4,0.054
+Responsable Marketing Digital,SRE Kubernetes Linux,0.501,0.0,0.143,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Junior DevOps CI/CD,0.503,0.0,0.146,0.0,0.503,0.0,-0.4,0.039
+Responsable Marketing Digital,Analyste Sécurité Pentester,0.5,0.0,0.128,0.0,0.5,0.0,-0.4,0.054
+Responsable Marketing Digital,Analyste SOC SIEM,0.501,0.0,0.137,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Ingénieur QA Automation,0.501,0.0,0.134,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Designer UX/UI Figma,0.501,0.0,0.124,0.0,0.501,0.0,0.0,0.054
+Responsable Marketing Digital,Chef de Projet IT Scrum,0.503,0.2,0.176,0.0,0.503,0.2,-0.4,0.336
+Responsable Marketing Digital,Marketing Digital Expert,0.716,0.85,0.434,0.0,0.716,1.0,0.0,0.95
+Responsable Marketing Digital,Commercial B2B Salesforce,0.51,0.0,0.155,0.0,0.51,0.0,0.0,0.054
+Responsable Marketing Digital,Junior Marketing Digital,0.672,0.6,0.363,0.0,0.672,0.6,0.0,0.655
+Responsable Marketing Digital,Comptable Confirmé SAP,0.501,0.0,0.136,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Contrôleur de Gestion,0.505,0.0,0.138,0.0,0.505,0.0,-0.4,0.054
+Responsable Marketing Digital,Chargé RH Recrutement IT,0.509,0.0,0.147,0.0,0.509,0.0,0.0,0.054
+Responsable Marketing Digital,Médecin Généraliste,0.5,0.0,0.122,0.0,0.5,0.0,-1.0,0.054
+Responsable Marketing Digital,Enseignant Mathématiques,0.501,0.0,0.119,0.0,0.501,0.0,-0.4,0.054
+Responsable Marketing Digital,Juriste Droit des Affaires,0.5,0.0,0.146,0.0,0.5,0.0,-0.4,0.054
+Responsable Marketing Digital,Ingénieur Civil BTP,0.5,0.0,0.14,0.0,0.5,0.0,-0.4,0.054
+Responsable Marketing Digital,Commercial Vente Retail,0.505,0.0,0.14,0.0,0.505,0.0,0.0,0.054
+Responsable Marketing Digital,Étudiant Première Année,0.519,0.0,0.118,0.0,0.519,0.0,0.4,0.02
+Commercial B2B Tech,Senior Backend Python FastAPI,0.501,0.0,0.143,0.0,0.501,0.0,-0.4,0.054
+Commercial B2B Tech,Mid Backend Python Django,0.501,0.0,0.13,0.0,0.501,0.0,-0.4,0.044
+Commercial B2B Tech,Junior Python Flask,0.502,0.0,0.127,0.0,0.502,0.0,0.0,0.034
+Commercial B2B Tech,Python Data + Backend,0.508,0.0,0.141,0.0,0.508,0.0,-0.4,0.054
+Commercial B2B Tech,Senior Java Spring Boot,0.503,0.0,0.135,0.0,0.503,0.0,-0.4,0.054
+Commercial B2B Tech,Mid Java Spring,0.504,0.0,0.129,0.0,0.504,0.0,-0.4,0.054
+Commercial B2B Tech,Junior Java Angular Stage,0.502,0.0,0.111,0.0,0.502,0.0,-0.2,0.024
+Commercial B2B Tech,Senior Node.js Express,0.502,0.0,0.126,0.0,0.502,0.0,0.0,0.054
+Commercial B2B Tech,Full Stack Node React,0.509,0.0,0.123,0.0,0.509,0.0,-0.4,0.054
+Commercial B2B Tech,Développeur PHP Laravel Senior,0.5,0.0,0.131,0.0,0.5,0.0,0.0,0.054
+Commercial B2B Tech,Junior PHP Symfony,0.501,0.0,0.121,0.0,0.501,0.0,0.0,0.034
+Commercial B2B Tech,Développeur .NET C# Senior,0.502,0.0,0.138,0.0,0.502,0.0,-0.4,0.054
+Commercial B2B Tech,Senior Frontend React,0.503,0.0,0.132,0.0,0.503,0.0,0.0,0.054
+Commercial B2B Tech,Mid Frontend React Redux,0.501,0.0,0.121,0.0,0.501,0.0,-0.4,0.044
+Commercial B2B Tech,Junior Frontend JavaScript,0.502,0.0,0.141,0.0,0.502,0.0,0.2,0.0229
+Commercial B2B Tech,Senior Angular TypeScript,0.502,0.0,0.123,0.0,0.502,0.0,-0.4,0.054
+Commercial B2B Tech,Développeur Flutter Senior,0.5,0.0,0.116,0.0,0.5,0.0,0.0,0.054
+Commercial B2B Tech,Développeur Android Kotlin,0.5,0.0,0.115,0.0,0.5,0.0,-0.4,0.054
+Commercial B2B Tech,Junior Mobile React Native,0.502,0.0,0.111,0.0,0.502,0.0,0.0,0.034
+Commercial B2B Tech,Senior Data Scientist,0.501,0.0,0.138,0.0,0.501,0.0,-0.4,0.054
+Commercial B2B Tech,ML Engineer MLOps,0.504,0.0,0.144,0.0,0.504,0.0,-0.4,0.054
+Commercial B2B Tech,Data Analyst Junior,0.504,0.167,0.194,0.0,0.504,0.1667,0.0,0.1125
+Commercial B2B Tech,Data Analyst Senior BI,0.503,0.167,0.212,0.0,0.503,0.1667,-0.4,0.1625
+Commercial B2B Tech,Data Engineer Spark,0.501,0.0,0.133,0.0,0.501,0.0,-0.4,0.054
+Commercial B2B Tech,Stage Data Science,0.509,0.0,0.118,0.0,0.509,0.0,-0.2,0.024
+Commercial B2B Tech,Senior DevOps AWS,0.505,0.0,0.129,0.0,0.505,0.0,-0.4,0.054
+Commercial B2B Tech,Ingénieur Cloud Azure,0.5,0.0,0.151,0.0,0.5,0.0,-0.4,0.054
+Commercial B2B Tech,SRE Kubernetes Linux,0.505,0.0,0.134,0.0,0.505,0.0,-0.4,0.054
+Commercial B2B Tech,Junior DevOps CI/CD,0.509,0.0,0.139,0.0,0.509,0.0,-0.4,0.034
+Commercial B2B Tech,Analyste Sécurité Pentester,0.5,0.0,0.127,0.0,0.5,0.0,-0.4,0.054
+Commercial B2B Tech,Analyste SOC SIEM,0.501,0.0,0.133,0.0,0.501,0.0,-0.4,0.044
+Commercial B2B Tech,Ingénieur QA Automation,0.502,0.0,0.148,0.0,0.502,0.0,-0.4,0.054
+Commercial B2B Tech,Designer UX/UI Figma,0.501,0.0,0.13,0.0,0.501,0.0,0.0,0.054
+Commercial B2B Tech,Chef de Projet IT Scrum,0.502,0.0,0.137,0.0,0.502,0.0,-0.4,0.054
+Commercial B2B Tech,Marketing Digital Expert,0.515,0.167,0.2,0.0,0.515,0.1667,0.0,0.1625
+Commercial B2B Tech,Commercial B2B Salesforce,0.722,0.861,0.426,0.0,0.722,1.0,0.0,0.95
+Commercial B2B Tech,Junior Marketing Digital,0.516,0.167,0.184,0.0,0.516,0.1667,0.0,0.1125
+Commercial B2B Tech,Comptable Confirmé SAP,0.502,0.167,0.198,0.0,0.502,0.1667,-0.4,0.1625
+Commercial B2B Tech,Contrôleur de Gestion,0.505,0.167,0.226,0.0,0.505,0.1667,-0.4,0.1625
+Commercial B2B Tech,Chargé RH Recrutement IT,0.515,0.167,0.201,0.0,0.515,0.1667,0.0,0.1625
+Commercial B2B Tech,Médecin Généraliste,0.5,0.0,0.121,0.0,0.5,0.0,-1.0,0.054
+Commercial B2B Tech,Enseignant Mathématiques,0.501,0.167,0.167,0.0,0.501,0.1667,-0.4,0.1625
+Commercial B2B Tech,Juriste Droit des Affaires,0.5,0.0,0.142,0.0,0.5,0.0,-0.4,0.054
+Commercial B2B Tech,Ingénieur Civil BTP,0.5,0.0,0.154,0.0,0.5,0.0,-0.4,0.054
+Commercial B2B Tech,Commercial Vente Retail,0.715,0.817,0.39,0.0,0.715,0.8333,0.0,0.9083
+Commercial B2B Tech,Étudiant Première Année,0.507,0.0,0.117,0.0,0.507,0.0,0.4,0.02
+Comptable Contrôleur de Gestion,Senior Backend Python FastAPI,0.513,0.0,0.146,0.0,0.513,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Mid Backend Python Django,0.512,0.0,0.136,0.0,0.512,0.0,0.0,0.044
+Comptable Contrôleur de Gestion,Junior Python Flask,0.515,0.0,0.129,0.0,0.515,0.0,0.4,0.02
+Comptable Contrôleur de Gestion,Python Data + Backend,0.528,0.0,0.139,0.0,0.528,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Senior Java Spring Boot,0.511,0.0,0.135,0.0,0.511,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Mid Java Spring,0.512,0.0,0.13,0.0,0.512,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Junior Java Angular Stage,0.506,0.0,0.115,0.0,0.506,0.0,0.2,0.02
+Comptable Contrôleur de Gestion,Senior Node.js Express,0.504,0.0,0.127,0.0,0.504,0.0,0.4,0.032
+Comptable Contrôleur de Gestion,Full Stack Node React,0.517,0.0,0.12,0.0,0.517,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Développeur PHP Laravel Senior,0.5,0.0,0.126,0.0,0.5,0.0,0.4,0.032
+Comptable Contrôleur de Gestion,Junior PHP Symfony,0.506,0.0,0.11,0.0,0.506,0.0,0.4,0.02
+Comptable Contrôleur de Gestion,Développeur .NET C# Senior,0.501,0.0,0.142,0.0,0.501,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Senior Frontend React,0.504,0.0,0.124,0.0,0.504,0.0,0.4,0.032
+Comptable Contrôleur de Gestion,Mid Frontend React Redux,0.504,0.0,0.119,0.0,0.504,0.0,0.0,0.044
+Comptable Contrôleur de Gestion,Junior Frontend JavaScript,0.505,0.0,0.128,0.0,0.505,0.0,0.6,0.02
+Comptable Contrôleur de Gestion,Senior Angular TypeScript,0.505,0.0,0.121,0.0,0.505,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Développeur Flutter Senior,0.5,0.0,0.117,0.0,0.5,0.0,0.4,0.032
+Comptable Contrôleur de Gestion,Développeur Android Kotlin,0.5,0.0,0.118,0.0,0.5,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Junior Mobile React Native,0.503,0.0,0.101,0.0,0.503,0.0,0.4,0.02
+Comptable Contrôleur de Gestion,Senior Data Scientist,0.503,0.0,0.136,0.0,0.503,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,ML Engineer MLOps,0.503,0.0,0.14,0.0,0.503,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Data Analyst Junior,0.503,0.333,0.246,0.0,0.503,0.3333,0.4,0.167
+Comptable Contrôleur de Gestion,Data Analyst Senior BI,0.505,0.333,0.278,0.0,0.505,0.3333,0.0,0.38
+Comptable Contrôleur de Gestion,Data Engineer Spark,0.503,0.0,0.136,0.0,0.503,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Stage Data Science,0.521,0.0,0.116,0.0,0.521,0.0,0.2,0.02
+Comptable Contrôleur de Gestion,Senior DevOps AWS,0.507,0.0,0.124,0.0,0.507,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Ingénieur Cloud Azure,0.501,0.0,0.149,0.0,0.501,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,SRE Kubernetes Linux,0.508,0.0,0.132,0.0,0.508,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Junior DevOps CI/CD,0.51,0.0,0.142,0.0,0.51,0.0,0.0,0.034
+Comptable Contrôleur de Gestion,Analyste Sécurité Pentester,0.501,0.0,0.132,0.0,0.501,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Analyste SOC SIEM,0.502,0.0,0.136,0.0,0.502,0.0,0.0,0.044
+Comptable Contrôleur de Gestion,Ingénieur QA Automation,0.502,0.0,0.151,0.0,0.502,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Designer UX/UI Figma,0.501,0.0,0.112,0.0,0.501,0.0,0.4,0.032
+Comptable Contrôleur de Gestion,Chef de Projet IT Scrum,0.504,0.117,0.178,0.0,0.504,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Marketing Digital Expert,0.508,0.333,0.229,0.0,0.508,0.1667,0.4,0.0997
+Comptable Contrôleur de Gestion,Commercial B2B Salesforce,0.54,0.167,0.205,0.0,0.54,0.1667,0.4,0.0997
+Comptable Contrôleur de Gestion,Junior Marketing Digital,0.507,0.167,0.158,0.0,0.507,0.1667,0.4,0.0637
+Comptable Contrôleur de Gestion,Comptable Confirmé SAP,0.704,0.833,0.278,0.0,0.704,0.8333,0.0,0.9083
+Comptable Contrôleur de Gestion,Contrôleur de Gestion,0.73,1.0,0.446,0.0,0.73,1.0,0.0,0.95
+Comptable Contrôleur de Gestion,Chargé RH Recrutement IT,0.527,0.167,0.192,0.0,0.527,0.1667,0.4,0.0997
+Comptable Contrôleur de Gestion,Médecin Généraliste,0.5,0.0,0.127,0.0,0.5,0.0,-0.6,0.054
+Comptable Contrôleur de Gestion,Enseignant Mathématiques,0.507,0.167,0.16,0.0,0.507,0.1667,0.0,0.1625
+Comptable Contrôleur de Gestion,Juriste Droit des Affaires,0.502,0.0,0.134,0.0,0.502,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Ingénieur Civil BTP,0.5,0.0,0.158,0.0,0.5,0.0,0.0,0.054
+Comptable Contrôleur de Gestion,Commercial Vente Retail,0.526,0.167,0.204,0.0,0.526,0.1667,0.4,0.0997
+Comptable Contrôleur de Gestion,Étudiant Première Année,0.516,0.0,0.101,0.0,0.516,0.0,0.8,0.02
+Chargé RH Recrutement,Senior Backend Python FastAPI,0.502,0.0,0.145,0.0,0.502,0.0,-0.4,0.054
+Chargé RH Recrutement,Mid Backend Python Django,0.501,0.0,0.133,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Junior Python Flask,0.501,0.0,0.122,0.0,0.501,0.0,0.0,0.039
+Chargé RH Recrutement,Python Data + Backend,0.504,0.0,0.133,0.0,0.504,0.0,-0.4,0.054
+Chargé RH Recrutement,Senior Java Spring Boot,0.503,0.0,0.138,0.0,0.503,0.0,-0.4,0.054
+Chargé RH Recrutement,Mid Java Spring,0.504,0.0,0.136,0.0,0.504,0.0,-0.4,0.054
+Chargé RH Recrutement,Junior Java Angular Stage,0.502,0.0,0.119,0.0,0.502,0.0,-0.2,0.024
+Chargé RH Recrutement,Senior Node.js Express,0.502,0.0,0.128,0.0,0.502,0.0,0.0,0.054
+Chargé RH Recrutement,Full Stack Node React,0.505,0.0,0.126,0.0,0.505,0.0,-0.4,0.054
+Chargé RH Recrutement,Développeur PHP Laravel Senior,0.5,0.0,0.135,0.0,0.5,0.0,0.0,0.054
+Chargé RH Recrutement,Junior PHP Symfony,0.501,0.0,0.111,0.0,0.501,0.0,0.0,0.039
+Chargé RH Recrutement,Développeur .NET C# Senior,0.501,0.0,0.146,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Senior Frontend React,0.502,0.0,0.139,0.0,0.502,0.0,0.0,0.054
+Chargé RH Recrutement,Mid Frontend React Redux,0.501,0.0,0.133,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Junior Frontend JavaScript,0.501,0.0,0.129,0.0,0.501,0.0,0.2,0.0273
+Chargé RH Recrutement,Senior Angular TypeScript,0.501,0.0,0.132,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Développeur Flutter Senior,0.5,0.0,0.126,0.0,0.5,0.0,0.0,0.054
+Chargé RH Recrutement,Développeur Android Kotlin,0.5,0.0,0.121,0.0,0.5,0.0,-0.4,0.054
+Chargé RH Recrutement,Junior Mobile React Native,0.502,0.0,0.12,0.0,0.502,0.0,0.0,0.039
+Chargé RH Recrutement,Senior Data Scientist,0.501,0.0,0.127,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,ML Engineer MLOps,0.501,0.0,0.133,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Data Analyst Junior,0.501,0.143,0.172,0.0,0.501,0.1429,0.0,0.1211
+Chargé RH Recrutement,Data Analyst Senior BI,0.501,0.143,0.187,0.0,0.501,0.1429,-0.4,0.1586
+Chargé RH Recrutement,Data Engineer Spark,0.502,0.0,0.135,0.0,0.502,0.0,-0.4,0.054
+Chargé RH Recrutement,Stage Data Science,0.504,0.0,0.107,0.0,0.504,0.0,-0.2,0.024
+Chargé RH Recrutement,Senior DevOps AWS,0.504,0.0,0.122,0.0,0.504,0.0,-0.4,0.054
+Chargé RH Recrutement,Ingénieur Cloud Azure,0.501,0.0,0.142,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,SRE Kubernetes Linux,0.501,0.0,0.136,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Junior DevOps CI/CD,0.503,0.0,0.131,0.0,0.503,0.0,-0.4,0.039
+Chargé RH Recrutement,Analyste Sécurité Pentester,0.501,0.0,0.128,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Analyste SOC SIEM,0.502,0.0,0.14,0.0,0.502,0.0,-0.4,0.054
+Chargé RH Recrutement,Ingénieur QA Automation,0.501,0.0,0.149,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Designer UX/UI Figma,0.5,0.0,0.118,0.0,0.5,0.0,0.0,0.054
+Chargé RH Recrutement,Chef de Projet IT Scrum,0.503,0.0,0.143,0.0,0.503,0.0,-0.4,0.054
+Chargé RH Recrutement,Marketing Digital Expert,0.502,0.286,0.218,0.0,0.502,0.1429,0.0,0.1586
+Chargé RH Recrutement,Commercial B2B Salesforce,0.504,0.143,0.2,0.0,0.504,0.1429,0.0,0.1586
+Chargé RH Recrutement,Junior Marketing Digital,0.503,0.143,0.155,0.0,0.503,0.1429,0.0,0.1211
+Chargé RH Recrutement,Comptable Confirmé SAP,0.503,0.143,0.189,0.0,0.503,0.1429,-0.4,0.1586
+Chargé RH Recrutement,Contrôleur de Gestion,0.506,0.143,0.203,0.0,0.506,0.1429,-0.4,0.1586
+Chargé RH Recrutement,Chargé RH Recrutement IT,0.73,0.857,0.415,0.0,0.73,1.0,0.0,0.95
+Chargé RH Recrutement,Médecin Généraliste,0.5,0.0,0.12,0.0,0.5,0.0,-1.0,0.054
+Chargé RH Recrutement,Enseignant Mathématiques,0.5,0.143,0.148,0.0,0.5,0.1429,-0.4,0.1586
+Chargé RH Recrutement,Juriste Droit des Affaires,0.501,0.0,0.143,0.0,0.501,0.0,-0.4,0.054
+Chargé RH Recrutement,Ingénieur Civil BTP,0.5,0.0,0.151,0.0,0.5,0.0,-0.4,0.054
+Chargé RH Recrutement,Commercial Vente Retail,0.504,0.143,0.199,0.0,0.504,0.1429,0.0,0.1586
+Chargé RH Recrutement,Étudiant Première Année,0.503,0.0,0.104,0.0,0.503,0.0,0.4,0.02
