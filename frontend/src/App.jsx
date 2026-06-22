@@ -15,7 +15,6 @@ import OfferNew    from './pages/OfferNew'
 import OfferDetail from './pages/OfferDetail'
 import CandidateOffers from './pages/CandidateOffers'
 import Dashboard from './pages/Dashboard'
-import Dashboard2 from './pages/Dashboard2'
 import CandidateOfferDetail from './pages/CandidateOfferDetail'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -56,7 +55,6 @@ function App() {
               <Route path="/offers/:id"  element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><OfferDetail /></ProtectedRoute>} />
 
               <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><Dashboard /></ProtectedRoute>} />
-              <Route path="/dashboard2" element={<ProtectedRoute allowedRoles={["recruteur","admin"]}><Dashboard2 /></ProtectedRoute>} />
 
               {/* Admin uniquement */}
               <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />

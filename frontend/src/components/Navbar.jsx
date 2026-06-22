@@ -64,13 +64,6 @@ function Navbar() {
                 </Link>
               </li>
             )}
-            {role !== 'candidat' && (
-              <li>
-                <Link to="/dashboard2" className={location.pathname === '/dashboard2' ? 'active' : ''}>
-                  Scoring avancé
-                </Link>
-              </li>
-            )}
             {role === 'admin' && (
               <li>
                 <Link to="/admin/users" className={location.pathname === '/admin/users' ? 'active' : ''}>

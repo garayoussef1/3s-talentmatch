@@ -414,12 +414,6 @@ function TabMatching({ offerId, offer }) {
   const [selectResult, setSelectResult] = useState(null)
   const [aiSummaries, setAiSummaries]   = useState({})
   const [cvLoading,   setCvLoading]     = useState({})
-  const [compareResults, setCompareResults] = useState(null)
-  const [loadingCompare, setLoadingCompare] = useState(false)
-  const [showCompare, setShowCompare]       = useState(false)
-  const [fusionResults, setFusionResults]   = useState(null)
-  const [loadingFusion, setLoadingFusion]   = useState(false)
-  const [showFusion, setShowFusion]         = useState(false)
 
   const viewCV = async (cvId, candidateName) => {
     setCvLoading(prev => ({ ...prev, [cvId]: true }))
@@ -483,38 +477,10 @@ function TabMatching({ offerId, offer }) {
     setLoading(true)
     setError(null)
     setResults(null)
-    setCompareResults(null)
-    setShowCompare(false)
-    setFusionResults(null)
-    setShowFusion(false)
     api.post(`/match-sandbox/${offerId}?engine=bert`, null, { timeout: 180000 })
       .then(res => setResults(res.data))
       .catch(err => setError(err?.response?.data?.detail || err?.message || "Erreur lors du matching."))
       .finally(() => setLoading(false))
-  }
-
-  const runBertV2 = () => {
-    setLoadingCompare(true)
-    setError(null)
-    setCompareResults(null)
-    setShowCompare(false)
-    setFusionResults(null)
-    setShowFusion(false)
-    api.post(`/match-sandbox/${offerId}?engine=bert_v2`, null, { timeout: 180000 })
-      .then(res => { setCompareResults(res.data); setShowCompare(true) })
-      .catch(err => setError(err?.response?.data?.detail || err?.message || "Erreur lors du matching BERT v2."))
-      .finally(() => setLoadingCompare(false))
-  }
-
-  const runFusion = () => {
-    setLoadingFusion(true)
-    setError(null)
-    setFusionResults(null)
-    setShowFusion(false)
-    api.post(`/match-sandbox/${offerId}?engine=fusion`, null, { timeout: 240000 })
-      .then(res => { setFusionResults(res.data); setShowFusion(true) })
-      .catch(err => setError(err?.response?.data?.detail || err?.message || "Erreur lors du matching Fusion."))
-      .finally(() => setLoadingFusion(false))
   }
 
   return (
@@ -533,128 +499,13 @@ function TabMatching({ offerId, offer }) {
           )}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-primary" onClick={runMatching} disabled={loading || loadingCompare}>
+          <button className="btn-primary" onClick={runMatching} disabled={loading}>
             {loading ? 'Analyse en cours…' : results ? 'Relancer le matching' : 'Lancer le Matching'}
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={runBertV2}
-            disabled={loading || loadingCompare || loadingFusion}
-            title="Matching avec TalentMatch-BERT v2.0 (modèle entraîné sur Google Colab — bilingue FR/EN)"
-          >
-            {loadingCompare ? '⏳ BERT v2 en cours…' : '🤖 Matching BERT v2'}
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={runFusion}
-            disabled={loading || loadingCompare || loadingFusion}
-            title="Fusion intelligente BGE-M3 + BERT v2 — compétences via BGE-M3, sémantique via BERT v2"
-            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff', border: 'none' }}
-          >
-            {loadingFusion ? '⏳ Fusion en cours…' : '🔀 Matching Fusion'}
           </button>
         </div>
       </div>
 
       {error && <div className="alert error">{error}</div>}
-
-      {showCompare && compareResults && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, padding: '10px 16px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8 }}>
-            <span style={{ fontSize: 18 }}>🤖</span>
-            <div>
-              <strong style={{ fontSize: 14 }}>Résultats — TalentMatch-BERT v2.0</strong>
-              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 10 }}>Modèle entraîné sur Google Colab · bilingue FR/EN · {compareResults.total} candidats</span>
-            </div>
-            <button onClick={() => setShowCompare(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#94a3b8' }}>✕</button>
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <thead>
-              <tr style={{ background: '#1d4ed8', color: '#fff' }}>
-                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Rang</th>
-                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Candidat</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Score BERT v2</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Compétences</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Expérience</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Formation</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Sémantique</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(compareResults.results || [])
-                .slice()
-                .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
-                .map((c, i) => {
-                  const pct = Math.round((c.score ?? 0) * 100)
-                  const d   = c.bert_details || {}
-                  const verdict = pct >= 70 ? '#16a34a' : pct >= 45 ? '#d97706' : '#dc2626'
-                  return (
-                    <tr key={c.candidate_id} style={{ borderBottom: '1px solid #e2e8f0', background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
-                      <td style={{ padding: '10px 14px', fontWeight: 700, color: i === 0 ? '#ca8a04' : '#64748b' }}>#{i + 1}</td>
-                      <td style={{ padding: '10px 14px', fontWeight: 600 }}>{c.candidate_name}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>
-                        <span style={{ background: verdict + '22', color: verdict, fontWeight: 700, padding: '3px 12px', borderRadius: 20 }}>{pct}%</span>
-                      </td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.competences != null ? `${Math.round(d.competences)}%` : '—'}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.experience  != null ? `${Math.round(d.experience)}%`  : '—'}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.formation   != null ? `${Math.round(d.formation)}%`   : '—'}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.semantique  != null ? `${Math.round(d.semantique)}%`  : '—'}</td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {showFusion && fusionResults && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, padding: '10px 16px', background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: 8 }}>
-            <span style={{ fontSize: 18 }}>🔀</span>
-            <div>
-              <strong style={{ fontSize: 14 }}>Résultats — Matching Fusion (MLP BGE-M3 + BERT v2)</strong>
-              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 10 }}>Fusion intelligente apprise par MLP · {fusionResults.total} candidats</span>
-            </div>
-            <button onClick={() => setShowFusion(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#94a3b8' }}>✕</button>
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, background: '#fff', borderRadius: 8, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <thead>
-              <tr style={{ background: '#6d28d9', color: '#fff' }}>
-                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Rang</th>
-                <th style={{ padding: '10px 14px', textAlign: 'left' }}>Candidat</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Score Fusion</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Compétences</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Expérience</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Formation</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Sémantique</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(fusionResults.results || [])
-                .slice()
-                .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
-                .map((c, i) => {
-                  const pct     = Math.round((c.score ?? 0) * 100)
-                  const d       = c.bert_details || {}
-                  const verdict = pct >= 70 ? '#16a34a' : pct >= 45 ? '#d97706' : '#dc2626'
-                  return (
-                    <tr key={c.candidate_id} style={{ borderBottom: '1px solid #e2e8f0', background: i % 2 === 0 ? '#fff' : '#faf5ff' }}>
-                      <td style={{ padding: '10px 14px', fontWeight: 700, color: i === 0 ? '#ca8a04' : '#64748b' }}>#{i + 1}</td>
-                      <td style={{ padding: '10px 14px', fontWeight: 600 }}>{c.candidate_name}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>
-                        <span style={{ background: verdict + '22', color: verdict, fontWeight: 700, padding: '3px 12px', borderRadius: 20 }}>{pct}%</span>
-                      </td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.competences != null ? `${Math.round(d.competences)}%` : '—'}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.experience  != null ? `${Math.round(d.experience)}%`  : '—'}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.formation   != null ? `${Math.round(d.formation)}%`   : '—'}</td>
-                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>{d.semantique  != null ? `${Math.round(d.semantique)}%`  : '—'}</td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
-        </div>
-      )}
 
       {!results && !loading && (
         <div className="empty-state" style={{ paddingTop: 48 }}>
@@ -981,194 +832,6 @@ function TabMatching({ offerId, offer }) {
 }
 
 // ─────────────────────────────────────────────
-// Onglet 4 — Évaluation
-// ─────────────────────────────────────────────
-function TabEvaluation({ offerId }) {
-  const [matchData, setMatchData]       = useState(null)
-  const [loadingMatch, setLoadingMatch] = useState(false)
-  const [annotations, setAnnotations]   = useState({})
-  const [saving, setSaving]             = useState(false)
-  const [metrics, setMetrics]           = useState(null)
-  const [loadingMetrics, setLoadingMetrics] = useState(false)
-  const [error, setError]               = useState(null)
-  const [success, setSuccess]           = useState(null)
-
-  const loadCandidates = () => {
-    setLoadingMatch(true)
-    api.post(`/match-sandbox/${offerId}?engine=heuristic`, null, { timeout: 120000 })
-      .then(res => setMatchData(res.data))
-      .catch(err => setError(err?.response?.data?.detail || "Erreur chargement candidats."))
-      .finally(() => setLoadingMatch(false))
-  }
-
-  const setNote = (candidateId, value) => {
-    setAnnotations(prev => ({ ...prev, [candidateId]: value }))
-  }
-
-  const saveAnnotations = () => {
-    const payload = annotations
-    if (Object.keys(payload).length === 0) return
-    setSaving(true)
-    setError(null)
-    setSuccess(null)
-    api.post(`/match-sandbox/${offerId}/annotate`, payload, { timeout: 15000 })
-      .then(() => setSuccess(`${Object.keys(payload).length} annotation(s) sauvegardée(s).`))
-      .catch(err => setError(err?.response?.data?.detail || "Erreur lors de la sauvegarde."))
-      .finally(() => setSaving(false))
-  }
-
-  const computeMetrics = () => {
-    setLoadingMetrics(true)
-    setMetrics(null)
-    setError(null)
-    setSuccess(null)
-    api.post(`/match-sandbox/${offerId}/evaluate`, null, { timeout: 120000 })
-      .then(res => setMetrics(res.data))
-      .catch(err => setError(err?.response?.data?.detail || "Erreur calcul métriques."))
-      .finally(() => setLoadingMetrics(false))
-  }
-
-  return (
-    <div>
-      {error   && <div className="alert error">{error}</div>}
-      {success && <div className="alert success">{success}</div>}
-
-      <div className="eval-instructions">
-        <strong>Comment évaluer ?</strong><br />
-        1. Chargez les candidats → 2. Notez chaque candidat (0 = non pertinent, 1 = pertinent, 2 = très pertinent) → 3. Sauvegardez → 4. Calculez les métriques
-      </div>
-
-      {!matchData && (
-        <div style={{ marginBottom: 16 }}>
-          <button className="btn-primary" onClick={loadCandidates} disabled={loadingMatch}>
-            {loadingMatch ? 'Chargement…' : 'Charger les candidats'}
-          </button>
-        </div>
-      )}
-
-      {matchData && matchData.results?.length === 0 && (
-        <div className="empty-state">Aucun candidat n'a postulé à cette offre.</div>
-      )}
-
-      {matchData && matchData.results?.length > 0 && (
-        <>
-          <div className="eval-table-wrap">
-            <table className="eval-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Candidat</th>
-                  <th>Score système</th>
-                  <th>Note manuelle (0 / 1 / 2)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {matchData.results.map((r, idx) => (
-                  <tr key={r.candidate_id}>
-                    <td style={{ fontWeight: 700, color: '#4f46e5' }}>{idx + 1}</td>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{r.candidate_name || '—'}</div>
-                      <div style={{ fontSize: '0.78rem', color: '#6b7280' }}>{r.candidate_email || ''}</div>
-                    </td>
-                    <td>
-                      <span style={{ fontWeight: 700, color: '#374151' }}>
-                        {((r.score || 0) * 100).toFixed(1)}%
-                      </span>
-                    </td>
-                    <td>
-                      <div className="note-btns">
-                        {[0, 1, 2].map(v => (
-                          <button
-                            key={v}
-                            className={`note-btn note-${v}${annotations[r.candidate_id] === v ? ' active' : ''}`}
-                            onClick={() => setNote(r.candidate_id, v)}
-                            title={v === 0 ? 'Non pertinent' : v === 1 ? 'Pertinent' : 'Très pertinent'}
-                          >
-                            {v}
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="eval-actions">
-            <button
-              className="btn-secondary"
-              onClick={saveAnnotations}
-              disabled={saving || Object.keys(annotations).length === 0}
-            >
-              {saving ? 'Sauvegarde…' : 'Sauvegarder les annotations'}
-            </button>
-            <button
-              className="btn-primary"
-              onClick={computeMetrics}
-              disabled={loadingMetrics}
-            >
-              {loadingMetrics ? 'Calcul…' : 'Calculer les métriques'}
-            </button>
-          </div>
-        </>
-      )}
-
-      {metrics && (
-        <div className="metrics-panel">
-          <div className="metrics-panel-title">
-            Résultats d'évaluation — <em>{metrics.offer_title}</em>
-          </div>
-          <div className="metrics-grid">
-            {Object.entries(metrics.metrics?.precision || {}).map(([k, v]) => (
-              <div key={k} className="metric-card">
-                <div className="metric-name">{k}</div>
-                <div className="metric-val">{(v * 100).toFixed(1)}%</div>
-              </div>
-            ))}
-            {Object.entries(metrics.metrics?.ndcg || {}).map(([k, v]) => (
-              <div key={k} className="metric-card">
-                <div className="metric-name">{k}</div>
-                <div className="metric-val">{(v * 100).toFixed(1)}%</div>
-              </div>
-            ))}
-            <div className="metric-card mrr">
-              <div className="metric-name">MRR</div>
-              <div className="metric-val">{((metrics.metrics?.mrr || 0) * 100).toFixed(1)}%</div>
-            </div>
-          </div>
-
-          <div className="metrics-ranking-title">Classement détaillé :</div>
-          <table className="ranking-table">
-            <thead>
-              <tr><th>#</th><th>Candidat</th><th>Score hybride</th><th>Pertinence annotée</th></tr>
-            </thead>
-            <tbody>
-              {(metrics.metrics?.ranking || []).map(row => (
-                <tr key={row.rank}>
-                  <td style={{ fontWeight: 700 }}>{row.rank}</td>
-                  <td>{row.name}</td>
-                  <td style={{ fontWeight: 700 }}>{(row.hybrid * 100).toFixed(1)}%</td>
-                  <td>
-                    <span className={`rel-badge rel-${row.relevance}`}>
-                      {row.relevance === 2 ? 'Très pertinent' : row.relevance === 1 ? 'Pertinent' : 'Non pertinent'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="metrics-footer">
-            {metrics.metrics?.annotated_count} candidat(s) annoté(s) ·{' '}
-            {metrics.metrics?.relevant_count} pertinent(s)
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
 // Page principale — OfferDetail
 // ─────────────────────────────────────────────
 export default function OfferDetail() {
@@ -1242,16 +905,12 @@ export default function OfferDetail() {
         <button className={`tab-btn ${tab === 'match' ? 'active' : ''}`} onClick={() => setTab('match')}>
           Matching
         </button>
-        <button className={`tab-btn ${tab === 'eval'  ? 'active' : ''}`} onClick={() => setTab('eval')}>
-          Évaluation
-        </button>
       </div>
 
       {/* Contenu */}
       {tab === 'info'  && <TabInfo offer={offer} onUpdated={setOffer} onDeleted={() => {}} />}
       {tab === 'apps'  && <TabApplications offerId={id} />}
       {tab === 'match' && <TabMatching offerId={id} offer={offer} />}
-      {tab === 'eval'  && <TabEvaluation offerId={id} />}
     </div>
   )
 }
