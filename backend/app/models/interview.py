@@ -99,6 +99,10 @@ class InterviewQuestion(Base):
     target_competence = Column(String(150), nullable=True)  # compétence évaluée (ESCO)
     intent            = Column(String(255), nullable=True)  # ce que la question cherche à évaluer
 
+    # Métadonnées de génération (JSON string) : cv_reference, green_flag_keywords,
+    # red_flag_indicators, context_hint — réutilisées pour scorer la réponse.
+    meta = Column(Text, nullable=True)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     interview = relationship("Interview", back_populates="questions")

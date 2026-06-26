@@ -1,0 +1,405 @@
+"""
+Routes — Entretien IA conversationnel.
+
+Flux :
+  POST /interviews/start          → génère les questions + crée l'entretien en DB
+  GET  /interviews/{id}           → récupère l'entretien (questions, réponses, rapport)
+  POST /interviews/{id}/answer    → soumet une réponse + l'analyse (scoring)
+  POST /interviews/{id}/report    → génère le rapport final + recommandation
+"""
+from __future__ import annotations
+
+import json
+from uuid import UUID
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
+
+from app.database import get_db
+from app.dependencies import get_current_recruteur_or_admin
+from app.models.candidate import Candidate
+from app.models.job_offer import JobOffer
+from app.models.user import User
+from app.models.interview import (
+    Interview, InterviewQuestion, InterviewAnswer, InterviewReport,
+    InterviewStatus, InterviewPhase, Recommendation,
+)
+from app.services.interview.groq_interview_service import (
+    CVSummary, OfferSummary, GroqInterviewService,
+)
+
+router = APIRouter()
+
+# Singleton — chargé une fois
+_service: Optional[GroqInterviewService] = None
+
+
+def _get_service() -> GroqInterviewService:
+    global _service
+    if _service is None:
+        _service = GroqInterviewService()
+    return _service
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Mapping phases / recommandation (texte service → enum DB)
+# ─────────────────────────────────────────────────────────────────────────────
+_PHASE_MAP = {
+    "validation_profil": InterviewPhase.profile,
+    "technique":         InterviewPhase.technical,
+    "mise_en_situation": InterviewPhase.situational,
+    "soft_skill":        InterviewPhase.soft_skills,
+    "motivation":        InterviewPhase.motivation,
+    "cloture":           InterviewPhase.closing,
+}
+_RECO_MAP = {
+    "RECRUTER": Recommendation.recruit,
+    "HESITER":  Recommendation.hesitate,
+    "REJETER":  Recommendation.reject,
+}
+
+# Pondération des 5 dimensions (identique au moteur)
+_WEIGHTS = {"technique": 0.40, "star": 0.20, "coherence": 0.15,
+            "specificite": 0.15, "communication": 0.10}
+
+
+def _weighted_score(scores: Dict[str, float]) -> float:
+    """Score pondéré d'une réponse, ramené sur [0,1]."""
+    total = sum(_WEIGHTS[k] * float(scores.get(k, 0)) for k in _WEIGHTS)
+    return round(total / 10.0, 4)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Constructeurs CVSummary / OfferSummary depuis les modèles ORM
+# ─────────────────────────────────────────────────────────────────────────────
+def _build_cv(candidate: Candidate) -> CVSummary:
+    return CVSummary.from_parsed_data(
+        nom=candidate.nom or "Candidat",
+        email=candidate.email or "",
+        parsed_data=candidate.parsed_data or {},
+    )
+
+
+def _build_offer(offer: JobOffer) -> OfferSummary:
+    return OfferSummary(
+        titre=offer.titre or "Poste",
+        domaine_metier=getattr(offer, "domaine_metier", None) or "IT / Développement",
+        type_contrat=offer.type_contrat or "CDI",
+        competences_requises=offer.competences_requises or [],
+        competences_appreciees=getattr(offer, "competences_appreciees", None) or [],
+        description=offer.description or "",
+        niveau_seniorite=getattr(offer, "niveau_seniorite", None) or "",
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Schémas de requête
+# ─────────────────────────────────────────────────────────────────────────────
+class StartPayload(BaseModel):
+    candidate_id: str
+    offer_id: str
+    langue: str = "fr"
+
+
+class AnswerPayload(BaseModel):
+    question_id: str
+    answer_text: str
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /interviews/start
+# ─────────────────────────────────────────────────────────────────────────────
+@router.post("/interviews/start", summary="Démarrer un entretien IA pour un candidat")
+def start_interview(
+    payload: StartPayload,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    try:
+        cand_uuid  = UUID(str(payload.candidate_id))
+        offer_uuid = UUID(str(payload.offer_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="ID invalide")
+
+    candidate = db.query(Candidate).filter(Candidate.id == cand_uuid).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidat non trouvé")
+    offer = db.query(JobOffer).filter(JobOffer.id == offer_uuid).first()
+    if not offer:
+        raise HTTPException(status_code=404, detail="Offre non trouvée")
+
+    cv    = _build_cv(candidate)
+    offer_summary = _build_offer(offer)
+    service = _get_service()
+
+    try:
+        questions = service.generate_questions(cv, offer_summary)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Erreur génération questions : {exc}")
+
+    if not questions:
+        raise HTTPException(status_code=502, detail="Aucune question générée")
+
+    # Création de l'entretien
+    interview = Interview(
+        candidate_id=cand_uuid,
+        job_offer_id=offer_uuid,
+        status=InterviewStatus.created,
+        domaine=offer_summary.domaine_metier,
+        langue=payload.langue,
+        llm_model=service.model,
+        started_at=func.now(),
+    )
+    db.add(interview)
+    db.flush()  # pour avoir interview.id
+
+    # Création des questions
+    out_questions = []
+    for q in questions:
+        phase_enum = _PHASE_MAP.get(q.get("phase", ""), InterviewPhase.technical)
+        iq = InterviewQuestion(
+            interview_id=interview.id,
+            order_index=int(q.get("index", 0)),
+            phase=phase_enum,
+            question_text=q.get("question", ""),
+            target_competence=(q.get("skill_targeted") or "")[:150] or None,
+            intent=(q.get("context_hint") or "")[:255] or None,
+            meta=json.dumps(q, ensure_ascii=False),
+        )
+        db.add(iq)
+        db.flush()
+        out_questions.append({
+            "id": str(iq.id),
+            "order_index": iq.order_index,
+            "phase": phase_enum.value,
+            "question": iq.question_text,
+            "context_hint": q.get("context_hint", ""),
+            "cv_reference": q.get("cv_reference", ""),
+        })
+
+    db.commit()
+
+    return {
+        "interview_id": str(interview.id),
+        "status": interview.status.value,
+        "domaine": interview.domaine,
+        "provider": service.provider,
+        "model": service.model,
+        "candidate_name": candidate.nom,
+        "offer_titre": offer.titre,
+        "total_questions": len(out_questions),
+        "questions": out_questions,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GET /interviews/{id}
+# ─────────────────────────────────────────────────────────────────────────────
+@router.get("/interviews/{interview_id}", summary="Récupérer un entretien")
+def get_interview(
+    interview_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    interview = db.query(Interview).filter(Interview.id == interview_id).first()
+    if not interview:
+        raise HTTPException(status_code=404, detail="Entretien non trouvé")
+
+    answers_by_q = {a.question_id: a for a in interview.answers}
+    questions = []
+    for q in interview.questions:
+        a = answers_by_q.get(q.id)
+        questions.append({
+            "id": str(q.id),
+            "order_index": q.order_index,
+            "phase": q.phase.value,
+            "question": q.question_text,
+            "context_hint": q.intent,
+            "answered": a is not None,
+            "answer_text": a.answer_text if a else None,
+            "score": a.score if a else None,
+        })
+
+    report = None
+    if interview.report:
+        report = json.loads(interview.report.full_payload) if interview.report.full_payload else {
+            "score_global_100": interview.report.global_score,
+            "recommandation": interview.report.recommendation.value,
+            "synthese_executive": interview.report.summary,
+        }
+
+    return {
+        "interview_id": str(interview.id),
+        "status": interview.status.value,
+        "domaine": interview.domaine,
+        "candidate_id": str(interview.candidate_id),
+        "global_score": interview.global_score,
+        "recommendation": interview.recommendation.value if interview.recommendation else None,
+        "questions": questions,
+        "report": report,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /interviews/{id}/answer
+# ─────────────────────────────────────────────────────────────────────────────
+@router.post("/interviews/{interview_id}/answer", summary="Soumettre + analyser une réponse")
+def submit_answer(
+    interview_id: UUID,
+    payload: AnswerPayload,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    interview = db.query(Interview).filter(Interview.id == interview_id).first()
+    if not interview:
+        raise HTTPException(status_code=404, detail="Entretien non trouvé")
+
+    try:
+        q_uuid = UUID(str(payload.question_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="question_id invalide")
+
+    question = db.query(InterviewQuestion).filter(
+        InterviewQuestion.id == q_uuid,
+        InterviewQuestion.interview_id == interview_id,
+    ).first()
+    if not question:
+        raise HTTPException(status_code=404, detail="Question non trouvée")
+
+    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
+    cv = _build_cv(candidate) if candidate else CVSummary(nom="Candidat")
+
+    # Reconstruire le dict question attendu par score_answer (depuis meta)
+    q_dict = json.loads(question.meta) if question.meta else {
+        "question": question.question_text,
+        "skill_targeted": question.target_competence,
+    }
+
+    service = _get_service()
+    try:
+        analysis = service.score_answer(q_dict, payload.answer_text, cv, interview.domaine or "")
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Erreur analyse réponse : {exc}")
+
+    scores = analysis.get("scores", {})
+    weighted = _weighted_score(scores)
+
+    # Upsert de la réponse
+    answer = db.query(InterviewAnswer).filter(
+        InterviewAnswer.question_id == q_uuid
+    ).first()
+    if answer is None:
+        answer = InterviewAnswer(interview_id=interview_id, question_id=q_uuid)
+        db.add(answer)
+
+    answer.answer_text = payload.answer_text
+    answer.analysis = json.dumps(analysis, ensure_ascii=False)
+    answer.score = weighted
+    answer.flags = json.dumps(analysis.get("flags", {}), ensure_ascii=False)
+
+    if interview.status == InterviewStatus.created:
+        interview.status = InterviewStatus.in_progress
+
+    db.commit()
+
+    return {
+        "question_id": str(q_uuid),
+        "score": weighted,
+        "scores": scores,
+        "flags": analysis.get("flags", {}),
+        "cv_contradiction": analysis.get("cv_contradiction", False),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POST /interviews/{id}/report
+# ─────────────────────────────────────────────────────────────────────────────
+@router.post("/interviews/{interview_id}/report", summary="Générer le rapport final")
+def generate_report(
+    interview_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    interview = db.query(Interview).filter(Interview.id == interview_id).first()
+    if not interview:
+        raise HTTPException(status_code=404, detail="Entretien non trouvé")
+
+    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == interview.job_offer_id).first()
+    if not candidate or not offer:
+        raise HTTPException(status_code=404, detail="Candidat ou offre introuvable")
+
+    cv = _build_cv(candidate)
+    offer_summary = _build_offer(offer)
+
+    # Construire qa_pairs + scores agrégés depuis les réponses
+    answers_by_q = {a.question_id: a for a in interview.answers}
+    qa_pairs: List[Dict[str, Any]] = []
+    dim_totals = {k: [] for k in _WEIGHTS}
+
+    for q in interview.questions:
+        a = answers_by_q.get(q.id)
+        if a is None or not a.answer_text:
+            continue
+        analysis = json.loads(a.analysis) if a.analysis else {}
+        scores = analysis.get("scores", {})
+        for k in _WEIGHTS:
+            if k in scores:
+                dim_totals[k].append(float(scores[k]))
+        qa_pairs.append({
+            "phase": q.phase.value,
+            "question": q.question_text,
+            "answer": a.answer_text,
+            "scores": scores,
+            "flags": json.loads(a.flags) if a.flags else {},
+        })
+
+    if not qa_pairs:
+        raise HTTPException(status_code=400, detail="Aucune réponse à analyser")
+
+    aggregated = {
+        k: round(sum(v) / len(v), 2) if v else 0.0
+        for k, v in dim_totals.items()
+    }
+
+    service = _get_service()
+    try:
+        rapport = service.generate_report(cv, offer_summary, qa_pairs, aggregated)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Erreur génération rapport : {exc}")
+
+    reco_enum = _RECO_MAP.get(rapport.get("recommandation", ""), Recommendation.hesitate)
+    score_100 = float(rapport.get("score_global_100", 0))
+
+    # Persistance du rapport
+    existing = db.query(InterviewReport).filter(
+        InterviewReport.interview_id == interview_id
+    ).first()
+    if existing:
+        db.delete(existing)
+        db.flush()
+
+    report = InterviewReport(
+        interview_id=interview_id,
+        global_score=score_100,
+        recommendation=reco_enum,
+        summary=rapport.get("synthese_executive", ""),
+        validated_competences=json.dumps(rapport.get("competences", {}), ensure_ascii=False),
+        soft_skills=json.dumps(rapport.get("soft_skills_detectes", []), ensure_ascii=False),
+        cross_check=json.dumps(rapport.get("cross_check", {}), ensure_ascii=False),
+        next_steps=json.dumps(rapport.get("prochaines_etapes", []), ensure_ascii=False),
+        full_payload=json.dumps(rapport, ensure_ascii=False),
+    )
+    db.add(report)
+
+    interview.status = InterviewStatus.completed
+    interview.global_score = score_100
+    interview.recommendation = reco_enum
+    interview.completed_at = func.now()
+
+    db.commit()
+
+    return rapport
