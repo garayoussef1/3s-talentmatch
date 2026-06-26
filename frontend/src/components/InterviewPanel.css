@@ -82,3 +82,36 @@
   border-radius: 20px; font-size: 13px; font-weight: 600;
 }
 .ip-chip em { font-style: normal; opacity: 0.7; font-weight: 400; }
+
+/* ── Mode multi-candidats ── */
+.ip-modal-wide { max-width: 640px; }
+.ip-list { display: flex; flex-direction: column; gap: 14px; }
+.ip-cand-card {
+  border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px;
+  background: #fafbfc;
+}
+.ip-cand-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.ip-cand-head strong { color: #1e293b; font-size: 15px; }
+.ip-reco-mini {
+  font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 14px;
+}
+.ip-btn-mini {
+  background: #1B4F8A; color: #fff; border: none; border-radius: 7px;
+  padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.ip-btn-mini:hover:not(:disabled) { background: #16406f; }
+.ip-btn-mini:disabled { background: #94a3b8; cursor: not-allowed; }
+.ip-cand-actions {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-top: 8px;
+}
+.ip-error-inline { color: #dc2626; font-size: 12px; margin-bottom: 8px; }
+.ip-report-inline {
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed #cbd5e1;
+}
+.ip-synth { font-size: 13px; color: #475569; line-height: 1.5; margin: 0 0 8px; }
+.ip-mini-sec { font-size: 13px; color: #334155; margin-bottom: 4px; }
+.ip-mini-title { font-weight: 600; }

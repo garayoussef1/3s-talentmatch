@@ -487,12 +487,11 @@ function TabMatching({ offerId, offer }) {
 
   return (
     <div>
-      {/* Panneau Entretien IA */}
+      {/* Panneau Entretien IA (un ou plusieurs candidats) */}
       {interviewFor && (
         <InterviewPanel
-          candidateId={interviewFor.id}
+          candidates={interviewFor}
           offerId={offerId}
-          candidateName={interviewFor.name}
           onClose={() => setInterviewFor(null)}
         />
       )}
@@ -552,6 +551,21 @@ function TabMatching({ offerId, offer }) {
               onClick={confirmSelection}
             >
               {selecting ? 'Confirmation…' : `Confirmer la sélection (${selected.length})`}
+            </button>
+            {/* Lancer les entretiens des candidats sélectionnés */}
+            <button
+              className="tm-select-btn"
+              disabled={selected.length === 0}
+              style={{ background: '#4338ca', marginLeft: 8 }}
+              onClick={() => {
+                const list = selected
+                  .map(cvId => results.results.find(r => r.cv_id === cvId))
+                  .filter(Boolean)
+                  .map(r => ({ id: r.candidate_id, name: r.candidate_name }))
+                if (list.length) setInterviewFor(list)
+              }}
+            >
+              🎙 Lancer les entretiens ({selected.length})
             </button>
           </div>
 
@@ -631,7 +645,7 @@ function TabMatching({ offerId, offer }) {
                         )}
                         {/* Bouton Entretien IA */}
                         <button
-                          onClick={() => setInterviewFor({ id: r.candidate_id, name: r.candidate_name })}
+                          onClick={() => setInterviewFor([{ id: r.candidate_id, name: r.candidate_name }])}
                           style={{
                             display: 'inline-flex', alignItems: 'center', gap: 5,
                             background: '#eef2ff', color: '#4338ca',
