@@ -60,6 +60,10 @@ class Interview(Base):
     domaine = Column(String(100), nullable=True)        # domaine métier détecté (IT, Finance…)
     langue  = Column(String(10), default="fr", nullable=True)
 
+    # Jeton d'accès candidat : permet l'entretien autonome via lien public,
+    # sans compte recruteur. Généré au démarrage.
+    access_token = Column(String(64), unique=True, index=True, nullable=True)
+
     # Renseignés à la clôture
     global_score   = Column(Float, nullable=True)        # 0–100
     recommendation = Column(SAEnum(Recommendation), nullable=True)

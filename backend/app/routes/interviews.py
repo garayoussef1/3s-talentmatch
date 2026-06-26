@@ -10,6 +10,7 @@ Flux :
 from __future__ import annotations
 
 import json
+import secrets
 from uuid import UUID
 from typing import Any, Dict, List, Optional
 
@@ -143,7 +144,7 @@ def start_interview(
     if not questions:
         raise HTTPException(status_code=502, detail="Aucune question générée")
 
-    # Création de l'entretien
+    # Création de l'entretien (avec jeton d'accès candidat)
     interview = Interview(
         candidate_id=cand_uuid,
         job_offer_id=offer_uuid,
@@ -151,6 +152,7 @@ def start_interview(
         domaine=offer_summary.domaine_metier,
         langue=payload.langue,
         llm_model=service.model,
+        access_token=secrets.token_urlsafe(24),
         started_at=func.now(),
     )
     db.add(interview)
@@ -192,6 +194,9 @@ def start_interview(
         "offer_titre": offer.titre,
         "total_questions": len(out_questions),
         "questions": out_questions,
+        # Lien à transmettre au candidat (entretien autonome)
+        "access_token": interview.access_token,
+        "candidate_link": f"/entretien/{interview.access_token}",
     }
 
 
@@ -403,3 +408,101 @@ def generate_report(
     db.commit()
 
     return rapport
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ENDPOINTS PUBLICS — accès candidat par jeton (sans compte recruteur)
+# ═════════════════════════════════════════════════════════════════════════════
+class PublicAnswerPayload(BaseModel):
+    question_id: str
+    answer_text: str
+
+
+def _interview_by_token(db: Session, token: str) -> Interview:
+    interview = db.query(Interview).filter(Interview.access_token == token).first()
+    if not interview:
+        raise HTTPException(status_code=404, detail="Lien d'entretien invalide ou expiré")
+    return interview
+
+
+# GET /interviews/public/{token} — le candidat récupère ses questions (sans scores)
+@router.get("/interviews/public/{token}", summary="[Candidat] Récupérer l'entretien par lien")
+def public_get_interview(token: str, db: Session = Depends(get_db)):
+    interview = _interview_by_token(db, token)
+    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == interview.job_offer_id).first()
+
+    answered_ids = {a.question_id for a in interview.answers if a.answer_text}
+    questions = [{
+        "id": str(q.id),
+        "order_index": q.order_index,
+        "phase": q.phase.value,
+        "question": q.question_text,
+        "context_hint": q.intent,
+        "answered": q.id in answered_ids,
+    } for q in interview.questions]
+
+    return {
+        "candidate_name": candidate.nom if candidate else "Candidat",
+        "offer_titre": offer.titre if offer else "Poste",
+        "domaine": interview.domaine,
+        "status": interview.status.value,
+        "total_questions": len(questions),
+        "answered_count": len(answered_ids),
+        "completed": interview.status == InterviewStatus.completed,
+        "questions": questions,
+    }
+
+
+# POST /interviews/public/{token}/answer — le candidat répond (score interne, NON renvoyé)
+@router.post("/interviews/public/{token}/answer", summary="[Candidat] Soumettre une réponse")
+def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session = Depends(get_db)):
+    interview = _interview_by_token(db, token)
+    if interview.status == InterviewStatus.completed:
+        raise HTTPException(status_code=409, detail="Entretien déjà terminé")
+
+    try:
+        q_uuid = UUID(str(payload.question_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="question_id invalide")
+
+    question = db.query(InterviewQuestion).filter(
+        InterviewQuestion.id == q_uuid,
+        InterviewQuestion.interview_id == interview.id,
+    ).first()
+    if not question:
+        raise HTTPException(status_code=404, detail="Question non trouvée")
+
+    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
+    cv = _build_cv(candidate) if candidate else CVSummary(nom="Candidat")
+    q_dict = json.loads(question.meta) if question.meta else {"question": question.question_text}
+
+    service = _get_service()
+    try:
+        analysis = service.score_answer(q_dict, payload.answer_text, cv, interview.domaine or "")
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Erreur analyse : {exc}")
+
+    weighted = _weighted_score(analysis.get("scores", {}))
+
+    answer = db.query(InterviewAnswer).filter(InterviewAnswer.question_id == q_uuid).first()
+    if answer is None:
+        answer = InterviewAnswer(interview_id=interview.id, question_id=q_uuid)
+        db.add(answer)
+    answer.answer_text = payload.answer_text
+    answer.analysis = json.dumps(analysis, ensure_ascii=False)
+    answer.score = weighted
+    answer.flags = json.dumps(analysis.get("flags", {}), ensure_ascii=False)
+
+    if interview.status == InterviewStatus.created:
+        interview.status = InterviewStatus.in_progress
+    db.commit()
+
+    # On NE renvoie PAS le score au candidat (il ne doit pas ajuster ses réponses)
+    answered = db.query(InterviewAnswer).filter(
+        InterviewAnswer.interview_id == interview.id,
+        InterviewAnswer.answer_text.isnot(None),
+    ).count()
+    total = len(interview.questions)
+    return {"ok": True, "answered_count": answered, "total_questions": total,
+            "done": answered >= total}
