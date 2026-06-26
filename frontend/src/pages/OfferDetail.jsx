@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import InterviewPanel from '../components/InterviewPanel'
 import './Offers.css'
 
 // hook role
@@ -414,6 +415,7 @@ function TabMatching({ offerId, offer }) {
   const [selectResult, setSelectResult] = useState(null)
   const [aiSummaries, setAiSummaries]   = useState({})
   const [cvLoading,   setCvLoading]     = useState({})
+  const [interviewFor, setInterviewFor] = useState(null)   // {id, name} ou null
 
   const viewCV = async (cvId, candidateName) => {
     setCvLoading(prev => ({ ...prev, [cvId]: true }))
@@ -485,6 +487,16 @@ function TabMatching({ offerId, offer }) {
 
   return (
     <div>
+      {/* Panneau Entretien IA */}
+      {interviewFor && (
+        <InterviewPanel
+          candidateId={interviewFor.id}
+          offerId={offerId}
+          candidateName={interviewFor.name}
+          onClose={() => setInterviewFor(null)}
+        />
+      )}
+
       {/* ── Barre supérieure ── */}
       <div className="matching-top">
         <div>
@@ -617,6 +629,19 @@ function TabMatching({ offerId, offer }) {
                             {cvLoading[r.cv_id] ? '⏳' : '📄'} Voir CV
                           </button>
                         )}
+                        {/* Bouton Entretien IA */}
+                        <button
+                          onClick={() => setInterviewFor({ id: r.candidate_id, name: r.candidate_name })}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 5,
+                            background: '#eef2ff', color: '#4338ca',
+                            border: '1px solid #c7d2fe',
+                            borderRadius: 6, padding: '3px 10px',
+                            fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                          }}
+                        >
+                          🎙 Entretien IA
+                        </button>
                       </div>
                     </div>
 

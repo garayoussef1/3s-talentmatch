@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import UploadCV from './pages/UploadCV'
+import InterviewCandidate from './pages/InterviewCandidate'
 import Candidates from './pages/Candidates'
 import CandidateDetail from './pages/CandidateDetail'
 import MyApplications from './pages/MyApplications'
@@ -37,6 +38,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/entretien/:token" element={<InterviewCandidate />} />
               <Route path="/auth/callback/google" element={<OAuthCallback provider="google" />} />
               <Route path="/auth/callback/linkedin" element={<OAuthCallback provider="linkedin" />} />
 
