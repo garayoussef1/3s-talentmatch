@@ -54,7 +54,16 @@ export default function InterviewCandidate() {
     })
       .then(res => {
         setAnswer('')
-        if (res.data.done || idx + 1 >= total) {
+        if (res.data.followup) {
+          // Relance dynamique : insérer la question de suivi juste après l'actuelle
+          const fu = res.data.followup
+          setData(d => {
+            const qs = [...d.questions]
+            qs.splice(idx + 1, 0, { ...fu, answered: false })
+            return { ...d, questions: qs, total_questions: qs.length }
+          })
+          setIdx(idx + 1)
+        } else if (res.data.done) {
           setDone(true)
         } else {
           setIdx(idx + 1)
@@ -110,7 +119,9 @@ export default function InterviewCandidate() {
 
         {/* Carte question */}
         <div className="itw-question-card">
-          <div className="itw-phase-badge">{PHASE_LABEL[current?.phase] || current?.phase}</div>
+          <div className="itw-phase-badge">
+            {current?.is_followup ? '↳ Question de suivi' : (PHASE_LABEL[current?.phase] || current?.phase)}
+          </div>
           <h2 className="itw-question">{current?.question}</h2>
           {current?.context_hint && (
             <div className="itw-hint">💡 {current.context_hint}</div>

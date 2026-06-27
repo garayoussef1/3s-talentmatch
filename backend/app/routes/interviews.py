@@ -648,6 +648,43 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
         interview.status = InterviewStatus.in_progress
     db.commit()
 
+    # ── Adaptatif : relance dynamique si la réponse est faible ──────────────
+    # Bornes : phases techniques/situationnelles, réponse faible mais non vide,
+    # question d'origine (pas déjà une relance), max 3 relances par entretien.
+    MAX_FOLLOWUPS = 3
+    followup_out = None
+    q_meta = q_dict if isinstance(q_dict, dict) else {}
+    is_followup = bool(q_meta.get("is_followup"))
+    nb_followups = sum(
+        1 for q in interview.questions
+        if q.meta and '"is_followup": true' in q.meta.lower()
+    )
+    if (not is_followup
+            and question.phase in (InterviewPhase.technical, InterviewPhase.situational)
+            and 0.0 < weighted < 0.5
+            and nb_followups < MAX_FOLLOWUPS):
+        fu = service.generate_followup(q_meta, payload.answer_text, cv, interview.domaine or "")
+        if fu:
+            fu_meta = {**fu, "is_followup": True, "parent_id": str(q_uuid)}
+            fu_q = InterviewQuestion(
+                interview_id=interview.id,
+                order_index=question.order_index,   # adjacent à la question parente
+                phase=question.phase,
+                question_text=fu.get("question", ""),
+                target_competence=(fu.get("skill_targeted") or "")[:150] or None,
+                intent=(fu.get("context_hint") or "")[:255] or None,
+                meta=json.dumps(fu_meta, ensure_ascii=False),
+            )
+            db.add(fu_q)
+            db.commit()
+            followup_out = {
+                "id": str(fu_q.id),
+                "phase": fu_q.phase.value,
+                "question": fu_q.question_text,
+                "context_hint": fu_q.intent or "",
+                "is_followup": True,
+            }
+
     # On NE renvoie PAS le score au candidat (il ne doit pas ajuster ses réponses)
     answered = db.query(InterviewAnswer).filter(
         InterviewAnswer.interview_id == interview.id,
@@ -655,4 +692,5 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
     ).count()
     total = len(interview.questions)
     return {"ok": True, "answered_count": answered, "total_questions": total,
-            "done": answered >= total}
+            "done": answered >= total and followup_out is None,
+            "followup": followup_out}

@@ -418,6 +418,45 @@ Réponds UNIQUEMENT avec ce JSON (rien d'autre) :
         return json.loads(response.choices[0].message.content)
 
     # ─────────────────────────────────────────
+    # MÉTHODE 2bis — Question de relance (adaptatif)
+    # ─────────────────────────────────────────
+    def generate_followup(self, question: dict, answer: str, cv: "CVSummary",
+                          domaine: str) -> dict | None:
+        """
+        Génère UNE question de relance quand une réponse est faible/vague, pour
+        creuser et distinguer "sait mais mal exprimé" de "ne maîtrise pas".
+        Retourne {"question", "context_hint", "skill_targeted"} ou None.
+        """
+        skill = question.get("skill_targeted") or question.get("question", "")[:60]
+        prompt = f"""Tu es un recruteur expert en {domaine}. Le candidat vient de donner
+une réponse FAIBLE ou VAGUE à cette question :
+
+QUESTION : {question.get('question', '')}
+RÉPONSE DU CANDIDAT : {answer[:600]}
+
+Pose UNE seule question de relance courte et PRÉCISE pour creuser et vérifier
+s'il maîtrise réellement « {skill} ». Demande un exemple concret, un détail
+technique, ou "comment exactement". Reste bienveillant mais exigeant.
+
+Réponds UNIQUEMENT avec ce JSON :
+{{"question": "Ta question de relance", "context_hint": "Conseil court au candidat", "skill_targeted": "{skill}"}}"""
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.4,
+                max_tokens=400,
+                response_format={"type": "json_object"},
+            )
+            data = json.loads(response.choices[0].message.content)
+            if data.get("question"):
+                return data
+        except Exception:
+            pass
+        return None
+
+    # ─────────────────────────────────────────
     # MÉTHODE 3 — Rapport final
     # ─────────────────────────────────────────
     def generate_report(
