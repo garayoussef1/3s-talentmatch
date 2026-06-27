@@ -343,6 +343,69 @@ def list_interviews(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# GET /interviews/compare?offer_id=  — données de comparaison (radar 5 dimensions)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.get("/interviews/compare", summary="Comparer les candidats interviewés")
+def compare_interviews(
+    offer_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    offer = db.query(JobOffer).filter(JobOffer.id == offer_id).first()
+    if not offer:
+        raise HTTPException(status_code=404, detail="Offre introuvable")
+    if not _can_access_offer(offer, current_user):
+        raise HTTPException(status_code=403, detail="Accès non autorisé à cette offre")
+
+    interviews = (
+        db.query(Interview)
+        .filter(Interview.job_offer_id == offer_id)
+        .order_by(Interview.global_score.desc().nullslast())
+        .all()
+    )
+
+    candidates = []
+    for itw in interviews:
+        # Agrège les 5 dimensions depuis les réponses analysées
+        dim_totals = {k: [] for k in _WEIGHTS}
+        for a in itw.answers:
+            if not a.answer_text or not a.analysis:
+                continue
+            scores = (json.loads(a.analysis) or {}).get("scores", {})
+            for k in _WEIGHTS:
+                if k in scores:
+                    dim_totals[k].append(float(scores[k]))
+        if not any(dim_totals.values()):
+            continue  # pas de données analysées → on ignore pour la comparaison
+
+        dimensions = {k: round(sum(v) / len(v), 1) if v else 0.0 for k, v in dim_totals.items()}
+        candidate = db.query(Candidate).filter(Candidate.id == itw.candidate_id).first()
+
+        report = itw.report
+        payload = json.loads(report.full_payload) if (report and report.full_payload) else {}
+        candidates.append({
+            "interview_id": str(itw.id),
+            "candidate_id": str(itw.candidate_id),
+            "candidate_name": candidate.nom if candidate else "—",
+            "global_score": itw.global_score if itw.global_score is not None else (
+                round(sum(dimensions[k] * w for k, w in _WEIGHTS.items()) * 10)
+            ),
+            "recommendation": itw.recommendation.value if itw.recommendation else None,
+            "has_report": report is not None,
+            "dimensions": dimensions,
+            "points_forts": payload.get("points_forts", [])[:3],
+            "points_faibles": payload.get("points_faibles", [])[:3],
+        })
+
+    return {
+        "offer_id": str(offer_id),
+        "offer_titre": offer.titre,
+        "dimensions_labels": list(_WEIGHTS.keys()),
+        "candidates": candidates,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # GET /interviews/{id}
 # ─────────────────────────────────────────────────────────────────────────────
 @router.get("/interviews/{interview_id}", summary="Récupérer un entretien")

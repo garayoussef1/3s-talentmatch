@@ -126,3 +126,30 @@
 .itb-xc-minor { background: #fef3c7; color: #d97706; }
 .itb-xc-conf  { background: #dcfce7; color: #15803d; }
 .itb-xc-na { font-size: 12px; color: #94a3b8; font-style: italic; margin-top: 4px; }
+
+/* Bouton comparer + vue comparaison */
+.itb-compare-btn {
+  background: #4338ca; color: #fff; border: none; border-radius: 7px;
+  padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.itb-compare-btn:hover { background: #3730a3; }
+.itb-modal-wide { max-width: 920px; }
+.itb-compare-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;
+}
+.itb-compare-card {
+  border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.itb-cc-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  width: 100%; margin-bottom: 6px;
+}
+.itb-cc-name { font-weight: 700; color: #1e293b; font-size: 14px; }
+.itb-cc-score { font-weight: 800; font-size: 18px; }
+.itb-radar { margin: 6px 0; }
+.itb-cc-pts {
+  font-size: 12px; color: #15803d; margin-top: 6px; line-height: 1.4; text-align: left; width: 100%;
+}
+.itb-cc-pts.itb-cc-neg { color: #dc2626; }
+.itb-cc-pts strong { font-size: 14px; }

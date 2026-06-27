@@ -26,6 +26,7 @@ export default function InterviewsTab({ offerId }) {
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState(null)
   const [detailId, setDetailId] = useState(null)
+  const [showCompare, setShowCompare] = useState(false)
 
   const load = () => {
     setLoading(true)
@@ -45,8 +46,13 @@ export default function InterviewsTab({ offerId }) {
     <div className="itb-wrap">
       <div className="itb-head-row">
         <h3>Entretiens IA — {list.length} candidat{list.length > 1 ? 's' : ''}</h3>
-        <button className="itb-refresh" onClick={load}>↻ Actualiser</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="itb-compare-btn" onClick={() => setShowCompare(true)}>📊 Comparer</button>
+          <button className="itb-refresh" onClick={load}>↻ Actualiser</button>
+        </div>
       </div>
+
+      {showCompare && <CompareView offerId={offerId} onClose={() => setShowCompare(false)} />}
 
       <table className="itb-table">
         <thead>
@@ -203,6 +209,95 @@ function InterviewDetail({ interviewId, onClose, onReportGenerated }) {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Vue comparaison : radar 5 dimensions par candidat ───
+const DIM_LABEL = {
+  technique: 'Technique', star: 'STAR', coherence: 'Cohérence',
+  specificite: 'Spécificité', communication: 'Communication',
+}
+const RADAR_COLORS = ['#1B4F8A', '#F7941D', '#16a34a', '#9333ea', '#dc2626']
+
+function Radar({ dimensions, labels, color, size = 180 }) {
+  const cx = size / 2, cy = size / 2, R = size / 2 - 28
+  const n = labels.length
+  const pt = (i, r) => {
+    const a = -Math.PI / 2 + (2 * Math.PI * i) / n
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)]
+  }
+  const grid = [0.25, 0.5, 0.75, 1].map(f =>
+    labels.map((_, i) => pt(i, R * f).join(',')).join(' ')
+  )
+  const poly = labels.map((k, i) => pt(i, R * (dimensions[k] || 0) / 10).join(',')).join(' ')
+  return (
+    <svg width={size} height={size} className="itb-radar">
+      {grid.map((g, i) => <polygon key={i} points={g} fill="none" stroke="#e2e8f0" strokeWidth="1" />)}
+      {labels.map((_, i) => {
+        const [x, y] = pt(i, R)
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#e2e8f0" strokeWidth="1" />
+      })}
+      <polygon points={poly} fill={color} fillOpacity="0.25" stroke={color} strokeWidth="2" />
+      {labels.map((k, i) => {
+        const [x, y] = pt(i, R + 14)
+        return <text key={k} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
+          fontSize="9" fill="#64748b">{DIM_LABEL[k] || k}</text>
+      })}
+    </svg>
+  )
+}
+
+function CompareView({ offerId, onClose }) {
+  const [data, setData]       = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState(null)
+
+  useEffect(() => {
+    api.get('/interviews/compare', { params: { offer_id: offerId } })
+      .then(res => setData(res.data))
+      .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
+      .finally(() => setLoading(false))
+  }, [offerId])
+
+  return (
+    <div className="itb-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="itb-modal itb-modal-wide">
+        <div className="itb-modal-head">
+          <h3>📊 Comparaison des candidats</h3>
+          <button className="itb-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="itb-modal-body">
+          {loading && <div className="itb-empty">Chargement…</div>}
+          {error && <div className="itb-empty itb-err">{error}</div>}
+          {data && !loading && (
+            data.candidates.length === 0
+              ? <div className="itb-empty">Aucun candidat avec des réponses analysées à comparer.</div>
+              : <div className="itb-compare-grid">
+                  {data.candidates.map((c, idx) => {
+                    const reco = c.recommendation ? RECO[c.recommendation] : null
+                    const color = RADAR_COLORS[idx % RADAR_COLORS.length]
+                    return (
+                      <div key={c.interview_id} className="itb-compare-card">
+                        <div className="itb-cc-head">
+                          <span className="itb-cc-name">{c.candidate_name}</span>
+                          <span className="itb-cc-score" style={{ color }}>{Math.round(c.global_score)}/100</span>
+                        </div>
+                        {reco && <span className={`itb-badge ${reco.cls}`}>{reco.label}</span>}
+                        <Radar dimensions={c.dimensions} labels={data.dimensions_labels} color={color} />
+                        {c.points_forts?.length > 0 && (
+                          <div className="itb-cc-pts"><strong>+</strong> {c.points_forts.join(', ')}</div>
+                        )}
+                        {c.points_faibles?.length > 0 && (
+                          <div className="itb-cc-pts itb-cc-neg"><strong>−</strong> {c.points_faibles.join(', ')}</div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+          )}
+        </div>
       </div>
     </div>
   )
