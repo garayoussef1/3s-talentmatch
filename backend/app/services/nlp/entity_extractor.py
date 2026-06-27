@@ -200,6 +200,34 @@ _PASS0_JOB_KEYWORDS = {
 # Supporte: Jean, JEAN, Jean-Pierre, Ben
 _NAME_WORD = re.compile(r"^[A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ]+(?:-[A-ZÀ-ÖØ-Þa-zà-öø-ÿ]+)?$|^[A-ZÀ-ÖØ-Þ]{2,}$")
 
+# ── Règle linguistique générale (offline) ────────────────────────────────────
+# Un vrai nom propre est rarement composé UNIQUEMENT de mots courants du
+# dictionnaire. On utilise wordfreq (données embarquées → marche sans internet)
+# pour rejeter les intitulés de section/service ("Ressources Humaines",
+# "Direction Commerciale", "Professional Experience"...) de façon générale,
+# sans liste de postes à maintenir.
+try:
+    from wordfreq import zipf_frequency as _zipf
+except Exception:  # wordfreq absent → la règle est simplement désactivée
+    _zipf = None
+
+_COMMON_WORD_ZIPF = 4.0  # au-dessus = mot courant ; en dessous = nom propre probable
+
+
+def _all_words_are_common(text: str) -> bool:
+    """True si TOUS les mots (≥3 lettres) sont des mots courants FR ou EN.
+
+    Sert à écarter les titres de section/service pris à tort comme nom.
+    Exiger que *tous* les mots soient communs préserve les vrais noms, qui
+    ont presque toujours au moins un token rare (le nom de famille).
+    """
+    if _zipf is None:
+        return False
+    tokens = [t for t in re.findall(r"[a-zà-öø-ÿ]+", (text or "").lower()) if len(t) >= 3]
+    if len(tokens) < 2:
+        return False
+    return all(max(_zipf(t, "fr"), _zipf(t, "en")) >= _COMMON_WORD_ZIPF for t in tokens)
+
 
 # Caractères décoratifs à nettoyer dans les lignes de CV (box-drawing, etc.)
 _DECORATIVE_CHARS = re.compile(r"[║╔╗╚╝═╠╣╬─│┌┐└┘├┤┬┴┼▒░▓█▌▐▄▀■□▪▫●○◆◇►▶◄◀★☆✓✗✔✘→←↑↓•‣⁃‐‑‒–—]")  # noqa: E501
@@ -343,6 +371,11 @@ class EntityExtractor:
         blocked_norm = {_normalize_letters(x) for x in blocked_joined}
         joined_norm = _normalize_letters(joined)
         if joined_norm in blocked_norm:
+            return False
+
+        # Règle linguistique générale : rejeter si TOUS les mots sont courants
+        # (ex: "Ressources Humaines", "Direction Commerciale") — pas une blacklist.
+        if _all_words_are_common(text):
             return False
 
         # Aucun mot ne doit être un mot interdit

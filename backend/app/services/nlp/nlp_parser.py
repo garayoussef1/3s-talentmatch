@@ -19,7 +19,7 @@ try:
 except ImportError:  # pragma: no cover
     spacy = None
 from app.services.nlp.contact_extractor import ContactExtractor
-from app.services.nlp.entity_extractor import EntityExtractor
+from app.services.nlp.entity_extractor import EntityExtractor, _all_words_are_common
 from app.services.nlp.hf_camembert import HFCamembertNameExtractor, camembert_runtime_config
 from app.services.nlp.skills_extractor import SkillsExtractor
 from app.services.nlp.formation_extractor import FormationExtractor
@@ -579,6 +579,10 @@ class NLPParser:
                 return True
             if wl in section_org:
                 return True
+        # Règle linguistique générale (offline, via wordfreq) : tous les mots courants
+        # → intitulé de section/service, pas un nom (ex: "Ressources Humaines").
+        if _all_words_are_common(candidate):
+            return True
         return False
 
     @staticmethod
