@@ -146,6 +146,30 @@ function InterviewDetail({ interviewId, onClose, onReportGenerated }) {
                 {report.competences?.non_validees?.length > 0 && (
                   <p className="itb-cmp"><strong>🔴 Non validées :</strong> {report.competences.non_validees.map(c => typeof c === 'string' ? c : c.competence).join(', ')}</p>
                 )}
+
+                {/* Cross-check CV ↔ Entretien */}
+                {report.cross_check && (report.cross_check.ecarts?.length > 0 || report.cross_check.confirmes?.length > 0) && (
+                  <div className="itb-xcheck">
+                    <div className="itb-xcheck-title">🔍 Cross-check CV ↔ Entretien</div>
+                    {report.cross_check.ecarts?.length > 0 && report.cross_check.ecarts.map((e, i) => (
+                      <div key={`e${i}`} className="itb-xc-row itb-xc-gap">
+                        <span className={`itb-xc-tag ${e.gravite === 'majeur' ? 'itb-xc-major' : 'itb-xc-minor'}`}>
+                          {e.gravite === 'majeur' ? '⚠ Écart majeur' : 'Écart mineur'}
+                        </span>
+                        <span><strong>{e.element_cv}</strong> → {e.constat_entretien}</span>
+                      </div>
+                    ))}
+                    {report.cross_check.confirmes?.length > 0 && report.cross_check.confirmes.map((c, i) => (
+                      <div key={`c${i}`} className="itb-xc-row itb-xc-ok">
+                        <span className="itb-xc-tag itb-xc-conf">✓ Confirmé</span>
+                        <span><strong>{c.element_cv}</strong> — {c.preuve_entretien}</span>
+                      </div>
+                    ))}
+                    {report.cross_check.non_aborde?.length > 0 && (
+                      <div className="itb-xc-na">Non vérifié : {report.cross_check.non_aborde.join(', ')}</div>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="itb-gen-box">

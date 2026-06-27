@@ -108,3 +108,21 @@
 .itb-qa-text { font-size: 14px; font-weight: 600; color: #1e293b; margin: 0 0 8px; line-height: 1.4; }
 .itb-qa-ans { font-size: 13px; color: #475569; line-height: 1.55; margin: 0; white-space: pre-wrap; }
 .itb-qa-none { font-size: 13px; color: #cbd5e1; font-style: italic; margin: 0; }
+
+/* Cross-check CV ↔ Entretien */
+.itb-xcheck {
+  margin-top: 14px; padding-top: 14px; border-top: 1px dashed #cbd5e1;
+}
+.itb-xcheck-title { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+.itb-xc-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: #334155; margin-bottom: 6px; line-height: 1.45;
+}
+.itb-xc-tag {
+  flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 2px 8px;
+  border-radius: 5px; white-space: nowrap;
+}
+.itb-xc-major { background: #fee2e2; color: #dc2626; }
+.itb-xc-minor { background: #fef3c7; color: #d97706; }
+.itb-xc-conf  { background: #dcfce7; color: #15803d; }
+.itb-xc-na { font-size: 12px; color: #94a3b8; font-style: italic; margin-top: 4px; }

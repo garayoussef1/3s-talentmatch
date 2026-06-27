@@ -465,6 +465,9 @@ CANDIDAT : {cv.nom}
 POSTE : {offer.titre} ({offer.type_contrat})
 DOMAINE : {offer.domaine_metier}
 
+━━━ CE QUE LE CV AFFIRME (à confronter à l'entretien) ━━━
+{cv.to_prompt_block()}
+
 SCORES CALCULÉS :
   Technique (40%)      : {aggregated_scores.get('technique', 0):.1f}/10
   Méthode STAR (20%)   : {aggregated_scores.get('star', 0):.1f}/10
@@ -478,6 +481,14 @@ ENTRETIEN (résumé des {len(qa_pairs)} questions) :
 
 Génère un rapport professionnel, factuel et actionnable.
 Cite des extraits de réponses pour appuyer tes points.
+
+━━━ CROSS-CHECK CV ↔ ENTRETIEN (analyse différenciante — sois rigoureux) ━━━
+Confronte CHAQUE affirmation importante du CV à ce que l'entretien a réellement démontré :
+- CONFIRMÉ  : le CV l'affirme ET l'entretien le prouve (cite la réponse)
+- ÉCART     : le CV l'affirme MAIS l'entretien le contredit ou le nuance fortement
+              (ex: "CV: 5 ans React" mais réponses superficielles → gravité "majeur")
+- NON ABORDÉ: élément du CV qui n'a pas pu être vérifié pendant l'entretien
+Sois factuel : un écart majeur sur une compétence clé doit peser sur la recommandation.
 
 La recommandation doit être CATÉGORIQUE :
 - RECRUTER   : score ≥ 7/10 ET pas de red flag critique
@@ -507,7 +518,15 @@ Réponds UNIQUEMENT avec ce JSON :
   ],
   "points_forts": ["Point fort 1", "Point fort 2", "Point fort 3"],
   "points_faibles": ["Point faible 1", "Point faible 2"],
-  "contradictions_cv": ["Contradiction détectée (si applicable)"],
+  "cross_check": {{
+    "confirmes": [
+      {{"element_cv": "Ce que le CV affirme", "preuve_entretien": "Citation/constat qui le confirme"}}
+    ],
+    "ecarts": [
+      {{"element_cv": "Ce que le CV affirme", "constat_entretien": "Ce que l'entretien a révélé", "gravite": "majeur|mineur"}}
+    ],
+    "non_aborde": ["Élément du CV non vérifié pendant l'entretien"]
+  }},
   "prochaines_etapes": [
     "Action concrète recommandée 1",
     "Action concrète recommandée 2"
