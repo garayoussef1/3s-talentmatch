@@ -32,6 +32,7 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
         link: window.location.origin + res.data.candidate_link,
         emailSent: res.data.email_sent,
         candidateEmail: res.data.candidate_email,
+        reused: res.data.reused === true,
       }))
       .catch(e => update(id, { loading: false,
         error: e?.response?.data?.detail || "Erreur au lancement." }))
@@ -111,9 +112,11 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
 
                   {(it.status === 'link' || it.status === 'report') && (
                     <>
-                      {it.emailSent
-                        ? <div className="ip-email-ok">📧 Invitation envoyée à <strong>{it.candidateEmail}</strong></div>
-                        : <div className="ip-email-warn">⚠️ Pas d'email envoyé (adresse manquante) — transmettez le lien manuellement</div>}
+                      {it.reused
+                        ? <div className="ip-email-ok">♻️ Entretien déjà créé — lien existant (email déjà envoyé)</div>
+                        : it.emailSent
+                          ? <div className="ip-email-ok">📧 Invitation envoyée à <strong>{it.candidateEmail}</strong></div>
+                          : <div className="ip-email-warn">⚠️ Pas d'email envoyé (adresse manquante) — transmettez le lien manuellement</div>}
                       <div className="ip-link-box">
                         <input readOnly value={it.link} onClick={e => e.target.select()} />
                         <button onClick={() => copyLink(c.id, it.link)}>

@@ -171,6 +171,44 @@ def start_interview(
     if not offer:
         raise HTTPException(status_code=404, detail="Offre non trouvée")
 
+    # ── Anti-doublons : réutiliser un entretien NON terminé déjà créé pour ce
+    # couple candidat+offre (évite d'en recréer un à chaque clic + ré-email). ──
+    existing = (
+        db.query(Interview)
+        .filter(
+            Interview.candidate_id == cand_uuid,
+            Interview.job_offer_id == offer_uuid,
+            Interview.status.in_([InterviewStatus.created, InterviewStatus.in_progress]),
+        )
+        .order_by(Interview.created_at.desc())
+        .first()
+    )
+    if existing and existing.questions:
+        reused_q = [{
+            "id": str(q.id),
+            "order_index": q.order_index,
+            "phase": q.phase.value,
+            "question": q.question_text,
+            "context_hint": q.intent or "",
+            "cv_reference": "",
+        } for q in sorted(existing.questions, key=lambda x: x.order_index)]
+        return {
+            "interview_id": str(existing.id),
+            "status": existing.status.value,
+            "reused": True,
+            "domaine": existing.domaine,
+            "candidate_name": candidate.nom,
+            "candidate_email": candidate.email,
+            "offer_titre": offer.titre,
+            "total_questions": len(reused_q),
+            "questions": reused_q,
+            "access_token": existing.access_token,
+            "candidate_link": f"/entretien/{existing.access_token}",
+            "full_link": f"{FRONTEND_URL}/entretien/{existing.access_token}",
+            "email_sent": False,           # déjà envoyé au 1er lancement
+            "notification_created": False,
+        }
+
     cv    = _build_cv(candidate)
     offer_summary = _build_offer(offer)
     service = _get_service()
