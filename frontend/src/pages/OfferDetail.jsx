@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import InterviewPanel from '../components/InterviewPanel'
+import InterviewsTab from '../components/InterviewsTab'
 import './Offers.css'
 
 // hook role
@@ -944,12 +945,16 @@ export default function OfferDetail() {
         <button className={`tab-btn ${tab === 'match' ? 'active' : ''}`} onClick={() => setTab('match')}>
           Matching
         </button>
+        <button className={`tab-btn ${tab === 'interviews' ? 'active' : ''}`} onClick={() => setTab('interviews')}>
+          🎙 Entretiens
+        </button>
       </div>
 
       {/* Contenu */}
       {tab === 'info'  && <TabInfo offer={offer} onUpdated={setOffer} onDeleted={() => {}} />}
       {tab === 'apps'  && <TabApplications offerId={id} />}
       {tab === 'match' && <TabMatching offerId={id} offer={offer} />}
+      {tab === 'interviews' && <InterviewsTab offerId={id} />}
     </div>
   )
 }

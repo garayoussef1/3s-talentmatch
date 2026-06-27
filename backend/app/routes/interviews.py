@@ -24,7 +24,7 @@ from app.database import get_db
 from app.dependencies import get_current_recruteur_or_admin
 from app.models.candidate import Candidate
 from app.models.job_offer import JobOffer
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.models.notification import Notification
 from app.models.interview import (
     Interview, InterviewQuestion, InterviewAnswer, InterviewReport,
@@ -249,6 +249,62 @@ def start_interview(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Contrôle d'accès offre : admin = tout ; recruteur = créateur ou assigné
+# ─────────────────────────────────────────────────────────────────────────────
+def _can_access_offer(offer: JobOffer, user: User) -> bool:
+    if user.role == UserRole.admin:
+        return True
+    if offer.recruiter_id == user.id:
+        return True
+    return any(r.id == user.id for r in (offer.assigned_recruiters or []))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GET /interviews?offer_id=  — liste des entretiens d'une offre (recruteur/admin)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.get("/interviews", summary="Lister les entretiens d'une offre")
+def list_interviews(
+    offer_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    offer = db.query(JobOffer).filter(JobOffer.id == offer_id).first()
+    if not offer:
+        raise HTTPException(status_code=404, detail="Offre introuvable")
+    if not _can_access_offer(offer, current_user):
+        raise HTTPException(status_code=403, detail="Accès non autorisé à cette offre")
+
+    interviews = (
+        db.query(Interview)
+        .filter(Interview.job_offer_id == offer_id)
+        .order_by(Interview.created_at.desc())
+        .all()
+    )
+
+    out = []
+    for itw in interviews:
+        candidate = db.query(Candidate).filter(Candidate.id == itw.candidate_id).first()
+        total = len(itw.questions)
+        answered = sum(1 for a in itw.answers if a.answer_text)
+        out.append({
+            "interview_id": str(itw.id),
+            "candidate_id": str(itw.candidate_id),
+            "candidate_name": candidate.nom if candidate else "—",
+            "candidate_email": candidate.email if candidate else None,
+            "cv_id": candidate.cv_id if candidate else None,
+            "status": itw.status.value,
+            "total_questions": total,
+            "answered_count": answered,
+            "global_score": itw.global_score,
+            "recommendation": itw.recommendation.value if itw.recommendation else None,
+            "has_report": itw.report is not None,
+            "created_at": itw.created_at.isoformat() if itw.created_at else None,
+        })
+
+    return {"offer_id": str(offer_id), "offer_titre": offer.titre, "interviews": out}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # GET /interviews/{id}
 # ─────────────────────────────────────────────────────────────────────────────
 @router.get("/interviews/{interview_id}", summary="Récupérer un entretien")
@@ -261,19 +317,25 @@ def get_interview(
     if not interview:
         raise HTTPException(status_code=404, detail="Entretien non trouvé")
 
+    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
+
     answers_by_q = {a.question_id: a for a in interview.answers}
     questions = []
     for q in interview.questions:
         a = answers_by_q.get(q.id)
+        analysis = json.loads(a.analysis) if (a and a.analysis) else {}
         questions.append({
             "id": str(q.id),
             "order_index": q.order_index,
             "phase": q.phase.value,
             "question": q.question_text,
             "context_hint": q.intent,
-            "answered": a is not None,
+            "answered": a is not None and bool(a.answer_text),
             "answer_text": a.answer_text if a else None,
             "score": a.score if a else None,
+            "scores": analysis.get("scores", {}),
+            "flags": analysis.get("flags", {}),
+            "cv_contradiction": analysis.get("cv_contradiction", False),
         })
 
     report = None
@@ -289,6 +351,8 @@ def get_interview(
         "status": interview.status.value,
         "domaine": interview.domaine,
         "candidate_id": str(interview.candidate_id),
+        "candidate_name": candidate.nom if candidate else "—",
+        "candidate_email": candidate.email if candidate else None,
         "global_score": interview.global_score,
         "recommendation": interview.recommendation.value if interview.recommendation else None,
         "questions": questions,
