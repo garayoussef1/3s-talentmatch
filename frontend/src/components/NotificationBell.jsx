@@ -15,6 +15,7 @@ function timeAgo(iso) {
 const TYPE_ICON = {
   status_change: "📋",
   new_cv: "📄",
+  interview_invite: "🎙",
 };
 
 export default function NotificationBell() {
