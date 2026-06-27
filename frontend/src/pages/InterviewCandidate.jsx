@@ -96,6 +96,24 @@ export default function InterviewCandidate() {
     </div>
   )
 
+  // Fenêtre de passation : pas encore ouvert ou expiré
+  if (data && data.access && data.access !== 'open') {
+    const fmt = (iso) => iso ? new Date(iso).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }) : null
+    const notOpen = data.access === 'not_open'
+    return (
+      <div className="itw-screen">
+        <div className="itw-card">
+          <div className="itw-check" style={{ background: notOpen ? '#1B4F8A' : '#dc2626' }}>{notOpen ? '🕒' : '⏳'}</div>
+          <h2>{notOpen ? 'Entretien pas encore ouvert' : 'Entretien clôturé'}</h2>
+          <p>Bonjour {data.candidate_name?.split(' ')[0]}, votre entretien pour le poste de <strong>{data.offer_titre}</strong>.</p>
+          <p className="itw-muted">{data.access_message}</p>
+          {notOpen && data.opens_at && <p><strong>Ouverture :</strong> {fmt(data.opens_at)}</p>}
+          {!notOpen && data.deadline && <p><strong>Date limite passée :</strong> {fmt(data.deadline)}</p>}
+        </div>
+      </div>
+    )
+  }
+
   const progress = Math.round((idx / total) * 100)
 
   return (

@@ -182,22 +182,55 @@ def send_status_change_email(to_email: str, prenom: str, offer_title: str, new_s
     return _send_email(to_email, subject, html)
 
 
-def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str, link: str) -> bool:
-    """Invite le candidat à passer son entretien IA via un lien personnel."""
-    subject = "🎙 Invitation à votre entretien — 3S TalentMatch"
+def _format_fr_datetime(dt) -> str:
+    """Formate une date/heure en français lisible (ex: 'le 30 juin 2026 à 09h00')."""
+    if not dt:
+        return ""
+    mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+            "août", "septembre", "octobre", "novembre", "décembre"]
+    try:
+        return f"le {dt.day} {mois[dt.month - 1]} {dt.year} à {dt.hour:02d}h{dt.minute:02d}"
+    except Exception:
+        return ""
+
+
+def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str,
+                                    link: str, opens_at=None, deadline=None) -> bool:
+    """Invite le candidat à passer son entretien IA (email pro, nomination + dates)."""
+    subject = f"🎉 Félicitations {prenom} — Invitation à un entretien pour « {offer_title} »"
+
+    # Bloc dates (affiché seulement si renseigné)
+    open_str = _format_fr_datetime(opens_at)
+    dead_str = _format_fr_datetime(deadline)
+    if open_str or dead_str:
+        lignes = []
+        if open_str:
+            lignes.append(f"<strong>Ouverture :</strong> {open_str}")
+        if dead_str:
+            lignes.append(f"<strong>Date limite :</strong> {dead_str}")
+        dates_block = f"""
+            <div style="background: #fff8ec; border: 1px solid #f7d9a8; border-radius: 8px; padding: 14px 16px; margin: 16px 0;">
+                <p style="color: #92400e; font-size: 14px; margin: 0; line-height: 1.6;">
+                    📅 {'<br/>'.join(lignes)}
+                </p>
+            </div>"""
+    else:
+        dates_block = ""
+
     html = f"""
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
             {_logo_header()}
             <h2 style="color: #1b4f8a; margin: 4px 0 0;">3S TalentMatch</h2>
         </div>
-        <div style="background: white; padding: 28px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1b4f8a;">
+        <div style="background: white; padding: 28px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #16a34a;">
             <p style="color: #334155; font-size: 16px; margin: 0 0 12px;">Bonjour <strong>{prenom}</strong>,</p>
-            <p style="color: #1e293b; font-size: 15px; line-height: 1.55;">
-                Suite à l'étude de votre candidature pour le poste de
-                <strong>« {offer_title} »</strong>, nous avons le plaisir de vous inviter
-                à réaliser un <strong>entretien d'évaluation en ligne</strong>.
+            <p style="color: #1e293b; font-size: 15px; line-height: 1.6;">
+                🎉 <strong>Félicitations !</strong> Votre profil a retenu toute notre attention
+                pour le poste de <strong>« {offer_title} »</strong>. Nous avons le plaisir de
+                vous convier à un <strong>entretien d'évaluation en ligne</strong>.
             </p>
+            {dates_block}
             <div style="background: #eef4fb; border: 1px solid #c7d8ef; border-radius: 8px; padding: 16px; margin: 16px 0;">
                 <p style="color: #475569; font-size: 14px; margin: 0 0 12px;">
                     L'entretien dure environ 20 minutes. Prenez votre temps et appuyez-vous

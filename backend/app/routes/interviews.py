@@ -41,8 +41,19 @@ router = APIRouter()
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
 
 
+def _parse_dt(value: Optional[str]):
+    """Parse une date ISO 8601 (tolérant au suffixe Z). Retourne datetime ou None."""
+    if not value:
+        return None
+    from datetime import datetime
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+
+
 def _notify_candidate(db: Session, candidate: Candidate, offer: JobOffer,
-                      full_link: str) -> Dict[str, bool]:
+                      full_link: str, opens_at=None, deadline=None) -> Dict[str, bool]:
     """Envoie l'email + crée la notification in-app. Best-effort (n'échoue jamais)."""
     prenom = (candidate.nom or "Candidat").split()[0]
     email_sent = False
@@ -52,7 +63,8 @@ def _notify_candidate(db: Session, candidate: Candidate, offer: JobOffer,
     if candidate.email:
         try:
             email_sent = email_service.send_interview_invitation_email(
-                candidate.email, prenom, offer.titre or "le poste", full_link
+                candidate.email, prenom, offer.titre or "le poste", full_link,
+                opens_at=opens_at, deadline=deadline,
             )
         except Exception:
             email_sent = False
@@ -142,6 +154,8 @@ class StartPayload(BaseModel):
     candidate_id: str
     offer_id: str
     langue: str = "fr"
+    opens_at: Optional[str] = None   # ISO 8601 (date/heure d'ouverture)
+    deadline: Optional[str] = None   # ISO 8601 (date/heure limite)
 
 
 class AnswerPayload(BaseModel):
@@ -222,6 +236,8 @@ def start_interview(
         raise HTTPException(status_code=502, detail="Aucune question générée")
 
     # Création de l'entretien (avec jeton d'accès candidat)
+    opens_at = _parse_dt(payload.opens_at)
+    deadline = _parse_dt(payload.deadline)
     interview = Interview(
         candidate_id=cand_uuid,
         job_offer_id=offer_uuid,
@@ -230,6 +246,8 @@ def start_interview(
         langue=payload.langue,
         llm_model=service.model,
         access_token=secrets.token_urlsafe(24),
+        opens_at=opens_at,
+        deadline=deadline,
         started_at=func.now(),
     )
     db.add(interview)
@@ -263,7 +281,7 @@ def start_interview(
 
     # Envoi automatique : email au candidat + notification in-app (best-effort)
     full_link = f"{FRONTEND_URL}/entretien/{interview.access_token}"
-    notif = _notify_candidate(db, candidate, offer, full_link)
+    notif = _notify_candidate(db, candidate, offer, full_link, opens_at, deadline)
     db.commit()
 
     return {
@@ -638,6 +656,25 @@ def _interview_by_token(db: Session, token: str) -> Interview:
     return interview
 
 
+def _window_status(interview: Interview):
+    """Retourne ('open'|'not_open'|'expired', message) selon opens_at/deadline."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+
+    def _aware(dt):
+        if dt and dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt
+
+    opens_at = _aware(interview.opens_at)
+    deadline = _aware(interview.deadline)
+    if opens_at and now < opens_at:
+        return "not_open", "Cet entretien n'est pas encore ouvert."
+    if deadline and now > deadline:
+        return "expired", "La date limite de cet entretien est dépassée."
+    return "open", ""
+
+
 # GET /interviews/public/{token} — le candidat récupère ses questions (sans scores)
 @router.get("/interviews/public/{token}", summary="[Candidat] Récupérer l'entretien par lien")
 def public_get_interview(token: str, db: Session = Depends(get_db)):
@@ -655,6 +692,7 @@ def public_get_interview(token: str, db: Session = Depends(get_db)):
         "answered": q.id in answered_ids,
     } for q in interview.questions]
 
+    access, access_msg = _window_status(interview)
     return {
         "candidate_name": candidate.nom if candidate else "Candidat",
         "offer_titre": offer.titre if offer else "Poste",
@@ -663,7 +701,12 @@ def public_get_interview(token: str, db: Session = Depends(get_db)):
         "total_questions": len(questions),
         "answered_count": len(answered_ids),
         "completed": interview.status == InterviewStatus.completed,
-        "questions": questions,
+        "access": access,                 # open | not_open | expired
+        "access_message": access_msg,
+        "opens_at": interview.opens_at.isoformat() if interview.opens_at else None,
+        "deadline": interview.deadline.isoformat() if interview.deadline else None,
+        # On ne renvoie les questions que si l'entretien est ouvert
+        "questions": questions if access == "open" else [],
     }
 
 
@@ -673,6 +716,10 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
     interview = _interview_by_token(db, token)
     if interview.status == InterviewStatus.completed:
         raise HTTPException(status_code=409, detail="Entretien déjà terminé")
+
+    access, access_msg = _window_status(interview)
+    if access != "open":
+        raise HTTPException(status_code=403, detail=access_msg)
 
     try:
         q_uuid = UUID(str(payload.question_id))

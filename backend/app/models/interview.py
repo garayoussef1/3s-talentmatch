@@ -71,6 +71,10 @@ class Interview(Base):
     # Modèle LLM utilisé (traçabilité)
     llm_model = Column(String(80), nullable=True)        # ex: "llama-3.3-70b" / "mistral"
 
+    # Fenêtre de passation définie par le recruteur (entretien autonome)
+    opens_at = Column(DateTime(timezone=True), nullable=True)   # date d'ouverture
+    deadline = Column(DateTime(timezone=True), nullable=True)   # date limite
+
     created_at   = Column(DateTime(timezone=True), server_default=func.now())
     started_at   = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)

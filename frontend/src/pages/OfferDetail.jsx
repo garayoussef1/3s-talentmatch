@@ -458,11 +458,10 @@ function TabMatching({ offerId, offer }) {
   }
 
   const toggleSelect = (cvId) => {
-    setSelected(prev => {
-      if (prev.includes(cvId)) return prev.filter(id => id !== cvId)
-      if (prev.length >= nbPostes) return prev
-      return [...prev, cvId]
-    })
+    // Sélection libre (plusieurs candidats pour les entretiens, pas de limite)
+    setSelected(prev =>
+      prev.includes(cvId) ? prev.filter(id => id !== cvId) : [...prev, cvId]
+    )
     setSelectResult(null)
   }
 
@@ -537,27 +536,20 @@ function TabMatching({ offerId, offer }) {
 
       {results && results.results?.length > 0 && (
         <div className="tm-panel" style={{ marginTop: 16 }}>
-          {/* ── Barre de sélection ── */}
+          {/* ── Barre de sélection pour entretiens ── */}
           <div className="tm-select-bar">
             <div className="tm-select-info">
-              <span className="tm-select-title">&#10003; Sélection finale</span>
-              <span className="tm-select-count" style={{ color: selected.length === nbPostes ? '#16a34a' : '#d97706' }}>
-                {selected.length} / {nbPostes} poste(s) sélectionné(s)
+              <span className="tm-select-title">🎙 Entretiens IA</span>
+              <span className="tm-select-count" style={{ color: selected.length ? '#16a34a' : '#94a3b8' }}>
+                {selected.length} candidat(s) sélectionné(s)
               </span>
             </div>
-            <div className="tm-select-hint">Cochez les candidats retenus (max {nbPostes})</div>
-            <button
-              className="tm-select-btn"
-              disabled={selected.length === 0 || selecting}
-              onClick={confirmSelection}
-            >
-              {selecting ? 'Confirmation…' : `Confirmer la sélection (${selected.length})`}
-            </button>
+            <div className="tm-select-hint">Cochez les candidats à convier à l'entretien</div>
             {/* Lancer les entretiens des candidats sélectionnés */}
             <button
               className="tm-select-btn"
               disabled={selected.length === 0}
-              style={{ background: '#4338ca', marginLeft: 8 }}
+              style={{ background: '#4338ca' }}
               onClick={() => {
                 const list = selected
                   .map(cvId => results.results.find(r => r.cv_id === cvId))
@@ -603,11 +595,10 @@ function TabMatching({ offerId, offer }) {
                 <div key={r.candidate_id} className={`tm-card ${idx === 0 ? 'tm-card-top' : ''} ${selected.includes(r.cv_id) ? 'tm-card-selected' : ''}`}>
                   {idx === 0 && <div className="tm-card-crown">&#128081; Meilleur match</div>}
 
-                  <label className="tm-card-checkbox" title={selected.length >= nbPostes && !selected.includes(r.cv_id) ? `Limite de ${nbPostes} poste(s) atteinte` : ''}>
+                  <label className="tm-card-checkbox">
                     <input
                       type="checkbox"
                       checked={selected.includes(r.cv_id)}
-                      disabled={selected.length >= nbPostes && !selected.includes(r.cv_id)}
                       onChange={() => toggleSelect(r.cv_id)}
                     />
                     <span>{selected.includes(r.cv_id) ? 'Sélectionné' : 'Sélectionner'}</span>

@@ -125,3 +125,14 @@
   background: #fef3c7; color: #92400e; font-size: 13px;
   padding: 8px 12px; border-radius: 7px; margin-bottom: 10px;
 }
+
+/* Champs date (fenêtre de passation) */
+.ip-dates { display: flex; gap: 12px; margin-bottom: 16px; }
+.ip-date-field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.ip-date-field span { font-size: 13px; font-weight: 600; color: #475569; }
+.ip-date-field em { font-weight: 400; color: #94a3b8; font-style: normal; }
+.ip-date-field input {
+  border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 9px 10px;
+  font-size: 13px; font-family: inherit; color: #334155;
+}
+.ip-date-field input:focus { outline: none; border-color: #1B4F8A; }

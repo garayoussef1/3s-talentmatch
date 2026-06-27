@@ -18,6 +18,8 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
     Object.fromEntries(candidates.map(c => [c.id, { name: c.name, status: 'idle' }]))
   )
   const [launchingAll, setLaunchingAll] = useState(false)
+  const [opensAt, setOpensAt]   = useState('')   // datetime-local
+  const [deadline, setDeadline] = useState('')
 
   const update = (id, patch) =>
     setItems(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
@@ -25,7 +27,11 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
   const launchOne = (id) => {
     update(id, { loading: true, error: null })
     return api.post('/interviews/start',
-      { candidate_id: id, offer_id: offerId }, { timeout: 90000 })
+      {
+        candidate_id: id, offer_id: offerId,
+        opens_at: opensAt || null,
+        deadline: deadline || null,
+      }, { timeout: 90000 })
       .then(res => update(id, {
         loading: false, status: 'link',
         interviewId: res.data.interview_id,
@@ -78,7 +84,24 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
               ? 'les candidats sélectionnés' : 'ce candidat'}. Le système génère des
               questions personnalisées (techniques, mises en situation, soft skills)
               à partir du CV et de l'offre.</p>
-            <button className="ip-btn-primary" onClick={launchAll} disabled={launchingAll}>
+
+            {/* Fenêtre de passation (optionnelle) */}
+            <div className="ip-dates">
+              <label className="ip-date-field">
+                <span>📅 Ouverture <em>(optionnel)</em></span>
+                <input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)} />
+              </label>
+              <label className="ip-date-field">
+                <span>⏳ Date limite <em>(optionnel)</em></span>
+                <input type="datetime-local" value={deadline} onChange={e => setDeadline(e.target.value)} />
+              </label>
+            </div>
+            {opensAt && deadline && deadline <= opensAt && (
+              <div className="ip-email-warn">⚠️ La date limite doit être après l'ouverture.</div>
+            )}
+
+            <button className="ip-btn-primary" onClick={launchAll}
+              disabled={launchingAll || (opensAt && deadline && deadline <= opensAt)}>
               {launchingAll ? 'Génération des entretiens…'
                 : `🎙 Lancer ${candidates.length > 1 ? `les ${candidates.length} entretiens` : "l'entretien"}`}
             </button>
