@@ -38,6 +38,7 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
         link: window.location.origin + res.data.candidate_link,
         emailSent: res.data.email_sent,
         candidateEmail: res.data.candidate_email,
+        accessPin: res.data.access_pin,
         reused: res.data.reused === true,
       }))
       .catch(e => update(id, { loading: false,
@@ -146,6 +147,10 @@ export default function InterviewPanel({ candidates, offerId, onClose }) {
                           {it.copied ? 'Copié ✓' : 'Copier'}
                         </button>
                       </div>
+                      {it.accessPin && (
+                        <div className="ip-pin">🔒 Code d'accès : <strong>{it.accessPin}</strong>
+                          <span> (envoyé au candidat par email)</span></div>
+                      )}
                       <div className="ip-cand-actions">
                         <a href={it.link} target="_blank" rel="noreferrer" className="ip-open-link">
                           Aperçu candidat ↗

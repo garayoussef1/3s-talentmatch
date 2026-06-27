@@ -189,6 +189,19 @@ function InterviewDetail({ interviewId, onClose, onReportGenerated }) {
               </div>
             )}
 
+            {/* Score d'intégrité (anti-triche) */}
+            {data.integrity && (
+              <div className={`itb-integrity itb-integ-${data.integrity.level}`}>
+                <div className="itb-integ-head">
+                  <span>🛡️ Intégrité de l'entretien</span>
+                  <strong>{data.integrity.score}/100</strong>
+                </div>
+                {data.integrity.flags?.length > 0
+                  ? <ul className="itb-integ-flags">{data.integrity.flags.map((f, i) => <li key={i}>⚠ {f}</li>)}</ul>
+                  : <p className="itb-integ-ok">✓ Aucun comportement suspect détecté.</p>}
+              </div>
+            )}
+
             {/* Réponses détaillées */}
             <h4 className="itb-qa-title">Réponses ({answeredCount}/{data.questions.length})</h4>
             <div className="itb-qa-list">

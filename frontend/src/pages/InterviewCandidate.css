@@ -114,3 +114,21 @@
   font-size: 36px; line-height: 64px;
   margin: 0 auto 18px;
 }
+
+/* Champ PIN */
+.itw-pin-input {
+  width: 100%; box-sizing: border-box; margin-top: 8px;
+  text-align: center; font-size: 28px; font-weight: 700;
+  letter-spacing: 10px; padding: 14px;
+  border: 2px solid #cbd5e1; border-radius: 12px; color: #1B4F8A;
+}
+.itw-pin-input:focus { outline: none; border-color: #1B4F8A; }
+
+/* Timer */
+.itw-timer {
+  background: rgba(255,255,255,0.15); color: #fff;
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.itw-timer-low { background: #dc2626; animation: itw-pulse 1s infinite; }
+@keyframes itw-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }

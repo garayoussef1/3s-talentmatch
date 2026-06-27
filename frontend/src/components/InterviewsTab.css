@@ -153,3 +153,17 @@
 }
 .itb-cc-pts.itb-cc-neg { color: #dc2626; }
 .itb-cc-pts strong { font-size: 14px; }
+
+/* Score d'intégrité */
+.itb-integrity { border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; border: 1px solid; }
+.itb-integ-high   { background: #f0fdf4; border-color: #bbf7d0; }
+.itb-integ-medium { background: #fffbeb; border-color: #fde68a; }
+.itb-integ-low    { background: #fef2f2; border-color: #fecaca; }
+.itb-integ-head { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; color: #1e293b; }
+.itb-integ-head strong { font-size: 18px; }
+.itb-integ-high .itb-integ-head strong   { color: #16a34a; }
+.itb-integ-medium .itb-integ-head strong { color: #d97706; }
+.itb-integ-low .itb-integ-head strong    { color: #dc2626; }
+.itb-integ-flags { margin: 8px 0 0; padding-left: 18px; }
+.itb-integ-flags li { font-size: 13px; color: #b91c1c; margin-bottom: 3px; }
+.itb-integ-ok { margin: 6px 0 0; font-size: 13px; color: #15803d; }

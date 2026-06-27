@@ -136,3 +136,11 @@
   font-size: 13px; font-family: inherit; color: #334155;
 }
 .ip-date-field input:focus { outline: none; border-color: #1B4F8A; }
+
+/* PIN affiché au recruteur */
+.ip-pin {
+  background: #eef9f0; border: 1px solid #b7e4c7; border-radius: 7px;
+  padding: 8px 12px; margin-bottom: 10px; font-size: 13px; color: #15803d;
+}
+.ip-pin strong { font-size: 16px; letter-spacing: 2px; }
+.ip-pin span { color: #94a3b8; font-weight: 400; }

@@ -53,7 +53,8 @@ def _parse_dt(value: Optional[str]):
 
 
 def _notify_candidate(db: Session, candidate: Candidate, offer: JobOffer,
-                      full_link: str, opens_at=None, deadline=None) -> Dict[str, bool]:
+                      full_link: str, opens_at=None, deadline=None,
+                      access_pin=None) -> Dict[str, bool]:
     """Envoie l'email + crée la notification in-app. Best-effort (n'échoue jamais)."""
     prenom = (candidate.nom or "Candidat").split()[0]
     email_sent = False
@@ -64,7 +65,7 @@ def _notify_candidate(db: Session, candidate: Candidate, offer: JobOffer,
         try:
             email_sent = email_service.send_interview_invitation_email(
                 candidate.email, prenom, offer.titre or "le poste", full_link,
-                opens_at=opens_at, deadline=deadline,
+                opens_at=opens_at, deadline=deadline, access_pin=access_pin,
             )
         except Exception:
             email_sent = False
@@ -217,6 +218,7 @@ def start_interview(
             "total_questions": len(reused_q),
             "questions": reused_q,
             "access_token": existing.access_token,
+            "access_pin": existing.access_pin,
             "candidate_link": f"/entretien/{existing.access_token}",
             "full_link": f"{FRONTEND_URL}/entretien/{existing.access_token}",
             "email_sent": False,           # déjà envoyé au 1er lancement
@@ -235,9 +237,10 @@ def start_interview(
     if not questions:
         raise HTTPException(status_code=502, detail="Aucune question générée")
 
-    # Création de l'entretien (avec jeton d'accès candidat)
+    # Création de l'entretien (jeton d'accès + PIN candidat à 6 chiffres)
     opens_at = _parse_dt(payload.opens_at)
     deadline = _parse_dt(payload.deadline)
+    access_pin = f"{secrets.randbelow(900000) + 100000}"  # 6 chiffres
     interview = Interview(
         candidate_id=cand_uuid,
         job_offer_id=offer_uuid,
@@ -246,6 +249,7 @@ def start_interview(
         langue=payload.langue,
         llm_model=service.model,
         access_token=secrets.token_urlsafe(24),
+        access_pin=access_pin,
         opens_at=opens_at,
         deadline=deadline,
         started_at=func.now(),
@@ -281,7 +285,7 @@ def start_interview(
 
     # Envoi automatique : email au candidat + notification in-app (best-effort)
     full_link = f"{FRONTEND_URL}/entretien/{interview.access_token}"
-    notif = _notify_candidate(db, candidate, offer, full_link, opens_at, deadline)
+    notif = _notify_candidate(db, candidate, offer, full_link, opens_at, deadline, access_pin)
     db.commit()
 
     return {
@@ -297,6 +301,7 @@ def start_interview(
         "questions": out_questions,
         # Lien à transmettre au candidat (entretien autonome)
         "access_token": interview.access_token,
+        "access_pin": interview.access_pin,
         "candidate_link": f"/entretien/{interview.access_token}",
         "full_link": full_link,
         "email_sent": notif["email_sent"],
@@ -307,6 +312,44 @@ def start_interview(
 # ─────────────────────────────────────────────────────────────────────────────
 # Contrôle d'accès offre : admin = tout ; recruteur = créateur ou assigné
 # ─────────────────────────────────────────────────────────────────────────────
+def _compute_integrity(interview: Interview) -> Dict[str, Any]:
+    """Calcule un score d'intégrité (0-100) à partir des signaux anti-triche."""
+    integ = json.loads(interview.integrity) if interview.integrity else {}
+    answers = [a for a in interview.answers if a.answer_text]
+    n_paste = sum(1 for a in answers if a.paste_detected)
+    n_fast = sum(
+        1 for a in answers
+        if a.response_time and a.response_time < 10 and len(a.answer_text or "") > 200
+    )
+    tab = int(integ.get("tab_switches", 0))
+    fs = int(integ.get("fullscreen_exits", 0))
+
+    score = 100
+    score -= min(40, tab * 8)
+    score -= min(20, fs * 5)
+    score -= min(30, n_paste * 15)
+    score -= min(20, n_fast * 10)
+    score = max(0, score)
+
+    flags = []
+    if tab:
+        flags.append(f"A quitté l'onglet {tab} fois")
+    if fs:
+        flags.append(f"Sorti du plein écran {fs} fois")
+    if n_paste:
+        flags.append(f"{n_paste} réponse(s) collée(s)")
+    if n_fast:
+        flags.append(f"{n_fast} réponse(s) anormalement rapide(s)")
+
+    level = "high" if score >= 80 else ("medium" if score >= 50 else "low")
+    return {
+        "score": score, "level": level,
+        "tab_switches": tab, "fullscreen_exits": fs,
+        "paste_count": n_paste, "fast_answers": n_fast,
+        "flags": flags,
+    }
+
+
 def _can_access_offer(offer: JobOffer, user: User) -> bool:
     if user.role == UserRole.admin:
         return True
@@ -354,6 +397,7 @@ def list_interviews(
             "global_score": itw.global_score,
             "recommendation": itw.recommendation.value if itw.recommendation else None,
             "has_report": itw.report is not None,
+            "integrity_score": _compute_integrity(itw)["score"] if answered else None,
             "created_at": itw.created_at.isoformat() if itw.created_at else None,
         })
 
@@ -474,6 +518,7 @@ def get_interview(
         "candidate_email": candidate.email if candidate else None,
         "global_score": interview.global_score,
         "recommendation": interview.recommendation.value if interview.recommendation else None,
+        "integrity": _compute_integrity(interview),
         "questions": questions,
         "report": report,
     }
@@ -647,6 +692,11 @@ def generate_report(
 class PublicAnswerPayload(BaseModel):
     question_id: str
     answer_text: str
+    pin: Optional[str] = None
+    response_time: Optional[float] = None   # secondes pour répondre
+    paste_detected: bool = False            # collage détecté sur la réponse
+    tab_switches: int = 0                   # cumul changements d'onglet
+    fullscreen_exits: int = 0               # cumul sorties plein écran
 
 
 def _interview_by_token(db: Session, token: str) -> Interview:
@@ -675,38 +725,64 @@ def _window_status(interview: Interview):
     return "open", ""
 
 
-# GET /interviews/public/{token} — le candidat récupère ses questions (sans scores)
-@router.get("/interviews/public/{token}", summary="[Candidat] Récupérer l'entretien par lien")
-def public_get_interview(token: str, db: Session = Depends(get_db)):
-    interview = _interview_by_token(db, token)
-    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
-    offer = db.query(JobOffer).filter(JobOffer.id == interview.job_offer_id).first()
+class PinPayload(BaseModel):
+    pin: str
 
+
+def _questions_payload(interview: Interview):
     answered_ids = {a.question_id for a in interview.answers if a.answer_text}
-    questions = [{
+    return [{
         "id": str(q.id),
         "order_index": q.order_index,
         "phase": q.phase.value,
         "question": q.question_text,
         "context_hint": q.intent,
+        "is_followup": bool(q.meta and '"is_followup": true' in q.meta.lower()),
         "answered": q.id in answered_ids,
     } for q in interview.questions]
 
+
+# GET /interviews/public/{token} — métadonnées (sans questions ; PIN requis ensuite)
+@router.get("/interviews/public/{token}", summary="[Candidat] Infos d'accès à l'entretien")
+def public_get_interview(token: str, db: Session = Depends(get_db)):
+    interview = _interview_by_token(db, token)
+    candidate = db.query(Candidate).filter(Candidate.id == interview.candidate_id).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == interview.job_offer_id).first()
+
+    answered = sum(1 for a in interview.answers if a.answer_text)
     access, access_msg = _window_status(interview)
     return {
         "candidate_name": candidate.nom if candidate else "Candidat",
         "offer_titre": offer.titre if offer else "Poste",
         "domaine": interview.domaine,
         "status": interview.status.value,
-        "total_questions": len(questions),
-        "answered_count": len(answered_ids),
+        "total_questions": len(interview.questions),
+        "answered_count": answered,
         "completed": interview.status == InterviewStatus.completed,
+        "requires_pin": bool(interview.access_pin),
         "access": access,                 # open | not_open | expired
         "access_message": access_msg,
         "opens_at": interview.opens_at.isoformat() if interview.opens_at else None,
         "deadline": interview.deadline.isoformat() if interview.deadline else None,
-        # On ne renvoie les questions que si l'entretien est ouvert
-        "questions": questions if access == "open" else [],
+    }
+
+
+# POST /interviews/public/{token}/verify — vérifie le PIN et délivre les questions
+@router.post("/interviews/public/{token}/verify", summary="[Candidat] Vérifier le code d'accès")
+def public_verify_pin(token: str, payload: PinPayload, db: Session = Depends(get_db)):
+    interview = _interview_by_token(db, token)
+    access, access_msg = _window_status(interview)
+    if access != "open":
+        raise HTTPException(status_code=403, detail=access_msg)
+    if interview.access_pin and str(payload.pin).strip() != interview.access_pin:
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
+    if interview.status == InterviewStatus.completed:
+        raise HTTPException(status_code=409, detail="Entretien déjà terminé.")
+    return {
+        "ok": True,
+        "total_questions": len(interview.questions),
+        "answered_count": sum(1 for a in interview.answers if a.answer_text),
+        "questions": _questions_payload(interview),
     }
 
 
@@ -720,6 +796,10 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
     access, access_msg = _window_status(interview)
     if access != "open":
         raise HTTPException(status_code=403, detail=access_msg)
+
+    # 2ᵉ facteur : le PIN doit accompagner chaque réponse
+    if interview.access_pin and str(payload.pin or "").strip() != interview.access_pin:
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
 
     try:
         q_uuid = UUID(str(payload.question_id))
@@ -753,6 +833,15 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
     answer.analysis = json.dumps(analysis, ensure_ascii=False)
     answer.score = weighted
     answer.flags = json.dumps(analysis.get("flags", {}), ensure_ascii=False)
+    answer.response_time = payload.response_time
+    answer.paste_detected = 1 if payload.paste_detected else 0
+
+    # Intégrité agrégée sur l'entretien (on garde le maximum observé)
+    integ = json.loads(interview.integrity) if interview.integrity else {}
+    integ["tab_switches"] = max(int(integ.get("tab_switches", 0)), int(payload.tab_switches or 0))
+    integ["fullscreen_exits"] = max(int(integ.get("fullscreen_exits", 0)), int(payload.fullscreen_exits or 0))
+    integ["paste_count"] = int(integ.get("paste_count", 0)) + (1 if payload.paste_detected else 0)
+    interview.integrity = json.dumps(integ, ensure_ascii=False)
 
     if interview.status == InterviewStatus.created:
         interview.status = InterviewStatus.in_progress

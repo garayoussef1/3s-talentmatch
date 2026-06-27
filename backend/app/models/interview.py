@@ -63,6 +63,11 @@ class Interview(Base):
     # Jeton d'accès candidat : permet l'entretien autonome via lien public,
     # sans compte recruteur. Généré au démarrage.
     access_token = Column(String(64), unique=True, index=True, nullable=True)
+    # Code PIN (2ᵉ facteur) saisi par le candidat avant de démarrer.
+    access_pin = Column(String(12), nullable=True)
+    # Signaux d'intégrité agrégés (JSON) : changements d'onglet, sorties plein
+    # écran, tentatives de copier-coller → score d'intégrité dans le rapport.
+    integrity = Column(Text, nullable=True)
 
     # Renseignés à la clôture
     global_score   = Column(Float, nullable=True)        # 0–100
@@ -144,6 +149,10 @@ class InterviewAnswer(Base):
 
     # Sécurité : flag si tentative d'injection de prompt détectée
     injection_detected = Column(Integer, default=0, nullable=False)  # 0/1
+
+    # Anti-triche : temps de réponse (secondes) + collage détecté sur la réponse
+    response_time = Column(Float, nullable=True)
+    paste_detected = Column(Integer, default=0, nullable=False)  # 0/1
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

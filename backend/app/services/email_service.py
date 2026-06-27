@@ -195,8 +195,9 @@ def _format_fr_datetime(dt) -> str:
 
 
 def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str,
-                                    link: str, opens_at=None, deadline=None) -> bool:
-    """Invite le candidat à passer son entretien IA (email pro, nomination + dates)."""
+                                    link: str, opens_at=None, deadline=None,
+                                    access_pin=None) -> bool:
+    """Invite le candidat à passer son entretien IA (email pro, nomination + dates + PIN)."""
     subject = f"🎉 Félicitations {prenom} — Invitation à un entretien pour « {offer_title} »"
 
     # Bloc dates (affiché seulement si renseigné)
@@ -217,6 +218,17 @@ def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str
     else:
         dates_block = ""
 
+    # Bloc code PIN (2ᵉ facteur d'accès)
+    if access_pin:
+        pin_block = f"""
+            <div style="background: #eef9f0; border: 1px solid #b7e4c7; border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center;">
+                <p style="color: #475569; font-size: 13px; margin: 0 0 6px;">🔒 Votre code d'accès personnel</p>
+                <p style="color: #15803d; font-size: 28px; font-weight: 800; letter-spacing: 6px; margin: 0;">{access_pin}</p>
+                <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0;">À saisir au démarrage de l'entretien. Ne le partagez avec personne.</p>
+            </div>"""
+    else:
+        pin_block = ""
+
     html = f"""
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
@@ -231,6 +243,7 @@ def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str
                 vous convier à un <strong>entretien d'évaluation en ligne</strong>.
             </p>
             {dates_block}
+            {pin_block}
             <div style="background: #eef4fb; border: 1px solid #c7d8ef; border-radius: 8px; padding: 16px; margin: 16px 0;">
                 <p style="color: #475569; font-size: 14px; margin: 0 0 12px;">
                     L'entretien dure environ 20 minutes. Prenez votre temps et appuyez-vous
