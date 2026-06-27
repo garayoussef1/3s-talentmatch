@@ -182,14 +182,29 @@ class GroqInterviewService:
         """
         profile = get_profile(offer.domaine_metier)
 
-        # Compétences matchées : intersection CV ∩ Offre
+        # ── Priorisation CŒUR vs SECONDAIRE (basée sur l'OFFRE, pas le CV) ──
+        # Les questions DÉTAILLÉES doivent cibler le cœur du poste (compétences
+        # requises par l'offre), pas les technos périphériques du CV.
         offer_skills_lower = {s.lower() for s in offer.competences_requises}
-        matched_skills = [
+        cv_skills_lower = {s.lower() for s in cv.competences}
+
+        # CŒUR = compétences requises par l'offre (ordre = priorité de l'offre).
+        # On garde TOUTES les requises (le poste passe avant le CV) ; à défaut,
+        # on retombe sur le titre du poste + les premières compétences du CV.
+        core_skills = list(offer.competences_requises[:6])
+        if not core_skills:
+            core_skills = cv.competences[:4]
+        # Marque celles confirmées par le CV (pour personnaliser les questions)
+        core_confirmed = [s for s in core_skills if s.lower() in cv_skills_lower]
+
+        # SECONDAIRE = technos présentes dans le CV mais NON requises par l'offre
+        # → questions générales / de survol uniquement (ex: AWS sur un poste backend).
+        secondary_skills = [
             s for s in cv.competences
-            if s.lower() in offer_skills_lower
-        ]
-        # Si peu de match exact, prendre les 3 premiers skills CV quand même
-        skills_to_target = matched_skills[:3] or cv.competences[:3]
+            if s.lower() not in offer_skills_lower
+        ][:5]
+
+        skills_to_target = core_skills  # rétro-compat (phase 2 ci-dessous)
 
         system_prompt = f"""Tu es {profile['expert_persona']}.
 Tu conduis un entretien de recrutement structuré, professionnel et rigoureux.
@@ -202,10 +217,18 @@ le Criterion-Based Interviewing (CBI) et le référentiel de compétences ESCO.
 ━━━ PROFIL CANDIDAT ━━━
 {cv.to_prompt_block()}
 
-━━━ COMPÉTENCES À CIBLER EN PRIORITÉ ━━━
-(celles qui matchent le poste) : {', '.join(skills_to_target) or 'À déterminer depuis le CV'}
+━━━ COMPÉTENCES CŒUR DU POSTE (questions techniques DÉTAILLÉES et pointues) ━━━
+(ce sont les compétences REQUISES par l'offre — c'est sur elles qu'il faut creuser
+en profondeur : concepts, choix techniques, cas concrets, résolution de problèmes)
+{', '.join(core_skills) or 'À déduire du titre du poste'}
+{('Confirmées dans le CV : ' + ', '.join(core_confirmed)) if core_confirmed else ''}
 
-━━━ DOMAINE — ZONES TECHNIQUES OBLIGATOIRES ━━━
+━━━ COMPÉTENCES SECONDAIRES (questions GÉNÉRALES de survol uniquement) ━━━
+(présentes dans le CV mais PAS au cœur du poste : reste général, ne creuse PAS,
+1 question légère maximum, sans entrer dans les détails d'expert)
+{', '.join(secondary_skills) or 'aucune'}
+
+━━━ DOMAINE — ZONES TECHNIQUES OBLIGATOIRES (à couvrir pour le cœur du poste) ━━━
 {chr(10).join(f'  • {z}' for z in profile['technical_areas'])}
 
 ━━━ VOCABULAIRE ATTENDU DANS LES BONNES RÉPONSES ━━━
@@ -223,8 +246,13 @@ PHASE 1 "validation_profil"    → 2 questions  (Q0, Q1)
   But : Vérifier la cohérence du parcours et l'expérience la plus récente
 
 PHASE 2 "technique"            → 5 questions  (Q2, Q3, Q4, Q5, Q6)
-  But : Valider techniquement les compétences {', '.join(skills_to_target)}
-  Règle : 2 questions théoriques + 3 questions sur des réalisations concrètes
+  But : Valider EN PROFONDEUR les compétences CŒUR du poste : {', '.join(core_skills)}
+  Répartition OBLIGATOIRE des 5 questions :
+    • 4 questions DÉTAILLÉES/pointues sur le cœur du poste ({', '.join(core_skills[:4])})
+      → concepts avancés, choix d'architecture, débogage, optimisation, cas concrets
+    • 1 question GÉNÉRALE de survol sur une compétence secondaire{(' (ex: ' + secondary_skills[0] + ')') if secondary_skills else ''}
+      → rester en surface, NE PAS demander de détails d'expert
+  Règle : sur le cœur, exige une vraie démonstration de savoir-faire (pas une définition)
 
 PHASE 3 "mise_en_situation"    → 3 questions  (Q7, Q8, Q9)
   But : Évaluer la prise de décision et la résolution de problèmes
