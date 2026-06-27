@@ -558,6 +558,16 @@ class NLPParser:
             "analyst", "consultant", "designer", "fullstack", "frontend", "backend",
             "data", "scientist", "lead", "senior", "junior",
         }
+        # Services/départements + établissements (souvent pris à tort comme nom)
+        section_org = {
+            "ressources", "humaines", "humaine", "ressource", "achats", "ventes",
+            "vente", "production", "qualite", "logistique", "juridique",
+            "administratif", "direction", "service", "services", "departement",
+            "pole", "unite", "secteur", "division",
+            "centre", "universite", "lycee", "societe", "entreprise", "groupe",
+            "hopital", "clinique", "cabinet", "institut", "ecole", "faculte",
+            "fondation", "association", "sarl", "sas", "suarl",
+        }
         for w in words:
             wl = norm_letters(w)
             if wl in banned_norm:
@@ -566,6 +576,8 @@ class NLPParser:
             if wl in {"professionnel", "professionnelle", "professionnels", "professionnelles"}:
                 return True
             if wl in jobish:
+                return True
+            if wl in section_org:
                 return True
         return False
 
@@ -582,6 +594,19 @@ class NLPParser:
         # Garder uniquement lettres et espaces
         s = re.sub(r"[^a-zà-öø-ÿ ]+", " ", s)
         return " ".join(s.split()).strip()
+
+    @classmethod
+    def _names_overlap(cls, a: Optional[str], b: Optional[str]) -> bool:
+        """True si deux noms partagent au moins un token significatif (≥ 3 lettres).
+
+        Sert à détecter quand un nom extrait (header/NER) CONTREDIT totalement le
+        nom dérivé de l'email du candidat (aucun token commun → faux positif probable).
+        """
+        ta = {w for w in cls._normalize_name_for_match(a).split() if len(w) >= 3}
+        tb = {w for w in cls._normalize_name_for_match(b).split() if len(w) >= 3}
+        if not ta or not tb:
+            return True  # info insuffisante → ne pas trancher contre l'extracteur
+        return bool(ta & tb)
 
 
     def __init__(self, model_name: str = "fr_core_news_md"):
@@ -897,7 +922,21 @@ class NLPParser:
             # Priorité : entity_extractor (5 passes, optimisé CVs) > CamemBERT (complément) > email
             # CamemBERT ne remplace entity_extractor QUE s'il est absent — pas de confiance aveugle.
             if name_candidates["entity_extractor"]:
-                if name_candidates["hf_camembert"]:
+                # Validation croisée email : l'email est l'adresse réelle du candidat.
+                # Si le nom extrait ne partage AUCUN token avec le nom dérivé de
+                # l'email, l'extracteur a probablement capté un lieu/service/établissement
+                # (ex: "Charles Nicolle" = hôpital) → on fait confiance à l'email.
+                if name_candidates["email"] and not self._names_overlap(
+                    name_candidates["entity_extractor"], name_candidates["email"]
+                ):
+                    full_name = name_candidates["email"]
+                    name_source = "email_override"
+                    name_conflict = True
+                    logger.info(
+                        "Nom: email prioritaire (aucun token commun) — entity=%r email=%r",
+                        name_candidates["entity_extractor"], name_candidates["email"],
+                    )
+                elif name_candidates["hf_camembert"]:
                     norm_entity = self._normalize_name_for_match(name_candidates["entity_extractor"])
                     norm_hf = self._normalize_name_for_match(name_candidates["hf_camembert"])
                     if norm_entity == norm_hf:

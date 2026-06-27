@@ -64,6 +64,17 @@ _NOT_NAME_WORDS = {
     # Lieu de travail parasite
     "cabinet", "garage", "clinique", "hôpital", "hopital",
     "agence", "bureau", "studio", "atelier", "laboratoire",
+    # Services / départements (souvent pris à tort comme nom)
+    "ressources", "humaines", "humaine", "ressource",
+    "achats", "ventes", "vente", "production", "qualité", "qualite",
+    "logistique", "juridique", "administratif", "administrative",
+    "direction", "service", "services", "département", "departement",
+    "pôle", "pole", "unité", "unite", "secteur", "division",
+    # Établissements (noms d'organisations pris à tort comme nom de personne)
+    "centre", "université", "universite", "lycée", "lycee",
+    "société", "societe", "entreprise", "groupe", "group",
+    "faculté", "faculte", "fondation", "association", "organisation",
+    "sarl", "sas", "sa", "suarl", "spa", "ets", "etablissement", "établissement",
     # Mots de CV/admin
     "etat", "état", "civil", "parcours", "historique",
     "publications", "publication", "divers",
@@ -143,6 +154,17 @@ _LOCATION_WORDS = {
     "dubai", "dubaï", "remote", "émirats", "emirats",
     "belgique", "suisse", "allemagne", "espagne", "italie",
     "london", "londres", "bruxelles", "genève", "geneve",
+}
+
+# Mots qui, juste AVANT une entité NER PERSON, indiquent un établissement
+# (ex: "Hôpital Charles Nicolle" → "Charles Nicolle" n'est PAS le candidat).
+_ESTABLISHMENT_CONTEXT = {
+    "hôpital", "hopital", "polyclinique", "clinique", "centre", "chu", "chr",
+    "université", "universite", "institut", "école", "ecole", "lycée", "lycee",
+    "société", "societe", "entreprise", "groupe", "group", "cabinet",
+    "laboratoire", "labo", "faculté", "faculte", "fondation", "ministère",
+    "ministere", "direction", "agence", "résidence", "residence",
+    "collège", "college", "pharmacie", "centre hospitalier",
 }
 
 # Mots-clés métier utilisés par Pass 0 pour rejeter les lignes
@@ -375,6 +397,12 @@ class EntityExtractor:
                 continue
             # Vérifier la plausibilité après nettoyage
             if not self._is_plausible_name(name):
+                continue
+            # Rejeter si l'entité est précédée d'un mot d'établissement
+            # (ex: "Hôpital Charles Nicolle" → "Charles Nicolle" = lieu, pas le candidat)
+            prefix = header_text[max(0, ent.start_char - 30):ent.start_char].lower()
+            prefix_words = re.findall(r"[a-zà-öø-ÿ]+", prefix)
+            if prefix_words and prefix_words[-1] in _ESTABLISHMENT_CONTEXT:
                 continue
             # Score : priorité aux entités en début de texte + nombre de mots
             position_score = max(0, 10 - ent.start)  # Plus tôt = meilleur
