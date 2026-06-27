@@ -182,6 +182,46 @@ def send_status_change_email(to_email: str, prenom: str, offer_title: str, new_s
     return _send_email(to_email, subject, html)
 
 
+def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str, link: str) -> bool:
+    """Invite le candidat à passer son entretien IA via un lien personnel."""
+    subject = "🎙 Invitation à votre entretien — 3S TalentMatch"
+    html = f"""
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            {_logo_header()}
+            <h2 style="color: #1b4f8a; margin: 4px 0 0;">3S TalentMatch</h2>
+        </div>
+        <div style="background: white; padding: 28px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1b4f8a;">
+            <p style="color: #334155; font-size: 16px; margin: 0 0 12px;">Bonjour <strong>{prenom}</strong>,</p>
+            <p style="color: #1e293b; font-size: 15px; line-height: 1.55;">
+                Suite à l'étude de votre candidature pour le poste de
+                <strong>« {offer_title} »</strong>, nous avons le plaisir de vous inviter
+                à réaliser un <strong>entretien d'évaluation en ligne</strong>.
+            </p>
+            <div style="background: #eef4fb; border: 1px solid #c7d8ef; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                <p style="color: #475569; font-size: 14px; margin: 0 0 12px;">
+                    L'entretien dure environ 20 minutes. Prenez votre temps et appuyez-vous
+                    sur des exemples concrets de votre parcours.
+                </p>
+                <div style="text-align: center;">
+                    <a href="{link}" style="display: inline-block; background: #1b4f8a; color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 15px;">
+                        Commencer mon entretien
+                    </a>
+                </div>
+            </div>
+            <p style="color: #94a3b8; font-size: 12px;">
+                Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/>
+                <span style="color: #1b4f8a; word-break: break-all;">{link}</span>
+            </p>
+        </div>
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 16px;">
+            3S Group — L'intelligence au service du recrutement.
+        </p>
+    </div>
+    """
+    return _send_email(to_email, subject, html)
+
+
 def send_password_reset_email(to_email: str, prenom: str, code: str) -> bool:
     """Envoie le code de reset de mot de passe."""
     subject = f"🔑 Réinitialisation de votre mot de passe — {code}"

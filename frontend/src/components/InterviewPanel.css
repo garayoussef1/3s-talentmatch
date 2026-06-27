@@ -115,3 +115,13 @@
 .ip-synth { font-size: 13px; color: #475569; line-height: 1.5; margin: 0 0 8px; }
 .ip-mini-sec { font-size: 13px; color: #334155; margin-bottom: 4px; }
 .ip-mini-title { font-weight: 600; }
+
+/* Confirmation d'email */
+.ip-email-ok {
+  background: #dcfce7; color: #15803d; font-size: 13px;
+  padding: 8px 12px; border-radius: 7px; margin-bottom: 10px;
+}
+.ip-email-warn {
+  background: #fef3c7; color: #92400e; font-size: 13px;
+  padding: 8px 12px; border-radius: 7px; margin-bottom: 10px;
+}

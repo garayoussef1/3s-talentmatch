@@ -9,6 +9,7 @@ Flux :
 """
 from __future__ import annotations
 
+import os
 import json
 import secrets
 from uuid import UUID
@@ -24,6 +25,7 @@ from app.dependencies import get_current_recruteur_or_admin
 from app.models.candidate import Candidate
 from app.models.job_offer import JobOffer
 from app.models.user import User
+from app.models.notification import Notification
 from app.models.interview import (
     Interview, InterviewQuestion, InterviewAnswer, InterviewReport,
     InterviewStatus, InterviewPhase, Recommendation,
@@ -31,8 +33,45 @@ from app.models.interview import (
 from app.services.interview.groq_interview_service import (
     CVSummary, OfferSummary, GroqInterviewService,
 )
+from app.services import email_service
 
 router = APIRouter()
+
+# URL du frontend (pour construire le lien complet candidat dans l'email)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+
+
+def _notify_candidate(db: Session, candidate: Candidate, offer: JobOffer,
+                      full_link: str) -> Dict[str, bool]:
+    """Envoie l'email + crée la notification in-app. Best-effort (n'échoue jamais)."""
+    prenom = (candidate.nom or "Candidat").split()[0]
+    email_sent = False
+    notif_created = False
+
+    # Email (si le candidat a une adresse)
+    if candidate.email:
+        try:
+            email_sent = email_service.send_interview_invitation_email(
+                candidate.email, prenom, offer.titre or "le poste", full_link
+            )
+        except Exception:
+            email_sent = False
+
+    # Notification in-app (si le candidat a un compte utilisateur lié)
+    if candidate.user_id:
+        try:
+            db.add(Notification(
+                user_id=candidate.user_id,
+                type="interview_invite",
+                title="Invitation à un entretien",
+                message=f"Vous êtes invité(e) à passer un entretien pour « {offer.titre} ».",
+                link=f"/entretien/{full_link.rsplit('/', 1)[-1]}",
+            ))
+            notif_created = True
+        except Exception:
+            notif_created = False
+
+    return {"email_sent": email_sent, "notification_created": notif_created}
 
 # Singleton — chargé une fois
 _service: Optional[GroqInterviewService] = None
@@ -184,6 +223,11 @@ def start_interview(
 
     db.commit()
 
+    # Envoi automatique : email au candidat + notification in-app (best-effort)
+    full_link = f"{FRONTEND_URL}/entretien/{interview.access_token}"
+    notif = _notify_candidate(db, candidate, offer, full_link)
+    db.commit()
+
     return {
         "interview_id": str(interview.id),
         "status": interview.status.value,
@@ -191,12 +235,16 @@ def start_interview(
         "provider": service.provider,
         "model": service.model,
         "candidate_name": candidate.nom,
+        "candidate_email": candidate.email,
         "offer_titre": offer.titre,
         "total_questions": len(out_questions),
         "questions": out_questions,
         # Lien à transmettre au candidat (entretien autonome)
         "access_token": interview.access_token,
         "candidate_link": f"/entretien/{interview.access_token}",
+        "full_link": full_link,
+        "email_sent": notif["email_sent"],
+        "notification_created": notif["notification_created"],
     }
 
 
