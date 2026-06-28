@@ -41,6 +41,8 @@ export default function InterviewCandidate() {
   const pasteDetected = useRef(false)
   const qStartTime  = useRef(Date.now())
   const submitRef   = useRef(null)
+  const wasFullscreen = useRef(false)
+  const [fsWarning, setFsWarning] = useState(false)  // overlay sortie plein écran
 
   // ── Chargement initial (métadonnées) ──
   useEffect(() => {
@@ -57,7 +59,16 @@ export default function InterviewCandidate() {
   useEffect(() => {
     if (!verified) return
     const onVisibility = () => { if (document.hidden) tabSwitches.current += 1 }
-    const onFsChange = () => { if (!document.fullscreenElement) fsExits.current += 1 }
+    const onFsChange = () => {
+      if (document.fullscreenElement) {
+        wasFullscreen.current = true
+        setFsWarning(false)
+      } else if (wasFullscreen.current) {
+        // Sortie du plein écran après y être entré → compter + avertir
+        fsExits.current += 1
+        setFsWarning(true)
+      }
+    }
     document.addEventListener('visibilitychange', onVisibility)
     document.addEventListener('fullscreenchange', onFsChange)
     return () => {
@@ -212,6 +223,21 @@ export default function InterviewCandidate() {
 
   return (
     <div className="itw-screen" onCopy={e => e.preventDefault()} onContextMenu={e => e.preventDefault()}>
+      {/* Overlay bloquant : sortie du plein écran */}
+      {fsWarning && (
+        <div className="itw-fs-overlay">
+          <div className="itw-fs-box">
+            <div className="itw-fs-icon">⚠️</div>
+            <h2>Vous avez quitté le plein écran</h2>
+            <p>Cette action est <strong>enregistrée</strong> et signalée au recruteur.
+               Pour des raisons d'intégrité, l'entretien doit se dérouler en plein écran.</p>
+            <button className="itw-btn" onClick={() => { enterFullscreen(); setFsWarning(false) }}>
+              Reprendre l'entretien
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="itw-container">
         <div className="itw-header">
           <div>
