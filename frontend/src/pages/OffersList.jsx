@@ -326,7 +326,8 @@ export default function OffersList() {
               const statusCls   = STATUS_CLS[o.status] || 'status-draft'
               const assigned    = o.assigned_recruiter_ids?.length ?? 0
               const newCount    = getNewCount(o.id, cnt)
-              const hasNew      = newCount > 0
+              // Pas de badge "nouveau" si l'offre est déjà traitée (entretiens lancés)
+              const hasNew      = newCount > 0 && !o.has_interviews
               const quality     = matchQuality(o)
 
               const handleCardClick = () => {
@@ -425,7 +426,8 @@ export default function OffersList() {
               <tbody>
                 {filtered.map(o => {
                   const rowCnt = o.candidate_count ?? 0
-                  const rowNew = getNewCount(o.id, rowCnt)
+                  // Pas de badge "nouveau" si l'offre est déjà traitée (entretiens lancés)
+                  const rowNew = o.has_interviews ? 0 : getNewCount(o.id, rowCnt)
                   return (
                   <tr
                     key={`${o.id}-row`}

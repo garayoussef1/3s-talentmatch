@@ -14,6 +14,7 @@ from app.models.job_offer import JobOffer, JobStatus, offer_recruiters
 from app.models.match import Match, MatchStatus
 from app.models.candidate import Candidate, CandidatureStatus
 from app.models.user import User, UserRole
+from app.models.interview import Interview
 from app.schemas.job_offers import (
     JobOfferCreate,
     JobOfferUpdate,
@@ -43,9 +44,10 @@ def _auto_close_expired(db: Session) -> None:
         db.commit()
 
 
-def _to_item(offer: JobOffer, candidate_count: int = None) -> dict:
+def _to_item(offer: JobOffer, candidate_count: int = None, has_interviews: bool = False) -> dict:
     count = candidate_count if candidate_count is not None else len(offer.matches or [])
     return {
+        "has_interviews": has_interviews,
         "id": str(offer.id),
         "recruiter_id": str(offer.recruiter_id) if offer.recruiter_id else None,
         "titre": offer.titre,
@@ -84,13 +86,20 @@ def list_offers(
         .correlate(JobOffer)
         .scalar_subquery()
     )
+    # Sous-requête : nombre d'entretiens lancés par offre (matching déjà traité)
+    interview_count_sq = (
+        db.query(func.count(Interview.id))
+        .filter(Interview.job_offer_id == JobOffer.id)
+        .correlate(JobOffer)
+        .scalar_subquery()
+    )
 
     # Admin voit tout ; recruteur voit seulement les offres qui lui sont assignées
     if current_user.role == UserRole.admin:
-        query = db.query(JobOffer, candidate_count_sq.label("cnt"))
+        query = db.query(JobOffer, candidate_count_sq.label("cnt"), interview_count_sq.label("itw"))
     else:
         query = (
-            db.query(JobOffer, candidate_count_sq.label("cnt"))
+            db.query(JobOffer, candidate_count_sq.label("cnt"), interview_count_sq.label("itw"))
             .join(offer_recruiters, offer_recruiters.c.offer_id == JobOffer.id)
             .filter(offer_recruiters.c.user_id == current_user.id)
         )
@@ -102,7 +111,7 @@ def list_offers(
     return {
         "total": total,
         "total_pool": total_pool,
-        "offers": [_to_item(o, cnt) for o, cnt in rows],
+        "offers": [_to_item(o, cnt, has_interviews=(itw or 0) > 0) for o, cnt, itw in rows],
     }
 
 

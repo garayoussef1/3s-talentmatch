@@ -48,6 +48,7 @@ class JobOfferItem(JobOfferBase):
     date_limite: Optional[str] = None
     candidate_count: Optional[int] = 0
     assigned_recruiter_ids: Optional[List[str]] = None
+    has_interviews: Optional[bool] = False   # matching + entretiens déjà lancés
 
     model_config = {"extra": "allow"}
 
