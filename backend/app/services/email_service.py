@@ -198,7 +198,7 @@ def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str
                                     link: str, opens_at=None, deadline=None,
                                     access_pin=None) -> bool:
     """Invite le candidat à passer son entretien IA (email pro, nomination + dates + PIN)."""
-    subject = f"🎉 Félicitations {prenom} — Invitation à un entretien pour « {offer_title} »"
+    subject = f"Invitation à un entretien — « {offer_title} »"
 
     # Bloc dates (affiché seulement si renseigné)
     open_str = _format_fr_datetime(opens_at)
@@ -235,12 +235,12 @@ def send_interview_invitation_email(to_email: str, prenom: str, offer_title: str
             {_logo_header()}
             <h2 style="color: #1b4f8a; margin: 4px 0 0;">3S TalentMatch</h2>
         </div>
-        <div style="background: white; padding: 28px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #16a34a;">
+        <div style="background: white; padding: 28px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #1b4f8a;">
             <p style="color: #334155; font-size: 16px; margin: 0 0 12px;">Bonjour <strong>{prenom}</strong>,</p>
             <p style="color: #1e293b; font-size: 15px; line-height: 1.6;">
-                🎉 <strong>Félicitations !</strong> Votre profil a retenu toute notre attention
-                pour le poste de <strong>« {offer_title} »</strong>. Nous avons le plaisir de
-                vous convier à un <strong>entretien d'évaluation en ligne</strong>.
+                Votre profil a retenu notre attention pour le poste de
+                <strong>« {offer_title} »</strong>. Nous avons le plaisir de vous convier
+                à un <strong>entretien d'évaluation en ligne</strong>.
             </p>
             {dates_block}
             {pin_block}
