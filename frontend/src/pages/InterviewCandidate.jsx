@@ -42,7 +42,7 @@ export default function InterviewCandidate() {
   const qStartTime  = useRef(Date.now())
   const submitRef   = useRef(null)
   const wasFullscreen = useRef(false)
-  const [fsWarning, setFsWarning] = useState(false)  // overlay sortie plein écran
+  const [security, setSecurity] = useState('')  // '' | 'warning' | 'blocked'
 
   // ── Chargement initial (métadonnées) ──
   useEffect(() => {
@@ -55,18 +55,26 @@ export default function InterviewCandidate() {
       .finally(() => setLoading(false))
   }, [token])
 
-  // ── Détection changement d'onglet (anti-triche) ──
+  // ── Signalement temps réel des événements d'intégrité ──
+  const reportEvent = useCallback((type) => {
+    return publicApi.post(`/interviews/public/${token}/event`, { pin: pin.trim(), type })
+      .then(res => {
+        if (res.data.blocked) setSecurity('blocked')
+        else if (res.data.warning) setSecurity('warning')
+      })
+      .catch(() => {})
+  }, [token, pin])
+
+  // ── Détection changement d'onglet + sortie plein écran ──
   useEffect(() => {
     if (!verified) return
-    const onVisibility = () => { if (document.hidden) tabSwitches.current += 1 }
+    const onVisibility = () => { if (document.hidden) { tabSwitches.current += 1; reportEvent('tab_switch') } }
     const onFsChange = () => {
       if (document.fullscreenElement) {
         wasFullscreen.current = true
-        setFsWarning(false)
       } else if (wasFullscreen.current) {
-        // Sortie du plein écran après y être entré → compter + avertir
         fsExits.current += 1
-        setFsWarning(true)
+        reportEvent('fullscreen_exit')   // le backend décide : avertir ou bloquer
       }
     }
     document.addEventListener('visibilitychange', onVisibility)
@@ -75,7 +83,7 @@ export default function InterviewCandidate() {
       document.removeEventListener('visibilitychange', onVisibility)
       document.removeEventListener('fullscreenchange', onFsChange)
     }
-  }, [verified])
+  }, [verified, reportEvent])
 
   // ── Timer par question ──
   useEffect(() => {
@@ -117,6 +125,7 @@ export default function InterviewCandidate() {
 
   // ── Soumission d'une réponse ──
   const submit = useCallback((auto = false) => {
+    if (security === 'blocked') return
     const cur = questions[idx]
     if (!cur) return
     const text = (auto && !answer.trim()) ? '(Pas de réponse — temps écoulé)' : answer.trim()
@@ -144,9 +153,12 @@ export default function InterviewCandidate() {
           setIdx(idx + 1)
         }
       })
-      .catch(e => setError(e?.response?.data?.detail || "Erreur lors de l'envoi. Réessayez."))
+      .catch(e => {
+        if (e?.response?.status === 423) setSecurity('blocked')
+        else setError(e?.response?.data?.detail || "Erreur lors de l'envoi. Réessayez.")
+      })
       .finally(() => setSending(false))
-  }, [questions, idx, answer, pin, token])
+  }, [questions, idx, answer, pin, token, security])
   submitRef.current = submit
 
   // ── Écrans ──
@@ -223,17 +235,32 @@ export default function InterviewCandidate() {
 
   return (
     <div className="itw-screen" onCopy={e => e.preventDefault()} onContextMenu={e => e.preventDefault()}>
-      {/* Overlay bloquant : sortie du plein écran */}
-      {fsWarning && (
+      {/* Overlay sécurité : 1er avertissement (dernière chance) */}
+      {security === 'warning' && (
         <div className="itw-fs-overlay">
           <div className="itw-fs-box">
             <div className="itw-fs-icon">⚠️</div>
-            <h2>Vous avez quitté le plein écran</h2>
-            <p>Cette action est <strong>enregistrée</strong> et signalée au recruteur.
-               Pour des raisons d'intégrité, l'entretien doit se dérouler en plein écran.</p>
-            <button className="itw-btn" onClick={() => { enterFullscreen(); setFsWarning(false) }}>
+            <h2>Avertissement</h2>
+            <p>Vous avez quitté le plein écran. <strong>C'est votre dernière chance</strong> :
+               une nouvelle sortie entraînera l'<strong>arrêt définitif</strong> de l'entretien.
+               Cet incident est enregistré et signalé au recruteur.</p>
+            <button className="itw-btn" onClick={() => { enterFullscreen(); setSecurity('') }}>
               Reprendre l'entretien
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay sécurité : entretien bloqué (définitif) */}
+      {security === 'blocked' && (
+        <div className="itw-fs-overlay">
+          <div className="itw-fs-box">
+            <div className="itw-fs-icon">🚫</div>
+            <h2 style={{ color: '#dc2626' }}>Entretien interrompu</h2>
+            <p>Votre entretien a été <strong>arrêté</strong> en raison de sorties répétées du
+               mode sécurisé. Cet incident a été transmis au recruteur, qui prendra la
+               décision finale.</p>
+            <p className="itw-muted" style={{ fontSize: 13 }}>Vous pouvez fermer cette page.</p>
           </div>
         </div>
       )}

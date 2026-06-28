@@ -341,9 +341,14 @@ def _compute_integrity(interview: Interview) -> Dict[str, Any]:
     if n_fast:
         flags.append(f"{n_fast} réponse(s) anormalement rapide(s)")
 
-    level = "high" if score >= 80 else ("medium" if score >= 50 else "low")
+    blocked = bool(integ.get("blocked"))
+    if blocked:
+        score = 0
+        flags.insert(0, integ.get("block_reason", "Entretien bloqué pour triche présumée."))
+
+    level = "blocked" if blocked else ("high" if score >= 80 else ("medium" if score >= 50 else "low"))
     return {
-        "score": score, "level": level,
+        "score": score, "level": level, "blocked": blocked,
         "tab_switches": tab, "fullscreen_exits": fs,
         "paste_count": n_paste, "fast_answers": n_fast,
         "flags": flags,
@@ -729,6 +734,14 @@ class PinPayload(BaseModel):
     pin: str
 
 
+class EventPayload(BaseModel):
+    pin: Optional[str] = None
+    type: str   # "fullscreen_exit" | "tab_switch"
+
+
+MAX_FULLSCREEN_EXITS = 2   # à la 2ᵉ sortie, l'entretien est bloqué
+
+
 def _questions_payload(interview: Interview):
     answered_ids = {a.question_id for a in interview.answers if a.answer_text}
     return [{
@@ -786,6 +799,40 @@ def public_verify_pin(token: str, payload: PinPayload, db: Session = Depends(get
     }
 
 
+# POST /interviews/public/{token}/event — signalement temps réel (anti-triche)
+@router.post("/interviews/public/{token}/event", summary="[Candidat] Signaler un événement d'intégrité")
+def public_report_event(token: str, payload: EventPayload, db: Session = Depends(get_db)):
+    interview = _interview_by_token(db, token)
+    if interview.access_pin and str(payload.pin or "").strip() != interview.access_pin:
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
+
+    integ = json.loads(interview.integrity) if interview.integrity else {}
+    blocked = bool(integ.get("blocked"))
+    warning = False
+
+    if not blocked:
+        if payload.type == "fullscreen_exit":
+            n = int(integ.get("fullscreen_exits", 0)) + 1
+            integ["fullscreen_exits"] = n
+            if n >= MAX_FULLSCREEN_EXITS:
+                integ["blocked"] = True
+                integ["block_reason"] = f"Entretien interrompu : {n} sorties du plein écran (triche présumée)."
+                interview.status = InterviewStatus.abandoned
+                blocked = True
+            else:
+                warning = True   # 1ʳᵉ sortie → dernier avertissement
+        elif payload.type == "tab_switch":
+            integ["tab_switches"] = int(integ.get("tab_switches", 0)) + 1
+
+    interview.integrity = json.dumps(integ, ensure_ascii=False)
+    db.commit()
+    return {
+        "blocked": blocked,
+        "warning": warning,
+        "remaining": max(0, MAX_FULLSCREEN_EXITS - int(integ.get("fullscreen_exits", 0))),
+    }
+
+
 # POST /interviews/public/{token}/answer — le candidat répond (score interne, NON renvoyé)
 @router.post("/interviews/public/{token}/answer", summary="[Candidat] Soumettre une réponse")
 def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session = Depends(get_db)):
@@ -800,6 +847,12 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
     # 2ᵉ facteur : le PIN doit accompagner chaque réponse
     if interview.access_pin and str(payload.pin or "").strip() != interview.access_pin:
         raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
+
+    # Entretien bloqué pour triche → plus aucune réponse acceptée
+    _integ = json.loads(interview.integrity) if interview.integrity else {}
+    if _integ.get("blocked"):
+        raise HTTPException(status_code=423, detail=_integ.get("block_reason",
+                            "Entretien bloqué pour non-respect des règles d'intégrité."))
 
     try:
         q_uuid = UUID(str(payload.question_id))
@@ -836,10 +889,8 @@ def public_submit_answer(token: str, payload: PublicAnswerPayload, db: Session =
     answer.response_time = payload.response_time
     answer.paste_detected = 1 if payload.paste_detected else 0
 
-    # Intégrité agrégée sur l'entretien (on garde le maximum observé)
+    # Intégrité : le collage est compté ici ; onglet/plein écran via /event (temps réel)
     integ = json.loads(interview.integrity) if interview.integrity else {}
-    integ["tab_switches"] = max(int(integ.get("tab_switches", 0)), int(payload.tab_switches or 0))
-    integ["fullscreen_exits"] = max(int(integ.get("fullscreen_exits", 0)), int(payload.fullscreen_exits or 0))
     integ["paste_count"] = int(integ.get("paste_count", 0)) + (1 if payload.paste_detected else 0)
     interview.integrity = json.dumps(integ, ensure_ascii=False)
 
