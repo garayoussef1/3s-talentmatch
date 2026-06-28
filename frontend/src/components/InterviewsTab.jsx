@@ -27,15 +27,26 @@ export default function InterviewsTab({ offerId }) {
   const [error, setError]     = useState(null)
   const [detailId, setDetailId] = useState(null)
   const [showCompare, setShowCompare] = useState(false)
+  const [offerTitre, setOfferTitre]   = useState('')
+  const [deleting, setDeleting]       = useState(null)
 
   const load = () => {
     setLoading(true)
     api.get('/interviews', { params: { offer_id: offerId } })
-      .then(res => setList(res.data.interviews))
+      .then(res => { setList(res.data.interviews); setOfferTitre(res.data.offer_titre || '') })
       .catch(e => setError(e?.response?.data?.detail || 'Erreur de chargement.'))
       .finally(() => setLoading(false))
   }
   useEffect(load, [offerId])
+
+  const deleteInterview = (id, name) => {
+    if (!window.confirm(`Supprimer l'entretien de ${name} ? Cette action est irréversible.`)) return
+    setDeleting(id)
+    api.delete(`/interviews/${id}`)
+      .then(() => setList(prev => prev.filter(it => it.interview_id !== id)))
+      .catch(e => alert(e?.response?.data?.detail || 'Suppression impossible.'))
+      .finally(() => setDeleting(null))
+  }
 
   if (loading) return <div className="itb-empty">Chargement des entretiens…</div>
   if (error)   return <div className="itb-empty itb-err">{error}</div>
@@ -45,7 +56,10 @@ export default function InterviewsTab({ offerId }) {
   return (
     <div className="itb-wrap">
       <div className="itb-head-row">
-        <h3>Entretiens IA — {list.length} candidat{list.length > 1 ? 's' : ''}</h3>
+        <div>
+          <h3>🎙 Entretiens — {offerTitre}</h3>
+          <div className="itb-subhead">{list.length} candidat{list.length > 1 ? 's' : ''} convié{list.length > 1 ? 's' : ''}</div>
+        </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="itb-compare-btn" onClick={() => setShowCompare(true)}>📊 Comparer</button>
           <button className="itb-refresh" onClick={load}>↻ Actualiser</button>
@@ -79,7 +93,14 @@ export default function InterviewsTab({ offerId }) {
                 <td><span className={`itb-badge ${st.cls}`}>{st.label}</span></td>
                 <td>{it.has_report ? <strong>{Math.round(it.global_score)}/100</strong> : <span className="itb-dash">—</span>}</td>
                 <td>{reco ? <span className={`itb-badge ${reco.cls}`}>{reco.label}</span> : <span className="itb-dash">—</span>}</td>
-                <td><button className="itb-view" onClick={() => setDetailId(it.interview_id)}>Voir →</button></td>
+                <td className="itb-actions-cell">
+                  <button className="itb-view" onClick={() => setDetailId(it.interview_id)}>Voir →</button>
+                  <button className="itb-del" title="Supprimer l'entretien"
+                    disabled={deleting === it.interview_id}
+                    onClick={() => deleteInterview(it.interview_id, it.candidate_name)}>
+                    {deleting === it.interview_id ? '…' : '🗑'}
+                  </button>
+                </td>
               </tr>
             )
           })}
@@ -103,6 +124,7 @@ function InterviewDetail({ interviewId, onClose, onReportGenerated }) {
   const [loading, setLoading] = useState(true)
   const [genLoading, setGen]  = useState(false)
   const [error, setError]     = useState(null)
+  const [tab, setTab]         = useState('rapport')  // rapport | qr
 
   const load = () => {
     setLoading(true)
@@ -133,10 +155,22 @@ function InterviewDetail({ interviewId, onClose, onReportGenerated }) {
           <button className="itb-close" onClick={onClose}>✕</button>
         </div>
 
+        {/* Onglets */}
+        {data && !loading && (
+          <div className="itb-tabs">
+            <button className={`itb-tab ${tab === 'rapport' ? 'active' : ''}`} onClick={() => setTab('rapport')}>
+              📊 Rapport
+            </button>
+            <button className={`itb-tab ${tab === 'qr' ? 'active' : ''}`} onClick={() => setTab('qr')}>
+              💬 Questions &amp; Réponses ({answeredCount}/{data.questions.length})
+            </button>
+          </div>
+        )}
+
         {loading && <div className="itb-empty">Chargement…</div>}
         {error && <div className="itb-empty itb-err">{error}</div>}
 
-        {data && !loading && (
+        {data && !loading && tab === 'rapport' && (
           <div className="itb-modal-body">
             {/* Rapport ou bouton de génération */}
             {report ? (
@@ -201,9 +235,12 @@ function InterviewDetail({ interviewId, onClose, onReportGenerated }) {
                   : <p className="itb-integ-ok">✓ Aucun comportement suspect détecté.</p>}
               </div>
             )}
+          </div>
+        )}
 
-            {/* Réponses détaillées */}
-            <h4 className="itb-qa-title">Réponses ({answeredCount}/{data.questions.length})</h4>
+        {/* Onglet Questions & Réponses */}
+        {data && !loading && tab === 'qr' && (
+          <div className="itb-modal-body">
             <div className="itb-qa-list">
               {data.questions.map((q, i) => (
                 <div key={q.id} className={`itb-qa ${q.answered ? '' : 'itb-qa-empty'}`}>

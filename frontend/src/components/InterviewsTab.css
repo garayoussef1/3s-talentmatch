@@ -167,3 +167,25 @@
 .itb-integ-flags { margin: 8px 0 0; padding-left: 18px; }
 .itb-integ-flags li { font-size: 13px; color: #b91c1c; margin-bottom: 3px; }
 .itb-integ-ok { margin: 6px 0 0; font-size: 13px; color: #15803d; }
+
+/* Sous-titre en-tête */
+.itb-subhead { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+
+/* Bouton supprimer + cellule actions */
+.itb-actions-cell { display: flex; gap: 6px; align-items: center; }
+.itb-del {
+  background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
+  border-radius: 7px; padding: 6px 10px; font-size: 13px; cursor: pointer;
+}
+.itb-del:hover:not(:disabled) { background: #fee2e2; }
+.itb-del:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Onglets modale détail */
+.itb-tabs { display: flex; gap: 4px; padding: 0 24px; border-bottom: 1px solid #e2e8f0; }
+.itb-tab {
+  background: none; border: none; padding: 12px 16px; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: #64748b;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.itb-tab:hover { color: #1B4F8A; }
+.itb-tab.active { color: #1B4F8A; border-bottom-color: #1B4F8A; }

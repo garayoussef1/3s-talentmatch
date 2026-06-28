@@ -691,6 +691,28 @@ def generate_report(
     return rapport
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# DELETE /interviews/{id} — supprimer un entretien (admin / recruteur propriétaire)
+# ─────────────────────────────────────────────────────────────────────────────
+@router.delete("/interviews/{interview_id}", summary="Supprimer un entretien")
+def delete_interview(
+    interview_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_recruteur_or_admin),
+):
+    interview = db.query(Interview).filter(Interview.id == interview_id).first()
+    if not interview:
+        raise HTTPException(status_code=404, detail="Entretien non trouvé")
+
+    offer = db.query(JobOffer).filter(JobOffer.id == interview.job_offer_id).first()
+    if offer and not _can_access_offer(offer, current_user):
+        raise HTTPException(status_code=403, detail="Accès non autorisé à cet entretien")
+
+    db.delete(interview)   # cascade : questions, réponses, rapport
+    db.commit()
+    return {"ok": True, "deleted": str(interview_id)}
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # ENDPOINTS PUBLICS — accès candidat par jeton (sans compte recruteur)
 # ═════════════════════════════════════════════════════════════════════════════
