@@ -221,6 +221,14 @@ export default function OffersList() {
     })
   }, [offers, searchText, statusFilter, contractFilter])
 
+  // Tri : offres "à traiter" (nouveaux candidats, pas encore d'entretiens) en haut.
+  // Tri stable → conserve l'ordre d'origine (par nb de candidats) dans chaque groupe.
+  const sortedOffers = useMemo(() => {
+    const newScore = (o) =>
+      o.has_interviews ? 0 : getNewCount(o.id, o.candidate_count ?? 0)
+    return [...filtered].sort((a, b) => newScore(b) - newScore(a))
+  }, [filtered, getNewCount])
+
   const STATUS_LABEL = { active: 'Active', draft: 'Brouillon', closed: 'Clôturée' }
   const STATUS_CLS   = { active: 'status-active', draft: 'status-draft', closed: 'status-closed' }
 
@@ -320,7 +328,7 @@ export default function OffersList() {
         <>
           {/* ── Vue cartes ── */}
           <div className="ol-grid">
-            {filtered.map(o => {
+            {sortedOffers.map(o => {
               const cnt         = o.candidate_count ?? 0
               const statusLabel = STATUS_LABEL[o.status] || o.status
               const statusCls   = STATUS_CLS[o.status] || 'status-draft'
@@ -424,7 +432,7 @@ export default function OffersList() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(o => {
+                {sortedOffers.map(o => {
                   const rowCnt = o.candidate_count ?? 0
                   // Pas de badge "nouveau" si l'offre est déjà traitée (entretiens lancés)
                   const rowNew = o.has_interviews ? 0 : getNewCount(o.id, rowCnt)
