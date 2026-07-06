@@ -21,10 +21,13 @@ from sqlalchemy.sql import func
 
 from app.database import get_db
 from app.models.candidate import Candidate
+from app.models.job_offer import JobOffer
+from app.models.match import Match
 from app.models.assessment import (
     AssessmentQuestion, AssessmentSession, AssessmentStatus, OpenQuestion,
+    RealityGapResult,
 )
-from app.services.assessment import cat_engine
+from app.services.assessment import cat_engine, reality_gap
 
 router = APIRouter()
 
@@ -45,6 +48,12 @@ class AnswerPayload(BaseModel):
 class OpenAnswerPayload(BaseModel):
     question_id: str   # id d'une OpenQuestion
     answer: str
+
+
+class RealityGapPayload(BaseModel):
+    candidate_id: str
+    offer_id: str
+    session_id: str
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -237,6 +246,93 @@ def score_open_question(payload: OpenAnswerPayload, db: Session = Depends(get_db
         "question_id": str(q.id),
         "competence": q.competence_esco,
         **result,
+    }
+
+
+# ── POST /assessment/reality-gap ─────────────────────────────────────────────
+@router.post("/assessment/reality-gap", summary="Calculer le Reality Gap Score")
+def compute_reality_gap_endpoint(payload: RealityGapPayload, db: Session = Depends(get_db)):
+    try:
+        cand_uuid  = UUID(str(payload.candidate_id))
+        offer_uuid = UUID(str(payload.offer_id))
+        sess_uuid  = UUID(str(payload.session_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="Identifiant invalide")
+
+    candidate = db.query(Candidate).filter(Candidate.id == cand_uuid).first()
+    offer     = db.query(JobOffer).filter(JobOffer.id == offer_uuid).first()
+    session   = db.query(AssessmentSession).filter(AssessmentSession.id == sess_uuid).first()
+    if not candidate or not offer or not session:
+        raise HTTPException(status_code=404, detail="Candidat, offre ou session introuvable")
+
+    demonstrated = session.competence_scores or {}
+    if not demonstrated:
+        raise HTTPException(status_code=400, detail="Test non terminé : aucun niveau démontré")
+
+    # Poids = importance de la compétence dans l'offre (requise 1.0 · appréciée 0.5)
+    requises   = {s.lower() for s in (offer.competences_requises or [])}
+    appreciees = {s.lower() for s in (offer.competences_appreciees or [])}
+    weights = {}
+    for comp in demonstrated:
+        cl = comp.lower()
+        weights[comp] = 1.0 if cl in requises else (0.5 if cl in appreciees else 1.0)
+
+    # Calcul du gap (déclaré CV vs démontré test)
+    result = reality_gap.compute_reality_gap(candidate.parsed_data or {}, demonstrated, weights)
+
+    # Score final ajusté (si un match existe pour ce couple)
+    match = (
+        db.query(Match)
+        .filter(Match.candidate_id == cand_uuid, Match.job_offer_id == offer_uuid)
+        .first()
+    )
+    score_final = None
+    if match and match.score is not None:
+        score_final = reality_gap.adjust_matching_score(match.score, result["fiabilite_cv"])
+
+    # Persistance (on remplace un éventuel résultat précédent)
+    db.query(RealityGapResult).filter(
+        RealityGapResult.candidate_id == cand_uuid,
+        RealityGapResult.job_offer_id == offer_uuid,
+    ).delete()
+    rg = RealityGapResult(
+        candidate_id=cand_uuid, job_offer_id=offer_uuid, session_id=sess_uuid,
+        reality_gap_score=result["reality_gap_score"],
+        fiabilite_cv=result["fiabilite_cv"],
+        score_final_ajuste=score_final,
+        details=result["details"],
+        niveau_label=result["niveau_label"],
+    )
+    db.add(rg)
+    db.commit()
+
+    return {
+        "candidate_id": str(cand_uuid),
+        "offer_id": str(offer_uuid),
+        "matching_score": round(match.score, 4) if match and match.score is not None else None,
+        "score_final_ajuste": score_final,
+        **result,
+    }
+
+
+# ── GET /assessment/reality-gap/{candidate_id}/{offer_id} ────────────────────
+@router.get("/assessment/reality-gap/{candidate_id}/{offer_id}", summary="Récupérer un Reality Gap")
+def get_reality_gap(candidate_id: UUID, offer_id: UUID, db: Session = Depends(get_db)):
+    rg = (
+        db.query(RealityGapResult)
+        .filter(RealityGapResult.candidate_id == candidate_id,
+                RealityGapResult.job_offer_id == offer_id)
+        .order_by(RealityGapResult.created_at.desc())
+        .first()
+    )
+    if not rg:
+        raise HTTPException(status_code=404, detail="Aucun Reality Gap calculé")
+    return {
+        "reality_gap_score": rg.reality_gap_score,
+        "fiabilite_cv": rg.fiabilite_cv,
+        "score_final_ajuste": rg.score_final_ajuste,
+        "niveau_label": rg.niveau_label,
+        "details": rg.details,
     }
 
 
