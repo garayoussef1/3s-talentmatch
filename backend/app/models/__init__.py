@@ -9,9 +9,13 @@ from app.models.notification import Notification
 from app.models.interview import (
     Interview, InterviewQuestion, InterviewAnswer, InterviewReport,
 )
+from app.models.assessment import (
+    AssessmentQuestion, AssessmentSession, OpenQuestion, RealityGapResult,
+)
 
 __all__ = [
     "Candidate", "User", "CVDocument", "JobOffer", "Match", "AccessLog",
     "Notification",
     "Interview", "InterviewQuestion", "InterviewAnswer", "InterviewReport",
+    "AssessmentQuestion", "AssessmentSession", "OpenQuestion", "RealityGapResult",
 ]
