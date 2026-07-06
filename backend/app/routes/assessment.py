@@ -27,7 +27,7 @@ from app.models.assessment import (
     AssessmentQuestion, AssessmentSession, AssessmentStatus, OpenQuestion,
     RealityGapResult,
 )
-from app.services.assessment import cat_engine, reality_gap
+from app.services.assessment import cat_engine, reality_gap, question_bank
 
 router = APIRouter()
 
@@ -56,6 +56,11 @@ class RealityGapPayload(BaseModel):
     session_id: str
 
 
+class PreparePayload(BaseModel):
+    offer_id: Optional[str] = None
+    competences: Optional[List[str]] = None   # sinon, celles de l'offre
+
+
 # ── Helpers ──────────────────────────────────────────────────────────────────
 def _pool(db: Session, domaine: str) -> List[AssessmentQuestion]:
     """Banque de questions du domaine, ordre déterministe (= index catsim)."""
@@ -65,6 +70,20 @@ def _pool(db: Session, domaine: str) -> List[AssessmentQuestion]:
         .order_by(AssessmentQuestion.created_at, AssessmentQuestion.id)
         .all()
     )
+
+
+def _pool_for_competences(db: Session, competences: List[str]) -> List[AssessmentQuestion]:
+    """Banque = questions (en cache) des compétences ciblées par l'offre."""
+    if not competences:
+        return []
+    lowered = {c.lower() for c in competences}
+    rows = (
+        db.query(AssessmentQuestion)
+        .filter(func.lower(AssessmentQuestion.competence_esco).in_(lowered))
+        .order_by(AssessmentQuestion.competence_esco, AssessmentQuestion.difficulte, AssessmentQuestion.id)
+        .all()
+    )
+    return rows
 
 
 def _question_public(q: AssessmentQuestion) -> dict:
@@ -91,6 +110,31 @@ def _next_question(db: Session, session: AssessmentSession, pool: List[Assessmen
     return pool[idx], idx
 
 
+# ── POST /assessment/prepare ─────────────────────────────────────────────────
+@router.post("/assessment/prepare", summary="Générer/mettre en cache les questions d'une offre")
+def prepare_assessment(payload: PreparePayload, db: Session = Depends(get_db)):
+    """Génère (via LLM local) et met en cache les questions des compétences ciblées.
+
+    Étape recruteur, potentiellement longue (génération Ollama) mais faite UNE
+    fois par compétence puis réutilisée. N'envoie que le nom des compétences.
+    """
+    competences = list(payload.competences or [])
+    if payload.offer_id and not competences:
+        try:
+            offer = db.query(JobOffer).filter(JobOffer.id == UUID(str(payload.offer_id))).first()
+        except (ValueError, AttributeError):
+            offer = None
+        if not offer:
+            raise HTTPException(status_code=404, detail="Offre introuvable")
+        competences = list(offer.competences_requises or [])
+    if not competences:
+        raise HTTPException(status_code=400, detail="Aucune compétence à préparer")
+
+    recap = question_bank.prepare_competences(db, competences)
+    total_qcm = sum(r["qcm"] for r in recap.values())
+    return {"competences": recap, "total_qcm": total_qcm, "pret": total_qcm >= 3}
+
+
 # ── POST /assessment/start ───────────────────────────────────────────────────
 @router.post("/assessment/start", summary="Démarrer un test d'évaluation adaptatif")
 def start_assessment(payload: StartPayload, db: Session = Depends(get_db)):
@@ -103,16 +147,26 @@ def start_assessment(payload: StartPayload, db: Session = Depends(get_db)):
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidat non trouvé")
 
-    pool = _pool(db, payload.domaine)
-    if len(pool) < 3:
-        raise HTTPException(status_code=400, detail=f"Banque insuffisante pour le domaine « {payload.domaine} »")
-
+    # Le test cible en priorité les compétences REQUISES de l'offre (cache).
     offer_uuid = None
+    pool: List[AssessmentQuestion] = []
     if payload.offer_id:
         try:
             offer_uuid = UUID(str(payload.offer_id))
+            offer = db.query(JobOffer).filter(JobOffer.id == offer_uuid).first()
+            if offer and offer.competences_requises:
+                pool = _pool_for_competences(db, list(offer.competences_requises))
         except (ValueError, AttributeError):
             offer_uuid = None
+
+    # Repli : banque par domaine (compat / démo)
+    if len(pool) < 3:
+        pool = _pool(db, payload.domaine)
+    if len(pool) < 3:
+        raise HTTPException(
+            status_code=400,
+            detail="Questions non préparées pour cette offre. Lancez d'abord /assessment/prepare.",
+        )
 
     session = AssessmentSession(
         candidate_id=cand_uuid,
