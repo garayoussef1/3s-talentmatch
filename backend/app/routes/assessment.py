@@ -22,7 +22,7 @@ from sqlalchemy.sql import func
 from app.database import get_db
 from app.models.candidate import Candidate
 from app.models.assessment import (
-    AssessmentQuestion, AssessmentSession, AssessmentStatus,
+    AssessmentQuestion, AssessmentSession, AssessmentStatus, OpenQuestion,
 )
 from app.services.assessment import cat_engine
 
@@ -40,6 +40,11 @@ class AnswerPayload(BaseModel):
     session_id: str
     question_id: str
     reponse: int   # index de l'option choisie (0-based)
+
+
+class OpenAnswerPayload(BaseModel):
+    question_id: str   # id d'une OpenQuestion
+    answer: str
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -196,6 +201,42 @@ def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
         "done": False,
         "progression": len(administered),
         "question": _question_public(next_q),
+    }
+
+
+# ── GET /assessment/open-questions ───────────────────────────────────────────
+@router.get("/assessment/open-questions", summary="Lister les questions ouvertes d'un domaine")
+def list_open_questions(domaine: str = "IT", db: Session = Depends(get_db)):
+    qs = db.query(OpenQuestion).filter(OpenQuestion.domaine == domaine).all()
+    return {"domaine": domaine, "questions": [
+        {"question_id": str(q.id), "competence": q.competence_esco, "question": q.question}
+        for q in qs
+    ]}
+
+
+# ── POST /assessment/open-question ───────────────────────────────────────────
+@router.post("/assessment/open-question", summary="Noter une réponse ouverte (sémantique)")
+def score_open_question(payload: OpenAnswerPayload, db: Session = Depends(get_db)):
+    try:
+        q_uuid = UUID(str(payload.question_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="question_id invalide")
+
+    q = db.query(OpenQuestion).filter(OpenQuestion.id == q_uuid).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="Question ouverte non trouvée")
+    if not (q.emb_faible and q.emb_correct and q.emb_expert):
+        raise HTTPException(status_code=503, detail="Embeddings non calculés pour cette question")
+
+    # Import local : évite de charger BGE-M3 au démarrage de l'app
+    from app.services.assessment import semantic_scorer
+    result = semantic_scorer.score_open_answer(
+        payload.answer, q.emb_faible, q.emb_correct, q.emb_expert
+    )
+    return {
+        "question_id": str(q.id),
+        "competence": q.competence_esco,
+        **result,
     }
 
 
