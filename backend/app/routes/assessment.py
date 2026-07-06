@@ -11,6 +11,8 @@ estimé du candidat. 100% local (catsim + numpy).
 """
 from __future__ import annotations
 
+import hashlib
+import random
 from uuid import UUID
 from typing import Optional, List
 
@@ -92,14 +94,31 @@ def _pool_for_competences(db: Session, competences: List[str]) -> List[Assessmen
     return rows
 
 
-def _question_public(q: AssessmentQuestion) -> dict:
-    """Question renvoyée au candidat — SANS la bonne réponse."""
+def _option_permutation(session_id: str, question_id: str, n: int) -> List[int]:
+    """Permutation déterministe des options pour (session, question).
+
+    Anti-triche : chaque candidat voit les options dans un ordre différent.
+    Déterministe (hash) → reproductible côté serveur sans stockage.
+    perm[position_affichée] = index_original.
+    """
+    seed = int(hashlib.md5(f"{session_id}:{question_id}".encode()).hexdigest(), 16)
+    r = random.Random(seed)
+    perm = list(range(n))
+    r.shuffle(perm)
+    return perm
+
+
+def _question_public(q: AssessmentQuestion, session_id: str) -> dict:
+    """Question renvoyée au candidat — options MÉLANGÉES, sans la bonne réponse."""
+    opts = q.options or []
+    perm = _option_permutation(session_id, str(q.id), len(opts))
+    shuffled = [opts[perm[i]] for i in range(len(opts))]
     return {
         "question_id": str(q.id),
         "competence": q.competence_esco,
         "difficulte": q.difficulte,
         "question": q.question,
-        "options": q.options,
+        "options": shuffled,
     }
 
 
@@ -197,7 +216,7 @@ def start_assessment(payload: StartPayload, db: Session = Depends(get_db)):
         "session_id": str(session.id),
         "domaine": session.domaine,
         "total_prevu": min(cat_engine.TEST_LENGTH, len(pool)),
-        "question": _question_public(question),
+        "question": _question_public(question, str(session.id)),
         "progression": 0,
     }
 
@@ -228,7 +247,13 @@ def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
     if any(it["question_id"] == str(q_uuid) for it in administered):
         raise HTTPException(status_code=409, detail="Question déjà répondue")
 
-    correct = int(payload.reponse) == int(question.bonne_reponse)
+    # Les options ont été mélangées à l'affichage → on remappe l'index choisi
+    perm = _option_permutation(str(session.id), str(q_uuid), len(question.options or []))
+    try:
+        original_choice = perm[int(payload.reponse)]
+    except (IndexError, ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Réponse hors options")
+    correct = original_choice == int(question.bonne_reponse)
     administered.append({
         "question_id": str(q_uuid),
         "index": id_to_index[str(q_uuid)],
@@ -269,7 +294,7 @@ def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
     return {
         "done": False,
         "progression": len(administered),
-        "question": _question_public(next_q),
+        "question": _question_public(next_q, str(session.id)),
     }
 
 

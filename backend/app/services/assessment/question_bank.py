@@ -19,8 +19,10 @@ from app.services.assessment import question_generator, semantic_scorer
 
 logger = logging.getLogger(__name__)
 
-MIN_QCM_PER_COMPETENCE = 6
-MIN_OPEN_PER_COMPETENCE = 1
+# Pool plus large que la longueur du test (12) → anti-triche : chaque candidat
+# reçoit un sous-ensemble varié (via le RandomesqueSelector du moteur).
+MIN_QCM_PER_COMPETENCE = 15
+MIN_OPEN_PER_COMPETENCE = 2
 
 
 def _count_qcm(db: Session, competence: str) -> int:

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import numpy as np
 from catsim.item_bank import ItemBank
-from catsim.selection import MaxInfoSelector
+from catsim.selection import RandomesqueSelector
 from catsim.estimation import NumericalSearchEstimator
 
 # QCM à 4 options → probabilité de réussite au hasard ≈ 0.25
@@ -23,8 +23,14 @@ GUESSING = 0.25
 # Longueur cible du test adaptatif (borne haute)
 TEST_LENGTH = 12
 
-_selector = MaxInfoSelector()
+# Anti-triche : au lieu de toujours choisir LA question la plus informative
+# (déterministe → mêmes questions pour tous), on tire AU HASARD parmi les
+# `bin_size` plus informatives. Le test reste adaptatif, mais chaque candidat
+# voit un sous-ensemble/ordre DIFFÉRENT.
+_ANTICHEAT_BIN = 5
+_selector = RandomesqueSelector(bin_size=_ANTICHEAT_BIN)
 _estimator = NumericalSearchEstimator()
+_rng = np.random.default_rng()
 
 
 def difficulte_to_b(difficulte: int) -> float:
@@ -61,6 +67,7 @@ def select_next_index(bank: ItemBank, administered_indices: list[int], theta: fl
         item_bank=bank,
         administered_items=administered_indices,
         est_theta=theta if theta is not None else 0.0,
+        rng=_rng,
     )
 
 
