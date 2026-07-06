@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from app.routes import cv, auth
-from app.routes import admin, job_offers, matching, dashboard, notifications, interviews
+from app.routes import admin, job_offers, matching, dashboard, notifications, interviews, assessment
 from app.services.nlp.hf_camembert import camembert_runtime_config
 
 
@@ -93,6 +93,7 @@ app.include_router(matching.router, prefix="/api", tags=["Matching"])
 app.include_router(dashboard.router, prefix="/api", tags=["Dashboard"])
 app.include_router(notifications.router, prefix="/api", tags=["Notifications"])
 app.include_router(interviews.router, prefix="/api", tags=["Entretien IA"])
+app.include_router(assessment.router, prefix="/api", tags=["Évaluation (Reality Gap)"])
 
 
 
