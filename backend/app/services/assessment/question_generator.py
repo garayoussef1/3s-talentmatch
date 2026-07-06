@@ -98,14 +98,27 @@ Réponds UNIQUEMENT avec ce JSON :
 # Génération de questions ouvertes (Module 2)
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_open_questions(competence: str, n: int = 1) -> list[dict]:
-    """Génère n questions ouvertes + 3 réponses de référence (faible/correct/expert)."""
-    prompt = f"""Tu es un examinateur technique. Génère EXACTEMENT {n} question(s) OUVERTE(S)
-pour évaluer en profondeur la compétence « {competence} ».
+    """Génère n questions ouvertes de RAISONNEMENT + 3 réponses de référence.
+
+    On privilégie des questions qui révèlent la FAÇON DE PENSER du candidat
+    (mise en situation, résolution de problème, analyse), pas de simples
+    définitions — pour un vrai entretien technique.
+    """
+    prompt = f"""Tu es un examinateur senior qui mène un entretien technique sur
+la compétence « {competence} ». Génère EXACTEMENT {n} question(s) OUVERTE(S) de
+RAISONNEMENT, qui obligent le candidat à EXPLIQUER sa démarche (pas une définition).
+
+Varie les styles selon la question :
+- Mise en situation : « Vous devez… comment vous y prenez-vous et pourquoi ? »
+- Résolution de problème : « Face à [problème concret], quelle est votre approche ? »
+- Analyse critique : « Quels sont les compromis / risques de… ? »
+- Choix justifié : « Entre A et B, que choisissez-vous et pourquoi ? »
 
 Pour CHAQUE question, fournis 3 réponses de référence de qualité croissante :
-- "ref_faible"  : réponse superficielle/incomplète (1 phrase vague).
-- "ref_correct" : réponse correcte mais basique (2-3 phrases).
-- "ref_expert"  : réponse experte, précise et complète (4-6 phrases, vocabulaire technique).
+- "ref_faible"  : réponse superficielle, sans vrai raisonnement (1 phrase vague).
+- "ref_correct" : réponse correcte avec un raisonnement basique (2-3 phrases).
+- "ref_expert"  : réponse experte, raisonnement structuré, compromis et justifications
+                  (4-6 phrases, vocabulaire technique précis).
 
 Réponds UNIQUEMENT avec ce JSON :
 {{"questions": [

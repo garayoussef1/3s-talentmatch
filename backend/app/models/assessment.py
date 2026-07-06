@@ -74,6 +74,9 @@ class AssessmentSession(Base):
     administered = Column(JSON, default=list, nullable=True)
     # Niveau démontré agrégé par compétence (0-10) : {"Python": 7.2, ...}
     competence_scores = Column(JSON, default=dict, nullable=True)
+    # Réponses ouvertes (raisonnement) : [{question_id, competence, question, answer,
+    #   score, similarites}] — sert au rapport IA.
+    open_answers = Column(JSON, default=list, nullable=True)
 
     created_at   = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True), nullable=True)

@@ -50,6 +50,12 @@ class OpenAnswerPayload(BaseModel):
     answer: str
 
 
+class SessionOpenAnswerPayload(BaseModel):
+    session_id: str
+    question_id: str   # id d'une OpenQuestion
+    answer: str
+
+
 class RealityGapPayload(BaseModel):
     candidate_id: str
     offer_id: str
@@ -301,6 +307,86 @@ def score_open_question(payload: OpenAnswerPayload, db: Session = Depends(get_db
         "competence": q.competence_esco,
         **result,
     }
+
+
+# ── POST /assessment/open-answer ─────────────────────────────────────────────
+@router.post("/assessment/open-answer", summary="Répondre à une question ouverte (liée à la session)")
+def submit_open_answer(payload: SessionOpenAnswerPayload, db: Session = Depends(get_db)):
+    try:
+        sess_uuid = UUID(str(payload.session_id))
+        q_uuid = UUID(str(payload.question_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="Identifiant invalide")
+
+    session = db.query(AssessmentSession).filter(AssessmentSession.id == sess_uuid).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session non trouvée")
+    q = db.query(OpenQuestion).filter(OpenQuestion.id == q_uuid).first()
+    if not q:
+        raise HTTPException(status_code=404, detail="Question ouverte non trouvée")
+    if not (q.emb_faible and q.emb_correct and q.emb_expert):
+        raise HTTPException(status_code=503, detail="Embeddings non calculés")
+
+    from app.services.assessment import semantic_scorer
+    result = semantic_scorer.score_open_answer(payload.answer, q.emb_faible, q.emb_correct, q.emb_expert)
+
+    # Stockage dans la session (pour le rapport IA) — pas de score renvoyé au candidat
+    answers = list(session.open_answers or [])
+    answers = [a for a in answers if a.get("question_id") != str(q_uuid)]  # remplace si déjà répondu
+    answers.append({
+        "question_id": str(q_uuid),
+        "competence": q.competence_esco,
+        "question": q.question,
+        "answer": payload.answer,
+        "score": result.get("score"),
+        "similarites": result.get("similarites", {}),
+    })
+    session.open_answers = answers
+    db.commit()
+    return {"ok": True, "answered": len(answers)}
+
+
+# ── POST /assessment/report/{session_id} ─────────────────────────────────────
+@router.post("/assessment/report/{session_id}", summary="Générer le rapport IA (local)")
+def generate_assessment_report(session_id: UUID, db: Session = Depends(get_db)):
+    session = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session non trouvée")
+
+    candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
+
+    # Reality Gap (le plus récent pour ce couple, s'il existe)
+    rg = None
+    if session.job_offer_id:
+        rg_row = (
+            db.query(RealityGapResult)
+            .filter(RealityGapResult.candidate_id == session.candidate_id,
+                    RealityGapResult.job_offer_id == session.job_offer_id)
+            .order_by(RealityGapResult.created_at.desc())
+            .first()
+        )
+        if rg_row:
+            rg = {
+                "reality_gap_score": rg_row.reality_gap_score,
+                "fiabilite_cv": rg_row.fiabilite_cv,
+                "niveau_label": rg_row.niveau_label,
+                "details": rg_row.details,
+            }
+
+    from app.services.assessment import report_generator
+    try:
+        report = report_generator.generate_report(
+            candidate.nom if candidate else "Candidat",
+            offer.titre if offer else "le poste",
+            session.competence_scores or {},
+            session.open_answers or [],
+            rg,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Erreur génération rapport : {exc}")
+
+    return {"session_id": str(session_id), "report": report}
 
 
 # ── POST /assessment/reality-gap ─────────────────────────────────────────────
