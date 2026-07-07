@@ -4,6 +4,7 @@ import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import InterviewPanel from '../components/InterviewPanel'
 import InterviewsTab from '../components/InterviewsTab'
+import AssessmentPanel from '../components/AssessmentPanel'
 import './Offers.css'
 
 // hook role
@@ -417,6 +418,7 @@ function TabMatching({ offerId, offer }) {
   const [aiSummaries, setAiSummaries]   = useState({})
   const [cvLoading,   setCvLoading]     = useState({})
   const [interviewFor, setInterviewFor] = useState(null)   // {id, name} ou null
+  const [assessmentFor, setAssessmentFor] = useState(null) // {id, name} ou null
 
   const viewCV = async (cvId, candidateName) => {
     setCvLoading(prev => ({ ...prev, [cvId]: true }))
@@ -493,6 +495,16 @@ function TabMatching({ offerId, offer }) {
           candidates={interviewFor}
           offerId={offerId}
           onClose={() => setInterviewFor(null)}
+        />
+      )}
+
+      {/* Panneau Évaluation technique (Reality Gap) */}
+      {assessmentFor && (
+        <AssessmentPanel
+          candidateId={assessmentFor.id}
+          offerId={offerId}
+          candidateName={assessmentFor.name}
+          onClose={() => setAssessmentFor(null)}
         />
       )}
 
@@ -647,6 +659,19 @@ function TabMatching({ offerId, offer }) {
                           }}
                         >
                           🎙 Entretien IA
+                        </button>
+                        {/* Bouton Évaluation technique (Reality Gap) */}
+                        <button
+                          onClick={() => setAssessmentFor({ id: r.candidate_id, name: r.candidate_name })}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 5,
+                            background: '#f5f3ff', color: '#6d28d9',
+                            border: '1px solid #ddd6fe',
+                            borderRadius: 6, padding: '3px 10px',
+                            fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                          }}
+                        >
+                          🎯 Évaluation
                         </button>
                       </div>
                     </div>

@@ -1,0 +1,63 @@
+/* Évaluation candidat — plein écran immersif */
+.asv-screen {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4338ca 0%, #1e1b4b 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; font-family: system-ui, 'Segoe UI', sans-serif;
+}
+.asv-container { width: 100%; max-width: 720px; }
+
+.asv-header { display: flex; justify-content: space-between; align-items: flex-end; color: #fff; margin-bottom: 18px; }
+.asv-logo { font-size: 20px; font-weight: 800; }
+.asv-poste { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+.asv-phase-tag { background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+.asv-progress-wrap { height: 6px; background: rgba(255,255,255,0.2); border-radius: 999px; overflow: hidden; }
+.asv-progress-bar { height: 100%; background: #F7941D; border-radius: 999px; transition: width 0.4s; }
+.asv-progress-text { color: #fff; opacity: 0.85; font-size: 12px; margin: 8px 0 18px; text-align: right; }
+
+.asv-qcard { background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.asv-center { text-align: center; }
+.asv-comp {
+  display: inline-block; background: #eef2ff; color: #4338ca; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px; padding: 5px 12px; border-radius: 6px; margin-bottom: 14px;
+}
+.asv-question { font-size: 19px; font-weight: 700; color: #1e293b; line-height: 1.45; margin: 0 0 20px; }
+
+.asv-options { display: flex; flex-direction: column; gap: 10px; }
+.asv-option {
+  display: flex; align-items: center; gap: 12px; text-align: left;
+  background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px;
+  padding: 14px 16px; font-size: 15px; color: #334155; cursor: pointer; transition: all 0.15s;
+}
+.asv-option:hover:not(:disabled) { border-color: #4338ca; background: #eef2ff; }
+.asv-option:disabled { opacity: 0.6; cursor: not-allowed; }
+.asv-opt-letter {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: #4338ca; color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+}
+.asv-hint-send { text-align: center; color: #94a3b8; font-size: 13px; margin-top: 12px; }
+
+.asv-textarea {
+  width: 100%; box-sizing: border-box; border: 1.5px solid #cbd5e1; border-radius: 10px;
+  padding: 14px; font-size: 15px; line-height: 1.55; resize: vertical; font-family: inherit;
+}
+.asv-textarea:focus { outline: none; border-color: #4338ca; }
+.asv-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+.asv-count { font-size: 12px; color: #94a3b8; }
+.asv-btn {
+  background: #4338ca; color: #fff; border: none; padding: 12px 26px; border-radius: 10px;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.asv-btn:hover:not(:disabled) { background: #3730a3; }
+.asv-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+.asv-inline-err { color: #fecaca; font-size: 13px; margin-top: 12px; text-align: center; }
+.asv-footer { text-align: center; color: #fff; opacity: 0.7; font-size: 12px; margin-top: 18px; }
+
+.asv-card { background: #fff; border-radius: 16px; padding: 40px; max-width: 520px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.asv-card h2 { color: #4338ca; margin: 0 0 12px; }
+.asv-card p { color: #475569; line-height: 1.55; margin: 8px 0; }
+.asv-muted { font-size: 13px; color: #94a3b8 !important; }
+.asv-err h2 { color: #dc2626; }
+.asv-check { width: 64px; height: 64px; border-radius: 50%; background: #16a34a; color: #fff; font-size: 36px; line-height: 64px; margin: 0 auto 18px; }
