@@ -10,9 +10,7 @@ const LABEL = {
   a_verifier: { txt: 'À vérifier', cls: 'ap-badge-mid' },
   ecart_important: { txt: 'Écart important', cls: 'ap-badge-no' },
 }
-const RECO = {
-  RECRUTER: 'ap-badge-ok', A_APPROFONDIR: 'ap-badge-mid', REJETER: 'ap-badge-no',
-}
+const RECO = { RECRUTER: 'ap-badge-ok', A_APPROFONDIR: 'ap-badge-mid', REJETER: 'ap-badge-no' }
 
 export default function AssessmentPanel({ candidateId, offerId, candidateName, onClose }) {
   const [step, setStep]       = useState('idle')   // idle | link | results
@@ -22,19 +20,18 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
   const [sessionId, setSessionId] = useState(null)
   const [gap, setGap]         = useState(null)
   const [report, setReport]   = useState(null)
+  const [detail, setDetail]   = useState(null)     // Q/R pour vérification
+  const [showAnswers, setShowAnswers] = useState(false)
   const [copied, setCopied]   = useState(false)
-
-  const prepare = () => {
-    setLoading(true); setError(null)
-    api.post('/assessment/prepare', { offer_id: offerId }, { timeout: 600000 })
-      .then(() => setError('✓ Questions préparées (cache). Vous pouvez lancer.'))
-      .catch(e => setError(e?.response?.data?.detail || 'Erreur de préparation.'))
-      .finally(() => setLoading(false))
-  }
+  const [recruiterQs, setRecruiterQs] = useState('')  // 1 question par ligne
 
   const launch = () => {
     setLoading(true); setError(null)
-    api.post('/assessment/launch', { candidate_id: candidateId, offer_id: offerId }, { timeout: 60000 })
+    const questions = recruiterQs.split('\n').map(q => q.trim()).filter(Boolean)
+    // Génération Ollama locale : long (~3-6 min) mais questionnaire unique
+    api.post('/assessment/launch',
+      { candidate_id: candidateId, offer_id: offerId, recruiter_questions: questions },
+      { timeout: 600000 })
       .then(res => {
         setSessionId(res.data.session_id)
         setLink(window.location.origin + res.data.candidate_link)
@@ -51,10 +48,14 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
   const seeResults = () => {
     setLoading(true); setError(null)
     Promise.all([
-      api.get(`/assessment/reality-gap/${candidateId}/${offerId}`),
-      sessionId ? api.post(`/assessment/report/${sessionId}`, null, { timeout: 120000 }) : Promise.resolve({ data: {} }),
+      api.get(`/assessment/reality-gap/${candidateId}/${offerId}`).catch(() => ({ data: null })),
+      sessionId ? api.post(`/assessment/report/${sessionId}`, null, { timeout: 300000 }).catch(() => ({ data: {} })) : Promise.resolve({ data: {} }),
+      sessionId ? api.get(`/assessment/detail/${sessionId}`) : Promise.resolve({ data: null }),
     ])
-      .then(([g, r]) => { setGap(g.data); setReport(r.data.report || null); setStep('results') })
+      .then(([g, r, d]) => {
+        setGap(g.data); setReport(r.data.report || null); setDetail(d.data)
+        setStep('results')
+      })
       .catch(e => setError(e?.response?.data?.detail || "Le candidat n'a pas encore terminé."))
       .finally(() => setLoading(false))
   }
@@ -77,20 +78,26 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
 
         {step === 'idle' && (
           <div className="ap-body">
-            <p>Évaluez ce candidat par un <strong>test adaptatif + questions de raisonnement</strong>
-               (100% local). Le système mesure le niveau réel et le compare au CV.</p>
-            <button className="ap-btn-ghost" onClick={prepare} disabled={loading}>
-              {loading ? 'Génération des questions…' : '⚙️ Préparer les questions (si compétences nouvelles)'}
-            </button>
+            <p>L'IA génère un questionnaire <strong>unique pour ce candidat</strong>
+               (QCM + questions de raisonnement), ciblé sur l'offre et son profil.
+               100% local et confidentiel.</p>
+
+            <label className="ap-label">✍️ Vos questions personnalisées <em>(optionnel, une par ligne)</em></label>
+            <textarea
+              className="ap-rq" rows={3}
+              placeholder={"Ex: Pourquoi voulez-vous rejoindre notre entreprise ?\nEx: Êtes-vous disponible immédiatement ?"}
+              value={recruiterQs} onChange={e => setRecruiterQs(e.target.value)}
+            />
+
             <button className="ap-btn" onClick={launch} disabled={loading}>
-              {loading ? '…' : '🚀 Lancer l\'évaluation'}
+              {loading ? '⏳ Génération du questionnaire (2 à 6 min, IA locale)…' : '🚀 Générer et lancer l\'évaluation'}
             </button>
           </div>
         )}
 
         {step === 'link' && (
           <div className="ap-body">
-            <div className="ap-ok">✓ Évaluation créée</div>
+            <div className="ap-ok">✓ Questionnaire unique généré</div>
             <p>Transmettez ce lien au candidat :</p>
             <div className="ap-link-box">
               <input readOnly value={link} onClick={e => e.target.select()} />
@@ -99,26 +106,28 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
             <a className="ap-open" href={link} target="_blank" rel="noreferrer">Ouvrir (aperçu candidat) ↗</a>
             <hr className="ap-sep" />
             <button className="ap-btn" onClick={seeResults} disabled={loading}>
-              {loading ? 'Analyse…' : '📊 Voir les résultats'}
+              {loading ? 'Analyse (rapport IA local)…' : '📊 Voir les résultats'}
             </button>
           </div>
         )}
 
-        {step === 'results' && gap && (
+        {step === 'results' && (
           <div className="ap-body">
             {/* Badge fiabilité */}
-            <div className="ap-fiab">
-              <div className="ap-fiab-score">{Math.round(gap.fiabilite_cv)}<span>/100</span></div>
-              <div>
-                <div className="ap-fiab-lbl">Fiabilité du CV</div>
-                <span className={`ap-badge ${LABEL[gap.niveau_label]?.cls}`}>{LABEL[gap.niveau_label]?.txt}</span>
+            {gap && (
+              <div className="ap-fiab">
+                <div className="ap-fiab-score">{Math.round(gap.fiabilite_cv)}<span>/100</span></div>
+                <div>
+                  <div className="ap-fiab-lbl">Fiabilité du CV</div>
+                  <span className={`ap-badge ${LABEL[gap.niveau_label]?.cls}`}>{LABEL[gap.niveau_label]?.txt}</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Radar Déclaré vs Démontré */}
             {radarData.length > 0 && (
               <div className="ap-radar">
-                <ResponsiveContainer width="100%" height={280}>
+                <ResponsiveContainer width="100%" height={270}>
                   <RadarChart data={radarData} outerRadius="72%">
                     <PolarGrid />
                     <PolarAngleAxis dataKey="competence" tick={{ fontSize: 12 }} />
@@ -131,17 +140,6 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
               </div>
             )}
 
-            {/* Détail par compétence */}
-            <div className="ap-details">
-              {gap.details?.map((d, i) => (
-                <div key={i} className="ap-drow">
-                  <span className="ap-dcomp">{d.competence}</span>
-                  <span className="ap-dvals">CV {d.niveau_declare} → test <strong>{d.niveau_demontre}</strong></span>
-                  {d.gap >= 0.3 && <span className="ap-dgap">🚨 écart</span>}
-                </div>
-              ))}
-            </div>
-
             {/* Rapport IA */}
             {report && (
               <div className="ap-report">
@@ -152,6 +150,38 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
                 <p className="ap-synth">{report.synthese}</p>
                 <p className="ap-meta">Niveau : <strong>{report.niveau_technique}</strong> · Raisonnement : <strong>{report.qualite_raisonnement}</strong></p>
                 {report.coherence_cv && <p className="ap-coh">🔍 {report.coherence_cv}</p>}
+              </div>
+            )}
+
+            {/* Bouton VOIR LES RÉPONSES (vérification recruteur) */}
+            {detail && (
+              <button className="ap-btn-ghost" onClick={() => setShowAnswers(v => !v)}>
+                {showAnswers ? '▲ Masquer les réponses' : `▼ Voir les réponses du candidat (${(detail.qcm?.length || 0) + (detail.open_answers?.length || 0)})`}
+              </button>
+            )}
+
+            {showAnswers && detail && (
+              <div className="ap-answers">
+                {detail.qcm?.length > 0 && <h4 className="ap-ans-title">QCM ({detail.qcm.filter(q => q.correct).length}/{detail.qcm.length} corrects)</h4>}
+                {detail.qcm?.map((q, i) => (
+                  <div key={`q${i}`} className={`ap-ans ${q.correct ? 'ap-ans-ok' : 'ap-ans-ko'}`}>
+                    <div className="ap-ans-q">[{q.competence} · diff {q.difficulte}] {q.question}</div>
+                    <div className="ap-ans-r">
+                      Candidat : <strong>{q.options?.[q.reponse_candidat] ?? '—'}</strong> {q.correct ? '✓' : '✗'}
+                      {!q.correct && <span className="ap-ans-good"> · Bonne réponse : {q.options?.[q.bonne_reponse]}</span>}
+                    </div>
+                  </div>
+                ))}
+                {detail.open_answers?.length > 0 && <h4 className="ap-ans-title">Réponses rédigées</h4>}
+                {detail.open_answers?.map((a, i) => (
+                  <div key={`o${i}`} className="ap-ans">
+                    <div className="ap-ans-q">
+                      {a.source === 'recruteur' ? '👤 [Votre question] ' : `[${a.competence}] `}{a.question}
+                      {a.score != null && <span className="ap-ans-score"> {Math.round(a.score)}/100</span>}
+                    </div>
+                    <div className="ap-ans-text">{a.answer}</div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
