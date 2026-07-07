@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import hashlib
 import random
+import secrets
+import os
 from uuid import UUID
 from typing import Optional, List
 
@@ -120,6 +122,26 @@ def _question_public(q: AssessmentQuestion, session_id: str) -> dict:
         "question": q.question,
         "options": shuffled,
     }
+
+
+def _session_pool(db: Session, session: AssessmentSession) -> List[AssessmentQuestion]:
+    """Banque UNIFIÉE d'une session : compétences de l'offre, sinon repli seed IT.
+
+    Garantit que /answer et /public utilisent EXACTEMENT le même pool
+    (donc le même arrêt à TEST_LENGTH questions).
+    """
+    competences = []
+    if session.job_offer_id:
+        offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first()
+        if offer and offer.competences_requises:
+            competences = list(offer.competences_requises)
+    pool = _pool_for_competences(db, competences)
+    if len(pool) < 3:
+        dom = session.domaine if session.domaine and session.domaine != "auto" else "IT"
+        pool = _pool(db, dom)
+    if len(pool) < 3:
+        pool = _pool(db, "IT")
+    return pool
 
 
 def _next_question(db: Session, session: AssessmentSession, pool: List[AssessmentQuestion]):
@@ -236,7 +258,7 @@ def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Test déjà terminé")
 
-    pool = _pool(db, session.domaine)
+    pool = _session_pool(db, session)
     id_to_index = {str(q.id): i for i, q in enumerate(pool)}
     if str(q_uuid) not in id_to_index:
         raise HTTPException(status_code=404, detail="Question hors banque")
@@ -271,10 +293,9 @@ def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
     session.administered = administered
     session.competence_scores = cat_engine.competence_scores(administered)
 
-    # Fin du test ?
+    # Fin de la phase QCM ? (le test complet n'est "completed" qu'au /finish,
+    # car il reste éventuellement les questions ouvertes de raisonnement)
     if cat_engine.is_finished(len(administered), len(pool)):
-        session.status = AssessmentStatus.completed
-        session.completed_at = func.now()
         db.commit()
         return {
             "done": True,
@@ -518,3 +539,146 @@ def assessment_result(session_id: UUID, db: Session = Depends(get_db)):
         "competence_scores": session.competence_scores or {},
         "nb_questions": len(session.administered or []),
     }
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# LANCEMENT RECRUTEUR + ACCÈS CANDIDAT PAR JETON (test autonome via lien)
+# ═════════════════════════════════════════════════════════════════════════════
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+
+
+class LaunchPayload(BaseModel):
+    candidate_id: str
+    offer_id: str
+
+
+def _session_by_token(db: Session, token: str) -> AssessmentSession:
+    s = db.query(AssessmentSession).filter(AssessmentSession.access_token == token).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="Lien d'évaluation invalide")
+    return s
+
+
+def _open_questions_for(db: Session, competences: List[str]) -> List[OpenQuestion]:
+    if not competences:
+        return []
+    lowered = {c.lower() for c in competences}
+    return (
+        db.query(OpenQuestion)
+        .filter(func.lower(OpenQuestion.competence_esco).in_(lowered),
+                OpenQuestion.emb_expert.isnot(None))
+        .all()
+    )
+
+
+# ── POST /assessment/launch (recruteur) ──────────────────────────────────────
+@router.post("/assessment/launch", summary="[Recruteur] Créer une session + lien candidat")
+def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
+    try:
+        cand_uuid = UUID(str(payload.candidate_id))
+        offer_uuid = UUID(str(payload.offer_id))
+    except (ValueError, AttributeError):
+        raise HTTPException(status_code=400, detail="Identifiant invalide")
+
+    candidate = db.query(Candidate).filter(Candidate.id == cand_uuid).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == offer_uuid).first()
+    if not candidate or not offer:
+        raise HTTPException(status_code=404, detail="Candidat ou offre introuvable")
+
+    competences = list(offer.competences_requises or [])
+    pool = _pool_for_competences(db, competences) if competences else []
+    if len(pool) < 3:
+        pool = _pool(db, "IT")   # repli démo (seed IT)
+    if len(pool) < 3:
+        raise HTTPException(status_code=400,
+                            detail="Questions non préparées. Lancez /assessment/prepare d'abord.")
+
+    session = AssessmentSession(
+        candidate_id=cand_uuid, job_offer_id=offer_uuid,
+        domaine=offer.domaine_metier or "IT",
+        status=AssessmentStatus.in_progress,
+        access_token=secrets.token_urlsafe(24),
+        theta=0.0, administered=[], competence_scores={}, open_answers=[],
+    )
+    db.add(session)
+    db.commit()
+    return {
+        "session_id": str(session.id),
+        "access_token": session.access_token,
+        "candidate_link": f"/evaluation/{session.access_token}",
+        "full_link": f"{FRONTEND_URL}/evaluation/{session.access_token}",
+        "candidate_name": candidate.nom,
+        "offer_titre": offer.titre,
+    }
+
+
+# ── GET /assessment/public/{token} (candidat) ────────────────────────────────
+@router.get("/assessment/public/{token}", summary="[Candidat] État + question courante")
+def public_get(token: str, db: Session = Depends(get_db)):
+    session = _session_by_token(db, token)
+    candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
+    competences = list(offer.competences_requises or []) if offer else []
+
+    pool = _session_pool(db, session)
+
+    qcm_done = cat_engine.is_finished(len(session.administered or []), len(pool))
+    base = {
+        "candidate_name": candidate.nom if candidate else "Candidat",
+        "offer_titre": offer.titre if offer else "Poste",
+        "status": session.status.value,
+        "total_qcm": min(cat_engine.TEST_LENGTH, len(pool)),
+        "answered_qcm": len(session.administered or []),
+        "completed": session.status == AssessmentStatus.completed,
+    }
+    if session.status == AssessmentStatus.completed:
+        return {**base, "phase": "done"}
+    if not qcm_done:
+        nxt = _next_question(db, session, pool)
+        if nxt:
+            question, _ = nxt
+            return {**base, "phase": "qcm", "question": _question_public(question, str(session.id))}
+    # Phase questions ouvertes
+    answered_open = {a["question_id"] for a in (session.open_answers or [])}
+    open_qs = [
+        {"question_id": str(q.id), "competence": q.competence_esco, "question": q.question}
+        for q in _open_questions_for(db, competences)
+        if str(q.id) not in answered_open
+    ][:5]
+    return {**base, "phase": "open", "open_questions": open_qs}
+
+
+# ── POST /assessment/public/{token}/answer (candidat, QCM) ───────────────────
+@router.post("/assessment/public/{token}/answer", summary="[Candidat] Répondre à un QCM")
+def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_db)):
+    session = _session_by_token(db, token)
+    # On délègue à la logique existante en fixant le session_id
+    payload.session_id = str(session.id)
+    return answer_assessment(payload, db)
+
+
+# ── POST /assessment/public/{token}/open-answer (candidat) ───────────────────
+@router.post("/assessment/public/{token}/open-answer", summary="[Candidat] Répondre à une question ouverte")
+def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Session = Depends(get_db)):
+    session = _session_by_token(db, token)
+    payload.session_id = str(session.id)
+    return submit_open_answer(payload, db)
+
+
+# ── POST /assessment/public/{token}/finish (candidat) ────────────────────────
+@router.post("/assessment/public/{token}/finish", summary="[Candidat] Terminer l'évaluation")
+def public_finish(token: str, db: Session = Depends(get_db)):
+    session = _session_by_token(db, token)
+    session.status = AssessmentStatus.completed
+    session.completed_at = func.now()
+    db.commit()
+    # Calcul du Reality Gap (best-effort)
+    if session.job_offer_id and session.competence_scores:
+        try:
+            compute_reality_gap_endpoint(
+                RealityGapPayload(candidate_id=str(session.candidate_id),
+                                  offer_id=str(session.job_offer_id),
+                                  session_id=str(session.id)), db)
+        except Exception:
+            pass
+    return {"ok": True, "completed": True}

@@ -68,6 +68,9 @@ class AssessmentSession(Base):
     domaine = Column(String(80), nullable=False)
     status  = Column(SAEnum(AssessmentStatus), default=AssessmentStatus.in_progress, nullable=False)
 
+    # Jeton d'accès candidat (test autonome via lien, sans compte)
+    access_token = Column(String(64), unique=True, index=True, nullable=True)
+
     theta = Column(Float, nullable=True)   # niveau estimé (échelle IRT, ~[-3, 3])
 
     # Historique des items administrés : [{question_id, difficulte, reponse, correct}]
