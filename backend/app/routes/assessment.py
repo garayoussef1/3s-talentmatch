@@ -550,6 +550,7 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
 class LaunchPayload(BaseModel):
     candidate_id: str
     offer_id: str
+    recruiter_questions: Optional[List[str]] = None   # questions ajoutées par le recruteur
 
 
 def _session_by_token(db: Session, token: str) -> AssessmentSession:
@@ -559,21 +560,35 @@ def _session_by_token(db: Session, token: str) -> AssessmentSession:
     return s
 
 
-def _open_questions_for(db: Session, competences: List[str]) -> List[OpenQuestion]:
-    if not competences:
-        return []
-    lowered = {c.lower() for c in competences}
-    return (
-        db.query(OpenQuestion)
-        .filter(func.lower(OpenQuestion.competence_esco).in_(lowered),
-                OpenQuestion.emb_expert.isnot(None))
-        .all()
+def _cv_resume(candidate: Candidate) -> str:
+    """Résumé anonymisé du CV pour contextualiser la génération (pas de données perso)."""
+    pd = candidate.parsed_data or {}
+    comps = ", ".join(c.get("name", "") for c in (pd.get("competences") or [])[:15] if isinstance(c, dict))
+    exps = " ; ".join(
+        f"{e.get('poste','')}" for e in (pd.get("experiences") or [])[:4] if isinstance(e, dict)
     )
+    meta = pd.get("metadata", {}) or {}
+    return (f"Compétences : {comps or 'non précisées'}. "
+            f"Expériences : {exps or 'non précisées'}. "
+            f"Séniorité : {meta.get('niveau_seniorite', 'inconnue')} "
+            f"({meta.get('annees_experience_totales', '?')} ans).")
+
+
+def _session_qcm_pool_rows(session: AssessmentSession):
+    """Adapte session_qcm (dicts) au format attendu par cat_engine (a/b/c/d)."""
+    class _Q:  # objet léger compatible build_item_bank
+        def __init__(self, d):
+            self.discrimination = 1.0
+            self.difficulte = d["difficulte"]
+    return [_Q(d) for d in (session.session_qcm or [])]
 
 
 # ── POST /assessment/launch (recruteur) ──────────────────────────────────────
-@router.post("/assessment/launch", summary="[Recruteur] Créer une session + lien candidat")
+@router.post("/assessment/launch", summary="[Recruteur] Générer le questionnaire + lien candidat")
 def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
+    """Génère À LA VOLÉE (Ollama local) un questionnaire UNIQUE pour ce candidat :
+    QCM + questions de raisonnement ciblés offre+CV, + questions du recruteur.
+    Long (~2-4 min) mais chaque entretien a des questions fraîches."""
     try:
         cand_uuid = UUID(str(payload.candidate_id))
         offer_uuid = UUID(str(payload.offer_id))
@@ -586,12 +601,45 @@ def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Candidat ou offre introuvable")
 
     competences = list(offer.competences_requises or [])
-    pool = _pool_for_competences(db, competences) if competences else []
-    if len(pool) < 3:
-        pool = _pool(db, "IT")   # repli démo (seed IT)
-    if len(pool) < 3:
-        raise HTTPException(status_code=400,
-                            detail="Questions non préparées. Lancez /assessment/prepare d'abord.")
+
+    # 1) Génération intelligente par entretien (offre + CV anonymisé)
+    from app.services.assessment import question_generator, semantic_scorer
+    try:
+        gen = question_generator.generate_session_questions(
+            offer.titre or "le poste", competences, _cv_resume(candidate),
+            n_qcm=10, n_open=3,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Génération impossible (Ollama) : {exc}")
+    if len(gen["qcm"]) < 3:
+        raise HTTPException(status_code=502, detail="Génération insuffisante, relancez.")
+
+    # Identifiants internes des questions de session
+    session_qcm = [{"qid": f"q{i}", **q} for i, q in enumerate(gen["qcm"])]
+
+    # 2) Questions ouvertes IA + embeddings des références (scoring local)
+    session_open = []
+    ref_texts, ref_map = [], []
+    for i, q in enumerate(gen["open"]):
+        item = {"qid": f"o{i}", "source": "ia", **q}
+        session_open.append(item)
+        ref_texts += [q["ref_faible"], q["ref_correct"], q["ref_expert"]]
+        ref_map.append(item)
+    vecs = semantic_scorer.embed(ref_texts) if ref_texts else None
+    if vecs is not None:
+        for j, item in enumerate(ref_map):
+            item["emb_faible"]  = [float(x) for x in vecs[3 * j]]
+            item["emb_correct"] = [float(x) for x in vecs[3 * j + 1]]
+            item["emb_expert"]  = [float(x) for x in vecs[3 * j + 2]]
+
+    # 3) Questions personnalisées du RECRUTEUR (rédaction libre, jugées par lui)
+    for k, rq in enumerate(payload.recruiter_questions or []):
+        rq = (rq or "").strip()
+        if rq:
+            session_open.append({
+                "qid": f"r{k}", "source": "recruteur",
+                "competence": "question recruteur", "question": rq,
+            })
 
     session = AssessmentSession(
         candidate_id=cand_uuid, job_offer_id=offer_uuid,
@@ -599,6 +647,7 @@ def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
         status=AssessmentStatus.in_progress,
         access_token=secrets.token_urlsafe(24),
         theta=0.0, administered=[], competence_scores={}, open_answers=[],
+        session_qcm=session_qcm, session_open=session_open,
     )
     db.add(session)
     db.commit()
@@ -609,6 +658,8 @@ def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
         "full_link": f"{FRONTEND_URL}/evaluation/{session.access_token}",
         "candidate_name": candidate.nom,
         "offer_titre": offer.titre,
+        "nb_qcm": len(session_qcm),
+        "nb_open": len(session_open),
     }
 
 
@@ -618,33 +669,46 @@ def public_get(token: str, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
     candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
     offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
-    competences = list(offer.competences_requises or []) if offer else []
 
-    pool = _session_pool(db, session)
+    qcm = session.session_qcm or []
+    administered = session.administered or []
+    total_qcm = min(cat_engine.TEST_LENGTH, len(qcm))
+    qcm_done = len(administered) >= total_qcm
 
-    qcm_done = cat_engine.is_finished(len(session.administered or []), len(pool))
     base = {
         "candidate_name": candidate.nom if candidate else "Candidat",
         "offer_titre": offer.titre if offer else "Poste",
         "status": session.status.value,
-        "total_qcm": min(cat_engine.TEST_LENGTH, len(pool)),
-        "answered_qcm": len(session.administered or []),
+        "total_qcm": total_qcm,
+        "answered_qcm": len(administered),
         "completed": session.status == AssessmentStatus.completed,
     }
     if session.status == AssessmentStatus.completed:
         return {**base, "phase": "done"}
-    if not qcm_done:
-        nxt = _next_question(db, session, pool)
-        if nxt:
-            question, _ = nxt
-            return {**base, "phase": "qcm", "question": _question_public(question, str(session.id))}
-    # Phase questions ouvertes
+
+    if qcm and not qcm_done:
+        # Sélection adaptative sur les questions DE CETTE SESSION
+        bank = cat_engine.build_item_bank(_session_qcm_pool_rows(session))
+        idx = cat_engine.select_next_index(bank, [a["index"] for a in administered], session.theta)
+        if idx is not None:
+            q = qcm[idx]
+            perm = _option_permutation(str(session.id), q["qid"], len(q["options"]))
+            return {**base, "phase": "qcm", "question": {
+                "question_id": q["qid"],
+                "competence": q["competence"],
+                "difficulte": q["difficulte"],
+                "question": q["question"],
+                "options": [q["options"][perm[i]] for i in range(len(q["options"]))],
+            }}
+
+    # Phase questions ouvertes (IA + recruteur) de cette session
     answered_open = {a["question_id"] for a in (session.open_answers or [])}
     open_qs = [
-        {"question_id": str(q.id), "competence": q.competence_esco, "question": q.question}
-        for q in _open_questions_for(db, competences)
-        if str(q.id) not in answered_open
-    ][:5]
+        {"question_id": o["qid"], "competence": o.get("competence", ""),
+         "question": o["question"], "source": o.get("source", "ia")}
+        for o in (session.session_open or [])
+        if o["qid"] not in answered_open
+    ]
     return {**base, "phase": "open", "open_questions": open_qs}
 
 
@@ -652,17 +716,108 @@ def public_get(token: str, db: Session = Depends(get_db)):
 @router.post("/assessment/public/{token}/answer", summary="[Candidat] Répondre à un QCM")
 def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
-    # On délègue à la logique existante en fixant le session_id
-    payload.session_id = str(session.id)
-    return answer_assessment(payload, db)
+    if session.status == AssessmentStatus.completed:
+        raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
+
+    qcm = session.session_qcm or []
+    by_qid = {q["qid"]: (i, q) for i, q in enumerate(qcm)}
+    if payload.question_id not in by_qid:
+        raise HTTPException(status_code=404, detail="Question hors session")
+    idx, q = by_qid[payload.question_id]
+
+    administered = list(session.administered or [])
+    if any(a["question_id"] == payload.question_id for a in administered):
+        raise HTTPException(status_code=409, detail="Question déjà répondue")
+
+    # Remap de l'option choisie (options mélangées à l'affichage)
+    perm = _option_permutation(str(session.id), q["qid"], len(q["options"]))
+    try:
+        original = perm[int(payload.reponse)]
+    except (IndexError, ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Réponse hors options")
+    correct = original == int(q["correct"])
+
+    administered.append({
+        "question_id": q["qid"], "index": idx,
+        "competence": q["competence"], "difficulte": q["difficulte"],
+        "reponse": original, "correct": correct,
+    })
+
+    bank = cat_engine.build_item_bank(_session_qcm_pool_rows(session))
+    session.theta = cat_engine.estimate_theta(
+        bank, [a["index"] for a in administered], [a["correct"] for a in administered], session.theta)
+    session.administered = administered
+    session.competence_scores = cat_engine.competence_scores(administered)
+    db.commit()
+
+    total_qcm = min(cat_engine.TEST_LENGTH, len(qcm))
+    return {"done": len(administered) >= total_qcm, "progression": len(administered)}
 
 
 # ── POST /assessment/public/{token}/open-answer (candidat) ───────────────────
 @router.post("/assessment/public/{token}/open-answer", summary="[Candidat] Répondre à une question ouverte")
 def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
-    payload.session_id = str(session.id)
-    return submit_open_answer(payload, db)
+    if session.status == AssessmentStatus.completed:
+        raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
+
+    target = next((o for o in (session.session_open or []) if o["qid"] == payload.question_id), None)
+    if not target:
+        raise HTTPException(status_code=404, detail="Question hors session")
+
+    # Notation sémantique locale (questions IA uniquement — celles du recruteur
+    # sont jugées par lui à la lecture des réponses)
+    score, sims = None, {}
+    if target.get("emb_expert"):
+        from app.services.assessment import semantic_scorer
+        res = semantic_scorer.score_open_answer(
+            payload.answer, target["emb_faible"], target["emb_correct"], target["emb_expert"])
+        score, sims = res.get("score"), res.get("similarites", {})
+
+    answers = [a for a in (session.open_answers or []) if a.get("question_id") != payload.question_id]
+    answers.append({
+        "question_id": payload.question_id,
+        "competence": target.get("competence", ""),
+        "question": target["question"],
+        "source": target.get("source", "ia"),
+        "answer": payload.answer,
+        "score": score,
+        "similarites": sims,
+    })
+    session.open_answers = answers
+    db.commit()
+    return {"ok": True, "answered": len(answers)}
+
+
+# ── GET /assessment/detail/{session_id} (recruteur : vérifier les réponses) ──
+@router.get("/assessment/detail/{session_id}", summary="[Recruteur] Toutes les questions/réponses")
+def assessment_detail(session_id: UUID, db: Session = Depends(get_db)):
+    session = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session non trouvée")
+
+    qcm_map = {q["qid"]: q for q in (session.session_qcm or [])}
+    qcm_detail = []
+    for a in (session.administered or []):
+        q = qcm_map.get(a["question_id"], {})
+        qcm_detail.append({
+            "competence": a.get("competence"),
+            "difficulte": a.get("difficulte"),
+            "question": q.get("question", ""),
+            "options": q.get("options", []),
+            "bonne_reponse": q.get("correct"),
+            "reponse_candidat": a.get("reponse"),
+            "correct": a.get("correct"),
+        })
+
+    return {
+        "session_id": str(session.id),
+        "status": session.status.value,
+        "niveau_global": cat_engine.theta_to_niveau(session.theta),
+        "competence_scores": session.competence_scores or {},
+        "qcm": qcm_detail,
+        "open_answers": session.open_answers or [],
+    }
 
 
 # ── POST /assessment/public/{token}/finish (candidat) ────────────────────────

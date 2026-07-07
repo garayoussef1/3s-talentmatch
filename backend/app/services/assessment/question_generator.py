@@ -42,6 +42,91 @@ def _extract_json(raw: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Génération PAR ENTRETIEN (offre + CV) — questions uniques à chaque session
+# ─────────────────────────────────────────────────────────────────────────────
+def generate_session_questions(offer_titre: str, competences: list[str],
+                               cv_resume: str, n_qcm: int = 10, n_open: int = 3) -> dict:
+    """Génère en UN appel le questionnaire complet d'un entretien.
+
+    Intelligent : ciblé sur le POSTE (offre) et adapté au PROFIL (résumé CV
+    anonymisé : compétences + expériences, PAS de données personnelles).
+    Chaque session reçoit des questions fraîches (pas de banque partagée).
+
+    Retourne {"qcm": [...], "open": [...]}.
+    """
+    comp_str = ", ".join(competences[:8]) or "les compétences du poste"
+    prompt = f"""Tu es un examinateur technique senior qui prépare un entretien
+d'évaluation pour le poste « {offer_titre} ».
+
+COMPÉTENCES CLÉS DU POSTE : {comp_str}
+
+PROFIL DU CANDIDAT (résumé) :
+{cv_resume[:900]}
+
+Génère un questionnaire ADAPTÉ à ce poste et à ce profil :
+
+1) EXACTEMENT {n_qcm} QCM techniques sur les compétences clés du poste,
+   difficulté croissante (échelle 1-10 répartie), 4 options dont UNE correcte.
+   Les questions testent la compréhension réelle (pas de la culture générale).
+
+2) EXACTEMENT {n_open} questions OUVERTES de RAISONNEMENT (mise en situation,
+   résolution de problème, choix justifié) liées au poste — le candidat devra
+   RÉDIGER et expliquer sa démarche. Pour chacune, fournis 3 réponses de
+   référence : "ref_faible" (vague), "ref_correct" (basique), "ref_expert"
+   (structurée, compromis, vocabulaire précis).
+
+Réponds UNIQUEMENT avec ce JSON :
+{{"qcm": [
+  {{"competence": "...", "question": "...", "options": ["...","...","...","..."], "correct": 0, "difficulte": 3}}
+],
+"open": [
+  {{"competence": "...", "question": "...", "ref_faible": "...", "ref_correct": "...", "ref_expert": "..."}}
+]}}"""
+
+    client = _client()
+    resp = client.chat.completions.create(
+        model=client.model_name,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.6,   # un peu de variété entre sessions
+        max_tokens=3500,
+        response_format={"type": "json_object"},
+    )
+    data = _extract_json(resp.choices[0].message.content)
+
+    qcm = []
+    for q in data.get("qcm", []):
+        opts = q.get("options") or []
+        try:
+            correct = int(q.get("correct", 0))
+            diff = max(1, min(10, int(q.get("difficulte", 5))))
+        except (TypeError, ValueError):
+            continue
+        if len(opts) != 4 or not (0 <= correct <= 3) or not q.get("question"):
+            continue
+        qcm.append({
+            "competence": str(q.get("competence", "")).strip() or "générale",
+            "question": str(q["question"]).strip(),
+            "options": [str(o).strip() for o in opts],
+            "correct": correct,
+            "difficulte": diff,
+        })
+
+    open_qs = []
+    for q in data.get("open", []):
+        if not all(q.get(k) for k in ("question", "ref_faible", "ref_correct", "ref_expert")):
+            continue
+        open_qs.append({
+            "competence": str(q.get("competence", "")).strip() or "générale",
+            "question": str(q["question"]).strip(),
+            "ref_faible": str(q["ref_faible"]).strip(),
+            "ref_correct": str(q["ref_correct"]).strip(),
+            "ref_expert": str(q["ref_expert"]).strip(),
+        })
+
+    return {"qcm": qcm, "open": open_qs}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Génération de QCM (Module 1)
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_qcm(competence: str, n: int = 6) -> list[dict]:

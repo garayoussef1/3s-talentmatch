@@ -81,6 +81,14 @@ class AssessmentSession(Base):
     #   score, similarites}] — sert au rapport IA.
     open_answers = Column(JSON, default=list, nullable=True)
 
+    # Questions générées À LA VOLÉE pour CETTE session (uniques par entretien,
+    # à partir de l'offre + du CV — pas de banque partagée) :
+    #   session_qcm  : [{qid, competence, difficulte, question, options, correct}]
+    #   session_open : [{qid, competence, question, ref_faible, ref_correct,
+    #                    ref_expert, emb_*, source: "ia"|"recruteur"}]
+    session_qcm  = Column(JSON, default=list, nullable=True)
+    session_open = Column(JSON, default=list, nullable=True)
+
     created_at   = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
