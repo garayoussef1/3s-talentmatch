@@ -101,3 +101,19 @@
 .ast-good { color: #16a34a; }
 .ast-ans-text { font-size: 13px; color: #475569; line-height: 1.5; white-space: pre-wrap; }
 .ast-score { color: #4338ca; font-weight: 700; margin-left: 6px; }
+
+/* Score d'intégrité */
+.ast-integ { border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; border: 1px solid; }
+.ast-integ-high    { background: #f0fdf4; border-color: #bbf7d0; }
+.ast-integ-medium  { background: #fffbeb; border-color: #fde68a; }
+.ast-integ-low     { background: #fef2f2; border-color: #fecaca; }
+.ast-integ-blocked { background: #fef2f2; border-color: #fca5a5; }
+.ast-integ-head { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; color: #1e293b; }
+.ast-integ-head strong { font-size: 18px; }
+.ast-integ-high .ast-integ-head strong    { color: #16a34a; }
+.ast-integ-medium .ast-integ-head strong  { color: #d97706; }
+.ast-integ-low .ast-integ-head strong,
+.ast-integ-blocked .ast-integ-head strong { color: #dc2626; }
+.ast-integ-flags { margin: 8px 0 0; padding-left: 18px; }
+.ast-integ-flags li { font-size: 13px; color: #b91c1c; margin-bottom: 3px; }
+.ast-integ-ok { margin: 6px 0 0; font-size: 13px; color: #15803d; }

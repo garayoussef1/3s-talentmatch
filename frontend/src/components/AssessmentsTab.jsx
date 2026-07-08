@@ -150,6 +150,19 @@ function AssessmentDetail({ session, offerId, onClose }) {
 
         {!loading && tab === 'resultats' && (
           <div className="ast-body">
+            {/* Score d'intégrité (anti-triche) */}
+            {answers?.integrity && (
+              <div className={`ast-integ ast-integ-${answers.integrity.level}`}>
+                <div className="ast-integ-head">
+                  <span>🛡️ Intégrité de l'évaluation</span>
+                  <strong>{answers.integrity.score}/100</strong>
+                </div>
+                {answers.integrity.flags?.length > 0
+                  ? <ul className="ast-integ-flags">{answers.integrity.flags.map((f, i) => <li key={i}>⚠ {f}</li>)}</ul>
+                  : <p className="ast-integ-ok">✓ Aucun comportement suspect détecté.</p>}
+              </div>
+            )}
+
             {gap && (
               <div className="ast-fiab-row">
                 <div className="ast-fiab-score">{Math.round(gap.fiabilite_cv)}<span>/100</span></div>

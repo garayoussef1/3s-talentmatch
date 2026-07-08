@@ -46,8 +46,9 @@ class StartPayload(BaseModel):
 class AnswerPayload(BaseModel):
     session_id: str
     question_id: str
-    reponse: int   # index de l'option choisie (0-based)
+    reponse: int   # index de l'option choisie (0-based) ; -1 = temps écoulé
     pin: Optional[str] = None   # 2ᵉ facteur (accès candidat par lien)
+    response_time: Optional[float] = None   # secondes pour répondre (anti-triche)
 
 
 class OpenAnswerPayload(BaseModel):
@@ -60,6 +61,19 @@ class SessionOpenAnswerPayload(BaseModel):
     question_id: str   # id d'une OpenQuestion
     answer: str
     pin: Optional[str] = None
+    # Télémétrie anti-triche (rédaction)
+    response_time: Optional[float] = None   # secondes
+    keystrokes: Optional[int] = None        # nb de frappes clavier dans la zone
+    paste_detected: bool = False            # tentative de collage bloquée
+
+
+class EventPayload(BaseModel):
+    pin: Optional[str] = None
+    type: str   # "fullscreen_exit" | "tab_switch"
+
+
+# Anti-triche : à la 2ᵉ sortie du plein écran, l'évaluation est bloquée
+MAX_FULLSCREEN_EXITS = 2
 
 
 class RealityGapPayload(BaseModel):
@@ -582,6 +596,58 @@ def _check_pin(session: AssessmentSession, pin: Optional[str]) -> bool:
     return str(pin or "").strip() == session.access_pin
 
 
+def _is_blocked(session: AssessmentSession) -> bool:
+    return bool((session.integrity or {}).get("blocked"))
+
+
+def _compute_integrity(session: AssessmentSession) -> dict:
+    """Score d'intégrité 0-100 à partir des signaux anti-triche.
+
+    Pénalités : changements d'onglet, sorties plein écran, collages, réponses
+    rédigées "injectées" (texte long avec très peu de frappes), QCM difficiles
+    réussis anormalement vite. Blocage 2-strikes → score 0.
+    """
+    integ = session.integrity or {}
+    tab = int(integ.get("tab_switches", 0))
+    fs = int(integ.get("fullscreen_exits", 0))
+    paste = int(integ.get("paste_count", 0))
+
+    injected = 0
+    for a in (session.open_answers or []):
+        ks, txt = a.get("keystrokes"), a.get("answer", "")
+        if ks is not None and len(txt) > 80 and ks < len(txt) * 0.5:
+            injected += 1   # texte apparu sans frappes → injection probable
+
+    fast_qcm = sum(
+        1 for it in (session.administered or [])
+        if it.get("correct") and it.get("difficulte", 0) >= 7
+        and it.get("response_time") is not None and it["response_time"] < 5
+    )
+
+    score = 100
+    score -= min(40, tab * 8)
+    score -= min(20, fs * 5)
+    score -= min(30, paste * 10)
+    score -= min(30, injected * 15)
+    score -= min(20, fast_qcm * 10)
+    score = max(0, score)
+
+    flags = []
+    if tab: flags.append(f"A quitté l'onglet {tab} fois")
+    if fs: flags.append(f"Sorti du plein écran {fs} fois")
+    if paste: flags.append(f"{paste} tentative(s) de collage")
+    if injected: flags.append(f"{injected} réponse(s) rédigée(s) sans frappe clavier (texte injecté)")
+    if fast_qcm: flags.append(f"{fast_qcm} QCM difficile(s) réussi(s) anormalement vite")
+
+    blocked = bool(integ.get("blocked"))
+    if blocked:
+        score = 0
+        flags.insert(0, integ.get("block_reason", "Évaluation bloquée pour triche présumée."))
+
+    level = "blocked" if blocked else ("high" if score >= 80 else ("medium" if score >= 50 else "low"))
+    return {"score": score, "level": level, "blocked": blocked, "flags": flags}
+
+
 def _window_status(session: AssessmentSession):
     """('open'|'not_open'|'expired', message) selon opens_at/deadline."""
     from datetime import datetime, timezone
@@ -852,6 +918,36 @@ def public_get(token: str, pin: Optional[str] = None, db: Session = Depends(get_
     return {**base, "phase": "open", "open_questions": open_qs}
 
 
+# ── POST /assessment/public/{token}/event (anti-triche temps réel) ───────────
+@router.post("/assessment/public/{token}/event", summary="[Candidat] Signaler un événement d'intégrité")
+def public_event(token: str, payload: EventPayload, db: Session = Depends(get_db)):
+    session = _session_by_token(db, token)
+    if not _check_pin(session, payload.pin):
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
+
+    integ = dict(session.integrity or {})
+    blocked = bool(integ.get("blocked"))
+    warning = False
+
+    if not blocked:
+        if payload.type == "fullscreen_exit":
+            n = int(integ.get("fullscreen_exits", 0)) + 1
+            integ["fullscreen_exits"] = n
+            if n >= MAX_FULLSCREEN_EXITS:
+                integ["blocked"] = True
+                integ["block_reason"] = f"Évaluation interrompue : {n} sorties du plein écran (triche présumée)."
+                session.status = AssessmentStatus.abandoned
+                blocked = True
+            else:
+                warning = True   # 1ʳᵉ sortie → dernier avertissement
+        elif payload.type == "tab_switch":
+            integ["tab_switches"] = int(integ.get("tab_switches", 0)) + 1
+
+    session.integrity = integ
+    db.commit()
+    return {"blocked": blocked, "warning": warning}
+
+
 # ── POST /assessment/public/{token}/answer (candidat, QCM) ───────────────────
 @router.post("/assessment/public/{token}/answer", summary="[Candidat] Répondre à un QCM")
 def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_db)):
@@ -860,6 +956,9 @@ def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
     if not _check_pin(session, payload.pin):
         raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
+    if _is_blocked(session):
+        raise HTTPException(status_code=423, detail=(session.integrity or {}).get(
+            "block_reason", "Évaluation bloquée pour non-respect des règles."))
     access, access_msg = _window_status(session)
     if access != "open":
         raise HTTPException(status_code=403, detail=access_msg)
@@ -874,18 +973,23 @@ def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_
     if any(a["question_id"] == payload.question_id for a in administered):
         raise HTTPException(status_code=409, detail="Question déjà répondue")
 
-    # Remap de l'option choisie (options mélangées à l'affichage)
-    perm = _option_permutation(str(session.id), q["qid"], len(q["options"]))
-    try:
-        original = perm[int(payload.reponse)]
-    except (IndexError, ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="Réponse hors options")
-    correct = original == int(q["correct"])
+    # Remap de l'option choisie (options mélangées à l'affichage).
+    # reponse = -1 → temps écoulé (timer) : compté comme incorrect.
+    if int(payload.reponse) == -1:
+        original, correct = -1, False
+    else:
+        perm = _option_permutation(str(session.id), q["qid"], len(q["options"]))
+        try:
+            original = perm[int(payload.reponse)]
+        except (IndexError, ValueError, TypeError):
+            raise HTTPException(status_code=400, detail="Réponse hors options")
+        correct = original == int(q["correct"])
 
     administered.append({
         "question_id": q["qid"], "index": idx,
         "competence": q["competence"], "difficulte": q["difficulte"],
         "reponse": original, "correct": correct,
+        "response_time": payload.response_time,
     })
 
     bank = cat_engine.build_item_bank(_session_qcm_pool_rows(session))
@@ -907,9 +1011,18 @@ def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Sessio
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
     if not _check_pin(session, payload.pin):
         raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
+    if _is_blocked(session):
+        raise HTTPException(status_code=423, detail=(session.integrity or {}).get(
+            "block_reason", "Évaluation bloquée pour non-respect des règles."))
     access, access_msg = _window_status(session)
     if access != "open":
         raise HTTPException(status_code=403, detail=access_msg)
+
+    # Télémétrie : compteur de collages agrégé sur la session
+    if payload.paste_detected:
+        integ = dict(session.integrity or {})
+        integ["paste_count"] = int(integ.get("paste_count", 0)) + 1
+        session.integrity = integ
 
     target = next((o for o in (session.session_open or []) if o["qid"] == payload.question_id), None)
     if not target:
@@ -933,6 +1046,9 @@ def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Sessio
         "answer": payload.answer,
         "score": score,
         "similarites": sims,
+        "response_time": payload.response_time,
+        "keystrokes": payload.keystrokes,
+        "paste_detected": payload.paste_detected,
     })
     session.open_answers = answers
     db.commit()
@@ -965,6 +1081,7 @@ def assessment_detail(session_id: UUID, db: Session = Depends(get_db)):
         "status": session.status.value,
         "niveau_global": cat_engine.theta_to_niveau(session.theta),
         "competence_scores": session.competence_scores or {},
+        "integrity": _compute_integrity(session),
         "qcm": qcm_detail,
         "open_answers": session.open_answers or [],
     }
@@ -1031,6 +1148,8 @@ def list_assessments(offer_id: UUID, db: Session = Depends(get_db)):
             "niveau_global": cat_engine.theta_to_niveau(s.theta) if (s.administered or []) else None,
             "fiabilite_cv": rg.fiabilite_cv if rg else None,
             "niveau_label": rg.niveau_label if rg else None,
+            "integrity_score": _compute_integrity(s)["score"] if (s.administered or s.open_answers) else None,
+            "blocked": _is_blocked(s),
             "created_at": s.created_at.isoformat() if s.created_at else None,
         })
     return {"offer_id": str(offer_id), "offer_titre": offer.titre, "sessions": out}

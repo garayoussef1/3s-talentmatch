@@ -1,10 +1,12 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import './AssessmentCandidate.css'
 
 // Axios dédié (candidat non connecté), timeout large (scoring local)
 const publicApi = axios.create({ baseURL: '/api', timeout: 60000 })
+
+const QCM_SECONDS = 90   // timer par QCM (anti-recherche externe)
 
 export default function AssessmentCandidate() {
   const { token } = useParams()
@@ -22,6 +24,44 @@ export default function AssessmentCandidate() {
   const [pinInput, setPinInput] = useState('')
   const [verifying, setVerifying] = useState(false)
 
+  // ── Anti-triche (mode examen) ──
+  const [security, setSecurity] = useState('')   // '' | 'warning' | 'blocked'
+  const [timeLeft, setTimeLeft] = useState(QCM_SECONDS)
+  const keystrokes = useRef(0)         // frappes dans la zone de rédaction
+  const pasteTried = useRef(false)     // collage tenté (bloqué)
+  const qStart = useRef(Date.now())    // début de la question courante
+  const wasFullscreen = useRef(false)
+
+  const enterFullscreen = () => {
+    const el = document.documentElement
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {})
+  }
+
+  const reportEvent = useCallback((type) => {
+    return publicApi.post(`/assessment/public/${token}/event`, { pin, type })
+      .then(res => {
+        if (res.data.blocked) setSecurity('blocked')
+        else if (res.data.warning) setSecurity('warning')
+      })
+      .catch(() => {})
+  }, [token, pin])
+
+  // Détection onglet + sortie plein écran (une fois le PIN validé)
+  useEffect(() => {
+    if (!pin) return
+    const onVisibility = () => { if (document.hidden) reportEvent('tab_switch') }
+    const onFsChange = () => {
+      if (document.fullscreenElement) wasFullscreen.current = true
+      else if (wasFullscreen.current) reportEvent('fullscreen_exit')
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    document.addEventListener('fullscreenchange', onFsChange)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      document.removeEventListener('fullscreenchange', onFsChange)
+    }
+  }, [pin, reportEvent])
+
   const load = useCallback((pinValue) => {
     const p = pinValue !== undefined ? pinValue : pin
     return publicApi.get(`/assessment/public/${token}`, { params: p ? { pin: p } : {} })
@@ -34,11 +74,31 @@ export default function AssessmentCandidate() {
     publicApi.get(`/assessment/public/${token}`, { params: { pin: pinInput.trim() } })
       .then(res => {
         setData(res.data)
-        if (res.data.phase !== 'pin') setPin(pinInput.trim())
+        if (res.data.phase !== 'pin') {
+          setPin(pinInput.trim())
+          enterFullscreen()   // mode examen : plein écran dès le démarrage
+        }
       })
       .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
       .finally(() => setVerifying(false))
   }
+
+  // Timer par QCM : à 0, la question est soumise comme non répondue (-1)
+  const currentQcmId = data?.phase === 'qcm' ? data?.question?.question_id : null
+  useEffect(() => {
+    if (!currentQcmId || security === 'blocked') return
+    setTimeLeft(QCM_SECONDS)
+    qStart.current = Date.now()
+    const t = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(t); answerQcmRef.current(-1); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQcmId, security])
+  const answerQcmRef = useRef(() => {})
 
   useEffect(() => { load().finally(() => setLoading(false)) }, [load])
 
@@ -51,33 +111,45 @@ export default function AssessmentCandidate() {
 
   // ── Répondre à un QCM ──
   const answerQcm = (displayIndex) => {
-    if (sending) return
+    if (sending || security === 'blocked') return
     setSending(true); setError(null)
     publicApi.post(`/assessment/public/${token}/answer`, {
       session_id: '', question_id: data.question.question_id, reponse: displayIndex, pin,
+      response_time: (Date.now() - qStart.current) / 1000,
     })
       .then(() => load())
-      .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
+      .catch(e => {
+        if (e?.response?.status === 423) setSecurity('blocked')
+        else setError(e?.response?.data?.detail || 'Erreur.')
+      })
       .finally(() => setSending(false))
   }
+  answerQcmRef.current = answerQcm
 
   // ── Répondre à une question ouverte ──
   const submitOpen = () => {
-    if (sending || !answer.trim()) return
+    if (sending || !answer.trim() || security === 'blocked') return
     const oq = data.open_questions[openIdx]
     setSending(true); setError(null)
     publicApi.post(`/assessment/public/${token}/open-answer`, {
       session_id: '', question_id: oq.question_id, answer: answer.trim(), pin,
+      response_time: (Date.now() - qStart.current) / 1000,
+      keystrokes: keystrokes.current,
+      paste_detected: pasteTried.current,
     })
       .then(() => {
-        setAnswer('')
+        setAnswer(''); keystrokes.current = 0; pasteTried.current = false
+        qStart.current = Date.now()
         if (openIdx + 1 < data.open_questions.length) {
           setOpenIdx(openIdx + 1)
         } else {
           return finishTest()
         }
       })
-      .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
+      .catch(e => {
+        if (e?.response?.status === 423) setSecurity('blocked')
+        else setError(e?.response?.data?.detail || 'Erreur.')
+      })
       .finally(() => setSending(false))
   }
 
@@ -161,16 +233,48 @@ export default function AssessmentCandidate() {
 
   const isQcm = data?.phase === 'qcm'
   const pct = isQcm && data.total_qcm ? Math.round(data.answered_qcm / data.total_qcm * 100) : 100
+  const lowTime = timeLeft <= 15
 
   return (
-    <div className="asv-screen">
+    <div className="asv-screen" onCopy={e => e.preventDefault()} onContextMenu={e => e.preventDefault()}>
+      {/* Overlay sécurité : avertissement (dernière chance) */}
+      {security === 'warning' && (
+        <div className="asv-fs-overlay">
+          <div className="asv-fs-box">
+            <div className="asv-fs-icon">⚠️</div>
+            <h2>Avertissement</h2>
+            <p>Vous avez quitté le plein écran. <strong>C'est votre dernière chance</strong> :
+               une nouvelle sortie entraînera l'<strong>arrêt définitif</strong> de l'évaluation.
+               Cet incident est enregistré et signalé au recruteur.</p>
+            <button className="asv-btn" onClick={() => { enterFullscreen(); setSecurity('') }}>
+              Reprendre l'évaluation
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay sécurité : évaluation bloquée (définitif) */}
+      {security === 'blocked' && (
+        <div className="asv-fs-overlay">
+          <div className="asv-fs-box">
+            <div className="asv-fs-icon">🚫</div>
+            <h2 style={{ color: '#dc2626' }}>Évaluation interrompue</h2>
+            <p>Votre évaluation a été <strong>arrêtée</strong> en raison de sorties répétées du
+               mode sécurisé. Cet incident a été transmis au recruteur.</p>
+            <p className="asv-muted" style={{ fontSize: 13 }}>Vous pouvez fermer cette page.</p>
+          </div>
+        </div>
+      )}
+
       <div className="asv-container">
         <div className="asv-header">
           <div>
             <div className="asv-logo">3S TalentMatch</div>
             <div className="asv-poste">Évaluation — {data?.offer_titre}</div>
           </div>
-          <div className="asv-phase-tag">{isQcm ? 'QCM technique' : 'Raisonnement'}</div>
+          {isQcm
+            ? <div className={`asv-timer ${lowTime ? 'asv-timer-low' : ''}`}>⏱ {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:{String(timeLeft % 60).padStart(2, '0')}</div>
+            : <div className="asv-phase-tag">Raisonnement</div>}
         </div>
 
         <div className="asv-progress-wrap"><div className="asv-progress-bar" style={{ width: `${pct}%` }} /></div>
@@ -204,9 +308,11 @@ export default function AssessmentCandidate() {
               <h2 className="asv-question">{data.open_questions[openIdx]?.question}</h2>
               <textarea
                 className="asv-textarea" rows={7}
-                placeholder="Expliquez votre démarche, appuyez-vous sur des exemples concrets…"
+                placeholder="Rédigez votre réponse… (copier-coller désactivé)"
                 value={answer} onChange={e => setAnswer(e.target.value)} disabled={sending}
-                onPaste={e => e.preventDefault()} onCopy={e => e.preventDefault()}
+                onKeyDown={() => { keystrokes.current += 1 }}
+                onPaste={e => { e.preventDefault(); pasteTried.current = true }}
+                onCopy={e => e.preventDefault()} onCut={e => e.preventDefault()}
               />
               <div className="asv-actions">
                 <span className="asv-count">{answer.trim().length} caractères</span>

@@ -70,3 +70,26 @@
   border: 2px solid #cbd5e1; border-radius: 12px; color: #4338ca;
 }
 .asv-pin:focus { outline: none; border-color: #4338ca; }
+
+/* Timer QCM */
+.asv-timer {
+  background: rgba(255,255,255,0.15); color: #fff;
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.asv-timer-low { background: #dc2626; animation: asv-pulse 1s infinite; }
+@keyframes asv-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* Overlays sécurité */
+.asv-fs-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(15,23,42,0.92); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.asv-fs-box {
+  background: #fff; border-radius: 16px; padding: 40px; max-width: 460px;
+  text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+.asv-fs-icon { font-size: 48px; margin-bottom: 12px; }
+.asv-fs-box h2 { color: #d97706; margin: 0 0 12px; }
+.asv-fs-box p { color: #475569; line-height: 1.55; margin: 0 0 20px; font-size: 14px; }

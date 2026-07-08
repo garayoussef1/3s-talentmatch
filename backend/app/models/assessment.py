@@ -90,6 +90,10 @@ class AssessmentSession(Base):
     #   score, similarites}] — sert au rapport IA.
     open_answers = Column(JSON, default=list, nullable=True)
 
+    # Signaux d'intégrité anti-triche (JSON) : sorties plein écran, changements
+    # d'onglet, collages, blocage 2-strikes → score d'intégrité pour le recruteur.
+    integrity = Column(JSON, default=dict, nullable=True)
+
     # Questions générées À LA VOLÉE pour CETTE session (uniques par entretien,
     # à partir de l'offre + du CV — pas de banque partagée) :
     #   session_qcm  : [{qid, competence, difficulte, question, options, correct}]

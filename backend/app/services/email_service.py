@@ -309,6 +309,7 @@ def send_assessment_invitation_email(to_email: str, prenom: str, offer_title: st
                 <p style="color: #475569; font-size: 13px; margin: 0 0 6px;">🔒 Votre code d'accès personnel</p>
                 <p style="color: #15803d; font-size: 28px; font-weight: 800; letter-spacing: 6px; margin: 0;">{access_pin}</p>
                 <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0;">À saisir au démarrage de l'évaluation. Ne le partagez avec personne.</p>
+                <p style="color: #b45309; font-size: 12px; margin: 4px 0 0; font-weight: 600;">⚠️ Ce code est à usage unique : il n'est valable que pour cette évaluation.</p>
             </div>"""
     else:
         pin_block = ""
