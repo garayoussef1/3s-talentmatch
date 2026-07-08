@@ -4,6 +4,7 @@ import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import InterviewPanel from '../components/InterviewPanel'
 import InterviewsTab from '../components/InterviewsTab'
+import AssessmentsTab from '../components/AssessmentsTab'
 import AssessmentPanel from '../components/AssessmentPanel'
 import './Offers.css'
 
@@ -964,6 +965,9 @@ export default function OfferDetail() {
         <button className={`tab-btn ${tab === 'interviews' ? 'active' : ''}`} onClick={() => setTab('interviews')}>
           🎙 Entretiens
         </button>
+        <button className={`tab-btn ${tab === 'assessments' ? 'active' : ''}`} onClick={() => setTab('assessments')}>
+          🎯 Évaluations
+        </button>
       </div>
 
       {/* Contenu */}
@@ -971,6 +975,7 @@ export default function OfferDetail() {
       {tab === 'apps'  && <TabApplications offerId={id} />}
       {tab === 'match' && <TabMatching offerId={id} offer={offer} />}
       {tab === 'interviews' && <InterviewsTab offerId={id} />}
+      {tab === 'assessments' && <AssessmentsTab offerId={id} />}
     </div>
   )
 }

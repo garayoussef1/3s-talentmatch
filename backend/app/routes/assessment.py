@@ -869,3 +869,60 @@ def public_finish(token: str, db: Session = Depends(get_db)):
         except Exception:
             pass
     return {"ok": True, "completed": True}
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# GESTION RECRUTEUR — liste des évaluations d'une offre + suppression
+# ═════════════════════════════════════════════════════════════════════════════
+@router.get("/assessment/list", summary="[Recruteur] Évaluations d'une offre")
+def list_assessments(offer_id: UUID, db: Session = Depends(get_db)):
+    offer = db.query(JobOffer).filter(JobOffer.id == offer_id).first()
+    if not offer:
+        raise HTTPException(status_code=404, detail="Offre introuvable")
+
+    sessions = (
+        db.query(AssessmentSession)
+        .filter(AssessmentSession.job_offer_id == offer_id)
+        .order_by(AssessmentSession.created_at.desc())
+        .all()
+    )
+
+    out = []
+    for s in sessions:
+        candidate = db.query(Candidate).filter(Candidate.id == s.candidate_id).first()
+        rg = (
+            db.query(RealityGapResult)
+            .filter(RealityGapResult.candidate_id == s.candidate_id,
+                    RealityGapResult.job_offer_id == offer_id)
+            .order_by(RealityGapResult.created_at.desc())
+            .first()
+        )
+        total_qcm = min(cat_engine.TEST_LENGTH, len(s.session_qcm or [])) or None
+        out.append({
+            "session_id": str(s.id),
+            "candidate_id": str(s.candidate_id),
+            "candidate_name": candidate.nom if candidate else "—",
+            "candidate_email": candidate.email if candidate else None,
+            "status": s.status.value,
+            "answered_qcm": len(s.administered or []),
+            "total_qcm": total_qcm,
+            "answered_open": len(s.open_answers or []),
+            "total_open": len(s.session_open or []),
+            "niveau_global": cat_engine.theta_to_niveau(s.theta) if (s.administered or []) else None,
+            "fiabilite_cv": rg.fiabilite_cv if rg else None,
+            "niveau_label": rg.niveau_label if rg else None,
+            "created_at": s.created_at.isoformat() if s.created_at else None,
+        })
+    return {"offer_id": str(offer_id), "offer_titre": offer.titre, "sessions": out}
+
+
+@router.delete("/assessment/{session_id}", summary="[Recruteur] Supprimer une évaluation")
+def delete_assessment(session_id: UUID, db: Session = Depends(get_db)):
+    s = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="Session non trouvée")
+    # Supprimer aussi le Reality Gap lié à cette session
+    db.query(RealityGapResult).filter(RealityGapResult.session_id == session_id).delete()
+    db.delete(s)
+    db.commit()
+    return {"ok": True, "deleted": str(session_id)}
