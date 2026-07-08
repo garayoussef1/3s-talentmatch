@@ -40,6 +40,9 @@ class AssessmentQuestion(Base):
 
     domaine         = Column(String(80), nullable=False, index=True)   # ex: "IT"
     competence_esco = Column(String(150), nullable=False, index=True)  # ex: "Python"
+    # Pool par OFFRE : questions générées une fois pour l'offre, chaque candidat
+    # en reçoit un sous-ensemble différent (lancements instantanés).
+    job_offer_id    = Column(UUID(as_uuid=True), ForeignKey("job_offers.id", ondelete="CASCADE"), nullable=True, index=True)
 
     # Paramètres IRT (modèle logistique)
     difficulte    = Column(Integer, nullable=False)   # 1-10 (mappé sur b ∈ [-3, 3])
@@ -106,6 +109,7 @@ class OpenQuestion(Base):
 
     domaine         = Column(String(80), nullable=False, index=True)
     competence_esco = Column(String(150), nullable=True)
+    job_offer_id    = Column(UUID(as_uuid=True), ForeignKey("job_offers.id", ondelete="CASCADE"), nullable=True, index=True)
     question        = Column(Text, nullable=False)
 
     # Réponses de référence (3 niveaux) + leurs embeddings BGE-M3 pré-calculés.

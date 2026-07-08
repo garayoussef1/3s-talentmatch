@@ -18,7 +18,7 @@ import os
 from uuid import UUID
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
@@ -560,20 +560,6 @@ def _session_by_token(db: Session, token: str) -> AssessmentSession:
     return s
 
 
-def _cv_resume(candidate: Candidate) -> str:
-    """Résumé anonymisé du CV pour contextualiser la génération (pas de données perso)."""
-    pd = candidate.parsed_data or {}
-    comps = ", ".join(c.get("name", "") for c in (pd.get("competences") or [])[:15] if isinstance(c, dict))
-    exps = " ; ".join(
-        f"{e.get('poste','')}" for e in (pd.get("experiences") or [])[:4] if isinstance(e, dict)
-    )
-    meta = pd.get("metadata", {}) or {}
-    return (f"Compétences : {comps or 'non précisées'}. "
-            f"Expériences : {exps or 'non précisées'}. "
-            f"Séniorité : {meta.get('niveau_seniorite', 'inconnue')} "
-            f"({meta.get('annees_experience_totales', '?')} ans).")
-
-
 def _session_qcm_pool_rows(session: AssessmentSession):
     """Adapte session_qcm (dicts) au format attendu par cat_engine (a/b/c/d)."""
     class _Q:  # objet léger compatible build_item_bank
@@ -583,12 +569,63 @@ def _session_qcm_pool_rows(session: AssessmentSession):
     return [_Q(d) for d in (session.session_qcm or [])]
 
 
+# Taille du questionnaire servi à CHAQUE candidat (tiré du pool de l'offre)
+SESSION_QCM_COUNT = 10
+SESSION_OPEN_COUNT = 3
+
+
+def _fill_session_from_pool(db: Session, session: AssessmentSession) -> bool:
+    """Remplit le questionnaire du candidat depuis le pool de l'OFFRE.
+
+    Tirage aléatoire seedé par la session → chaque candidat reçoit un
+    sous-ensemble DIFFÉRENT du pool. Retourne False si le pool n'est pas prêt.
+    """
+    status = question_bank.offer_pool_status(db, session.job_offer_id)
+    if not status["ready"]:
+        return False
+
+    rng = random.Random(str(session.id))
+    qcm_rows = (
+        db.query(AssessmentQuestion)
+        .filter(AssessmentQuestion.job_offer_id == session.job_offer_id)
+        .all()
+    )
+    open_rows = (
+        db.query(OpenQuestion)
+        .filter(OpenQuestion.job_offer_id == session.job_offer_id,
+                OpenQuestion.emb_expert.isnot(None))
+        .all()
+    )
+    qcm_pick = rng.sample(qcm_rows, min(SESSION_QCM_COUNT, len(qcm_rows)))
+    open_pick = rng.sample(open_rows, min(SESSION_OPEN_COUNT, len(open_rows)))
+
+    session.session_qcm = [{
+        "qid": f"q{i}", "competence": r.competence_esco, "difficulte": r.difficulte,
+        "question": r.question, "options": r.options, "correct": r.bonne_reponse,
+    } for i, r in enumerate(qcm_pick)]
+
+    generated_open = [{
+        "qid": f"o{i}", "source": "ia", "competence": r.competence_esco,
+        "question": r.question,
+        "emb_faible": r.emb_faible, "emb_correct": r.emb_correct, "emb_expert": r.emb_expert,
+    } for i, r in enumerate(open_pick)]
+    # Conserver les questions RECRUTEUR déjà posées au launch
+    recruiter_qs = [o for o in (session.session_open or []) if o.get("source") == "recruteur"]
+    session.session_open = generated_open + recruiter_qs
+    db.commit()
+    return True
+
+
 # ── POST /assessment/launch (recruteur) ──────────────────────────────────────
-@router.post("/assessment/launch", summary="[Recruteur] Générer le questionnaire + lien candidat")
-def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
-    """Génère À LA VOLÉE (Ollama local) un questionnaire UNIQUE pour ce candidat :
-    QCM + questions de raisonnement ciblés offre+CV, + questions du recruteur.
-    Long (~2-4 min) mais chaque entretien a des questions fraîches."""
+@router.post("/assessment/launch", summary="[Recruteur] Lancer une évaluation (instantané)")
+def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
+                      db: Session = Depends(get_db)):
+    """INSTANTANÉ : crée la session + le lien candidat immédiatement.
+
+    Le pool de questions de l'OFFRE est généré UNE seule fois, en ARRIÈRE-PLAN
+    (Ollama local). Les lancements suivants sur la même offre sont immédiats.
+    Chaque candidat recevra un sous-ensemble différent du pool (anti-triche).
+    """
     try:
         cand_uuid = UUID(str(payload.candidate_id))
         offer_uuid = UUID(str(payload.offer_id))
@@ -600,39 +637,8 @@ def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
     if not candidate or not offer:
         raise HTTPException(status_code=404, detail="Candidat ou offre introuvable")
 
-    competences = list(offer.competences_requises or [])
-
-    # 1) Génération intelligente par entretien (offre + CV anonymisé)
-    from app.services.assessment import question_generator, semantic_scorer
-    try:
-        gen = question_generator.generate_session_questions(
-            offer.titre or "le poste", competences, _cv_resume(candidate),
-            n_qcm=10, n_open=3,
-        )
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Génération impossible (Ollama) : {exc}")
-    if len(gen["qcm"]) < 3:
-        raise HTTPException(status_code=502, detail="Génération insuffisante, relancez.")
-
-    # Identifiants internes des questions de session
-    session_qcm = [{"qid": f"q{i}", **q} for i, q in enumerate(gen["qcm"])]
-
-    # 2) Questions ouvertes IA + embeddings des références (scoring local)
+    # Questions personnalisées du recruteur (stockées dès maintenant)
     session_open = []
-    ref_texts, ref_map = [], []
-    for i, q in enumerate(gen["open"]):
-        item = {"qid": f"o{i}", "source": "ia", **q}
-        session_open.append(item)
-        ref_texts += [q["ref_faible"], q["ref_correct"], q["ref_expert"]]
-        ref_map.append(item)
-    vecs = semantic_scorer.embed(ref_texts) if ref_texts else None
-    if vecs is not None:
-        for j, item in enumerate(ref_map):
-            item["emb_faible"]  = [float(x) for x in vecs[3 * j]]
-            item["emb_correct"] = [float(x) for x in vecs[3 * j + 1]]
-            item["emb_expert"]  = [float(x) for x in vecs[3 * j + 2]]
-
-    # 3) Questions personnalisées du RECRUTEUR (rédaction libre, jugées par lui)
     for k, rq in enumerate(payload.recruiter_questions or []):
         rq = (rq or "").strip()
         if rq:
@@ -647,10 +653,23 @@ def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
         status=AssessmentStatus.in_progress,
         access_token=secrets.token_urlsafe(24),
         theta=0.0, administered=[], competence_scores={}, open_answers=[],
-        session_qcm=session_qcm, session_open=session_open,
+        session_qcm=[], session_open=session_open,
     )
     db.add(session)
     db.commit()
+
+    # Pool de l'offre : prêt ? sinon génération en arrière-plan (une seule fois)
+    status = question_bank.offer_pool_status(db, offer_uuid)
+    if not status["ready"] and not status["generating"]:
+        background_tasks.add_task(
+            question_bank.generate_offer_pool,
+            offer_uuid, offer.titre or "le poste", list(offer.competences_requises or []),
+        )
+
+    # Si le pool est déjà prêt, on remplit le questionnaire tout de suite
+    if status["ready"]:
+        _fill_session_from_pool(db, session)
+
     return {
         "session_id": str(session.id),
         "access_token": session.access_token,
@@ -658,8 +677,8 @@ def launch_assessment(payload: LaunchPayload, db: Session = Depends(get_db)):
         "full_link": f"{FRONTEND_URL}/evaluation/{session.access_token}",
         "candidate_name": candidate.nom,
         "offer_titre": offer.titre,
-        "nb_qcm": len(session_qcm),
-        "nb_open": len(session_open),
+        "pool_ready": status["ready"],
+        "pool_generating": (not status["ready"]),
     }
 
 
@@ -669,6 +688,19 @@ def public_get(token: str, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
     candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
     offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
+
+    # Questionnaire pas encore rempli → tenter depuis le pool de l'offre ;
+    # si le pool est en cours de génération, le candidat patiente.
+    if not (session.session_qcm or []) and session.status != AssessmentStatus.completed:
+        if not _fill_session_from_pool(db, session):
+            return {
+                "candidate_name": candidate.nom if candidate else "Candidat",
+                "offer_titre": offer.titre if offer else "Poste",
+                "status": session.status.value,
+                "completed": False,
+                "phase": "preparing",
+                "message": "Votre questionnaire est en cours de préparation. Revenez dans quelques minutes.",
+            }
 
     qcm = session.session_qcm or []
     administered = session.administered or []

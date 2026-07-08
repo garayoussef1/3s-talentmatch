@@ -25,6 +25,13 @@ export default function AssessmentCandidate() {
 
   useEffect(() => { load().finally(() => setLoading(false)) }, [load])
 
+  // Questionnaire en préparation (pool généré en arrière-plan) → re-vérifier
+  useEffect(() => {
+    if (data?.phase !== 'preparing') return
+    const t = setInterval(load, 20000)
+    return () => clearInterval(t)
+  }, [data?.phase, load])
+
   // ── Répondre à un QCM ──
   const answerQcm = (displayIndex) => {
     if (sending) return
@@ -75,6 +82,19 @@ export default function AssessmentCandidate() {
         <h2>Merci {data?.candidate_name?.split(' ')[0]} !</h2>
         <p>Votre évaluation pour <strong>{data?.offer_titre}</strong> est terminée.</p>
         <p className="asv-muted">Vos résultats ont été transmis au recruteur.</p>
+      </div>
+    </div>
+  )
+
+  // Questionnaire en préparation (première évaluation de l'offre)
+  if (data?.phase === 'preparing') return (
+    <div className="asv-screen">
+      <div className="asv-card">
+        <div className="asv-check" style={{ background: '#4338ca' }}>⏳</div>
+        <h2>Préparation en cours</h2>
+        <p>Bonjour {data?.candidate_name?.split(' ')[0]}, votre questionnaire pour
+           <strong> {data?.offer_titre}</strong> est en cours de préparation par notre IA.</p>
+        <p className="asv-muted">Cette page se rafraîchit automatiquement — encore quelques minutes.</p>
       </div>
     </div>
   )

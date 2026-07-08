@@ -65,3 +65,9 @@
 .ap-ans-good { color: #16a34a; }
 .ap-ans-text { font-size: 13px; color: #475569; line-height: 1.5; white-space: pre-wrap; }
 .ap-ans-score { color: #4338ca; font-weight: 700; margin-left: 6px; }
+
+.ap-warn {
+  background: #fef3c7; color: #92400e; font-size: 13px;
+  padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; line-height: 1.5;
+}
+.ap-note { font-size: 12px; color: #94a3b8; margin: 10px 0 0; line-height: 1.5; }

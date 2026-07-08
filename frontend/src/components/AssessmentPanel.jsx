@@ -25,16 +25,19 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
   const [copied, setCopied]   = useState(false)
   const [recruiterQs, setRecruiterQs] = useState('')  // 1 question par ligne
 
+  const [poolGenerating, setPoolGenerating] = useState(false)
+
   const launch = () => {
     setLoading(true); setError(null)
     const questions = recruiterQs.split('\n').map(q => q.trim()).filter(Boolean)
-    // Génération Ollama locale : long (~3-6 min) mais questionnaire unique
+    // INSTANTANÉ : le pool de questions de l'offre se génère en arrière-plan
     api.post('/assessment/launch',
       { candidate_id: candidateId, offer_id: offerId, recruiter_questions: questions },
-      { timeout: 600000 })
+      { timeout: 30000 })
       .then(res => {
         setSessionId(res.data.session_id)
         setLink(window.location.origin + res.data.candidate_link)
+        setPoolGenerating(res.data.pool_generating === true)
         setStep('link')
       })
       .catch(e => setError(e?.response?.data?.detail || 'Erreur au lancement.'))
@@ -90,14 +93,19 @@ export default function AssessmentPanel({ candidateId, offerId, candidateName, o
             />
 
             <button className="ap-btn" onClick={launch} disabled={loading}>
-              {loading ? '⏳ Génération du questionnaire (2 à 6 min, IA locale)…' : '🚀 Générer et lancer l\'évaluation'}
+              {loading ? '⏳ Création…' : '🚀 Lancer l\'évaluation (instantané)'}
             </button>
+            <p className="ap-note">💡 Première évaluation d'une offre : l'IA prépare le questionnaire
+               en arrière-plan (~5 min, une seule fois). Les lancements suivants sont immédiats.</p>
           </div>
         )}
 
         {step === 'link' && (
           <div className="ap-body">
-            <div className="ap-ok">✓ Questionnaire unique généré</div>
+            {poolGenerating
+              ? <div className="ap-warn">⏳ Le questionnaire se prépare en arrière-plan (~5 min).
+                  Le lien est déjà valable : le candidat verra "préparation en cours" s'il ouvre trop tôt.</div>
+              : <div className="ap-ok">✓ Évaluation prête (questionnaire unique tiré du pool de l'offre)</div>}
             <p>Transmettez ce lien au candidat :</p>
             <div className="ap-link-box">
               <input readOnly value={link} onClick={e => e.target.select()} />
