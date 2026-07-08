@@ -61,3 +61,12 @@
 .asv-muted { font-size: 13px; color: #94a3b8 !important; }
 .asv-err h2 { color: #dc2626; }
 .asv-check { width: 64px; height: 64px; border-radius: 50%; background: #16a34a; color: #fff; font-size: 36px; line-height: 64px; margin: 0 auto 18px; }
+
+/* Champ PIN */
+.asv-pin {
+  width: 100%; box-sizing: border-box; margin-top: 8px;
+  text-align: center; font-size: 28px; font-weight: 700;
+  letter-spacing: 10px; padding: 14px;
+  border: 2px solid #cbd5e1; border-radius: 12px; color: #4338ca;
+}
+.asv-pin:focus { outline: none; border-color: #4338ca; }

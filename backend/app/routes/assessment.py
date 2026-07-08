@@ -47,6 +47,7 @@ class AnswerPayload(BaseModel):
     session_id: str
     question_id: str
     reponse: int   # index de l'option choisie (0-based)
+    pin: Optional[str] = None   # 2ᵉ facteur (accès candidat par lien)
 
 
 class OpenAnswerPayload(BaseModel):
@@ -58,6 +59,7 @@ class SessionOpenAnswerPayload(BaseModel):
     session_id: str
     question_id: str   # id d'une OpenQuestion
     answer: str
+    pin: Optional[str] = None
 
 
 class RealityGapPayload(BaseModel):
@@ -573,6 +575,13 @@ def _parse_dt(value: Optional[str]):
         return None
 
 
+def _check_pin(session: AssessmentSession, pin: Optional[str]) -> bool:
+    """True si le PIN fourni correspond (ou si la session n'en a pas)."""
+    if not session.access_pin:
+        return True
+    return str(pin or "").strip() == session.access_pin
+
+
 def _window_status(session: AssessmentSession):
     """('open'|'not_open'|'expired', message) selon opens_at/deadline."""
     from datetime import datetime, timezone
@@ -590,7 +599,8 @@ def _window_status(session: AssessmentSession):
 
 
 def _notify_assessment(db: Session, candidate: Candidate, offer: JobOffer,
-                       full_link: str, opens_at=None, deadline=None) -> bool:
+                       full_link: str, opens_at=None, deadline=None,
+                       access_pin=None) -> bool:
     """Email d'invitation + notification in-app (best-effort)."""
     from app.services import email_service
     from app.models.notification import Notification
@@ -600,7 +610,7 @@ def _notify_assessment(db: Session, candidate: Candidate, offer: JobOffer,
         try:
             email_sent = email_service.send_assessment_invitation_email(
                 candidate.email, prenom, offer.titre or "le poste", full_link,
-                opens_at=opens_at, deadline=deadline,
+                opens_at=opens_at, deadline=deadline, access_pin=access_pin,
             )
         except Exception:
             email_sent = False
@@ -707,11 +717,13 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
 
     opens_at = _parse_dt(payload.opens_at)
     deadline = _parse_dt(payload.deadline)
+    access_pin = f"{secrets.randbelow(900000) + 100000}"  # PIN 6 chiffres
     session = AssessmentSession(
         candidate_id=cand_uuid, job_offer_id=offer_uuid,
         domaine=offer.domaine_metier or "IT",
         status=AssessmentStatus.in_progress,
         access_token=secrets.token_urlsafe(24),
+        access_pin=access_pin,
         opens_at=opens_at, deadline=deadline,
         theta=0.0, administered=[], competence_scores={}, open_answers=[],
         session_qcm=[], session_open=session_open,
@@ -733,12 +745,14 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
 
     # Email d'invitation + notification in-app (automatique, best-effort)
     full_link = f"{FRONTEND_URL}/evaluation/{session.access_token}"
-    email_sent = _notify_assessment(db, candidate, offer, full_link, opens_at, deadline)
+    email_sent = _notify_assessment(db, candidate, offer, full_link, opens_at, deadline,
+                                    access_pin=access_pin)
     db.commit()
 
     return {
         "session_id": str(session.id),
         "access_token": session.access_token,
+        "access_pin": access_pin,
         "candidate_link": f"/evaluation/{session.access_token}",
         "full_link": full_link,
         "candidate_name": candidate.nom,
@@ -752,10 +766,21 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
 
 # ── GET /assessment/public/{token} (candidat) ────────────────────────────────
 @router.get("/assessment/public/{token}", summary="[Candidat] État + question courante")
-def public_get(token: str, db: Session = Depends(get_db)):
+def public_get(token: str, pin: Optional[str] = None, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
     candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
     offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
+
+    # 2ᵉ facteur : sans PIN valide, on ne révèle RIEN du questionnaire
+    if not _check_pin(session, pin) and session.status != AssessmentStatus.completed:
+        return {
+            "candidate_name": candidate.nom if candidate else "Candidat",
+            "offer_titre": offer.titre if offer else "Poste",
+            "status": session.status.value,
+            "completed": False,
+            "phase": "pin",
+            "pin_invalid": bool(pin),   # true = un PIN a été tenté et refusé
+        }
 
     # Fenêtre de passation (dates fixées par le recruteur)
     access, access_msg = _window_status(session)
@@ -833,6 +858,8 @@ def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_
     session = _session_by_token(db, token)
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
+    if not _check_pin(session, payload.pin):
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
     access, access_msg = _window_status(session)
     if access != "open":
         raise HTTPException(status_code=403, detail=access_msg)
@@ -878,6 +905,8 @@ def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Sessio
     session = _session_by_token(db, token)
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
+    if not _check_pin(session, payload.pin):
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
     access, access_msg = _window_status(session)
     if access != "open":
         raise HTTPException(status_code=403, detail=access_msg)
@@ -943,8 +972,10 @@ def assessment_detail(session_id: UUID, db: Session = Depends(get_db)):
 
 # ── POST /assessment/public/{token}/finish (candidat) ────────────────────────
 @router.post("/assessment/public/{token}/finish", summary="[Candidat] Terminer l'évaluation")
-def public_finish(token: str, db: Session = Depends(get_db)):
+def public_finish(token: str, pin: Optional[str] = None, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
+    if not _check_pin(session, pin):
+        raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
     session.status = AssessmentStatus.completed
     session.completed_at = func.now()
     db.commit()

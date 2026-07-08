@@ -298,9 +298,20 @@ def send_password_reset_email(to_email: str, prenom: str, code: str) -> bool:
 
 
 def send_assessment_invitation_email(to_email: str, prenom: str, offer_title: str,
-                                     link: str, opens_at=None, deadline=None) -> bool:
-    """Invite le candidat à passer son évaluation technique (lien + fenêtre de dates)."""
+                                     link: str, opens_at=None, deadline=None,
+                                     access_pin=None) -> bool:
+    """Invite le candidat à passer son évaluation technique (lien + dates + PIN)."""
     subject = f"Invitation à une évaluation technique — « {offer_title} »"
+
+    if access_pin:
+        pin_block = f"""
+            <div style="background: #eef9f0; border: 1px solid #b7e4c7; border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center;">
+                <p style="color: #475569; font-size: 13px; margin: 0 0 6px;">🔒 Votre code d'accès personnel</p>
+                <p style="color: #15803d; font-size: 28px; font-weight: 800; letter-spacing: 6px; margin: 0;">{access_pin}</p>
+                <p style="color: #94a3b8; font-size: 12px; margin: 8px 0 0;">À saisir au démarrage de l'évaluation. Ne le partagez avec personne.</p>
+            </div>"""
+    else:
+        pin_block = ""
 
     open_str = _format_fr_datetime(opens_at)
     dead_str = _format_fr_datetime(deadline)
@@ -333,6 +344,7 @@ def send_assessment_invitation_email(to_email: str, prenom: str, offer_title: st
                 <strong>évaluation technique en ligne</strong> (QCM et questions rédigées).
             </p>
             {dates_block}
+            {pin_block}
             <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 16px; margin: 16px 0;">
                 <p style="color: #475569; font-size: 14px; margin: 0 0 12px;">
                     Durée estimée : 20 à 30 minutes. Installez-vous dans un endroit calme,

@@ -73,6 +73,8 @@ class AssessmentSession(Base):
 
     # Jeton d'accès candidat (test autonome via lien, sans compte)
     access_token = Column(String(64), unique=True, index=True, nullable=True)
+    # Code PIN (2ᵉ facteur) envoyé par email, saisi avant de démarrer
+    access_pin = Column(String(12), nullable=True)
 
     # Fenêtre de passation définie par le recruteur
     opens_at = Column(DateTime(timezone=True), nullable=True)   # date d'ouverture

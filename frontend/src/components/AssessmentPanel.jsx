@@ -37,6 +37,7 @@ export default function AssessmentPanel({ candidates, offerId, onClose }) {
           link: window.location.origin + res.data.candidate_link,
           emailSent: res.data.email_sent,
           candidateEmail: res.data.candidate_email,
+          accessPin: res.data.access_pin,
         })
         if (res.data.pool_generating) setPoolGenerating(true)
       })
@@ -128,6 +129,10 @@ export default function AssessmentPanel({ candidates, offerId, onClose }) {
                       {it.emailSent
                         ? <div className="ap-mail-ok">📧 Invitation envoyée à <strong>{it.candidateEmail}</strong></div>
                         : <div className="ap-mail-warn">⚠️ Email non envoyé — transmettez le lien manuellement</div>}
+                      {it.accessPin && (
+                        <div className="ap-pin">🔒 Code d'accès : <strong>{it.accessPin}</strong>
+                          <span> (envoyé au candidat par email)</span></div>
+                      )}
                       <div className="ap-link-box">
                         <input readOnly value={it.link} onClick={e => e.target.select()} />
                         <button onClick={() => copyLink(c.id, it.link)}>{it.copied ? 'Copié ✓' : 'Copier'}</button>

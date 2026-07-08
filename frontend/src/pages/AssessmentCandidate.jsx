@@ -17,11 +17,28 @@ export default function AssessmentCandidate() {
   const [openIdx, setOpenIdx] = useState(0)
   const [answer, setAnswer]   = useState('')
 
-  const load = useCallback(() => {
-    return publicApi.get(`/assessment/public/${token}`)
+  // Code PIN (2ᵉ facteur reçu par email)
+  const [pin, setPin]         = useState('')
+  const [pinInput, setPinInput] = useState('')
+  const [verifying, setVerifying] = useState(false)
+
+  const load = useCallback((pinValue) => {
+    const p = pinValue !== undefined ? pinValue : pin
+    return publicApi.get(`/assessment/public/${token}`, { params: p ? { pin: p } : {} })
       .then(res => setData(res.data))
       .catch(e => setError(e?.response?.data?.detail || "Lien d'évaluation invalide."))
-  }, [token])
+  }, [token, pin])
+
+  const verifyPin = () => {
+    setVerifying(true); setError(null)
+    publicApi.get(`/assessment/public/${token}`, { params: { pin: pinInput.trim() } })
+      .then(res => {
+        setData(res.data)
+        if (res.data.phase !== 'pin') setPin(pinInput.trim())
+      })
+      .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
+      .finally(() => setVerifying(false))
+  }
 
   useEffect(() => { load().finally(() => setLoading(false)) }, [load])
 
@@ -37,7 +54,7 @@ export default function AssessmentCandidate() {
     if (sending) return
     setSending(true); setError(null)
     publicApi.post(`/assessment/public/${token}/answer`, {
-      session_id: '', question_id: data.question.question_id, reponse: displayIndex,
+      session_id: '', question_id: data.question.question_id, reponse: displayIndex, pin,
     })
       .then(() => load())
       .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
@@ -50,7 +67,7 @@ export default function AssessmentCandidate() {
     const oq = data.open_questions[openIdx]
     setSending(true); setError(null)
     publicApi.post(`/assessment/public/${token}/open-answer`, {
-      session_id: '', question_id: oq.question_id, answer: answer.trim(),
+      session_id: '', question_id: oq.question_id, answer: answer.trim(), pin,
     })
       .then(() => {
         setAnswer('')
@@ -66,7 +83,7 @@ export default function AssessmentCandidate() {
 
   const finishTest = () => {
     setSending(true)
-    return publicApi.post(`/assessment/public/${token}/finish`)
+    return publicApi.post(`/assessment/public/${token}/finish`, null, { params: pin ? { pin } : {} })
       .then(() => load())
       .finally(() => setSending(false))
   }
@@ -82,6 +99,31 @@ export default function AssessmentCandidate() {
         <h2>Merci {data?.candidate_name?.split(' ')[0]} !</h2>
         <p>Votre évaluation pour <strong>{data?.offer_titre}</strong> est terminée.</p>
         <p className="asv-muted">Vos résultats ont été transmis au recruteur.</p>
+      </div>
+    </div>
+  )
+
+  // Code d'accès requis (PIN reçu par email)
+  if (data?.phase === 'pin') return (
+    <div className="asv-screen">
+      <div className="asv-card">
+        <div className="asv-check" style={{ background: '#4338ca' }}>🔒</div>
+        <h2>Accès sécurisé</h2>
+        <p>Bonjour {data?.candidate_name?.split(' ')[0]}, évaluation pour <strong>{data?.offer_titre}</strong>.</p>
+        <p className="asv-muted">Saisissez le code d'accès reçu par email.</p>
+        <input
+          className="asv-pin"
+          inputMode="numeric" maxLength={6} placeholder="••••••"
+          value={pinInput}
+          onChange={e => setPinInput(e.target.value.replace(/\D/g, ''))}
+          onKeyDown={e => e.key === 'Enter' && pinInput.length >= 4 && verifyPin()}
+        />
+        {data.pin_invalid && <p className="asv-inline-err">Code incorrect, réessayez.</p>}
+        {error && <p className="asv-inline-err">{error}</p>}
+        <button className="asv-btn" style={{ width: '100%', marginTop: 14 }}
+          onClick={verifyPin} disabled={verifying || pinInput.length < 4}>
+          {verifying ? 'Vérification…' : 'Démarrer l\'évaluation'}
+        </button>
       </div>
     </div>
   )
