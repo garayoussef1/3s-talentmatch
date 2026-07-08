@@ -74,6 +74,10 @@ class AssessmentSession(Base):
     # Jeton d'accès candidat (test autonome via lien, sans compte)
     access_token = Column(String(64), unique=True, index=True, nullable=True)
 
+    # Fenêtre de passation définie par le recruteur
+    opens_at = Column(DateTime(timezone=True), nullable=True)   # date d'ouverture
+    deadline = Column(DateTime(timezone=True), nullable=True)   # date limite
+
     theta = Column(Float, nullable=True)   # niveau estimé (échelle IRT, ~[-3, 3])
 
     # Historique des items administrés : [{question_id, difficulte, reponse, correct}]

@@ -86,6 +86,24 @@ export default function AssessmentCandidate() {
     </div>
   )
 
+  // Fenêtre de passation : pas encore ouvert ou expiré
+  if (data?.phase === 'window') {
+    const fmt = (iso) => iso ? new Date(iso).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }) : null
+    const notOpen = data.access === 'not_open'
+    return (
+      <div className="asv-screen">
+        <div className="asv-card">
+          <div className="asv-check" style={{ background: notOpen ? '#4338ca' : '#dc2626' }}>{notOpen ? '🕒' : '⏳'}</div>
+          <h2>{notOpen ? 'Évaluation pas encore ouverte' : 'Évaluation clôturée'}</h2>
+          <p>Bonjour {data?.candidate_name?.split(' ')[0]}, évaluation pour <strong>{data?.offer_titre}</strong>.</p>
+          <p className="asv-muted">{data.message}</p>
+          {notOpen && data.opens_at && <p><strong>Ouverture :</strong> {fmt(data.opens_at)}</p>}
+          {!notOpen && data.deadline && <p><strong>Date limite passée :</strong> {fmt(data.deadline)}</p>}
+        </div>
+      </div>
+    )
+  }
+
   // Questionnaire en préparation (première évaluation de l'offre)
   if (data?.phase === 'preparing') return (
     <div className="asv-screen">

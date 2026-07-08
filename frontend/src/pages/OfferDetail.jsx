@@ -499,12 +499,11 @@ function TabMatching({ offerId, offer }) {
         />
       )}
 
-      {/* Panneau Évaluation technique (Reality Gap) */}
+      {/* Panneau Évaluation technique (un ou plusieurs candidats) */}
       {assessmentFor && (
         <AssessmentPanel
-          candidateId={assessmentFor.id}
+          candidates={assessmentFor}
           offerId={offerId}
-          candidateName={assessmentFor.name}
           onClose={() => setAssessmentFor(null)}
         />
       )}
@@ -572,6 +571,21 @@ function TabMatching({ offerId, offer }) {
               }}
             >
               🎙 Lancer les entretiens ({selected.length})
+            </button>
+            {/* Lancer les évaluations techniques des candidats sélectionnés */}
+            <button
+              className="tm-select-btn"
+              disabled={selected.length === 0}
+              style={{ background: '#6d28d9', marginLeft: 8 }}
+              onClick={() => {
+                const list = selected
+                  .map(cvId => results.results.find(r => r.cv_id === cvId))
+                  .filter(Boolean)
+                  .map(r => ({ id: r.candidate_id, name: r.candidate_name }))
+                if (list.length) setAssessmentFor(list)
+              }}
+            >
+              🎯 Lancer les évaluations ({selected.length})
             </button>
           </div>
 
@@ -663,7 +677,7 @@ function TabMatching({ offerId, offer }) {
                         </button>
                         {/* Bouton Évaluation technique (Reality Gap) */}
                         <button
-                          onClick={() => setAssessmentFor({ id: r.candidate_id, name: r.candidate_name })}
+                          onClick={() => setAssessmentFor([{ id: r.candidate_id, name: r.candidate_name }])}
                           style={{
                             display: 'inline-flex', alignItems: 'center', gap: 5,
                             background: '#f5f3ff', color: '#6d28d9',

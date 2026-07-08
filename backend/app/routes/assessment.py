@@ -551,6 +551,8 @@ class LaunchPayload(BaseModel):
     candidate_id: str
     offer_id: str
     recruiter_questions: Optional[List[str]] = None   # questions ajoutées par le recruteur
+    opens_at: Optional[str] = None    # ISO 8601 — date d'ouverture
+    deadline: Optional[str] = None    # ISO 8601 — date limite
 
 
 def _session_by_token(db: Session, token: str) -> AssessmentSession:
@@ -558,6 +560,62 @@ def _session_by_token(db: Session, token: str) -> AssessmentSession:
     if not s:
         raise HTTPException(status_code=404, detail="Lien d'évaluation invalide")
     return s
+
+
+def _parse_dt(value: Optional[str]):
+    """Parse une date ISO 8601 (tolérant au suffixe Z)."""
+    if not value:
+        return None
+    from datetime import datetime
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+
+
+def _window_status(session: AssessmentSession):
+    """('open'|'not_open'|'expired', message) selon opens_at/deadline."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+
+    def _aware(dt):
+        return dt.replace(tzinfo=timezone.utc) if (dt and dt.tzinfo is None) else dt
+
+    opens_at, deadline = _aware(session.opens_at), _aware(session.deadline)
+    if opens_at and now < opens_at:
+        return "not_open", "Cette évaluation n'est pas encore ouverte."
+    if deadline and now > deadline:
+        return "expired", "La date limite de cette évaluation est dépassée."
+    return "open", ""
+
+
+def _notify_assessment(db: Session, candidate: Candidate, offer: JobOffer,
+                       full_link: str, opens_at=None, deadline=None) -> bool:
+    """Email d'invitation + notification in-app (best-effort)."""
+    from app.services import email_service
+    from app.models.notification import Notification
+    prenom = (candidate.nom or "Candidat").split()[0]
+    email_sent = False
+    if candidate.email:
+        try:
+            email_sent = email_service.send_assessment_invitation_email(
+                candidate.email, prenom, offer.titre or "le poste", full_link,
+                opens_at=opens_at, deadline=deadline,
+            )
+        except Exception:
+            email_sent = False
+    if candidate.user_id:
+        try:
+            db.add(Notification(
+                user_id=candidate.user_id,
+                type="interview_invite",
+                title="Invitation à une évaluation technique",
+                message=f"Vous êtes invité(e) à une évaluation pour « {offer.titre} ».",
+                link=f"/evaluation/{full_link.rsplit('/', 1)[-1]}",
+            ))
+        except Exception:
+            pass
+    return email_sent
 
 
 def _session_qcm_pool_rows(session: AssessmentSession):
@@ -647,11 +705,14 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
                 "competence": "question recruteur", "question": rq,
             })
 
+    opens_at = _parse_dt(payload.opens_at)
+    deadline = _parse_dt(payload.deadline)
     session = AssessmentSession(
         candidate_id=cand_uuid, job_offer_id=offer_uuid,
         domaine=offer.domaine_metier or "IT",
         status=AssessmentStatus.in_progress,
         access_token=secrets.token_urlsafe(24),
+        opens_at=opens_at, deadline=deadline,
         theta=0.0, administered=[], competence_scores={}, open_answers=[],
         session_qcm=[], session_open=session_open,
     )
@@ -670,12 +731,19 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
     if status["ready"]:
         _fill_session_from_pool(db, session)
 
+    # Email d'invitation + notification in-app (automatique, best-effort)
+    full_link = f"{FRONTEND_URL}/evaluation/{session.access_token}"
+    email_sent = _notify_assessment(db, candidate, offer, full_link, opens_at, deadline)
+    db.commit()
+
     return {
         "session_id": str(session.id),
         "access_token": session.access_token,
         "candidate_link": f"/evaluation/{session.access_token}",
-        "full_link": f"{FRONTEND_URL}/evaluation/{session.access_token}",
+        "full_link": full_link,
         "candidate_name": candidate.nom,
+        "candidate_email": candidate.email,
+        "email_sent": email_sent,
         "offer_titre": offer.titre,
         "pool_ready": status["ready"],
         "pool_generating": (not status["ready"]),
@@ -688,6 +756,21 @@ def public_get(token: str, db: Session = Depends(get_db)):
     session = _session_by_token(db, token)
     candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
     offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
+
+    # Fenêtre de passation (dates fixées par le recruteur)
+    access, access_msg = _window_status(session)
+    if access != "open" and session.status != AssessmentStatus.completed:
+        return {
+            "candidate_name": candidate.nom if candidate else "Candidat",
+            "offer_titre": offer.titre if offer else "Poste",
+            "status": session.status.value,
+            "completed": False,
+            "phase": "window",
+            "access": access,   # not_open | expired
+            "message": access_msg,
+            "opens_at": session.opens_at.isoformat() if session.opens_at else None,
+            "deadline": session.deadline.isoformat() if session.deadline else None,
+        }
 
     # Questionnaire pas encore rempli → tenter depuis le pool de l'offre ;
     # si le pool est en cours de génération, le candidat patiente.
@@ -750,6 +833,9 @@ def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_
     session = _session_by_token(db, token)
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
+    access, access_msg = _window_status(session)
+    if access != "open":
+        raise HTTPException(status_code=403, detail=access_msg)
 
     qcm = session.session_qcm or []
     by_qid = {q["qid"]: (i, q) for i, q in enumerate(qcm)}
@@ -792,6 +878,9 @@ def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Sessio
     session = _session_by_token(db, token)
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
+    access, access_msg = _window_status(session)
+    if access != "open":
+        raise HTTPException(status_code=403, detail=access_msg)
 
     target = next((o for o in (session.session_open or []) if o["qid"] == payload.question_id), None)
     if not target:

@@ -1,197 +1,144 @@
 import { useState } from 'react'
-import {
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend,
-} from 'recharts'
 import api from '../services/api'
 import './AssessmentPanel.css'
 
-const LABEL = {
-  fiable: { txt: 'CV fiable', cls: 'ap-badge-ok' },
-  a_verifier: { txt: 'À vérifier', cls: 'ap-badge-mid' },
-  ecart_important: { txt: 'Écart important', cls: 'ap-badge-no' },
-}
-const RECO = { RECRUTER: 'ap-badge-ok', A_APPROFONDIR: 'ap-badge-mid', REJETER: 'ap-badge-no' }
-
-export default function AssessmentPanel({ candidateId, offerId, candidateName, onClose }) {
-  const [step, setStep]       = useState('idle')   // idle | link | results
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState(null)
-  const [link, setLink]       = useState('')
-  const [sessionId, setSessionId] = useState(null)
-  const [gap, setGap]         = useState(null)
-  const [report, setReport]   = useState(null)
-  const [detail, setDetail]   = useState(null)     // Q/R pour vérification
-  const [showAnswers, setShowAnswers] = useState(false)
-  const [copied, setCopied]   = useState(false)
-  const [recruiterQs, setRecruiterQs] = useState('')  // 1 question par ligne
-
+/**
+ * Panneau Évaluation technique — gère un OU plusieurs candidats.
+ * props.candidates : [{ id, name }]
+ * Lancement instantané (pool de l'offre généré en arrière-plan) ; pour chaque
+ * candidat : lien + email automatique. Les résultats se consultent dans
+ * l'onglet "🎯 Évaluations" de l'offre.
+ */
+export default function AssessmentPanel({ candidates, offerId, onClose }) {
+  const [items, setItems] = useState(() =>
+    Object.fromEntries(candidates.map(c => [c.id, { name: c.name, status: 'idle' }]))
+  )
+  const [launchingAll, setLaunchingAll] = useState(false)
+  const [recruiterQs, setRecruiterQs] = useState('')   // 1 question par ligne
+  const [opensAt, setOpensAt]   = useState('')
+  const [deadline, setDeadline] = useState('')
   const [poolGenerating, setPoolGenerating] = useState(false)
 
-  const launch = () => {
-    setLoading(true); setError(null)
+  const update = (id, patch) =>
+    setItems(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
+
+  const launchOne = (id) => {
+    update(id, { loading: true, error: null })
     const questions = recruiterQs.split('\n').map(q => q.trim()).filter(Boolean)
-    // INSTANTANÉ : le pool de questions de l'offre se génère en arrière-plan
-    api.post('/assessment/launch',
-      { candidate_id: candidateId, offer_id: offerId, recruiter_questions: questions },
-      { timeout: 30000 })
+    return api.post('/assessment/launch', {
+      candidate_id: id, offer_id: offerId,
+      recruiter_questions: questions,
+      opens_at: opensAt || null,
+      deadline: deadline || null,
+    }, { timeout: 30000 })
       .then(res => {
-        setSessionId(res.data.session_id)
-        setLink(window.location.origin + res.data.candidate_link)
-        setPoolGenerating(res.data.pool_generating === true)
-        setStep('link')
+        update(id, {
+          loading: false, status: 'link',
+          link: window.location.origin + res.data.candidate_link,
+          emailSent: res.data.email_sent,
+          candidateEmail: res.data.candidate_email,
+        })
+        if (res.data.pool_generating) setPoolGenerating(true)
       })
-      .catch(e => setError(e?.response?.data?.detail || 'Erreur au lancement.'))
-      .finally(() => setLoading(false))
+      .catch(e => update(id, { loading: false, error: e?.response?.data?.detail || 'Erreur.' }))
   }
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(link).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
+  const launchAll = async () => {
+    setLaunchingAll(true)
+    for (const c of candidates) {
+      if (items[c.id]?.status === 'idle') await launchOne(c.id)
+    }
+    setLaunchingAll(false)
   }
 
-  const seeResults = () => {
-    setLoading(true); setError(null)
-    Promise.all([
-      api.get(`/assessment/reality-gap/${candidateId}/${offerId}`).catch(() => ({ data: null })),
-      sessionId ? api.post(`/assessment/report/${sessionId}`, null, { timeout: 300000 }).catch(() => ({ data: {} })) : Promise.resolve({ data: {} }),
-      sessionId ? api.get(`/assessment/detail/${sessionId}`) : Promise.resolve({ data: null }),
-    ])
-      .then(([g, r, d]) => {
-        setGap(g.data); setReport(r.data.report || null); setDetail(d.data)
-        setStep('results')
-      })
-      .catch(e => setError(e?.response?.data?.detail || "Le candidat n'a pas encore terminé."))
-      .finally(() => setLoading(false))
+  const copyLink = (id, link) => {
+    navigator.clipboard.writeText(link).then(() => {
+      update(id, { copied: true })
+      setTimeout(() => update(id, { copied: false }), 2000)
+    })
   }
 
-  const radarData = gap?.details?.map(d => ({
-    competence: d.competence,
-    'Déclaré (CV)': d.niveau_declare,
-    'Démontré (test)': d.niveau_demontre,
-  })) || []
+  const allIdle = candidates.every(c => items[c.id]?.status === 'idle')
+  const datesInvalid = opensAt && deadline && deadline <= opensAt
 
   return (
     <div className="ap-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="ap-modal">
         <div className="ap-head">
-          <h3>🎯 Évaluation technique — {candidateName}</h3>
+          <h3>🎯 Évaluation technique — {candidates.length} candidat{candidates.length > 1 ? 's' : ''}</h3>
           <button className="ap-close" onClick={onClose}>✕</button>
         </div>
 
-        {error && <div className="ap-msg">{error}</div>}
-
-        {step === 'idle' && (
+        {/* Étape 1 : configuration + lancement */}
+        {allIdle && (
           <div className="ap-body">
-            <p>L'IA génère un questionnaire <strong>unique pour ce candidat</strong>
-               (QCM + questions de raisonnement), ciblé sur l'offre et son profil.
-               100% local et confidentiel.</p>
+            <p>L'IA génère un questionnaire <strong>différent pour chaque candidat</strong>
+               (QCM + questions rédigées), ciblé sur l'offre. Chaque candidat reçoit
+               automatiquement un <strong>email avec son lien</strong>. 100% local.</p>
 
-            <label className="ap-label">✍️ Vos questions personnalisées <em>(optionnel, une par ligne)</em></label>
+            {/* Fenêtre de passation */}
+            <div className="ap-dates">
+              <label className="ap-date-field">
+                <span>📅 Ouverture <em>(optionnel)</em></span>
+                <input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)} />
+              </label>
+              <label className="ap-date-field">
+                <span>⏳ Date limite <em>(optionnel)</em></span>
+                <input type="datetime-local" value={deadline} onChange={e => setDeadline(e.target.value)} />
+              </label>
+            </div>
+            {datesInvalid && <div className="ap-warn">⚠️ La date limite doit être après l'ouverture.</div>}
+
+            <label className="ap-label">✍️ Vos questions personnalisées <em>(optionnel, une par ligne — posées à tous)</em></label>
             <textarea
               className="ap-rq" rows={3}
-              placeholder={"Ex: Pourquoi voulez-vous rejoindre notre entreprise ?\nEx: Êtes-vous disponible immédiatement ?"}
+              placeholder={"Ex: Pourquoi voulez-vous rejoindre notre entreprise ?"}
               value={recruiterQs} onChange={e => setRecruiterQs(e.target.value)}
             />
 
-            <button className="ap-btn" onClick={launch} disabled={loading}>
-              {loading ? '⏳ Création…' : '🚀 Lancer l\'évaluation (instantané)'}
+            <button className="ap-btn" onClick={launchAll} disabled={launchingAll || datesInvalid}>
+              {launchingAll ? '⏳ Envoi en cours…'
+                : `🚀 Lancer ${candidates.length > 1 ? `les ${candidates.length} évaluations` : "l'évaluation"} (instantané)`}
             </button>
-            <p className="ap-note">💡 Première évaluation d'une offre : l'IA prépare le questionnaire
-               en arrière-plan (~5 min, une seule fois). Les lancements suivants sont immédiats.</p>
+            <p className="ap-note">💡 Première évaluation d'une offre : l'IA prépare le questionnaire en
+               arrière-plan (~5 min, une seule fois). Les candidats sont prévenus par email.</p>
           </div>
         )}
 
-        {step === 'link' && (
-          <div className="ap-body">
-            {poolGenerating
-              ? <div className="ap-warn">⏳ Le questionnaire se prépare en arrière-plan (~5 min).
-                  Le lien est déjà valable : le candidat verra "préparation en cours" s'il ouvre trop tôt.</div>
-              : <div className="ap-ok">✓ Évaluation prête (questionnaire unique tiré du pool de l'offre)</div>}
-            <p>Transmettez ce lien au candidat :</p>
-            <div className="ap-link-box">
-              <input readOnly value={link} onClick={e => e.target.select()} />
-              <button onClick={copyLink}>{copied ? 'Copié ✓' : 'Copier'}</button>
-            </div>
-            <a className="ap-open" href={link} target="_blank" rel="noreferrer">Ouvrir (aperçu candidat) ↗</a>
-            <hr className="ap-sep" />
-            <button className="ap-btn" onClick={seeResults} disabled={loading}>
-              {loading ? 'Analyse (rapport IA local)…' : '📊 Voir les résultats'}
-            </button>
-          </div>
-        )}
-
-        {step === 'results' && (
-          <div className="ap-body">
-            {/* Badge fiabilité */}
-            {gap && (
-              <div className="ap-fiab">
-                <div className="ap-fiab-score">{Math.round(gap.fiabilite_cv)}<span>/100</span></div>
-                <div>
-                  <div className="ap-fiab-lbl">Fiabilité du CV</div>
-                  <span className={`ap-badge ${LABEL[gap.niveau_label]?.cls}`}>{LABEL[gap.niveau_label]?.txt}</span>
+        {/* Étape 2 : liste des candidats lancés */}
+        {!allIdle && (
+          <div className="ap-body ap-list">
+            {poolGenerating && (
+              <div className="ap-warn">⏳ Le questionnaire de l'offre se prépare en arrière-plan (~5 min).
+                Les liens sont déjà valables et les emails envoyés.</div>
+            )}
+            {candidates.map(c => {
+              const it = items[c.id] || {}
+              return (
+                <div key={c.id} className="ap-cand">
+                  <div className="ap-cand-head"><strong>{it.name}</strong></div>
+                  {it.error && <div className="ap-err-inline">{it.error}</div>}
+                  {it.status === 'idle' && (
+                    <button className="ap-btn-mini" onClick={() => launchOne(c.id)} disabled={it.loading}>
+                      {it.loading ? '…' : 'Lancer'}
+                    </button>
+                  )}
+                  {it.status === 'link' && (
+                    <>
+                      {it.emailSent
+                        ? <div className="ap-mail-ok">📧 Invitation envoyée à <strong>{it.candidateEmail}</strong></div>
+                        : <div className="ap-mail-warn">⚠️ Email non envoyé — transmettez le lien manuellement</div>}
+                      <div className="ap-link-box">
+                        <input readOnly value={it.link} onClick={e => e.target.select()} />
+                        <button onClick={() => copyLink(c.id, it.link)}>{it.copied ? 'Copié ✓' : 'Copier'}</button>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-            )}
-
-            {/* Radar Déclaré vs Démontré */}
-            {radarData.length > 0 && (
-              <div className="ap-radar">
-                <ResponsiveContainer width="100%" height={270}>
-                  <RadarChart data={radarData} outerRadius="72%">
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="competence" tick={{ fontSize: 12 }} />
-                    <PolarRadiusAxis domain={[0, 10]} tick={{ fontSize: 10 }} />
-                    <Radar name="Déclaré (CV)" dataKey="Déclaré (CV)" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.35} />
-                    <Radar name="Démontré (test)" dataKey="Démontré (test)" stroke="#4338ca" fill="#4338ca" fillOpacity={0.35} />
-                    <Legend />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-
-            {/* Rapport IA */}
-            {report && (
-              <div className="ap-report">
-                <div className="ap-rep-head">
-                  <span>📝 Rapport IA</span>
-                  <span className={`ap-badge ${RECO[report.recommandation] || 'ap-badge-mid'}`}>{report.recommandation}</span>
-                </div>
-                <p className="ap-synth">{report.synthese}</p>
-                <p className="ap-meta">Niveau : <strong>{report.niveau_technique}</strong> · Raisonnement : <strong>{report.qualite_raisonnement}</strong></p>
-                {report.coherence_cv && <p className="ap-coh">🔍 {report.coherence_cv}</p>}
-              </div>
-            )}
-
-            {/* Bouton VOIR LES RÉPONSES (vérification recruteur) */}
-            {detail && (
-              <button className="ap-btn-ghost" onClick={() => setShowAnswers(v => !v)}>
-                {showAnswers ? '▲ Masquer les réponses' : `▼ Voir les réponses du candidat (${(detail.qcm?.length || 0) + (detail.open_answers?.length || 0)})`}
-              </button>
-            )}
-
-            {showAnswers && detail && (
-              <div className="ap-answers">
-                {detail.qcm?.length > 0 && <h4 className="ap-ans-title">QCM ({detail.qcm.filter(q => q.correct).length}/{detail.qcm.length} corrects)</h4>}
-                {detail.qcm?.map((q, i) => (
-                  <div key={`q${i}`} className={`ap-ans ${q.correct ? 'ap-ans-ok' : 'ap-ans-ko'}`}>
-                    <div className="ap-ans-q">[{q.competence} · diff {q.difficulte}] {q.question}</div>
-                    <div className="ap-ans-r">
-                      Candidat : <strong>{q.options?.[q.reponse_candidat] ?? '—'}</strong> {q.correct ? '✓' : '✗'}
-                      {!q.correct && <span className="ap-ans-good"> · Bonne réponse : {q.options?.[q.bonne_reponse]}</span>}
-                    </div>
-                  </div>
-                ))}
-                {detail.open_answers?.length > 0 && <h4 className="ap-ans-title">Réponses rédigées</h4>}
-                {detail.open_answers?.map((a, i) => (
-                  <div key={`o${i}`} className="ap-ans">
-                    <div className="ap-ans-q">
-                      {a.source === 'recruteur' ? '👤 [Votre question] ' : `[${a.competence}] `}{a.question}
-                      {a.score != null && <span className="ap-ans-score"> {Math.round(a.score)}/100</span>}
-                    </div>
-                    <div className="ap-ans-text">{a.answer}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+              )
+            })}
+            <p className="ap-note">📊 Suivez les réponses et les rapports dans l'onglet
+               <strong> 🎯 Évaluations</strong> de l'offre.</p>
           </div>
         )}
       </div>

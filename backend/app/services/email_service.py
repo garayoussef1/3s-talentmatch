@@ -295,3 +295,63 @@ def send_password_reset_email(to_email: str, prenom: str, code: str) -> bool:
     </div>
     """
     return _send_email(to_email, subject, html)
+
+
+def send_assessment_invitation_email(to_email: str, prenom: str, offer_title: str,
+                                     link: str, opens_at=None, deadline=None) -> bool:
+    """Invite le candidat à passer son évaluation technique (lien + fenêtre de dates)."""
+    subject = f"Invitation à une évaluation technique — « {offer_title} »"
+
+    open_str = _format_fr_datetime(opens_at)
+    dead_str = _format_fr_datetime(deadline)
+    if open_str or dead_str:
+        lignes = []
+        if open_str:
+            lignes.append(f"<strong>Ouverture :</strong> {open_str}")
+        if dead_str:
+            lignes.append(f"<strong>Date limite :</strong> {dead_str}")
+        dates_block = f"""
+            <div style="background: #fff8ec; border: 1px solid #f7d9a8; border-radius: 8px; padding: 14px 16px; margin: 16px 0;">
+                <p style="color: #92400e; font-size: 14px; margin: 0; line-height: 1.6;">
+                    📅 {'<br/>'.join(lignes)}
+                </p>
+            </div>"""
+    else:
+        dates_block = ""
+
+    html = f"""
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 540px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            {_logo_header()}
+            <h2 style="color: #1b4f8a; margin: 4px 0 0;">3S TalentMatch</h2>
+        </div>
+        <div style="background: white; padding: 28px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #4338ca;">
+            <p style="color: #334155; font-size: 16px; margin: 0 0 12px;">Bonjour <strong>{prenom}</strong>,</p>
+            <p style="color: #1e293b; font-size: 15px; line-height: 1.6;">
+                Votre profil a retenu notre attention pour le poste de
+                <strong>« {offer_title} »</strong>. Nous vous invitons à réaliser une
+                <strong>évaluation technique en ligne</strong> (QCM et questions rédigées).
+            </p>
+            {dates_block}
+            <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                <p style="color: #475569; font-size: 14px; margin: 0 0 12px;">
+                    Durée estimée : 20 à 30 minutes. Installez-vous dans un endroit calme,
+                    l'évaluation se fait en une seule fois.
+                </p>
+                <div style="text-align: center;">
+                    <a href="{link}" style="display: inline-block; background: #4338ca; color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 15px;">
+                        Commencer mon évaluation
+                    </a>
+                </div>
+            </div>
+            <p style="color: #94a3b8; font-size: 12px;">
+                Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/>
+                <span style="color: #4338ca; word-break: break-all;">{link}</span>
+            </p>
+        </div>
+        <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 16px;">
+            3S Group — L'intelligence au service du recrutement.
+        </p>
+    </div>
+    """
+    return _send_email(to_email, subject, html)
