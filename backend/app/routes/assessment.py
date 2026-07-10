@@ -72,9 +72,6 @@ class EventPayload(BaseModel):
     type: str   # "fullscreen_exit" | "tab_switch"
 
 
-# Anti-triche : tolérance de 3 sorties du plein écran (rafraîchissement, Échap
-# accidentel...) avec avertissement et compteur ; au-delà, l'évaluation est bloquée.
-MAX_FULLSCREEN_EXITS = 3
 
 
 class RealityGapPayload(BaseModel):
@@ -926,31 +923,20 @@ def public_event(token: str, payload: EventPayload, db: Session = Depends(get_db
     if not _check_pin(session, payload.pin):
         raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
 
+    # Politique : on NE BLOQUE PAS (trop de faux positifs : F5, Échap...).
+    # Chaque incident est ENREGISTRÉ et pèse sur le score d'intégrité signalé
+    # au recruteur — c'est lui qui juge (comme les outils de proctoring réels).
     integ = dict(session.integrity or {})
-    blocked = bool(integ.get("blocked"))
     warning = False
-
-    if not blocked:
-        if payload.type == "fullscreen_exit":
-            n = int(integ.get("fullscreen_exits", 0)) + 1
-            integ["fullscreen_exits"] = n
-            if n >= MAX_FULLSCREEN_EXITS:
-                integ["blocked"] = True
-                integ["block_reason"] = f"Évaluation interrompue : {n} sorties du plein écran (triche présumée)."
-                session.status = AssessmentStatus.abandoned
-                blocked = True
-            else:
-                warning = True   # 1ʳᵉ sortie → dernier avertissement
-        elif payload.type == "tab_switch":
-            integ["tab_switches"] = int(integ.get("tab_switches", 0)) + 1
+    if payload.type == "fullscreen_exit":
+        integ["fullscreen_exits"] = int(integ.get("fullscreen_exits", 0)) + 1
+        warning = True
+    elif payload.type == "tab_switch":
+        integ["tab_switches"] = int(integ.get("tab_switches", 0)) + 1
 
     session.integrity = integ
     db.commit()
-    return {
-        "blocked": blocked,
-        "warning": warning,
-        "remaining": max(0, MAX_FULLSCREEN_EXITS - int(integ.get("fullscreen_exits", 0))),
-    }
+    return {"blocked": False, "warning": warning}
 
 
 # ── POST /assessment/public/{token}/answer (candidat, QCM) ───────────────────

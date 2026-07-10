@@ -245,12 +245,11 @@ export default function AssessmentCandidate() {
         <p style={{ textAlign: 'center' }}>Bonjour {data?.candidate_name?.split(' ')[0]},
            avant de commencer, prenez connaissance des règles :</p>
         <ul className="asv-rules">
-          <li>🖥️ L'évaluation se déroule <strong>en plein écran</strong>. Vous disposez de
-              <strong> 3 sorties maximum</strong> (Échap, rafraîchissement…) — au-delà,
-              l'évaluation est arrêtée définitivement.</li>
+          <li>🖥️ L'évaluation se déroule <strong>en plein écran</strong>. Toute sortie
+              (Échap, changement d'onglet…) est <strong>enregistrée et signalée au recruteur</strong>.</li>
           <li>⏱️ Chaque QCM est limité à <strong>90 secondes</strong> — temps écoulé = question comptée fausse.</li>
-          <li>🚫 Le <strong>copier-coller est désactivé</strong> ; les changements d'onglet sont enregistrés.</li>
-          <li>✍️ Rédigez vos réponses vous-même : l'activité du clavier est analysée.</li>
+          <li>🚫 Le <strong>copier-coller est désactivé</strong> ; rédigez vos réponses vous-même
+              (l'activité du clavier est analysée).</li>
           <li>🎯 Répondez en une seule session, dans un endroit calme (20-30 min).</li>
         </ul>
         <button className="asv-btn" style={{ width: '100%', marginTop: 16 }}
@@ -272,13 +271,11 @@ export default function AssessmentCandidate() {
         <div className="asv-fs-overlay">
           <div className="asv-fs-box">
             <div className="asv-fs-icon">⚠️</div>
-            <h2>Avertissement</h2>
-            <p>Vous avez quitté le plein écran. Cet incident est enregistré.</p>
-            <p><strong>{remaining === 1
-              ? "Dernière chance : encore une sortie et l'évaluation sera arrêtée définitivement."
-              : `Il vous reste ${remaining} sorties avant l'arrêt définitif de l'évaluation.`}</strong></p>
+            <h2>Sortie du plein écran détectée</h2>
+            <p>Cet incident est <strong>enregistré et sera signalé au recruteur</strong>
+               dans le rapport d'intégrité. Restez en plein écran jusqu'à la fin.</p>
             <button className="asv-btn" onClick={() => { enterFullscreen(); setSecurity('') }}>
-              Reprendre l'évaluation
+              Reprendre en plein écran
             </button>
           </div>
         </div>
