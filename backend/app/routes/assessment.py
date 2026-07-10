@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
 from app.database import get_db
+from app.dependencies import get_current_recruteur_or_admin
 from app.models.candidate import Candidate
 from app.models.job_offer import JobOffer
 from app.models.match import Match
@@ -173,7 +174,8 @@ def _next_question(db: Session, session: AssessmentSession, pool: List[Assessmen
 
 # ── POST /assessment/prepare ─────────────────────────────────────────────────
 @router.post("/assessment/prepare", summary="Générer/mettre en cache les questions d'une offre")
-def prepare_assessment(payload: PreparePayload, db: Session = Depends(get_db)):
+def prepare_assessment(payload: PreparePayload, db: Session = Depends(get_db),
+                       current_user=Depends(get_current_recruteur_or_admin)):
     """Génère (via LLM local) et met en cache les questions des compétences ciblées.
 
     Étape recruteur, potentiellement longue (génération Ollama) mais faite UNE
@@ -198,7 +200,8 @@ def prepare_assessment(payload: PreparePayload, db: Session = Depends(get_db)):
 
 # ── POST /assessment/start ───────────────────────────────────────────────────
 @router.post("/assessment/start", summary="Démarrer un test d'évaluation adaptatif")
-def start_assessment(payload: StartPayload, db: Session = Depends(get_db)):
+def start_assessment(payload: StartPayload, db: Session = Depends(get_db),
+                     current_user=Depends(get_current_recruteur_or_admin)):
     try:
         cand_uuid = UUID(str(payload.candidate_id))
     except (ValueError, AttributeError):
@@ -259,7 +262,8 @@ def start_assessment(payload: StartPayload, db: Session = Depends(get_db)):
 
 # ── POST /assessment/answer ──────────────────────────────────────────────────
 @router.post("/assessment/answer", summary="Répondre à une question (adaptatif)")
-def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
+def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db),
+                      current_user=Depends(get_current_recruteur_or_admin)):
     try:
         sess_uuid = UUID(str(payload.session_id))
         q_uuid = UUID(str(payload.question_id))
@@ -335,7 +339,8 @@ def answer_assessment(payload: AnswerPayload, db: Session = Depends(get_db)):
 
 # ── GET /assessment/open-questions ───────────────────────────────────────────
 @router.get("/assessment/open-questions", summary="Lister les questions ouvertes d'un domaine")
-def list_open_questions(domaine: str = "IT", db: Session = Depends(get_db)):
+def list_open_questions(domaine: str = "IT", db: Session = Depends(get_db),
+                        current_user=Depends(get_current_recruteur_or_admin)):
     qs = db.query(OpenQuestion).filter(OpenQuestion.domaine == domaine).all()
     return {"domaine": domaine, "questions": [
         {"question_id": str(q.id), "competence": q.competence_esco, "question": q.question}
@@ -345,7 +350,8 @@ def list_open_questions(domaine: str = "IT", db: Session = Depends(get_db)):
 
 # ── POST /assessment/open-question ───────────────────────────────────────────
 @router.post("/assessment/open-question", summary="Noter une réponse ouverte (sémantique)")
-def score_open_question(payload: OpenAnswerPayload, db: Session = Depends(get_db)):
+def score_open_question(payload: OpenAnswerPayload, db: Session = Depends(get_db),
+                        current_user=Depends(get_current_recruteur_or_admin)):
     try:
         q_uuid = UUID(str(payload.question_id))
     except (ValueError, AttributeError):
@@ -371,7 +377,8 @@ def score_open_question(payload: OpenAnswerPayload, db: Session = Depends(get_db
 
 # ── POST /assessment/open-answer ─────────────────────────────────────────────
 @router.post("/assessment/open-answer", summary="Répondre à une question ouverte (liée à la session)")
-def submit_open_answer(payload: SessionOpenAnswerPayload, db: Session = Depends(get_db)):
+def submit_open_answer(payload: SessionOpenAnswerPayload, db: Session = Depends(get_db),
+                       current_user=Depends(get_current_recruteur_or_admin)):
     try:
         sess_uuid = UUID(str(payload.session_id))
         q_uuid = UUID(str(payload.question_id))
@@ -408,7 +415,8 @@ def submit_open_answer(payload: SessionOpenAnswerPayload, db: Session = Depends(
 
 # ── POST /assessment/report/{session_id} ─────────────────────────────────────
 @router.post("/assessment/report/{session_id}", summary="Générer le rapport IA (local)")
-def generate_assessment_report(session_id: UUID, db: Session = Depends(get_db)):
+def generate_assessment_report(session_id: UUID, db: Session = Depends(get_db),
+                               current_user=Depends(get_current_recruteur_or_admin)):
     session = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session non trouvée")
@@ -451,7 +459,8 @@ def generate_assessment_report(session_id: UUID, db: Session = Depends(get_db)):
 
 # ── POST /assessment/reality-gap ─────────────────────────────────────────────
 @router.post("/assessment/reality-gap", summary="Calculer le Reality Gap Score")
-def compute_reality_gap_endpoint(payload: RealityGapPayload, db: Session = Depends(get_db)):
+def compute_reality_gap_endpoint(payload: RealityGapPayload, db: Session = Depends(get_db),
+                                 current_user=Depends(get_current_recruteur_or_admin)):
     try:
         cand_uuid  = UUID(str(payload.candidate_id))
         offer_uuid = UUID(str(payload.offer_id))
@@ -517,7 +526,8 @@ def compute_reality_gap_endpoint(payload: RealityGapPayload, db: Session = Depen
 
 # ── GET /assessment/reality-gap/{candidate_id}/{offer_id} ────────────────────
 @router.get("/assessment/reality-gap/{candidate_id}/{offer_id}", summary="Récupérer un Reality Gap")
-def get_reality_gap(candidate_id: UUID, offer_id: UUID, db: Session = Depends(get_db)):
+def get_reality_gap(candidate_id: UUID, offer_id: UUID, db: Session = Depends(get_db),
+                    current_user=Depends(get_current_recruteur_or_admin)):
     rg = (
         db.query(RealityGapResult)
         .filter(RealityGapResult.candidate_id == candidate_id,
@@ -538,7 +548,8 @@ def get_reality_gap(candidate_id: UUID, offer_id: UUID, db: Session = Depends(ge
 
 # ── GET /assessment/result/{id} ──────────────────────────────────────────────
 @router.get("/assessment/result/{session_id}", summary="Résultat du test (niveau démontré)")
-def assessment_result(session_id: UUID, db: Session = Depends(get_db)):
+def assessment_result(session_id: UUID, db: Session = Depends(get_db),
+                      current_user=Depends(get_current_recruteur_or_admin)):
     session = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session non trouvée")
@@ -782,7 +793,8 @@ def _fill_session_from_pool(db: Session, session: AssessmentSession) -> bool:
 # ── POST /assessment/launch (recruteur) ──────────────────────────────────────
 @router.post("/assessment/launch", summary="[Recruteur] Lancer une évaluation (instantané)")
 def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
-                      db: Session = Depends(get_db)):
+                      db: Session = Depends(get_db),
+                      current_user=Depends(get_current_recruteur_or_admin)):
     """INSTANTANÉ : crée la session + le lien candidat immédiatement.
 
     Le pool de questions de l'OFFRE est généré UNE seule fois, en ARRIÈRE-PLAN
@@ -1099,7 +1111,8 @@ def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Sessio
 
 # ── GET /assessment/detail/{session_id} (recruteur : vérifier les réponses) ──
 @router.get("/assessment/detail/{session_id}", summary="[Recruteur] Toutes les questions/réponses")
-def assessment_detail(session_id: UUID, db: Session = Depends(get_db)):
+def assessment_detail(session_id: UUID, db: Session = Depends(get_db),
+                      current_user=Depends(get_current_recruteur_or_admin)):
     session = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session non trouvée")
@@ -1157,7 +1170,8 @@ def public_finish(token: str, pin: Optional[str] = None, db: Session = Depends(g
 # GESTION RECRUTEUR — liste des évaluations d'une offre + suppression
 # ═════════════════════════════════════════════════════════════════════════════
 @router.get("/assessment/list", summary="[Recruteur] Évaluations d'une offre")
-def list_assessments(offer_id: UUID, db: Session = Depends(get_db)):
+def list_assessments(offer_id: UUID, db: Session = Depends(get_db),
+                     current_user=Depends(get_current_recruteur_or_admin)):
     offer = db.query(JobOffer).filter(JobOffer.id == offer_id).first()
     if not offer:
         raise HTTPException(status_code=404, detail="Offre introuvable")
@@ -1201,7 +1215,8 @@ def list_assessments(offer_id: UUID, db: Session = Depends(get_db)):
 
 
 @router.delete("/assessment/{session_id}", summary="[Recruteur] Supprimer une évaluation")
-def delete_assessment(session_id: UUID, db: Session = Depends(get_db)):
+def delete_assessment(session_id: UUID, db: Session = Depends(get_db),
+                      current_user=Depends(get_current_recruteur_or_admin)):
     s = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="Session non trouvée")

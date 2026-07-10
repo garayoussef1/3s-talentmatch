@@ -10,9 +10,11 @@ const STATUS = {
   completed:   { label: 'Terminé',  cls: 'ast-st-done' },
   abandoned:   { label: 'Abandonné', cls: 'ast-st-wait' },
 }
-const FIAB = (label) => label === 'fiable' ? { txt: 'CV fiable', cls: 'ast-ok' }
-  : label === 'a_verifier' ? { txt: 'À vérifier', cls: 'ast-mid' }
-  : label === 'ecart_important' ? { txt: 'Écart important', cls: 'ast-no' } : null
+// Cohérence CV ↔ Test : à quel point le niveau démontré au test correspond
+// à ce que le CV déclare (100% = parfaitement cohérent).
+const FIAB = (label) => label === 'fiable' ? { txt: 'CV cohérent avec le test', cls: 'ast-ok' }
+  : label === 'a_verifier' ? { txt: 'Quelques écarts à vérifier', cls: 'ast-mid' }
+  : label === 'ecart_important' ? { txt: 'CV ≠ niveau démontré', cls: 'ast-no' } : null
 
 export default function AssessmentsTab({ offerId }) {
   const [list, setList]       = useState(null)
@@ -58,7 +60,7 @@ export default function AssessmentsTab({ offerId }) {
 
       <table className="ast-table">
         <thead>
-          <tr><th>Candidat</th><th>Progression</th><th>Statut</th><th>Niveau</th><th>Fiabilité CV</th><th></th></tr>
+          <tr><th>Candidat</th><th>Progression</th><th>Statut</th><th>Niveau</th><th>Cohérence CV ↔ Test</th><th></th></tr>
         </thead>
         <tbody>
           {list.map(s => {
@@ -164,16 +166,24 @@ function AssessmentDetail({ session, offerId, onClose }) {
             )}
 
             {gap && (
-              <div className="ast-fiab-row">
-                <div className="ast-fiab-score">{Math.round(gap.fiabilite_cv)}<span>/100</span></div>
-                <div>
-                  <div className="ast-fiab-lbl">Fiabilité du CV</div>
-                  <span className={`ast-badge ${FIAB(gap.niveau_label)?.cls || ''}`}>{FIAB(gap.niveau_label)?.txt}</span>
+              <>
+                <div className="ast-fiab-row">
+                  <div className="ast-fiab-score">{Math.round(gap.fiabilite_cv)}<span>/100</span></div>
+                  <div>
+                    <div className="ast-fiab-lbl">Cohérence CV ↔ Test</div>
+                    <span className={`ast-badge ${FIAB(gap.niveau_label)?.cls || ''}`}>{FIAB(gap.niveau_label)?.txt}</span>
+                  </div>
+                  {answers?.niveau_global != null && (
+                    <div className="ast-niveau">Niveau démontré : <strong>{answers.niveau_global}/10</strong></div>
+                  )}
                 </div>
-                {answers?.niveau_global != null && (
-                  <div className="ast-niveau">Niveau démontré : <strong>{answers.niveau_global}/10</strong></div>
-                )}
-              </div>
+                <p className="ast-fiab-help">
+                  💡 Ce score compare ce que le CV <strong>déclare</strong> à ce que le candidat a
+                  réellement <strong>démontré</strong> au test. 100% = parfaitement cohérent.
+                  En dessous de 70%, consultez le radar ci-dessous pour voir quelles
+                  compétences sont surévaluées (ou sous-évaluées) sur le CV.
+                </p>
+              </>
             )}
 
             {radarData.length > 0 && (

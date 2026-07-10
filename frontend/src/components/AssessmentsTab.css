@@ -117,3 +117,10 @@
 .ast-integ-flags { margin: 8px 0 0; padding-left: 18px; }
 .ast-integ-flags li { font-size: 13px; color: #b91c1c; margin-bottom: 3px; }
 .ast-integ-ok { margin: 6px 0 0; font-size: 13px; color: #15803d; }
+
+/* Explication du score de cohérence */
+.ast-fiab-help {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+  padding: 10px 14px; font-size: 13px; color: #475569; line-height: 1.55;
+  margin: 0 0 14px;
+}
