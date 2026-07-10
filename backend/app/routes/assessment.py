@@ -18,7 +18,7 @@ import os
 from uuid import UUID
 from typing import Optional, List
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
@@ -594,6 +594,37 @@ def _check_pin(session: AssessmentSession, pin: Optional[str]) -> bool:
     return str(pin or "").strip() == session.access_pin
 
 
+def _optional_user(db: Session, authorization: Optional[str]):
+    """Décode le JWT s'il est présent (sinon None) — sans lever d'erreur."""
+    if not authorization or not authorization.lower().startswith("bearer "):
+        return None
+    from app.services.auth_service import decode_access_token, get_user_by_id
+    payload = decode_access_token(authorization.split(" ", 1)[1])
+    if not payload or not payload.get("sub"):
+        return None
+    user = get_user_by_id(db, payload["sub"])
+    return user if (user and user.is_active) else None
+
+
+def _session_access(db: Session, session: AssessmentSession, user) -> str:
+    """Politique d'accès candidat à une évaluation :
+
+      • admin / recruteur connecté      → 'ok'  (test / aperçu — les faux CV
+        n'ont pas d'email accessible, l'admin passe par le lien direct)
+      • candidat connecté PROPRIÉTAIRE  → 'ok'  (candidate.user_id == user.id)
+      • non connecté                    → 'login_required'
+      • connecté mais pas le bon compte → 'forbidden'
+    """
+    if user is None:
+        return "login_required"
+    if getattr(user.role, "value", str(user.role)) in ("admin", "recruteur"):
+        return "ok"
+    candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
+    if candidate and candidate.user_id == user.id:
+        return "ok"
+    return "forbidden"
+
+
 def _is_blocked(session: AssessmentSession) -> bool:
     return bool((session.integrity or {}).get("blocked"))
 
@@ -830,10 +861,21 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
 
 # ── GET /assessment/public/{token} (candidat) ────────────────────────────────
 @router.get("/assessment/public/{token}", summary="[Candidat] État + question courante")
-def public_get(token: str, pin: Optional[str] = None, db: Session = Depends(get_db)):
+def public_get(token: str, pin: Optional[str] = None, db: Session = Depends(get_db),
+               authorization: Optional[str] = Header(None)):
     session = _session_by_token(db, token)
     candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
     offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first() if session.job_offer_id else None
+
+    # 1ᵉʳ verrou : COMPTE requis (candidat propriétaire, ou admin/recruteur pour test)
+    access_compte = _session_access(db, session, _optional_user(db, authorization))
+    if access_compte != "ok":
+        return {
+            "offer_titre": offer.titre if offer else "Poste",
+            "status": session.status.value,
+            "completed": False,
+            "phase": access_compte,   # login_required | forbidden
+        }
 
     # 2ᵉ facteur : sans PIN valide, on ne révèle RIEN du questionnaire
     if not _check_pin(session, pin) and session.status != AssessmentStatus.completed:
@@ -918,8 +960,11 @@ def public_get(token: str, pin: Optional[str] = None, db: Session = Depends(get_
 
 # ── POST /assessment/public/{token}/event (anti-triche temps réel) ───────────
 @router.post("/assessment/public/{token}/event", summary="[Candidat] Signaler un événement d'intégrité")
-def public_event(token: str, payload: EventPayload, db: Session = Depends(get_db)):
+def public_event(token: str, payload: EventPayload, db: Session = Depends(get_db),
+                 authorization: Optional[str] = Header(None)):
     session = _session_by_token(db, token)
+    if _session_access(db, session, _optional_user(db, authorization)) != "ok":
+        raise HTTPException(status_code=401, detail="Connexion au compte requise.")
     if not _check_pin(session, payload.pin):
         raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
 
@@ -941,8 +986,11 @@ def public_event(token: str, payload: EventPayload, db: Session = Depends(get_db
 
 # ── POST /assessment/public/{token}/answer (candidat, QCM) ───────────────────
 @router.post("/assessment/public/{token}/answer", summary="[Candidat] Répondre à un QCM")
-def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_db)):
+def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_db),
+                  authorization: Optional[str] = Header(None)):
     session = _session_by_token(db, token)
+    if _session_access(db, session, _optional_user(db, authorization)) != "ok":
+        raise HTTPException(status_code=401, detail="Connexion au compte requise.")
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
     if not _check_pin(session, payload.pin):
@@ -996,8 +1044,11 @@ def public_answer(token: str, payload: AnswerPayload, db: Session = Depends(get_
 
 # ── POST /assessment/public/{token}/open-answer (candidat) ───────────────────
 @router.post("/assessment/public/{token}/open-answer", summary="[Candidat] Répondre à une question ouverte")
-def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Session = Depends(get_db)):
+def public_open_answer(token: str, payload: SessionOpenAnswerPayload, db: Session = Depends(get_db),
+                       authorization: Optional[str] = Header(None)):
     session = _session_by_token(db, token)
+    if _session_access(db, session, _optional_user(db, authorization)) != "ok":
+        raise HTTPException(status_code=401, detail="Connexion au compte requise.")
     if session.status == AssessmentStatus.completed:
         raise HTTPException(status_code=409, detail="Évaluation déjà terminée")
     if not _check_pin(session, payload.pin):
@@ -1080,8 +1131,11 @@ def assessment_detail(session_id: UUID, db: Session = Depends(get_db)):
 
 # ── POST /assessment/public/{token}/finish (candidat) ────────────────────────
 @router.post("/assessment/public/{token}/finish", summary="[Candidat] Terminer l'évaluation")
-def public_finish(token: str, pin: Optional[str] = None, db: Session = Depends(get_db)):
+def public_finish(token: str, pin: Optional[str] = None, db: Session = Depends(get_db),
+                  authorization: Optional[str] = Header(None)):
     session = _session_by_token(db, token)
+    if _session_access(db, session, _optional_user(db, authorization)) != "ok":
+        raise HTTPException(status_code=401, detail="Connexion au compte requise.")
     if not _check_pin(session, pin):
         raise HTTPException(status_code=401, detail="Code d'accès incorrect.")
     session.status = AssessmentStatus.completed
@@ -1156,3 +1210,48 @@ def delete_assessment(session_id: UUID, db: Session = Depends(get_db)):
     db.delete(s)
     db.commit()
     return {"ok": True, "deleted": str(session_id)}
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ESPACE CANDIDAT — mes évaluations (compte connecté)
+# ═════════════════════════════════════════════════════════════════════════════
+from app.dependencies import get_current_user  # noqa: E402
+from app.models.user import User  # noqa: E402
+
+
+@router.get("/assessment/my", summary="[Candidat connecté] Mes évaluations")
+def my_assessments(db: Session = Depends(get_db),
+                   current_user: User = Depends(get_current_user)):
+    """Liste les évaluations du candidat CONNECTÉ (via candidate.user_id).
+
+    Le candidat y accède depuis son espace ; l'accès au test lui-même exige
+    en plus le code PIN reçu par email.
+    """
+    candidate_ids = [
+        c.id for c in db.query(Candidate).filter(Candidate.user_id == current_user.id).all()
+    ]
+    if not candidate_ids:
+        return {"sessions": []}
+
+    sessions = (
+        db.query(AssessmentSession)
+        .filter(AssessmentSession.candidate_id.in_(candidate_ids))
+        .order_by(AssessmentSession.created_at.desc())
+        .all()
+    )
+    out = []
+    for s in sessions:
+        offer = db.query(JobOffer).filter(JobOffer.id == s.job_offer_id).first() if s.job_offer_id else None
+        window, _msg = _window_status(s)
+        out.append({
+            "session_id": str(s.id),
+            "offer_titre": offer.titre if offer else "Poste",
+            "entreprise": offer.entreprise if offer else None,
+            "status": s.status.value,
+            "window": window,   # open | not_open | expired
+            "opens_at": s.opens_at.isoformat() if s.opens_at else None,
+            "deadline": s.deadline.isoformat() if s.deadline else None,
+            "candidate_link": f"/evaluation/{s.access_token}" if s.access_token else None,
+            "created_at": s.created_at.isoformat() if s.created_at else None,
+        })
+    return {"sessions": out}

@@ -3,8 +3,15 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import './AssessmentCandidate.css'
 
-// Axios dédié (candidat non connecté), timeout large (scoring local)
+// Axios dédié, timeout large (scoring local). Le JWT est joint s'il existe :
+// l'accès à l'évaluation exige d'être connecté (candidat propriétaire, ou
+// admin/recruteur pour les tests).
 const publicApi = axios.create({ baseURL: '/api', timeout: 60000 })
+publicApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
 const QCM_SECONDS = 90   // timer par QCM (anti-recherche externe)
 
@@ -176,6 +183,35 @@ export default function AssessmentCandidate() {
         <h2>Merci {data?.candidate_name?.split(' ')[0]} !</h2>
         <p>Votre évaluation pour <strong>{data?.offer_titre}</strong> est terminée.</p>
         <p className="asv-muted">Vos résultats ont été transmis au recruteur.</p>
+      </div>
+    </div>
+  )
+
+  // Connexion au compte requise (organisation société)
+  if (data?.phase === 'login_required') return (
+    <div className="asv-screen">
+      <div className="asv-card">
+        <div className="asv-check" style={{ background: '#4338ca' }}>👤</div>
+        <h2>Connexion requise</h2>
+        <p>Pour accéder à votre évaluation pour <strong>{data?.offer_titre}</strong>,
+           connectez-vous d'abord à votre compte 3S TalentMatch.</p>
+        <p className="asv-muted">Après connexion, rouvrez le lien de votre email
+           ou passez par « Mes évaluations » dans votre espace.</p>
+        <button className="asv-btn" style={{ width: '100%', marginTop: 10 }}
+          onClick={() => { window.location.href = '/login' }}>
+          Se connecter
+        </button>
+      </div>
+    </div>
+  )
+
+  // Connecté avec le mauvais compte
+  if (data?.phase === 'forbidden') return (
+    <div className="asv-screen">
+      <div className="asv-card asv-err">
+        <h2>Accès refusé</h2>
+        <p>Cette évaluation est liée à un autre compte candidat.
+           Connectez-vous avec le compte qui a reçu l'invitation.</p>
       </div>
     </div>
   )

@@ -88,6 +88,13 @@ function Navbar() {
             )}
             {role === 'candidat' && (
               <li>
+                <Link to="/my-assessments" className={location.pathname === '/my-assessments' ? 'active' : ''}>
+                  Mes Évaluations
+                </Link>
+              </li>
+            )}
+            {role === 'candidat' && (
+              <li>
                 <Link to="/mes-donnees" className={location.pathname === '/mes-donnees' ? 'active' : ''}>
                   Mes Données
                 </Link>

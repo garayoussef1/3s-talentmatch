@@ -10,6 +10,7 @@ import AssessmentCandidate from './pages/AssessmentCandidate'
 import Candidates from './pages/Candidates'
 import CandidateDetail from './pages/CandidateDetail'
 import MyApplications from './pages/MyApplications'
+import MyAssessments from './pages/MyAssessments'
 import MesDonnees from './pages/MesDonnees'
 import AdminUsers from './pages/AdminUsers'
 import OffersList  from './pages/OffersList'
@@ -67,6 +68,7 @@ function App() {
               <Route path="/jobs" element={<ProtectedRoute allowedRoles={["candidat"]}><CandidateOffers /></ProtectedRoute>} />
               <Route path="/jobs/:id" element={<ProtectedRoute allowedRoles={["candidat"]}><CandidateOfferDetail /></ProtectedRoute>} />
               <Route path="/my-applications" element={<ProtectedRoute allowedRoles={["candidat"]}><MyApplications /></ProtectedRoute>} />
+              <Route path="/my-assessments" element={<ProtectedRoute allowedRoles={["candidat"]}><MyAssessments /></ProtectedRoute>} />
               <Route path="/mes-donnees" element={<ProtectedRoute allowedRoles={["candidat"]}><MesDonnees /></ProtectedRoute>} />
             </Routes>
           </ErrorBoundary>
