@@ -26,11 +26,15 @@ export default function AssessmentCandidate() {
 
   // ── Anti-triche (mode examen) ──
   const [security, setSecurity] = useState('')   // '' | 'warning' | 'blocked'
+  const [remaining, setRemaining] = useState(null)  // sorties restantes avant blocage
+  const [rulesOk, setRulesOk] = useState(false)     // règles acceptées (écran dédié)
   const [timeLeft, setTimeLeft] = useState(QCM_SECONDS)
   const keystrokes = useRef(0)         // frappes dans la zone de rédaction
   const pasteTried = useRef(false)     // collage tenté (bloqué)
   const qStart = useRef(Date.now())    // début de la question courante
   const wasFullscreen = useRef(false)
+  const phaseRef = useRef('')          // phase courante (le comptage ne vaut qu'en test)
+  useEffect(() => { phaseRef.current = data?.phase || '' }, [data?.phase])
 
   const enterFullscreen = () => {
     const el = document.documentElement
@@ -41,18 +45,20 @@ export default function AssessmentCandidate() {
     return publicApi.post(`/assessment/public/${token}/event`, { pin, type })
       .then(res => {
         if (res.data.blocked) setSecurity('blocked')
-        else if (res.data.warning) setSecurity('warning')
+        else if (res.data.warning) { setSecurity('warning'); setRemaining(res.data.remaining) }
       })
       .catch(() => {})
   }, [token, pin])
 
-  // Détection onglet + sortie plein écran (une fois le PIN validé)
+  // Détection onglet + sortie plein écran — UNIQUEMENT pendant le test
+  // (phases qcm/open, après acceptation des règles)
   useEffect(() => {
-    if (!pin) return
-    const onVisibility = () => { if (document.hidden) reportEvent('tab_switch') }
+    if (!pin || !rulesOk) return
+    const inTest = () => ['qcm', 'open'].includes(phaseRef.current)
+    const onVisibility = () => { if (document.hidden && inTest()) reportEvent('tab_switch') }
     const onFsChange = () => {
       if (document.fullscreenElement) wasFullscreen.current = true
-      else if (wasFullscreen.current) reportEvent('fullscreen_exit')
+      else if (wasFullscreen.current && inTest()) reportEvent('fullscreen_exit')
     }
     document.addEventListener('visibilitychange', onVisibility)
     document.addEventListener('fullscreenchange', onFsChange)
@@ -60,7 +66,7 @@ export default function AssessmentCandidate() {
       document.removeEventListener('visibilitychange', onVisibility)
       document.removeEventListener('fullscreenchange', onFsChange)
     }
-  }, [pin, reportEvent])
+  }, [pin, rulesOk, reportEvent])
 
   const load = useCallback((pinValue) => {
     const p = pinValue !== undefined ? pinValue : pin
@@ -74,10 +80,9 @@ export default function AssessmentCandidate() {
     publicApi.get(`/assessment/public/${token}`, { params: { pin: pinInput.trim() } })
       .then(res => {
         setData(res.data)
-        if (res.data.phase !== 'pin') {
-          setPin(pinInput.trim())
-          enterFullscreen()   // mode examen : plein écran dès le démarrage
-        }
+        // Le plein écran ne démarre PAS ici : le candidat lit d'abord les
+        // règles et clique "Commencer" (écran dédié).
+        if (res.data.phase !== 'pin') setPin(pinInput.trim())
       })
       .catch(e => setError(e?.response?.data?.detail || 'Erreur.'))
       .finally(() => setVerifying(false))
@@ -231,6 +236,31 @@ export default function AssessmentCandidate() {
     </div>
   )
 
+  // Écran des RÈGLES : annoncées AVANT de commencer (le plein écran démarre
+  // sur le clic du candidat — geste explicite, pas de sanction surprise)
+  if (pin && !rulesOk && ['qcm', 'open'].includes(data?.phase)) return (
+    <div className="asv-screen">
+      <div className="asv-card" style={{ maxWidth: 560, textAlign: 'left' }}>
+        <h2 style={{ textAlign: 'center' }}>📋 Règles de l'évaluation</h2>
+        <p style={{ textAlign: 'center' }}>Bonjour {data?.candidate_name?.split(' ')[0]},
+           avant de commencer, prenez connaissance des règles :</p>
+        <ul className="asv-rules">
+          <li>🖥️ L'évaluation se déroule <strong>en plein écran</strong>. Vous disposez de
+              <strong> 3 sorties maximum</strong> (Échap, rafraîchissement…) — au-delà,
+              l'évaluation est arrêtée définitivement.</li>
+          <li>⏱️ Chaque QCM est limité à <strong>90 secondes</strong> — temps écoulé = question comptée fausse.</li>
+          <li>🚫 Le <strong>copier-coller est désactivé</strong> ; les changements d'onglet sont enregistrés.</li>
+          <li>✍️ Rédigez vos réponses vous-même : l'activité du clavier est analysée.</li>
+          <li>🎯 Répondez en une seule session, dans un endroit calme (20-30 min).</li>
+        </ul>
+        <button className="asv-btn" style={{ width: '100%', marginTop: 16 }}
+          onClick={() => { enterFullscreen(); setRulesOk(true); qStart.current = Date.now() }}>
+          ✓ J'ai compris — Commencer en plein écran
+        </button>
+      </div>
+    </div>
+  )
+
   const isQcm = data?.phase === 'qcm'
   const pct = isQcm && data.total_qcm ? Math.round(data.answered_qcm / data.total_qcm * 100) : 100
   const lowTime = timeLeft <= 15
@@ -243,9 +273,10 @@ export default function AssessmentCandidate() {
           <div className="asv-fs-box">
             <div className="asv-fs-icon">⚠️</div>
             <h2>Avertissement</h2>
-            <p>Vous avez quitté le plein écran. <strong>C'est votre dernière chance</strong> :
-               une nouvelle sortie entraînera l'<strong>arrêt définitif</strong> de l'évaluation.
-               Cet incident est enregistré et signalé au recruteur.</p>
+            <p>Vous avez quitté le plein écran. Cet incident est enregistré.</p>
+            <p><strong>{remaining === 1
+              ? "Dernière chance : encore une sortie et l'évaluation sera arrêtée définitivement."
+              : `Il vous reste ${remaining} sorties avant l'arrêt définitif de l'évaluation.`}</strong></p>
             <button className="asv-btn" onClick={() => { enterFullscreen(); setSecurity('') }}>
               Reprendre l'évaluation
             </button>

@@ -72,8 +72,9 @@ class EventPayload(BaseModel):
     type: str   # "fullscreen_exit" | "tab_switch"
 
 
-# Anti-triche : à la 2ᵉ sortie du plein écran, l'évaluation est bloquée
-MAX_FULLSCREEN_EXITS = 2
+# Anti-triche : tolérance de 3 sorties du plein écran (rafraîchissement, Échap
+# accidentel...) avec avertissement et compteur ; au-delà, l'évaluation est bloquée.
+MAX_FULLSCREEN_EXITS = 3
 
 
 class RealityGapPayload(BaseModel):
@@ -945,7 +946,11 @@ def public_event(token: str, payload: EventPayload, db: Session = Depends(get_db
 
     session.integrity = integ
     db.commit()
-    return {"blocked": blocked, "warning": warning}
+    return {
+        "blocked": blocked,
+        "warning": warning,
+        "remaining": max(0, MAX_FULLSCREEN_EXITS - int(integ.get("fullscreen_exits", 0))),
+    }
 
 
 # ── POST /assessment/public/{token}/answer (candidat, QCM) ───────────────────
