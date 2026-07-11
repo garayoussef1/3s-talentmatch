@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import InterviewPanel from '../components/InterviewPanel'
-import InterviewsTab from '../components/InterviewsTab'
 import AssessmentsTab from '../components/AssessmentsTab'
 import AssessmentPanel from '../components/AssessmentPanel'
 import './Offers.css'
@@ -418,7 +416,6 @@ function TabMatching({ offerId, offer }) {
   const [selectResult, setSelectResult] = useState(null)
   const [aiSummaries, setAiSummaries]   = useState({})
   const [cvLoading,   setCvLoading]     = useState({})
-  const [interviewFor, setInterviewFor] = useState(null)   // {id, name} ou null
   const [assessmentFor, setAssessmentFor] = useState(null) // {id, name} ou null
 
   const viewCV = async (cvId, candidateName) => {
@@ -490,15 +487,6 @@ function TabMatching({ offerId, offer }) {
 
   return (
     <div>
-      {/* Panneau Entretien IA (un ou plusieurs candidats) */}
-      {interviewFor && (
-        <InterviewPanel
-          candidates={interviewFor}
-          offerId={offerId}
-          onClose={() => setInterviewFor(null)}
-        />
-      )}
-
       {/* Panneau Évaluation technique (un ou plusieurs candidats) */}
       {assessmentFor && (
         <AssessmentPanel
@@ -557,26 +545,11 @@ function TabMatching({ offerId, offer }) {
               </span>
             </div>
             <div className="tm-select-hint">Cochez les candidats à convier à l'entretien</div>
-            {/* Lancer les entretiens des candidats sélectionnés */}
-            <button
-              className="tm-select-btn"
-              disabled={selected.length === 0}
-              style={{ background: '#4338ca' }}
-              onClick={() => {
-                const list = selected
-                  .map(cvId => results.results.find(r => r.cv_id === cvId))
-                  .filter(Boolean)
-                  .map(r => ({ id: r.candidate_id, name: r.candidate_name }))
-                if (list.length) setInterviewFor(list)
-              }}
-            >
-              🎙 Lancer les entretiens ({selected.length})
-            </button>
             {/* Lancer les évaluations techniques des candidats sélectionnés */}
             <button
               className="tm-select-btn"
               disabled={selected.length === 0}
-              style={{ background: '#6d28d9', marginLeft: 8 }}
+              style={{ background: '#6d28d9' }}
               onClick={() => {
                 const list = selected
                   .map(cvId => results.results.find(r => r.cv_id === cvId))
@@ -662,19 +635,6 @@ function TabMatching({ offerId, offer }) {
                             {cvLoading[r.cv_id] ? '⏳' : '📄'} Voir CV
                           </button>
                         )}
-                        {/* Bouton Entretien IA */}
-                        <button
-                          onClick={() => setInterviewFor([{ id: r.candidate_id, name: r.candidate_name }])}
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 5,
-                            background: '#eef2ff', color: '#4338ca',
-                            border: '1px solid #c7d2fe',
-                            borderRadius: 6, padding: '3px 10px',
-                            fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
-                          }}
-                        >
-                          🎙 Entretien IA
-                        </button>
                         {/* Bouton Évaluation technique (Reality Gap) */}
                         <button
                           onClick={() => setAssessmentFor([{ id: r.candidate_id, name: r.candidate_name }])}
@@ -976,9 +936,6 @@ export default function OfferDetail() {
         <button className={`tab-btn ${tab === 'match' ? 'active' : ''}`} onClick={() => setTab('match')}>
           Matching
         </button>
-        <button className={`tab-btn ${tab === 'interviews' ? 'active' : ''}`} onClick={() => setTab('interviews')}>
-          🎙 Entretiens
-        </button>
         <button className={`tab-btn ${tab === 'assessments' ? 'active' : ''}`} onClick={() => setTab('assessments')}>
           🎯 Évaluations
         </button>
@@ -988,7 +945,6 @@ export default function OfferDetail() {
       {tab === 'info'  && <TabInfo offer={offer} onUpdated={setOffer} onDeleted={() => {}} />}
       {tab === 'apps'  && <TabApplications offerId={id} />}
       {tab === 'match' && <TabMatching offerId={id} offer={offer} />}
-      {tab === 'interviews' && <InterviewsTab offerId={id} />}
       {tab === 'assessments' && <AssessmentsTab offerId={id} />}
     </div>
   )

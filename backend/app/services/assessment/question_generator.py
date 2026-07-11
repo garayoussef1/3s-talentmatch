@@ -17,7 +17,7 @@ from __future__ import annotations
 import json
 import logging
 
-from app.services.interview.llm_client import get_llm_client
+from app.services.assessment.llm_client import get_llm_client
 
 logger = logging.getLogger(__name__)
 

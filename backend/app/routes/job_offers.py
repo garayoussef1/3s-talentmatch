@@ -14,7 +14,7 @@ from app.models.job_offer import JobOffer, JobStatus, offer_recruiters
 from app.models.match import Match, MatchStatus
 from app.models.candidate import Candidate, CandidatureStatus
 from app.models.user import User, UserRole
-from app.models.interview import Interview
+from app.models.assessment import AssessmentSession
 from app.schemas.job_offers import (
     JobOfferCreate,
     JobOfferUpdate,
@@ -86,10 +86,10 @@ def list_offers(
         .correlate(JobOffer)
         .scalar_subquery()
     )
-    # Sous-requête : nombre d'entretiens lancés par offre (matching déjà traité)
+    # Sous-requête : nombre d'évaluations lancées par offre (matching déjà traité)
     interview_count_sq = (
-        db.query(func.count(Interview.id))
-        .filter(Interview.job_offer_id == JobOffer.id)
+        db.query(func.count(AssessmentSession.id))
+        .filter(AssessmentSession.job_offer_id == JobOffer.id)
         .correlate(JobOffer)
         .scalar_subquery()
     )
