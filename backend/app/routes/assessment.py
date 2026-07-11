@@ -704,36 +704,6 @@ def _window_status(session: AssessmentSession):
     return "open", ""
 
 
-def _notify_assessment(db: Session, candidate: Candidate, offer: JobOffer,
-                       full_link: str, opens_at=None, deadline=None,
-                       access_pin=None) -> bool:
-    """Email d'invitation + notification in-app (best-effort)."""
-    from app.services import email_service
-    from app.models.notification import Notification
-    prenom = (candidate.nom or "Candidat").split()[0]
-    email_sent = False
-    if candidate.email:
-        try:
-            email_sent = email_service.send_assessment_invitation_email(
-                candidate.email, prenom, offer.titre or "le poste", full_link,
-                opens_at=opens_at, deadline=deadline, access_pin=access_pin,
-            )
-        except Exception:
-            email_sent = False
-    if candidate.user_id:
-        try:
-            db.add(Notification(
-                user_id=candidate.user_id,
-                type="interview_invite",
-                title="Invitation à une évaluation technique",
-                message=f"Vous êtes invité(e) à une évaluation pour « {offer.titre} ».",
-                link=f"/evaluation/{full_link.rsplit('/', 1)[-1]}",
-            ))
-        except Exception:
-            pass
-    return email_sent
-
-
 def _session_qcm_pool_rows(session: AssessmentSession):
     """Adapte session_qcm (dicts) au format attendu par cat_engine (a/b/c/d)."""
     class _Q:  # objet léger compatible build_item_bank
@@ -749,45 +719,8 @@ SESSION_OPEN_COUNT = 3
 
 
 def _fill_session_from_pool(db: Session, session: AssessmentSession) -> bool:
-    """Remplit le questionnaire du candidat depuis le pool de l'OFFRE.
-
-    Tirage aléatoire seedé par la session → chaque candidat reçoit un
-    sous-ensemble DIFFÉRENT du pool. Retourne False si le pool n'est pas prêt.
-    """
-    status = question_bank.offer_pool_status(db, session.job_offer_id)
-    if not status["ready"]:
-        return False
-
-    rng = random.Random(str(session.id))
-    qcm_rows = (
-        db.query(AssessmentQuestion)
-        .filter(AssessmentQuestion.job_offer_id == session.job_offer_id)
-        .all()
-    )
-    open_rows = (
-        db.query(OpenQuestion)
-        .filter(OpenQuestion.job_offer_id == session.job_offer_id,
-                OpenQuestion.emb_expert.isnot(None))
-        .all()
-    )
-    qcm_pick = rng.sample(qcm_rows, min(SESSION_QCM_COUNT, len(qcm_rows)))
-    open_pick = rng.sample(open_rows, min(SESSION_OPEN_COUNT, len(open_rows)))
-
-    session.session_qcm = [{
-        "qid": f"q{i}", "competence": r.competence_esco, "difficulte": r.difficulte,
-        "question": r.question, "options": r.options, "correct": r.bonne_reponse,
-    } for i, r in enumerate(qcm_pick)]
-
-    generated_open = [{
-        "qid": f"o{i}", "source": "ia", "competence": r.competence_esco,
-        "question": r.question,
-        "emb_faible": r.emb_faible, "emb_correct": r.emb_correct, "emb_expert": r.emb_expert,
-    } for i, r in enumerate(open_pick)]
-    # Conserver les questions RECRUTEUR déjà posées au launch
-    recruiter_qs = [o for o in (session.session_open or []) if o.get("source") == "recruteur"]
-    session.session_open = generated_open + recruiter_qs
-    db.commit()
-    return True
+    """Alias du service (source unique de vérité pour le tirage du questionnaire)."""
+    return question_bank.fill_session_from_pool(db, session)
 
 
 # ── POST /assessment/launch (recruteur) ──────────────────────────────────────
@@ -846,15 +779,14 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
             offer_uuid, offer.titre or "le poste", list(offer.competences_requises or []),
         )
 
-    # Si le pool est déjà prêt, on remplit le questionnaire tout de suite
+    # Politique PRO : l'email d'invitation ne part QUE si le questionnaire est
+    # prêt. Sinon, il sera envoyé AUTOMATIQUEMENT à la fin de la génération
+    # (finalize_pending_sessions) — le candidat n'ouvre jamais un test vide.
+    full_link = f"{FRONTEND_URL}/evaluation/{session.access_token}"
+    email_sent = False
     if status["ready"]:
         _fill_session_from_pool(db, session)
-
-    # Email d'invitation + notification in-app (automatique, best-effort)
-    full_link = f"{FRONTEND_URL}/evaluation/{session.access_token}"
-    email_sent = _notify_assessment(db, candidate, offer, full_link, opens_at, deadline,
-                                    access_pin=access_pin)
-    db.commit()
+        email_sent = question_bank.send_invitation(db, session)
 
     return {
         "session_id": str(session.id),
@@ -865,6 +797,7 @@ def launch_assessment(payload: LaunchPayload, background_tasks: BackgroundTasks,
         "candidate_name": candidate.nom,
         "candidate_email": candidate.email,
         "email_sent": email_sent,
+        "email_pending": (not status["ready"]),
         "offer_titre": offer.titre,
         "pool_ready": status["ready"],
         "pool_generating": (not status["ready"]),

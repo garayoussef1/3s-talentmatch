@@ -114,3 +114,8 @@
 }
 .ap-pin strong { font-size: 16px; letter-spacing: 2px; }
 .ap-pin span { color: #94a3b8; font-weight: 400; }
+
+.ap-mail-wait {
+  background: #eef2ff; color: #4338ca; font-size: 13px;
+  padding: 8px 12px; border-radius: 7px; margin-bottom: 8px; line-height: 1.5;
+}

@@ -36,6 +36,7 @@ export default function AssessmentPanel({ candidates, offerId, onClose }) {
           loading: false, status: 'link',
           link: window.location.origin + res.data.candidate_link,
           emailSent: res.data.email_sent,
+          emailPending: res.data.email_pending === true,
           candidateEmail: res.data.candidate_email,
           accessPin: res.data.access_pin,
         })
@@ -111,7 +112,7 @@ export default function AssessmentPanel({ candidates, offerId, onClose }) {
           <div className="ap-body ap-list">
             {poolGenerating && (
               <div className="ap-warn">⏳ Le questionnaire de l'offre se prépare en arrière-plan (~5 min).
-                Les liens sont déjà valables et les emails envoyés.</div>
+                Les invitations partiront <strong>automatiquement</strong> dès qu'il sera prêt.</div>
             )}
             {candidates.map(c => {
               const it = items[c.id] || {}
@@ -128,7 +129,9 @@ export default function AssessmentPanel({ candidates, offerId, onClose }) {
                     <>
                       {it.emailSent
                         ? <div className="ap-mail-ok">📧 Invitation envoyée à <strong>{it.candidateEmail}</strong></div>
-                        : <div className="ap-mail-warn">⚠️ Email non envoyé — transmettez le lien manuellement</div>}
+                        : it.emailPending
+                          ? <div className="ap-mail-wait">⏳ L'invitation sera envoyée <strong>automatiquement</strong> à {it.candidateEmail} dès que le questionnaire sera prêt (~5 min) — le candidat ne recevra jamais un test vide.</div>
+                          : <div className="ap-mail-warn">⚠️ Email non envoyé — transmettez le lien manuellement</div>}
                       {it.accessPin && (
                         <div className="ap-pin">🔒 Code d'accès : <strong>{it.accessPin}</strong>
                           <span> (envoyé au candidat par email)</span></div>

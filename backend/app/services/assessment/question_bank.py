@@ -87,6 +87,9 @@ def generate_offer_pool(offer_id, offer_titre: str, competences: list[str]) -> N
         db.commit()
         logger.info("Pool offre %s généré : %d QCM + %d ouvertes",
                     offer_titre, len(gen["qcm"]), len(gen["open"]))
+        # Invitations DIFFÉRÉES : les candidats déjà lancés sur cette offre
+        # reçoivent leur email MAINTENANT (questionnaire garanti prêt).
+        finalize_pending_sessions(db, offer_id)
     except Exception as exc:
         logger.error("Génération du pool offre %s échouée : %s", offer_titre, exc)
     finally:
@@ -168,3 +171,123 @@ def prepare_competences(db: Session, competences: list[str]) -> dict:
         nb_open = ensure_open(db, comp)
         recap[comp] = {"qcm": nb_qcm, "open": nb_open, "genere": before < nb_qcm}
     return recap
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Remplissage du questionnaire d'une session + invitation différée
+# ─────────────────────────────────────────────────────────────────────────────
+SESSION_QCM_COUNT = 10
+SESSION_OPEN_COUNT = 3
+
+
+def fill_session_from_pool(db: Session, session) -> bool:
+    """Remplit le questionnaire d'un candidat depuis le pool de l'OFFRE.
+
+    Tirage aléatoire seedé par la session → chaque candidat reçoit un
+    sous-ensemble DIFFÉRENT. Les questions du RECRUTEUR (déjà stockées dans
+    session_open) sont conservées. Retourne False si le pool n'est pas prêt.
+    """
+    import random as _random
+
+    status = offer_pool_status(db, session.job_offer_id)
+    if not status["ready"]:
+        return False
+
+    rng = _random.Random(str(session.id))
+    qcm_rows = (
+        db.query(AssessmentQuestion)
+        .filter(AssessmentQuestion.job_offer_id == session.job_offer_id)
+        .all()
+    )
+    open_rows = (
+        db.query(OpenQuestion)
+        .filter(OpenQuestion.job_offer_id == session.job_offer_id,
+                OpenQuestion.emb_expert.isnot(None))
+        .all()
+    )
+    qcm_pick = rng.sample(qcm_rows, min(SESSION_QCM_COUNT, len(qcm_rows)))
+    open_pick = rng.sample(open_rows, min(SESSION_OPEN_COUNT, len(open_rows)))
+
+    session.session_qcm = [{
+        "qid": f"q{i}", "competence": r.competence_esco, "difficulte": r.difficulte,
+        "question": r.question, "options": r.options, "correct": r.bonne_reponse,
+    } for i, r in enumerate(qcm_pick)]
+
+    generated_open = [{
+        "qid": f"o{i}", "source": "ia", "competence": r.competence_esco,
+        "question": r.question,
+        "emb_faible": r.emb_faible, "emb_correct": r.emb_correct, "emb_expert": r.emb_expert,
+    } for i, r in enumerate(open_pick)]
+    recruiter_qs = [o for o in (session.session_open or []) if o.get("source") == "recruteur"]
+    session.session_open = generated_open + recruiter_qs
+    db.commit()
+    return True
+
+
+def send_invitation(db: Session, session) -> bool:
+    """Envoie l'email d'invitation + la notification in-app pour une session.
+
+    Appelé au launch si le questionnaire est prêt, sinon en DIFFÉRÉ à la fin
+    de la génération du pool — le candidat ne reçoit JAMAIS un lien vers un
+    questionnaire pas prêt.
+    """
+    import os as _os
+    from app.models.candidate import Candidate
+    from app.models.job_offer import JobOffer
+    from app.models.notification import Notification
+    from app.services import email_service
+
+    candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
+    offer = db.query(JobOffer).filter(JobOffer.id == session.job_offer_id).first()
+    if not candidate or not offer:
+        return False
+
+    frontend = _os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    full_link = f"{frontend}/evaluation/{session.access_token}"
+    prenom = (candidate.nom or "Candidat").split()[0]
+
+    email_sent = False
+    if candidate.email:
+        try:
+            email_sent = email_service.send_assessment_invitation_email(
+                candidate.email, prenom, offer.titre or "le poste", full_link,
+                opens_at=session.opens_at, deadline=session.deadline,
+                access_pin=session.access_pin,
+            )
+        except Exception:
+            email_sent = False
+    if candidate.user_id:
+        try:
+            db.add(Notification(
+                user_id=candidate.user_id,
+                type="interview_invite",
+                title="Invitation à une évaluation technique",
+                message=f"Vous êtes invité(e) à une évaluation pour « {offer.titre} ».",
+                link=f"/evaluation/{session.access_token}",
+            ))
+            db.commit()
+        except Exception:
+            pass
+    return email_sent
+
+
+def finalize_pending_sessions(db: Session, offer_id) -> int:
+    """Après génération du pool : remplit les sessions en attente de cette offre
+    et envoie LEURS invitations (email différé). Retourne le nb finalisé."""
+    from app.models.assessment import AssessmentSession, AssessmentStatus
+    pending = (
+        db.query(AssessmentSession)
+        .filter(AssessmentSession.job_offer_id == offer_id,
+                AssessmentSession.status == AssessmentStatus.in_progress)
+        .all()
+    )
+    done = 0
+    for s in pending:
+        if s.session_qcm:      # déjà rempli → invitation déjà envoyée
+            continue
+        if fill_session_from_pool(db, s):
+            send_invitation(db, s)
+            done += 1
+    if done:
+        logger.info("Pool prêt : %d invitation(s) différée(s) envoyée(s)", done)
+    return done
