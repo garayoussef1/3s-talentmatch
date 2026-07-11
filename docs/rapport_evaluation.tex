@@ -1,0 +1,378 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Encodage & langue ──────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+
+% ── Mise en page ───────────────────────────────────────────
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{framed}
+\usepackage{fancyhdr}
+\usepackage{listings}
+
+% ── Couleurs 3S ────────────────────────────────────────────
+\definecolor{bleu3s}{HTML}{1B4F8A}
+\definecolor{orange3s}{HTML}{F7941D}
+\definecolor{grisclair}{HTML}{F1F5F9}
+\definecolor{vertok}{HTML}{15803D}
+\definecolor{rougeko}{HTML}{DC2626}
+
+\titleformat{\section}{\Large\bfseries\color{bleu3s}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries\color{bleu3s}}{\thesubsection}{0.7em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{bleu3s} 3S TalentMatch --- Module d'Évaluation Technique}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single,
+        backgroundcolor=\color{grisclair}, framesep=6pt, xleftmargin=8pt}
+
+\begin{document}
+
+% ════════════════ PAGE DE TITRE ════════════════
+\begin{center}
+  {\Huge\bfseries\color{bleu3s} Module d'Évaluation Technique}\\[6pt]
+  {\Large « Reality Gap Score » --- Entretien technique automatisé 100\,\% local}\\[14pt]
+  {\large Plateforme 3S TalentMatch --- Projet de Fin d'Études}\\[4pt]
+  {\large Youssef GARA --- Juillet 2026}\\[10pt]
+  \rule{0.7\textwidth}{1pt}
+\end{center}
+
+\vspace{6pt}
+\noindent\textbf{Objet du document.} Ce rapport explique le fonctionnement complet du
+module d'évaluation : une partie simple (pour tout lecteur), une partie technique
+détaillée, et une analyse Internet / confidentialité / RGPD. Il est destiné à la
+présentation du travail à l'encadrante et à l'entreprise.
+
+\tableofcontents
+\newpage
+
+% ════════════════ PARTIE 1 ════════════════
+\section{Explication simple}
+
+\subsection{À quoi sert le module ?}
+Un CV \emph{déclare} des compétences, mais rien ne prouve que le candidat les
+\emph{maîtrise réellement}. Le module fait passer au candidat un \textbf{entretien
+technique automatisé} qui mesure son niveau réel, puis compare ce niveau à ce que son
+CV annonce.
+
+\begin{quote}
+\textbf{En une phrase :} le CV dit « Expert Python » --- l'évaluation vérifie si c'est vrai.
+\end{quote}
+
+\subsection{Le parcours en six étapes}
+\begin{enumerate}
+  \item \textbf{Le recruteur} sélectionne un ou plusieurs candidats après le matching.
+        Il peut ajouter ses propres questions et fixer une date d'ouverture et une date
+        limite. Le lancement est \textbf{instantané}.
+  \item \textbf{L'IA locale} prépare le questionnaire de l'offre en arrière-plan
+        (une seule fois par offre, environ 5 à 8 minutes ; réutilisé ensuite).
+  \item \textbf{Le candidat} reçoit un e-mail professionnel : lien personnel, code PIN
+        à usage unique, dates de passage. \emph{L'e-mail ne part que lorsque le
+        questionnaire est prêt} --- le candidat n'ouvre jamais un test vide.
+  \item Il se \textbf{connecte à son compte}, saisit le PIN, lit les \textbf{règles}
+        puis passe le test en plein écran : environ 10 QCM adaptatifs (90 secondes
+        chacun), 3 questions de raisonnement à rédiger, et les questions du recruteur.
+  \item \textbf{L'IA locale note tout} : niveau par compétence, qualité du raisonnement,
+        écart entre le CV déclaré et le niveau démontré (« Reality Gap »).
+  \item \textbf{Le recruteur consulte} l'onglet « Évaluations » : niveau démontré /10,
+        cohérence CV--test, radar « Déclaré vs Démontré », rapport rédigé par l'IA,
+        toutes les réponses du candidat, et le score d'intégrité (anti-triche).
+\end{enumerate}
+
+\subsection{Ce qui le distingue d'un simple quiz}
+\begin{center}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm}XX}
+\toprule
+Aspect & Quiz classique & Notre module \\
+\midrule
+Questions & Banque figée, écrite à la main & Générées par IA à partir de l'offre ---
+fonctionne pour tout domaine (IT, finance, santé, droit\ldots) \\
+Difficulté & Identique pour tous & Adaptative (IRT) : converge vers le vrai niveau en
+$\sim$10 questions \\
+Rédaction & Non notée ou par mots-clés & Notée au \emph{sens} par IA sémantique (BGE-M3) \\
+Triche & Mêmes questions pour tous & Sous-ensemble différent par candidat, options
+mélangées, timer, télémétrie \\
+Résultat & Une note brute & Niveau par compétence + écart avec le CV + rapport IA +
+réponses vérifiables \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ════════════════ PARTIE 2 ════════════════
+\section{Fonctionnement technique détaillé}
+
+\subsection{Architecture}
+\begin{lstlisting}
+backend/app/
+  routes/assessment.py            <- endpoints (20 routes)
+  services/assessment/
+    llm_client.py                 <- client Ollama LOCAL (aucune API externe)
+    question_generator.py         <- generation (paliers + auto-verification)
+    question_bank.py              <- pool par offre, arriere-plan, invitations
+    cat_engine.py                 <- moteur IRT/CAT (catsim)
+    semantic_scorer.py            <- notation semantique (BGE-M3, cosinus)
+    reality_gap.py                <- ecart declare CV vs demontre
+    report_generator.py           <- rapport IA (Ollama)
+  models/assessment.py            <- 4 tables SQLAlchemy
+frontend/src/
+  components/AssessmentPanel.jsx  <- lancement recruteur
+  components/AssessmentsTab.jsx   <- onglet Evaluations (radar, rapport, reponses)
+  pages/AssessmentCandidate.jsx   <- passage du test (PIN, regles, QCM, redaction)
+  pages/MyAssessments.jsx         <- espace candidat "Mes Evaluations"
+\end{lstlisting}
+
+\noindent\textbf{Tables PostgreSQL :}
+\begin{center}
+\begin{tabularx}{\textwidth}{>{\ttfamily}p{4.6cm}X}
+\toprule
+\textrm{\textbf{Table}} & \textbf{Contenu} \\
+\midrule
+assessment\_questions & Pool de QCM par offre (question, 4 options, bonne réponse,
+difficulté 1--10, paramètres IRT) \\
+open\_questions & Questions de raisonnement + 3 réponses de référence + embeddings \\
+assessment\_sessions & Une session par candidat : jeton, PIN, dates, questionnaire tiré,
+réponses, theta, scores, signaux d'intégrité \\
+reality\_gap\_results & Écart déclaré/démontré par compétence, cohérence CV \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Génération des questions (100\,\% locale)}
+\textbf{Modèle :} Mistral 7B via \textbf{Ollama} (serveur local
+\texttt{http://localhost:11434}).
+
+\textbf{Déclenchement :} au premier lancement sur une offre, une tâche d'arrière-plan
+(FastAPI \texttt{BackgroundTasks}) génère le pool ($\sim$18 QCM + 6 questions rédigées).
+Le recruteur n'attend pas (lancement en 0,2\,s). Les lancements suivants sont immédiats.
+
+\textbf{Entrée du LLM :} \emph{uniquement} le titre du poste et les noms des compétences
+requises de l'offre (informations publiques). \textbf{Jamais le CV ni aucune donnée du
+candidat.}
+
+\textbf{Trois mécanismes de qualité :}
+\begin{enumerate}
+  \item \textbf{Paliers de difficulté} : deux appels séparés --- moitié « fondamentaux »
+        (difficulté 2--5), moitié « difficile/expert » (7--10 : pièges, cas limites).
+  \item \textbf{Distracteurs plausibles imposés} : quatre options proches, de même forme ;
+        les mauvaises options sont des erreurs fréquentes du métier $\Rightarrow$ deviner
+        au hasard ne donne aucun indice.
+  \item \textbf{Auto-vérification} : le LLM répond lui-même à chaque QCM généré
+        \emph{sans voir} la réponse marquée ; en cas de désaccord, la question est rejetée.
+\end{enumerate}
+
+\subsection{Test adaptatif (IRT / CAT)}
+\textbf{Théorie :} \emph{Item Response Theory}, le standard des tests standardisés
+(GMAT, TOEFL). Librairie : \texttt{catsim}.
+
+\begin{itemize}
+  \item Chaque question possède des paramètres IRT : difficulté $b$ (mappée de 1--10 vers
+        $[-3, +3]$), discrimination $a$, pseudo-chance $c = 0{,}25$ (4 options).
+  \item Le niveau du candidat est la variable $\theta$ (theta), initialisée à 0.
+  \item À chaque réponse, $\theta$ est ré-estimé par maximum de vraisemblance, puis la
+        question suivante est choisie parmi les plus \emph{informatives} au niveau
+        $\theta$ courant (sélecteur « randomesque » : tirage parmi les 5 meilleures,
+        donc deux candidats de même niveau ne voient pas les mêmes questions).
+  \item Le test s'arrête vers 10 questions ; $\theta$ est converti en niveau 0--10,
+        avec un détail par compétence.
+\end{itemize}
+
+\textbf{Pourquoi l'IRT plutôt qu'un pourcentage ?} Un pourcentage dépend des questions
+posées (8/10 sur des questions faciles $\neq$ 8/10 sur des dures). $\theta$ estime le
+niveau indépendamment des questions : test court \emph{et} comparaison équitable.
+
+\subsection{Notation des réponses rédigées (sémantique)}
+\textbf{Modèle :} BGE-M3 --- le même modèle d'embeddings que le moteur de matching
+(instance partagée).
+
+Chaque question rédigée possède trois réponses de référence (\emph{faible},
+\emph{correcte}, \emph{experte}) dont les vecteurs sont pré-calculés. À la soumission :
+\begin{enumerate}
+  \item la réponse du candidat est encodée en vecteur (localement) ;
+  \item similarité cosinus avec chacune des trois références ;
+  \item score 0--100 par interpolation \emph{softmax} vers les ancres 25 / 62 / 95 ;
+  \item pénalité $\times 0{,}6$ si la réponse fait moins de 30 mots.
+\end{enumerate}
+On note donc le \textbf{sens} de la réponse, pas des mots-clés. Validation
+expérimentale : experte $\approx 80$ $>$ correcte $\approx 41$ $>$ faible $\approx 16$.
+
+Les \textbf{questions du recruteur} sont posées dans le même flux mais ne sont pas
+notées par l'IA : le recruteur les juge lui-même (souvent des questions de motivation
+sans « bonne réponse »).
+
+\subsection{Le « Reality Gap » (écart CV -- démontré)}
+\begin{enumerate}
+  \item \textbf{Niveau déclaré} (0--10) dérivé du CV parsé, par compétence, avec une
+        formule transparente : base 5 si la compétence est listée ; $+0{,}4$/année
+        d'expérience indiquée (plafond $+3$) ; $+2$ si utilisée dans une expérience
+        réelle ; bonus séniorité ($+1$ confirmé, $+2$ senior). Absente du CV : 0.
+  \item \textbf{Écart} : $gap = |déclaré - démontré| / 10$ par compétence, moyenne
+        pondérée par l'importance dans l'offre (requise $=1{,}0$ ; appréciée $=0{,}5$).
+  \item \textbf{Cohérence CV} $= 100 - gap \times 100$, avec les seuils :
+        $\geq 85$ « CV cohérent » ; 70--85 « à vérifier » ; $< 70$ « CV $\neq$ niveau
+        démontré ».
+  \item \textbf{Score final ajusté} $= score_{matching} \times (0{,}7 + 0{,}3 \times
+        cohérence/100)$.
+\end{enumerate}
+L'interface affiche un \textbf{radar superposé « Déclaré (CV) vs Démontré (test) »} par
+compétence : le recruteur voit d'un coup d'\oe il les compétences surévaluées.
+
+\subsection{Le rapport IA}
+Principe clé : \textbf{le code calcule tous les chiffres} ($\theta$, niveaux, scores,
+gap --- aucun risque d'hallucination) ; \textbf{l'IA locale rédige l'analyse
+qualitative} : synthèse, niveau technique, qualité du raisonnement, cohérence CV,
+verdict (\textsc{recruter} / \textsc{à approfondir} / \textsc{rejeter}) justifié.
+Le recruteur peut tout vérifier : bouton « Voir les réponses » (chaque QCM avec le
+choix du candidat vs la bonne réponse, chaque rédaction avec son score).
+
+\subsection{Sécurité et anti-triche}
+\textbf{Contrôle d'accès --- trois verrous successifs :}
+\begin{enumerate}
+  \item \textbf{Compte} : le candidat doit être connecté à \emph{son} compte (celui lié
+        au CV) ; un administrateur connecté peut aussi ouvrir le lien (test/aperçu).
+  \item \textbf{PIN} : code à 6 chiffres, à usage unique, envoyé par e-mail, exigé au
+        démarrage et revalidé côté serveur à chaque réponse.
+  \item \textbf{Fenêtre de dates} : avant l'ouverture ou après la limite, l'accès est
+        refusé.
+\end{enumerate}
+
+\textbf{Anti-triche --- traçabilité, pas de sanction automatique :}
+\begin{center}
+\begin{tabularx}{\textwidth}{p{5.2cm}X}
+\toprule
+\textbf{Risque} & \textbf{Contre-mesure} \\
+\midrule
+Partage des questions & Sous-ensemble aléatoire par candidat + options mélangées
+(permutation déterministe par session, remappée côté serveur) \\
+Recherche externe pendant un QCM & Timer 90\,s par question (temps écoulé = compté faux) ;
+temps de réponse enregistré (QCM difficile réussi en moins de 5\,s = signalé) \\
+Copier-coller (ChatGPT\ldots) & Bloqué sur les questions et les réponses ; tentatives comptées \\
+Texte injecté sans taper & Télémétrie clavier : frappes comptées vs longueur du texte \\
+Sortie de l'écran du test & Plein écran obligatoire (annoncé et accepté sur l'écran des
+règles) ; chaque sortie et changement d'onglet est enregistré \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Ces signaux alimentent un \textbf{score d'intégrité (0--100)} présenté au recruteur avec
+la liste des incidents. \textbf{Choix de conception assumé :} le système ne bloque
+jamais automatiquement le candidat (un rafraîchissement ou la touche Échap ne prouvent
+pas la triche) --- il \emph{trace et signale}, la décision reste \emph{humaine}. C'est
+le modèle des outils professionnels de surveillance d'examen, et la position la plus
+défendable juridiquement.
+
+% ════════════════ PARTIE 3 ════════════════
+\section{Internet, confidentialité et RGPD}
+
+\subsection{Qu'est-ce qui utilise Internet ? (audit du code)}
+\begin{center}
+\begin{tabularx}{\textwidth}{Xp{4.6cm}>{\centering\arraybackslash}p{2.2cm}}
+\toprule
+\textbf{Composant} & \textbf{Où il s'exécute} & \textbf{Internet ?} \\
+\midrule
+Génération des questions (Mistral 7B) & Ollama, sur la machine & \textcolor{vertok}{\textbf{Non}} \\
+Notation sémantique (BGE-M3) & En mémoire, sur la machine & \textcolor{vertok}{\textbf{Non}} \\
+Test adaptatif (catsim) & Bibliothèque Python locale & \textcolor{vertok}{\textbf{Non}} \\
+Rapport IA & Ollama, sur la machine & \textcolor{vertok}{\textbf{Non}} \\
+Base de données & PostgreSQL local & \textcolor{vertok}{\textbf{Non}} \\
+Envoi des e-mails d'invitation & SMTP & \textcolor{rougeko}{\textbf{Oui}} \emph{(seul flux)} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Le \textbf{seul flux sortant} est l'e-mail d'invitation : adresse du candidat, prénom,
+titre du poste, lien, PIN, dates. \textbf{Aucun contenu de CV, aucune réponse, aucun
+résultat ne quitte jamais la machine.}
+
+\begin{quote}
+\emph{Recommandation production :} remplacer le SMTP actuel (Gmail) par le serveur mail
+interne de l'entreprise --- une variable d'environnement à changer, aucun code.
+\end{quote}
+
+À noter : une première version du module d'entretien reposait sur une API cloud (Groq) ;
+elle a été \textbf{entièrement supprimée} du projet (code, tables, clé API) pour
+respecter l'interdiction des API externes. Preuve : \texttt{grep -ri groq backend/}
+$\rightarrow$ 0 résultat.
+
+\subsection{Analyse RGPD}
+\begin{center}
+\begin{tabularx}{\textwidth}{p{4.6cm}X}
+\toprule
+\textbf{Principe RGPD} & \textbf{Réponse du module} \\
+\midrule
+Minimisation des données & Le LLM ne reçoit que le titre du poste et les compétences de
+l'offre --- jamais le CV ni l'identité. \\
+Pas de transfert hors machine & Tout le traitement IA est local (Ollama + BGE-M3).
+Aucune donnée candidat n'est envoyée à un tiers. \\
+Information préalable & Écran des règles avant le test : le candidat est informé
+(plein écran, enregistrement des sorties, analyse du clavier, timer) et clique pour
+accepter avant de commencer. \\
+Proportionnalité de la surveillance & Pas de webcam, pas de micro, pas de capture
+d'écran --- uniquement des signaux techniques, et aucune décision automatique. \\
+Décision non automatisée (art.~22) & Le système \emph{assiste} : le recruteur consulte
+les réponses brutes et décide seul. \\
+Droit d'accès / effacement & Réponses consultables ; suppression d'une évaluation en un
+clic (cascade session + résultats). \\
+Sécurité d'accès & Triple verrou (compte + PIN à usage unique + fenêtre de dates) ;
+endpoints recruteur protégés par authentification et rôle. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent\textbf{À formaliser côté entreprise avant production :} durée de conservation
+des sessions/résultats (ex.\ purge à 12 mois) ; mention de l'évaluation dans la
+politique de confidentialité ; SMTP interne.
+
+\subsection{Questions probables et réponses}
+\begin{description}
+  \item[« Pourquoi l'IRT plutôt qu'un simple score ? »] Le niveau estimé est indépendant
+        des questions posées : test plus court ($\sim$10 questions), équitable entre
+        candidats ; c'est la méthode des tests standardisés.
+  \item[« Comment garantir la qualité des questions générées ? »] Paliers de difficulté
+        imposés, distracteurs plausibles obligatoires, auto-vérification par le modèle ;
+        en dernier ressort le recruteur voit toutes les questions ; et le modèle local
+        est remplaçable par un plus performant (une variable d'environnement).
+  \item[« Et si le candidat triche ? »] La triche est rendue difficile (questions
+        uniques, options mélangées, timer, copier-coller bloqué), détectable (télémétrie
+        clavier, temps de réponse, sorties d'écran) et visible (score d'intégrité).
+        La sanction reste humaine --- choix éthique et juridique.
+  \item[« Quelles données personnelles, et où ? »] CV et réponses : PostgreSQL local.
+        Traitement IA : local. Seul envoi externe : l'e-mail d'invitation.
+  \item[« Quelle est la contribution originale ? »] Le \textbf{Reality Gap Score} :
+        croiser automatiquement le \emph{déclaré} (CV parsé par le pipeline NLP) et le
+        \emph{démontré} (test IRT + notation sémantique) pour produire un indice de
+        cohérence du CV, avec radar par compétence et score de matching ajusté.
+\end{description}
+
+\subsection{Limites (honnêteté scientifique)}
+\begin{enumerate}
+  \item \textbf{Qualité du modèle local} : Mistral 7B produit occasionnellement une
+        question discutable malgré les filtres ($\sim$1/16 observé). Mitigation :
+        vérification humaine possible ; modèle remplaçable sans changer le code.
+  \item \textbf{Première génération lente} ($\sim$5--8 min par offre) --- mitigée par
+        l'arrière-plan, l'invitation différée et le cache par offre.
+  \item \textbf{Niveau déclaré dérivé} : les CV n'indiquent presque jamais un niveau
+        chiffré (1\,\% des cas mesurés) ; la formule de dérivation est transparente mais
+        reste une heuristique.
+  \item \textbf{Anti-triche web} : un second appareil ou une tierce personne restent
+        indétectables par un navigateur --- d'où le score d'intégrité et la
+        contre-vérification humaine en entretien final.
+\end{enumerate}
+
+\vspace{14pt}
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}\\[6pt]
+\small Document généré le 11 juillet 2026 --- branche \texttt{feature/reality-gap-score}.
+\end{center}
+
+\end{document}
