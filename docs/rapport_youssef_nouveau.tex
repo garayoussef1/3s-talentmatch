@@ -1,0 +1,774 @@
+\documentclass[12pt,a4paper]{report}
+
+% ── Encodage & langue ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+
+% ── Mise en page ───────────────────────────────────────────────────────────────
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── En-tête / pied de page ─────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{3S TalentMatch}}
+\fancyhead[R]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Chapitres (style Sirine) ───────────────────────────────────────────────────
+\usepackage{titlesec}
+\usepackage{xcolor}
+\definecolor{chaptercolor}{RGB}{0,0,0}
+
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}
+  {\filleft\large Chapitre \thechapter}
+  {0pt}
+  {\titlerule[1pt]\vspace{6pt}\filright\huge}
+  [\vspace{6pt}\titlerule]
+
+\titlespacing*{\chapter}{0pt}{-10pt}{30pt}
+
+% ── Packages utiles ────────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{framed}
+% (la classe report numérote déjà figures et tableaux par chapitre)
+
+% ═══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Pages préliminaires (page de garde et cachet déjà faites séparément) ──────
+
+% ── Dédicaces ─────────────────────────────────────────────────────────────────
+\chapter*{Dédicaces}
+\addcontentsline{toc}{chapter}{Dédicaces}
+\thispagestyle{empty}
+
+\vspace{2cm}
+\begin{center}
+\textit{Je dédie ce travail à mes chers parents,\\[6pt]
+pour leur amour, leur soutien indéfectible et leurs sacrifices\\
+tout au long de mes études.\\[12pt]
+À ma famille et à mes amis,\\
+pour leurs encouragements constants.\\[12pt]
+À tous ceux qui ont contribué, de près ou de loin,\\
+à la réalisation de ce travail.}\\[2cm]
+\hfill \textit{Youssef GARA}
+\end{center}
+\newpage
+
+% ── Remerciements ─────────────────────────────────────────────────────────────
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+
+Il nous est offert ici la possibilité d'exprimer nos remerciements les plus chaleureux à tous ceux qui nous ont aidé à accomplir ce travail.
+
+Tout d'abord, nous tenons à exprimer notre profonde gratitude et notre grand respect à \textbf{Madame Sirine Nasri}, encadrante entreprise au sein de \textbf{3S Group}, pour ses précieux conseils, sa disponibilité et son suivi rigoureux tout au long de ce stage.
+
+Nous tenons également à remercier sincèrement \textbf{Madame Loujeyin Bouzrati}, encadrante académique à \textbf{ESPRIT}, pour ses orientations pédagogiques et son accompagnement tout au long de ce projet de fin d'études.
+
+Tout au long de notre stage, nous n'oublierons jamais de remercier tout le personnel de \textbf{3S Group} pour son accueil chaleureux et ses connaissances partagées avec nous.
+
+Enfin, nous tenons à remercier nos parents pour leur soutien moral et leurs innombrables sacrifices tout au long de nos études.
+\newpage
+
+% ── Table des matières ────────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ── Liste des figures ─────────────────────────────────────────────────────────
+\listoffigures
+\addcontentsline{toc}{chapter}{Liste des figures}
+\newpage
+
+% ── Liste des tableaux ────────────────────────────────────────────────────────
+\listoftables
+\addcontentsline{toc}{chapter}{Liste des tableaux}
+\newpage
+
+% ── Liste des abréviations ────────────────────────────────────────────────────
+\chapter*{Liste des abréviations}
+\addcontentsline{toc}{chapter}{Liste des abréviations}
+
+\begin{description}[leftmargin=3cm, style=nextline]
+  \item[\textbf{3S}]     Standard Sharing Software
+  \item[\textbf{API}]    Application Programming Interface
+  \item[\textbf{ATS}]    Applicant Tracking System
+  \item[\textbf{BGE}]    BAAI General Embedding
+  \item[\textbf{CRUD}]   Create, Read, Update, Delete
+  \item[\textbf{CV}]     Curriculum Vitae
+  \item[\textbf{DB}]     Database (Base de données)
+  \item[\textbf{DOCX}]   Document XML (format Microsoft Word)
+  \item[\textbf{IA}]     Intelligence Artificielle
+  \item[\textbf{ISO}]    International Organization for Standardization
+  \item[\textbf{IT}]     Information Technology
+  \item[\textbf{JWT}]    JSON Web Token
+  \item[\textbf{MLP}]    Multi-Layer Perceptron
+  \item[\textbf{NLP}]    Natural Language Processing (Traitement du langage naturel)
+  \item[\textbf{OCR}]    Optical Character Recognition
+  \item[\textbf{ORM}]    Object-Relational Mapping
+  \item[\textbf{PDF}]    Portable Document Format
+  \item[\textbf{PFE}]    Projet de Fin d'Études
+  \item[\textbf{RGPD}]   Règlement Général sur la Protection des Données
+  \item[\textbf{RH}]     Ressources Humaines
+  \item[\textbf{REST}]   Representational State Transfer
+  \item[\textbf{SPA}]    Single Page Application
+  \item[\textbf{SQL}]    Structured Query Language
+  \item[\textbf{TF-IDF}] Term Frequency–Inverse Document Frequency
+  \item[\textbf{UML}]    Unified Modeling Language
+  \item[\textbf{URL}]    Uniform Resource Locator
+\end{description}
+\newpage
+
+% ── Introduction générale ─────────────────────────────────────────────────────
+\chapter*{Introduction générale}
+\addcontentsline{toc}{chapter}{Introduction générale}
+\markboth{Introduction générale}{Introduction générale}
+
+Dans un contexte économique de plus en plus compétitif, la gestion des ressources humaines et, plus particulièrement, le processus de recrutement représentent un enjeu stratégique majeur pour les entreprises. La sélection des candidats les plus adaptés à un poste donné est une tâche complexe, chronophage et sujette à des biais humains. Face à la multiplication des candidatures reçues sous des formats hétérogènes (PDF, Word, images scannées), les équipes RH sont confrontées à une charge de travail considérable et à un risque d'erreurs d'évaluation.
+
+L'Intelligence Artificielle et le traitement automatique du langage naturel (NLP) offrent aujourd'hui des perspectives prometteuses pour automatiser et améliorer ce processus. En combinant l'extraction intelligente d'informations, l'analyse sémantique et les algorithmes de correspondance, il devient possible de construire des systèmes capables de mettre en relation automatiquement des profils candidats et des offres d'emploi avec une précision et une transparence accrues.
+
+C'est dans ce contexte que s'inscrit notre projet de fin d'études, réalisé au sein de \textbf{Standard Sharing Software (3S)}, entreprise tunisienne spécialisée dans l'intégration des infrastructures informatiques et la transformation digitale. Nous avons conçu et développé \textbf{3S TalentMatch}, une plateforme web intelligente dédiée au parsing et au matching automatique de CV, afin d'optimiser et d'objectiver le processus de recrutement interne de l'entreprise.
+
+Ce rapport se compose de cinq chapitres structurés comme suit :
+
+Le \textbf{premier chapitre} présente le contexte général du projet : l'entreprise d'accueil, la problématique identifiée, l'étude et la critique de l'existant, la solution proposée, la méthodologie Scrum adoptée et la planification du projet.
+
+Le \textbf{deuxième chapitre} est consacré à la spécification des besoins et à la conception globale : identification des acteurs, besoins fonctionnels et non fonctionnels, architecture du système, workflow de traitement, diagrammes UML et backlog produit.
+
+Le \textbf{troisième chapitre} couvre les Sprints 1 et 2 : le cadrage, la conception et la mise en place du socle technique (environnement de développement, architecture backend et frontend, authentification), puis l'importation des CV, l'extraction de texte, l'OCR, le pipeline NLP, le parsing et la structuration des données en base.
+
+Le \textbf{quatrième chapitre} présente le Sprint 3, consacré au matching IA candidat-offre : gestion des offres, moteur de matching, modèles retenus (BGE-M3, cross-encoder, réseau de neurones), calcul et explication du score, classement des candidats et dashboard RH.
+
+Le \textbf{cinquième chapitre} couvre le Sprint 4 : le module d'évaluation technique des candidats et la génération des rapports, la sécurité, la gestion des rôles, les mesures de protection des données personnelles, les tests fonctionnels et d'intégration, la validation du moteur IA, la documentation et la préparation du déploiement.
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════════
+%  CHAPITRE 1 — PRÉSENTATION GÉNÉRALE
+% ═══════════════════════════════════════════════════════════════════════════════
+\chapter{Présentation générale}
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+
+Dans ce chapitre, nous commençons par présenter le contexte de notre projet en mettant en avant l'entreprise d'accueil. Ensuite, nous exposons la problématique à examiner et déterminons les objectifs de notre projet. Puis, nous analysons ce qui existe déjà et repérons ses points forts et ses limites. Par la suite, nous proposons une solution adaptée pour satisfaire les besoins identifiés. Après, nous choisissons Scrum comme méthodologie de gestion de notre projet. Enfin, nous établissons une planification à travers un diagramme de Gantt élaboré.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Présentation de l'entreprise}
+
+Le groupe \textbf{Standard Sharing Software (3S)} excelle dans le domaine de l'intégration des infrastructures \textit{IT} en se concentrant sur l'innovation et en anticipant le futur. Avec un réseau de partenaires de renommée mondiale, il propose des solutions IT complètes. Avec plus de \textbf{16 filiales} spécialisées dans les technologies de pointe, il met l'accent sur deux domaines technologiques : l'\textit{IT} et le \textit{Cleantech}. Le groupe s'investit dans différents domaines, de l'intégration des infrastructures informatiques à la conception de solutions d'éclairage \textit{LED}, en passant par le développement de logiciels de réservation en ligne et la prestation de services en ligne. La figure~\ref{fig:logo3s} présente le logo de 3S.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.3\textwidth]{../rapport/garde.png}
+  \caption{Logo 3S}
+  \label{fig:logo3s}
+\end{figure}
+
+Avec plus de \textbf{35 ans d'expérience}, 3S assure la satisfaction de plus de \textbf{5\,000 clients}, dont 93\,\% font partie des 500 plus grandes entreprises tunisiennes. Son personnel s'élève à plus de \textbf{370 collaborateurs}, dont une large majorité d'ingénieurs et de techniciens certifiés. L'entreprise est certifiée \textbf{ISO\,9001\,:\,2015} pour la qualité et \textbf{ISO\,27001\,:\,2013} pour la sécurité de l'information. Son siège social est situé à l'Immeuble 3S, rue Abou Hamed El Ghazeli, 1073 Montplaisir, Tunis.
+
+\subsection{Domaines d'expertise et activités}
+
+Les domaines d'expertise de 3S s'articulent autour des pôles suivants :
+
+\begin{itemize}
+  \item Réseaux d'entreprise et télécommunications.
+  \item Sécurité informatique et cybersécurité.
+  \item Data Centers et infrastructures convergées.
+  \item Cloud Computing (privé, hybride, public).
+  \item Digital Workplace et solutions de mobilité.
+  \item Conception de solutions d'éclairage LED (\textit{Cleantech}).
+  \item Développement de logiciels métier et de plateformes web.
+\end{itemize}
+
+\subsection{Partenaires stratégiques}
+
+3S entretient des partenariats avec les principaux équipementiers mondiaux, synthétisés dans le tableau~\ref{tab:partenaires}.
+
+\begin{table}[H]
+\centering
+\caption{Principaux partenariats stratégiques de 3S}
+\label{tab:partenaires}
+\begin{tabular}{ll}
+\toprule
+\textbf{Partenaire} & \textbf{Niveau de partenariat} \\
+\midrule
+Cisco              & Seul partenaire Gold en Tunisie depuis plus de 25 ans \\
+Dell Technologies  & Partenaire Titanium \\
+Fortinet           & Unique partenaire Expert en Tunisie \\
+Nutanix            & Cloud Champion \\
+IBM, VMware, Microsoft & Partenaires technologiques de référence \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Département d'accueil}
+
+Le projet s'est déroulé au sein du \textbf{département IT et Innovation} de 3S, chargé de la veille technologique et de la conduite des projets d'innovation interne. L'encadrement professionnel a été assuré par \textbf{Mme Sirine Nasri}, ingénieure au sein de ce département.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Présentation du projet}
+
+\textbf{3S TalentMatch} est une plateforme web intelligente conçue pour automatiser et optimiser le processus de recrutement au sein de 3S. Elle repose sur un pipeline complet allant de l'import du CV à la mise en correspondance automatique avec les offres d'emploi, en passant par l'extraction structurée des informations et l'analyse sémantique.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Problématique}
+
+Le traitement des candidatures chez 3S repose encore largement sur des processus manuels : réception des CV par courriel, lecture individuelle de chaque document et tri subjectif des profils. Cette approche est chronophage et sujette à des erreurs d'interprétation, avec une traçabilité limitée des critères de sélection.
+
+Sur le plan technique, plusieurs difficultés s'ajoutent : hétérogénéité des formats de CV (PDF, DOCX, images scannées), contenu non structuré rédigé en langage naturel avec des formulations variables, ambiguïtés sémantiques, et contraintes réglementaires liées à la protection des données personnelles.
+
+Dans ce contexte, la problématique centrale du projet peut être formulée ainsi :
+
+\begin{framed}
+\noindent\textit{Comment concevoir une application capable d'extraire, structurer et analyser automatiquement les informations contenues dans des CV hétérogènes, afin de faciliter la mise en correspondance entre candidats et offres d'emploi, tout en garantissant la fiabilité des résultats et la sécurité des données personnelles ?}
+\end{framed}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Étude de l'existant}
+
+\subsection{Contexte actuel du recrutement chez 3S}
+
+Chez 3S, le processus de recrutement repose sur plusieurs étapes manuelles. Les candidatures sont reçues par courriel, sous des formats hétérogènes (PDF, Word, images scannées). Chaque CV est lu individuellement par un recruteur, qui en extrait manuellement les informations pertinentes avant de les saisir dans un fichier tableur. Le tri et le classement des profils sont ensuite effectués de manière subjective, sans critères formalisés ni traçabilité des décisions prises.
+
+Cette approche implique un traitement séquentiel et chronophage des candidatures, particulièrement problématique lors des périodes de recrutement intensif où l'entreprise peut recevoir plusieurs dizaines de CV pour un seul poste.
+
+Sur le plan organisationnel, les principales limites sont :
+\begin{itemize}
+  \item \textbf{Temps de traitement élevé} — chaque CV nécessite une lecture complète et une saisie manuelle des données.
+  \item \textbf{Subjectivité du tri} — l'évaluation dépend du recruteur et de son interprétation des critères de sélection.
+  \item \textbf{Traçabilité limitée} — les raisons d'exclusion ou de sélection d'un profil ne sont pas systématiquement consignées.
+  \item \textbf{Risque d'erreurs} — saisies incorrectes, oublis ou confusions entre candidats.
+\end{itemize}
+
+Sur le plan technique :
+\begin{itemize}
+  \item \textbf{Hétérogénéité des formats} — absence de standard universel pour la rédaction et la mise en page des CV.
+  \item \textbf{Contenu non structuré} — les informations sont rédigées en langage naturel avec des formulations variables d'un candidat à l'autre.
+  \item \textbf{Ambiguïtés sémantiques} — un même terme peut désigner des réalités différentes selon le contexte.
+  \item \textbf{Contraintes RGPD} — la manipulation de données personnelles impose des exigences réglementaires en matière de protection et de confidentialité.
+\end{itemize}
+
+\subsection{Analyse des solutions existantes}
+
+Face à ces limites, plusieurs catégories de solutions ont été identifiées et analysées.
+
+\subsubsection{Plateformes de recrutement grand public}
+
+Les plateformes telles que \textbf{LinkedIn Recruiter}, \textbf{Indeed} et \textbf{ANETI} sont les outils les plus répandus pour la diffusion d'offres et la collecte de candidatures.
+
+\textbf{LinkedIn Recruiter} propose des fonctionnalités avancées de recherche et de filtrage des profils. Il offre une suggestion partielle de candidats via un algorithme interne, mais sans score de pertinence explicite ni classement automatique basé sur une offre précise. L'accès complet est coûteux et les données sont hébergées sur des serveurs externes.
+
+\textbf{Indeed} permet la publication d'offres et la réception de candidatures avec une recherche par mots-clés. Aucune analyse sémantique approfondie n'est réalisée : un candidat qui mentionne un mot-clé sans maîtriser le domaine peut apparaître aussi bien classé qu'un expert.
+
+\textbf{ANETI} (Agence Nationale pour l'Emploi et le Travail Indépendant) est la plateforme nationale tunisienne de l'emploi. Elle propose des fonctionnalités basiques de dépôt de CV et de recherche d'offres, sans mécanisme d'analyse automatique des profils ni de mise en correspondance intelligente.
+
+\subsubsection{ATS (Applicant Tracking Systems)}
+
+Les systèmes de suivi des candidatures tels que \textbf{Workday}, \textbf{Greenhouse} et \textbf{Lever} sont des solutions professionnelles intégrées, conçues pour les équipes RH des grandes entreprises. Ils offrent un suivi structuré du pipeline de recrutement et des workflows de validation.
+
+Cependant, ces solutions présentent plusieurs limites dans le contexte de 3S :
+\begin{itemize}
+  \item \textbf{Coût élevé} — les licences annuelles sont généralement prohibitives pour des structures de taille intermédiaire.
+  \item \textbf{Parsing basique} — le parsing de CV reste fondé sur des règles heuristiques sans compréhension sémantique réelle.
+  \item \textbf{Peu personnalisables} — les critères de matching sont fixes et difficilement adaptables aux spécificités métier de 3S.
+  \item \textbf{Dépendance externe} — les données sont hébergées sur des serveurs tiers, ce qui soulève des questions de confidentialité.
+\end{itemize}
+
+\subsubsection{Solutions open source}
+
+Plusieurs bibliothèques open source permettent de construire un pipeline de traitement de CV.
+
+\textbf{spaCy} est une bibliothèque Python de traitement du langage naturel proposant des modèles pré-entraînés pour l'extraction d'entités nommées, la tokenisation et l'analyse syntaxique. Elle constitue un composant de base solide, mais nécessite un développement spécifique pour être intégrée dans un pipeline complet.
+
+\textbf{pyresparser} est une bibliothèque Python dédiée à l'extraction d'informations depuis des CV. Elle supporte les formats PDF et DOCX, mais ses performances restent limitées sur des CV non anglophones.
+
+Ces solutions constituent des briques utiles, mais aucune ne propose de pipeline complet intégrant extraction, parsing NLP, scoring sémantique et interface utilisateur adaptée au contexte de 3S.
+
+\subsection{Comparaison des solutions}
+
+Le tableau~\ref{tab:comparaison} synthétise la comparaison des solutions analysées selon quatre critères déterminants pour le projet.
+
+\begin{table}[H]
+\centering
+\caption{Comparaison des solutions de recrutement existantes}
+\label{tab:comparaison}
+\begin{tabularx}{\textwidth}{lXXXX}
+\toprule
+\textbf{Solution} & \textbf{Analyse sémantique} & \textbf{Score explicable} & \textbf{Classement auto} & \textbf{Personnalisation} \\
+\midrule
+LinkedIn Recruiter & Partielle   & Non & Partiel & Faible  \\
+Indeed             & Mots-clés   & Non & Non     & Faible  \\
+ANETI              & Non         & Non & Non     & Nulle   \\
+ATS (Workday…)    & Limitée     & Non & Partiel & Moyenne \\
+Open source        & Oui (partiel) & Non & Non   & Élevée  \\
+\textbf{3S TalentMatch} & \textbf{Oui} & \textbf{Oui} & \textbf{Oui} & \textbf{Élevée} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Critique de l'existant}
+
+L'analyse comparative met en évidence plusieurs lacunes communes aux solutions du marché :
+
+\begin{itemize}
+  \item \textbf{Absence de score explicable} — aucune solution ne fournit une explication détaillée du classement attribué à un candidat pour une offre précise.
+  \item \textbf{Matching superficiel} — les approches par mots-clés génèrent des faux positifs et des faux négatifs importants.
+  \item \textbf{Inadaptation au contexte tunisien} — les outils disponibles sont conçus principalement pour des marchés anglophones et ne reconnaissent pas les formations locales (ESPRIT, FST, ENIT, etc.).
+  \item \textbf{Dépendance et coût} — les solutions commerciales impliquent une dépendance externe, un coût de licence élevé et un manque de contrôle sur les données personnelles.
+  \item \textbf{Manque d'intégration} — les outils open source nécessitent un assemblage technique complexe sans interface adaptée aux recruteurs non techniques.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Solution proposée}
+
+Pour répondre à cette problématique, nous avons conçu et développé \textbf{3S TalentMatch}, une plateforme web destinée à automatiser les étapes clés du traitement des candidatures. La solution s'articule autour de cinq modules complémentaires :
+
+\begin{itemize}
+  \item \textbf{Extraction multi-formats} — lecture des CV au format PDF, DOCX et images scannées via reconnaissance optique de caractères (OCR).
+  \item \textbf{Parsing NLP} — structuration automatique des informations extraites (compétences, expériences, formations, langues) grâce à un pipeline spaCy enrichi.
+  \item \textbf{Moteur de matching IA} — calcul d'un score de correspondance sémantique entre un profil candidat et une offre d'emploi, basé sur des modèles d'embeddings (BGE-M3), un cross-encoder de re-classement et un réseau de neurones (MLP Fusion).
+  \item \textbf{Module d'évaluation technique} — entretien technique automatisé et 100\,\% local : génération de questionnaires adaptés à l'offre par un modèle de langage exécuté sur la machine (Ollama), QCM adaptatif fondé sur la théorie de réponse à l'item (IRT), questions de raisonnement notées sémantiquement, mesure de l'écart entre les compétences déclarées dans le CV et le niveau réellement démontré, et rapport d'aide à la décision généré par IA.
+  \item \textbf{Interface recruteur} — tableau de bord de consultation, gestion des offres, visualisation des résultats de matching avec explications et suivi des évaluations.
+\end{itemize}
+
+\subsection*{Objectif général}
+
+Concevoir et développer une application permettant d'automatiser l'extraction, la structuration et l'analyse des CV, afin d'améliorer l'efficacité du processus de recrutement au sein de 3S.
+
+\subsection*{Objectifs spécifiques}
+
+\begin{enumerate}
+  \item Permettre le téléversement de CV sous différents formats (PDF, DOCX, images).
+  \item Extraire automatiquement les informations essentielles avec un taux de fiabilité satisfaisant.
+  \item Structurer et stocker les données extraites dans une base de données relationnelle exploitable.
+  \item Mettre en place un mécanisme de correspondance sémantique entre profils candidats et offres d'emploi.
+  \item Permettre l'évaluation technique des candidats retenus, avec des questionnaires générés automatiquement et des résultats vérifiables par le recruteur.
+  \item Fournir une interface de consultation intuitive et responsive destinée aux recruteurs.
+  \item Appliquer des mesures de protection des données personnelles, notamment par l'exécution locale des modèles d'IA.
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Méthodologies de gestion de projet : Scrum}
+
+La méthodologie \textbf{Scrum} a été adoptée pour sa capacité à structurer un projet évolutif en livraisons incrémentales validées à chaque étape. Les rôles ont été adaptés au contexte du projet de fin d'études :
+
+\begin{itemize}
+  \item \textbf{Product Owner} : Mme Sirine Nasri, encadrante entreprise, chargée de définir et prioriser les fonctionnalités.
+  \item \textbf{Encadrante académique} : Mme Loujeyin Bouzrati (ESPRIT), responsable du suivi pédagogique et de la conformité PFE.
+  \item \textbf{Scrum Master et développeur} : Youssef Gara, en charge du développement et de la communication avec les deux encadrantes.
+\end{itemize}
+
+Les cérémonies Scrum appliquées sont les suivantes :
+\begin{itemize}
+  \item \textbf{Sprint Planning} : définition des objectifs et du backlog de chaque sprint.
+  \item \textbf{Daily Scrum} : suivi quotidien de l'avancement (adapté aux contraintes du stage).
+  \item \textbf{Sprint Review} : démonstration des fonctionnalités développées à l'encadrante.
+  \item \textbf{Sprint Retrospective} : analyse des points à améliorer pour le sprint suivant.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Planification du projet}
+
+Le projet s'étend sur une durée totale de \textbf{24 semaines}, structurées comme indiqué dans le tableau~\ref{tab:planification}.
+
+\begin{table}[H]
+\centering
+\caption{Planification des sprints du projet}
+\label{tab:planification}
+\begin{tabularx}{\textwidth}{lll X}
+\toprule
+\textbf{Phase} & \textbf{Durée} & \textbf{Période} & \textbf{Objectifs principaux} \\
+\midrule
+Sprint 0   & 2 semaines  & Semaines 1--2   & Cadrage, recueil des besoins, étude de l'existant, conception initiale. \\
+Sprint 1   & 4 semaines  & Semaines 3--6   & Socle technique, architecture, authentification. \\
+Sprint 2   & 4 semaines  & Semaines 7--10  & Extraction multi-formats, pipeline NLP, parsing, stockage. \\
+Sprint 3   & 4 semaines  & Semaines 11--14 & Gestion des offres, moteur de matching IA, calcul et explication du score, classement, dashboard RH. \\
+Sprint 4   & 4 semaines  & Semaines 15--18 & Module d'évaluation technique et rapports, sécurité, protection des données, tests, validation du moteur IA, documentation, déploiement. \\
+Rédaction  & 6 semaines  & Semaines 19--24 & Rédaction du rapport, corrections et préparation de la soutenance. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+Ce chapitre a présenté le cadre général du projet 3S TalentMatch : l'entreprise d'accueil, la problématique traitée, l'étude et la critique de l'existant, la solution proposée ainsi que la méthodologie et la planification retenues. Le chapitre suivant sera consacré à la spécification détaillée des besoins et à la conception globale du système.
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════════
+%  CHAPITRE 2 — SPÉCIFICATION DES BESOINS ET CONCEPTION GLOBALE
+% ═══════════════════════════════════════════════════════════════════════════════
+\chapter{Spécification des besoins et conception globale}
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+
+Ce chapitre est consacré à la spécification des besoins du système 3S TalentMatch et à sa conception globale. Nous commençons par identifier les différents acteurs de la plateforme, puis nous définissons les besoins fonctionnels et non fonctionnels. Ensuite, nous présentons l'architecture globale du système, le workflow de traitement, les diagrammes UML ainsi que le backlog produit.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Identification des acteurs}
+
+La plateforme 3S TalentMatch s'adresse à trois catégories d'acteurs aux rôles distincts :
+
+\begin{itemize}
+  \item \textbf{Candidat} : toute personne souhaitant postuler à une offre d'emploi. Il peut créer un compte, téléverser son CV, consulter les offres disponibles, suivre l'état de sa candidature et passer les évaluations techniques auxquelles il est invité.
+  \item \textbf{Recruteur / RH} : responsable du recrutement au sein de 3S. Il peut gérer les offres d'emploi qui lui sont assignées, consulter les résultats de matching pour chaque offre, visualiser les scores et leurs explications, lancer les évaluations techniques des candidats retenus et consulter leurs résultats et rapports.
+  \item \textbf{Administrateur} : gestionnaire de la plateforme. Il dispose de tous les droits : gestion des utilisateurs, des rôles, de l'assignation des recruteurs aux offres, des accès et de la configuration système.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Définition des besoins}
+
+\subsection{Besoins fonctionnels}
+
+Les principales fonctionnalités attendues sont les suivantes :
+
+\begin{itemize}
+  \item Importer des CV sous plusieurs formats (PDF, DOCX, JPG, PNG).
+  \item Extraire et structurer automatiquement les informations utiles (identité, compétences, expériences, formations, langues).
+  \item Permettre la consultation et la correction éventuelle des données extraites.
+  \item Créer et gérer des offres d'emploi, avec assignation des recruteurs par l'administrateur.
+  \item Calculer un score de correspondance sémantique entre un candidat et une offre.
+  \item Classer les candidats selon leur pertinence pour une offre donnée.
+  \item Fournir une explication détaillée de chaque score de matching (compétences couvertes, expérience, formation, similarité sémantique, alertes d'incohérence).
+  \item Lancer des évaluations techniques pour un ou plusieurs candidats retenus : invitation automatique par e-mail avec lien personnel, code PIN à usage unique et fenêtre de passage (date d'ouverture et date limite).
+  \item Faire passer au candidat un questionnaire généré automatiquement à partir de l'offre : QCM à difficulté adaptative et questions de raisonnement à rédiger, complétés par les questions personnalisées du recruteur.
+  \item Noter automatiquement les réponses (QCM et réponses rédigées), mesurer l'écart entre les compétences déclarées dans le CV et le niveau démontré, et générer un rapport d'évaluation par IA vérifiable par le recruteur.
+  \item Tracer les signaux d'intégrité durant l'évaluation (sorties de plein écran, changements d'onglet, tentatives de collage) et présenter un score d'intégrité au recruteur.
+  \item Notifier les candidats (e-mail et notifications dans la plateforme) des étapes de leur candidature.
+  \item Gérer les utilisateurs, les rôles et les traces d'accès.
+  \item Fournir un tableau de bord de suivi du processus de recrutement.
+\end{itemize}
+
+\subsection{Besoins non fonctionnels}
+
+Au-delà des fonctionnalités attendues, le système doit satisfaire plusieurs exigences qualitatives mesurables, synthétisées dans le tableau~\ref{tab:besoins_nf}.
+
+\begin{table}[H]
+\centering
+\caption{Besoins non fonctionnels}
+\label{tab:besoins_nf}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Exigence} & \textbf{Critère de satisfaction} \\
+\midrule
+Performance      & Traitement d'un CV PDF en moins de 5 secondes ; scoring de 20 candidats en moins de 3 secondes. \\
+Sécurité         & Authentification individuelle, mots de passe hachés avec bcrypt, échanges chiffrés, accès aux données personnelles journalisés. \\
+Disponibilité    & Accessible durant les heures ouvrables, avec un objectif de disponibilité élevé. \\
+Compatibilité    & Formats PDF, DOCX, JPG, PNG. Interface compatible avec les navigateurs web modernes. \\
+Maintenabilité   & Architecture modulaire, code documenté et versionné, migrations de schéma gérées par Alembic. \\
+Évolutivité      & Architecture permettant l'ajout de nouveaux formats, modèles ou fonctionnalités sans refonte majeure. \\
+Protection des données & Consentement explicite, droit d'accès et d'effacement des données personnelles, traitement local des modèles d'IA. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Architecture globale du système}
+
+L'architecture de 3S TalentMatch suit un modèle client-serveur en couches, illustré par la figure~\ref{fig:architecture} :
+
+\begin{itemize}
+  \item \textbf{Frontend (couche présentation)} : application React 18 + Vite + Tailwind CSS, communiquant avec le backend via une API REST sécurisée.
+  \item \textbf{Backend (couche métier)} : serveur FastAPI (Python), orchestrant l'ensemble des services : extraction, NLP, matching, évaluation technique, authentification et notifications.
+  \item \textbf{Couche données} : base de données PostgreSQL 16, gérée via SQLAlchemy 2 + Alembic pour les migrations.
+  \item \textbf{Couche IA (exécutée localement)} : modèles NLP (spaCy \texttt{fr\_core\_news\_md}, CamemBERT optionnel), modèle d'embeddings BGE-M3 (sentence-transformers), cross-encoder et réseau MLP Fusion pour le matching, et modèle de langage local Mistral\,7B servi par Ollama pour la génération des questionnaires et des rapports d'évaluation. Aucun modèle d'IA distant n'est utilisé : les données des candidats ne quittent pas l'infrastructure.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{architecture.png}
+  \caption{Architecture globale de 3S TalentMatch}
+  \label{fig:architecture}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Workflow de traitement}
+
+\subsection{Pipeline d'ingestion des CV}
+
+\begin{enumerate}
+  \item L'utilisateur téléverse un CV via l'interface (PDF, DOCX ou image).
+  \item Le module d'extraction sélectionne l'extracteur adapté au format (PDF textuel, DOCX, OCR).
+  \item Le texte brut est transmis au pipeline NLP qui extrait les entités structurées.
+  \item Les données structurées (\texttt{parsed\_data}) sont stockées dans la base de données.
+\end{enumerate}
+
+\subsection{Pipeline de matching candidat-offre}
+
+\begin{enumerate}
+  \item Le recruteur sélectionne une offre d'emploi.
+  \item Le moteur de matching vectorise le profil candidat et le texte de l'offre via BGE-M3.
+  \item Les scores TF-IDF, BERT (cross-encoder) et ML (MLP Fusion) sont calculés.
+  \item Les scores sont fusionnés en un score final et les candidats sont classés.
+  \item Les résultats avec explications sont affichés sur le dashboard RH.
+\end{enumerate}
+
+\subsection{Pipeline d'évaluation technique}
+
+\begin{enumerate}
+  \item Le recruteur sélectionne les candidats retenus après le matching et lance les évaluations (dates de passage et questions personnalisées optionnelles).
+  \item Le modèle de langage local génère, une seule fois par offre et en arrière-plan, une réserve de questions ciblées sur les compétences requises (QCM à difficulté graduée et questions de raisonnement avec réponses de référence).
+  \item Chaque candidat reçoit automatiquement une invitation par e-mail (lien personnel, code PIN à usage unique, dates) dès que son questionnaire est prêt ; chaque candidat reçoit un sous-ensemble de questions différent.
+  \item Le candidat se connecte à son compte, saisit le PIN, accepte les règles, puis répond : QCM adaptatif (la difficulté s'ajuste à ses réponses) puis questions rédigées.
+  \item Le système note les réponses localement (théorie de réponse à l'item pour les QCM, similarité sémantique BGE-M3 pour les rédactions), calcule l'écart entre compétences déclarées et démontrées, et trace les signaux d'intégrité.
+  \item Le recruteur consulte les résultats : niveau par compétence, cohérence CV--test, rapport généré par IA et réponses détaillées.
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Diagrammes UML}
+
+\subsection{Diagramme global des cas d'utilisation}
+
+La figure~\ref{fig:usecase} présente le diagramme global des cas d'utilisation de la plateforme, structuré autour des trois acteurs identifiés. Le candidat gère son compte, dépose son CV (avec extraction et analyse automatiques) et consulte les offres ; le recruteur gère les offres, lance le matching candidat-offre, consulte les scores avec leurs explications et traite les candidatures ; l'administrateur gère les utilisateurs, les rôles et droits d'accès ainsi que les journaux d'accès.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{cas_utilisation.png}
+  \caption{Diagramme global des cas d'utilisation}
+  \label{fig:usecase}
+\end{figure}
+
+\subsection{Diagramme de séquence}
+
+\textit{[Diagramme de séquence à insérer — flux principal : téléversement du CV $\rightarrow$ extraction $\rightarrow$ parsing NLP $\rightarrow$ matching $\rightarrow$ affichage des résultats]}
+
+\subsection{Diagramme de classes global}
+
+\textit{[Diagramme de classes à insérer — entités principales : User, Candidate, CVDocument, JobOffer, Match, Notification, AccessLog, AssessmentSession, AssessmentQuestion, OpenQuestion, RealityGapResult]}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Backlog produit}
+
+Le tableau~\ref{tab:backlog} présente le backlog produit de la plateforme 3S TalentMatch, organisé par fonctionnalité et priorité.
+
+\begin{longtable}{clll}
+\caption{Backlog produit de 3S TalentMatch}
+\label{tab:backlog} \\
+\toprule
+\textbf{ID} & \textbf{User Story} & \textbf{Sprint} & \textbf{Priorité} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{c}{\textit{(Suite du tableau~\ref{tab:backlog})}} \\
+\toprule
+\textbf{ID} & \textbf{User Story} & \textbf{Sprint} & \textbf{Priorité} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\textit{Suite page suivante}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+US01 & En tant que candidat, je veux créer un compte et me connecter & Sprint 1 & Haute \\
+US02 & En tant que candidat, je veux me connecter via Google/LinkedIn & Sprint 1 & Moyenne \\
+US03 & En tant qu'admin, je veux gérer les utilisateurs et les rôles & Sprint 1 & Haute \\
+US04 & En tant que candidat, je veux téléverser mon CV (PDF/DOCX/image) & Sprint 2 & Haute \\
+US05 & En tant que système, je veux extraire le texte du CV (dont OCR) & Sprint 2 & Haute \\
+US06 & En tant que système, je veux parser le texte en données structurées & Sprint 2 & Haute \\
+US07 & En tant que candidat, je veux vérifier et corriger mes données extraites & Sprint 2 & Moyenne \\
+US08 & En tant qu'admin, je veux créer les offres et y assigner des recruteurs & Sprint 3 & Haute \\
+US09 & En tant que RH, je veux voir les candidats classés pour une offre & Sprint 3 & Haute \\
+US10 & En tant que RH, je veux voir le score et l'explication du matching & Sprint 3 & Haute \\
+US11 & En tant que RH, je veux consulter le dashboard de recrutement & Sprint 3 & Haute \\
+US12 & En tant que RH, je veux lancer les évaluations techniques des candidats retenus (invitation e-mail, code PIN, dates de passage) & Sprint 4 & Haute \\
+US13 & En tant que candidat, je veux passer mon évaluation en ligne (QCM adaptatif et questions rédigées) & Sprint 4 & Haute \\
+US14 & En tant que RH, je veux consulter le rapport d'évaluation IA, la cohérence CV--test et les réponses détaillées & Sprint 4 & Haute \\
+US15 & En tant que RH, je veux disposer d'un score d'intégrité signalant les comportements suspects durant l'évaluation & Sprint 4 & Moyenne \\
+US16 & En tant que candidat, je veux recevoir des notifications (e-mail et plateforme) & Sprint 4 & Moyenne \\
+US17 & En tant qu'admin, je veux consulter les journaux d'accès aux données & Sprint 4 & Moyenne \\
+\end{longtable}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+Ce chapitre a permis de définir les besoins fonctionnels et non fonctionnels du système 3S TalentMatch, de présenter l'architecture globale, le workflow de traitement et les diagrammes UML, ainsi que le backlog produit. Le chapitre suivant sera consacré à la réalisation des Sprints 1 et 2 : la mise en place du socle technique, de l'architecture backend et frontend et de l'authentification, puis la construction du pipeline d'ingestion des CV (extraction, OCR, parsing NLP et stockage).
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════════
+%  CHAPITRES 3, 4, 5 — À COMPLÉTER
+% ═══════════════════════════════════════════════════════════════════════════════
+
+\chapter{Sprints 1 et 2 : Socle technique et pipeline d'ingestion des CV}
+
+\section{Introduction}
+\textit{[À rédiger — présentation des deux premiers sprints : mise en place des fondations techniques puis construction du pipeline de traitement des CV.]}
+
+% ═════════ SPRINT 1 ═════════
+\section{Sprint 1 : Cadrage, conception et socle technique}
+
+\subsection{Planification du sprint}
+\subsubsection{Objectif du sprint}
+\textit{[À rédiger — cadrage, environnement technique, architecture initiale, backend, frontend, authentification.]}
+\subsubsection{Backlog du sprint}
+\textit{[Tableau des user stories du Sprint 1.]}
+
+\subsection{Réalisation du sprint}
+\subsubsection{Environnement de travail et outils}
+\subsubsection{Architecture backend (FastAPI)}
+\subsubsection{Architecture frontend (React)}
+\subsubsection{Authentification et gestion des rôles}
+
+\subsection{Tests et validation du sprint}
+\textit{[À rédiger.]}
+
+\subsection{Revue du sprint}
+\textit{[À rédiger.]}
+
+\subsection{Conclusion du sprint}
+\textit{[À rédiger.]}
+
+% ═════════ SPRINT 2 ═════════
+\section{Sprint 2 : Extraction, parsing et structuration des CV}
+
+\subsection{Planification du sprint}
+\subsubsection{Objectif du sprint}
+\textit{[À rédiger — importation des CV, extraction de texte, OCR, pipeline NLP, parsing, structuration, stockage.]}
+\subsubsection{Backlog du sprint}
+\textit{[Tableau des user stories du Sprint 2.]}
+
+\subsection{Réalisation du sprint}
+\subsubsection{Module d'extraction multi-formats (PDF, DOCX, OCR)}
+\subsubsection{Pipeline NLP et parsing}
+\subsubsection{Structuration des données et stockage en base}
+\subsubsection{Interface de téléversement}
+
+\subsection{Tests et validation du sprint}
+\textit{[À rédiger — résultats sur CV de test : nombre, formats, taux d'extraction.]}
+
+\subsection{Revue du sprint}
+\textit{[À rédiger.]}
+
+\subsection{Conclusion du sprint}
+\textit{[À rédiger.]}
+
+\section{Conclusion}
+\textit{[À rédiger — bilan des deux sprints.]}
+\newpage
+
+\chapter{Sprint 3 : Matching IA candidat-offre et dashboard RH}
+
+\section{Introduction}
+\textit{[À rédiger.]}
+
+\section{Planification du sprint}
+\subsection{Objectif du sprint}
+\textit{[À rédiger — gestion des offres, moteur de matching IA, modèles retenus, calcul et explication du score, classement, dashboard RH.]}
+\subsection{Backlog du sprint}
+\textit{[Tableau des user stories du Sprint 3.]}
+
+\section{Réalisation du sprint}
+\subsection{Gestion des offres d'emploi}
+\subsection{Moteur de matching : rôle de chaque composant IA}
+\subsubsection{BGE-M3 : encodage sémantique}
+\textit{[À rédiger — rôle du modèle d'embeddings.]}
+\subsubsection{Cross-encoder : re-classement fin}
+\textit{[À rédiger — rôle du cross-encoder.]}
+\subsubsection{Réseau de neurones MLP Fusion : fusion des scores}
+\textit{[À rédiger — rôle du MLP.]}
+\subsection{Calcul et explication du score}
+\subsection{Classement des candidats et dashboard RH}
+
+\section{Tests et validation du sprint}
+\textit{[À rédiger — métriques : nombre de CV testés, domaines couverts, corrélation de Spearman, indicateurs de précision.]}
+
+\section{Revue du sprint}
+\textit{[À rédiger.]}
+
+\section{Conclusion du sprint}
+\textit{[À rédiger.]}
+\newpage
+
+\chapter{Sprint 4 : Rapports, sécurité, validation et finalisation}
+
+\section{Introduction}
+\textit{[À rédiger.]}
+
+\section{Planification du sprint}
+\subsection{Objectif du sprint}
+\textit{[À rédiger — module d'évaluation technique et rapports, sécurité, gestion des rôles, protection des données personnelles, tests, validation du moteur IA, documentation, déploiement.]}
+\subsection{Backlog du sprint}
+\textit{[Tableau des user stories du Sprint 4.]}
+
+\section{Réalisation du sprint}
+\subsection{Module d'évaluation technique des candidats}
+\subsubsection{Génération locale des questionnaires (Ollama)}
+\subsubsection{QCM adaptatif (théorie de réponse à l'item)}
+\subsubsection{Notation sémantique des réponses rédigées}
+\subsubsection{Écart déclaré--démontré et rapport d'évaluation IA}
+\subsection{Sécurité et gestion des rôles}
+\subsection{Mesures de protection des données personnelles}
+\subsection{Notifications et invitations par e-mail}
+
+\section{Tests et validation du sprint}
+\subsection{Tests fonctionnels et d'intégration}
+\textit{[À rédiger.]}
+\subsection{Validation du moteur IA}
+\textit{[À rédiger — métriques présentées explicitement.]}
+
+\section{Revue du sprint}
+\textit{[À rédiger.]}
+
+\section{Conclusion du sprint}
+\textit{[À rédiger.]}
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════════
+%  CONCLUSION GÉNÉRALE
+% ═══════════════════════════════════════════════════════════════════════════════
+\chapter*{Conclusion générale}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+\markboth{Conclusion générale}{Conclusion générale}
+
+\textit{[À rédiger — résumé des réalisations, apports du projet, perspectives]}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════════
+%  BIBLIOGRAPHIE
+% ═══════════════════════════════════════════════════════════════════════════════
+\chapter*{Bibliographie et Webographie}
+\addcontentsline{toc}{chapter}{Bibliographie et Webographie}
+\markboth{Bibliographie}{Bibliographie}
+
+\begin{enumerate}
+  \item Site officiel 3S Group : \texttt{https://www.3s.com.tn}
+  \item Documentation FastAPI : \texttt{https://fastapi.tiangolo.com}
+  \item Documentation spaCy : \texttt{https://spacy.io/usage}
+  \item BAAI BGE-M3 : \texttt{https://huggingface.co/BAAI/bge-m3}
+  \item React 18 Documentation : \texttt{https://react.dev}
+  \item SQLAlchemy Documentation : \texttt{https://docs.sqlalchemy.org}
+  \item Règlement général sur la protection des données (RGPD) : \texttt{https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on}
+\end{enumerate}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════════
+%  ANNEXES
+% ═══════════════════════════════════════════════════════════════════════════════
+\appendix
+\chapter{Métriques détaillées du moteur IA}
+\textit{[À compléter]}
+
+\chapter{Configuration de l'environnement de développement}
+\textit{[À compléter]}
+
+\end{document}
