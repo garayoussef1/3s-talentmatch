@@ -1,0 +1,77 @@
+@startuml diagramme_sequence
+' Diagramme de séquence — flux principal :
+' téléversement CV → extraction → parsing NLP → matching → résultats
+' Style : StarUML (boîtes blanches, bordures noires, ombres, Arial)
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequence {
+  ArrowColor Black
+  ActorBorderColor Black
+  ActorBackgroundColor White
+  LifeLineBorderColor Black
+  LifeLineBackgroundColor White
+  ParticipantBorderColor Black
+  ParticipantBackgroundColor White
+  ParticipantFontColor Black
+  GroupBorderColor Black
+  GroupBackgroundColor White
+  DividerBorderColor Black
+  DividerBackgroundColor White
+}
+skinparam database {
+  BackgroundColor White
+  BorderColor Black
+}
+
+actor Candidat  as C
+actor Recruteur as R
+participant "Frontend\n(React)" as F
+participant "API FastAPI\n(routes/cv, routes/matching)" as A
+participant "CVExtractor\n(pypdf / docx / EasyOCR)" as E
+participant "NLPParser\n(spaCy + extracteurs)" as N
+participant "MatchEngine\n(BGE-M3 + scorers)" as M
+database "PostgreSQL" as DB
+
+== Téléversement et extraction du CV (Candidat) ==
+C -> F : Sélectionne un fichier CV (PDF/DOCX/image)
+activate F
+F -> A : POST /api/upload-cv (multipart)
+activate A
+A -> E : extract(fichier)
+activate E
+E -> E : Détection du type\n→ pypdf | python-docx | OCR
+E --> A : texte brut + méthode d'extraction
+deactivate E
+
+A -> N : parse(texte)
+activate N
+N -> N : ContactExtractor → EntityExtractor\n→ SkillsExtractor → FormationExtractor\n→ ExperienceExtractor → langues
+N --> A : parsed_data (JSON structuré)
+deactivate N
+
+A -> DB : INSERT Candidate + CVDocument
+DB --> A : candidate_id
+A --> F : 201 — profil extrait
+deactivate A
+F --> C : Affichage du profil extrait
+deactivate F
+
+== Matching CV ↔ offre (Recruteur) ==
+R -> F : Lance le matching sur une offre
+activate F
+F -> A : POST /api/match/{job_offer_id}
+activate A
+A -> DB : SELECT Candidate(s), JobOffer
+DB --> A : profils + offre
+A -> M : match(candidat, offre)
+activate M
+M -> M : Score sémantique (BGE-M3)\n+ compétences + expérience\n+ formation → score fusionné
+M --> A : score + détails explicables
+deactivate M
+A -> DB : INSERT Match(score, details)
+A --> F : classement des candidats
+deactivate A
+F --> R : Résultats triés + explication des scores
+deactivate F
+@enduml

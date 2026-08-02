@@ -38,7 +38,8 @@ SECTION_PATTERNS: dict[str, list[str]] = {
         r"Technologies?\s*(?:utilis[ée]es?)?",
         r"Stack\s+technique", r"Outils?\s*(?:et\s+technologies?)?",
         r"Connaissances?\s*(?:techniques?)?",
-        r"Savoir[\s\-]faire", r"Technical\s+Skills?",
+ 
+         r"Savoir[\s\-]faire", r"Technical\s+Skills?",
         r"Hard\s+Skills?", r"Core\s+(?:competenc(?:ies|es)|skills?)",
     ],
     "langues": [

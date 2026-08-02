@@ -1,0 +1,44 @@
+@startuml pipeline_matching
+' Architecture du moteur de matching — 3S TalentMatch (version épurée)
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 16
+skinparam rectangle {
+  FontStyle bold
+  FontSize 13
+}
+skinparam arrow {
+  Color #37474F
+  Thickness 2
+  FontColor #37474F
+  FontSize 11
+}
+left to right direction
+
+rectangle "ENTRÉES" as entrees #E3F2FD;line:1B4F8A;text:1B4F8A {
+  rectangle "Profil candidat" as cv #White;line:1B4F8A;text:263238
+  rectangle "Offre d'emploi" as offre #White;line:1B4F8A;text:263238
+}
+
+rectangle "ANALYSE PAR CRITÈRE" as criteres #E8F5E9;line:2E7D32;text:2E7D32 {
+  rectangle "Compétences\n<i>couverture ESCO</i>" as comp #White;line:2E7D32;text:263238
+  rectangle "Sémantique\n<i>TalentMatch-BERT</i>\n<i>+ cross-encoder</i>" as sem #White;line:2E7D32;text:263238
+  rectangle "Expérience\n<i>années vs requises</i>" as exp #White;line:2E7D32;text:263238
+  rectangle "Formation\n<i>niveau vs requis</i>" as form #White;line:2E7D32;text:263238
+}
+
+rectangle "FUSION" as fusion #FFF3E0;line:E65100;text:E65100 {
+  rectangle "MLP Fusion\n<i>pondérations adaptatives</i>\n<i>garde-fous métier</i>" as mlp #White;line:E65100;text:263238
+}
+
+rectangle "RÉSULTAT" as sortie #F3E5F5;line:6A1B9A;text:6A1B9A {
+  rectangle "Score explicable\n<i>détail par critère</i>" as score #White;line:6A1B9A;text:263238
+  rectangle "Classement\ndes candidats" as rank #White;line:6A1B9A;text:263238
+}
+
+entrees --> criteres
+criteres --> fusion
+fusion --> sortie
+score -[hidden]- rank
+@enduml

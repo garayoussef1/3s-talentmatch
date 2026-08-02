@@ -1,0 +1,173 @@
+@startuml diagramme_classes
+' Diagramme de classes global — 3S TalentMatch
+' Style : StarUML (boîtes blanches, bordures noires, ombres, Arial)
+skinparam classAttributeIconSize 0
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam classFontStyle bold
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+  FontColor Black
+  AttributeFontColor Black
+  BorderThickness 1
+}
+skinparam legend {
+  BackgroundColor White
+  BorderColor Black
+}
+hide circle
+hide empty methods  
+
+' ─────────────── Utilisateurs & sécurité ───────────────
+class User {
+  +id : UUID
+  +nom : String
+  +prenom : String
+  +email : String
+  -hashed_password : String
+  +role : UserRole
+  +is_email_verified : Boolean
+  +auth_provider : AuthProvider
+}
+
+enum UserRole {
+  recruteur
+  admin
+  candidat
+}
+
+class Notification {
+  +id : UUID
+  +user_id : UUID
+  +type : String
+  +title : String
+  +message : String
+  +is_read : Boolean
+}
+
+class AccessLog {
+  +id : UUID
+  +user_id : UUID
+  +action : String
+  +resource_type : String
+  +ip_address : String
+  +created_at : DateTime
+}
+
+' ─────────────── Pipeline CV ───────────────
+class Candidate {
+  +id : UUID
+  +cv_id : String
+  +user_id : UUID
+  +candidature_status : CandidatureStatus
+  +nom : String
+  +email : String
+  +telephone : String
+  +parsed_data : JSON
+  +extraction_method : String
+  +anonymized : Boolean
+}
+
+class CVDocument {
+  +id : UUID
+  +candidate_id : UUID
+  +filename : String
+  +file_type : String
+  +extraction_method : String
+  +raw_text : Text
+  +status : CVStatus
+}
+
+' ─────────────── Offres & matching ───────────────
+class JobOffer {
+  +id : UUID
+  +recruiter_id : UUID
+  +titre : String
+  +entreprise : String
+  +competences_requises : JSON
+  +experience_requise : Integer
+  +domaine_metier : String
+  +niveau_seniorite : String
+  +status : JobStatus
+}
+
+class Match {
+  +id : UUID
+  +candidate_id : UUID
+  +job_offer_id : UUID
+  +score : Float
+  +details : Text
+  +status : MatchStatus
+}
+
+' ─────────────── Évaluation (Reality Gap) ───────────────
+class AssessmentSession {
+  +id : UUID
+  +candidate_id : UUID
+  +job_offer_id : UUID
+  +domaine : String
+  +status : AssessmentStatus
+  -access_token : String
+  -access_pin : String
+  +opens_at : DateTime
+  +deadline : DateTime
+  +theta : Float
+  +competence_scores : JSON
+  +session_qcm : JSON
+  +session_open : JSON
+  +integrity : JSON
+}
+
+class AssessmentQuestion {
+  +id : UUID
+  +job_offer_id : UUID
+  +competence_esco : String
+  +difficulte : Integer
+  +discrimination : Float
+  +question : Text
+  +options : JSON
+  -bonne_reponse : Integer
+}
+
+class OpenQuestion {
+  +id : UUID
+  +job_offer_id : UUID
+  +competence_esco : String
+  +question : Text
+  +ref_expert : Text
+  +ref_correct : Text
+  +ref_faible : Text
+  +emb_expert : JSON
+}
+
+class RealityGapResult {
+  +id : UUID
+  +candidate_id : UUID
+  +job_offer_id : UUID
+  +session_id : UUID
+  +reality_gap_score : Float
+  +fiabilite_cv : Float
+  +score_final_ajuste : Float
+  +niveau_label : String
+}
+
+' ─────────────── Relations ───────────────
+User "1" -- "0..*" Candidate : téléverse >
+User "1" -- "0..*" JobOffer : publie >
+User "1" -- "0..*" Notification : reçoit >
+User .r. UserRole
+
+Candidate "1" *-- "1..*" CVDocument : contient >
+
+Candidate "1" -- "0..*" Match : obtient >
+JobOffer "1" -- "0..*" Match : génère >
+
+Candidate "1" -- "0..*" AssessmentSession : passe >
+JobOffer "1" -- "0..*" AssessmentSession : encadre >
+JobOffer "1" -- "0..*" AssessmentQuestion : dispose de >
+JobOffer "1" -- "0..*" OpenQuestion : dispose de >
+AssessmentSession "1" -- "0..1" RealityGapResult : produit >
+@enduml

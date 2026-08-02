@@ -14,7 +14,7 @@ import logging
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +33,7 @@ def _load_logo_b64() -> str:
 LOGO_B64 = _load_logo_b64()
 
 def _logo_header() -> str:
-    if LOGO_B64:
-        return f'<img src="data:image/png;base64,{LOGO_B64}" alt="3S TalentMatch" style="height: 60px; width: auto; margin-bottom: 6px;" />'
-    return '<span style="font-size: 32px;">🎯</span>'
+    return '<span style="font-size: 28px; font-weight: 800; color: #1b4f8a; letter-spacing: 1px;">3S TalentMatch</span>'
 
 # ── Configuration SMTP ───────────────────────────────────────
 EMAIL_MODE = os.getenv("EMAIL_MODE", "smtp").strip().lower()  # smtp | log
@@ -103,7 +101,7 @@ def _send_email(to_email: str, subject: str, html_body: str) -> bool:
 
 def send_verification_email(to_email: str, prenom: str, code: str) -> bool:
     """Envoie le code de vérification d'email à un nouvel utilisateur."""
-    subject = f"🔐 Votre code de vérification — {code}"
+    subject = f"[3S TalentMatch] Code de verification : {code}"
     html = f"""
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
@@ -133,7 +131,6 @@ def send_verification_email(to_email: str, prenom: str, code: str) -> bool:
 def send_status_change_email(to_email: str, prenom: str, offer_title: str, new_status: str, cv_name: str = None) -> bool:
     """Notifie le candidat d'un changement de statut de sa candidature."""
     if new_status == "accepte":
-        emoji = "🎉"
         title = "Félicitations — Candidature acceptée !"
         color = "#16a34a"
         bg = "#f0fdf4"
@@ -141,7 +138,6 @@ def send_status_change_email(to_email: str, prenom: str, offer_title: str, new_s
         msg = f"Nous avons le plaisir de vous informer que votre candidature pour le poste <strong>« {offer_title} »</strong> a été <strong>acceptée</strong>."
         action = "Notre équipe vous contactera prochainement pour la suite du processus."
     elif new_status == "refuse":
-        emoji = "📋"
         title = "Mise à jour de votre candidature"
         color = "#dc2626"
         bg = "#fef2f2"
@@ -158,7 +154,7 @@ def send_status_change_email(to_email: str, prenom: str, offer_title: str, new_s
                 📄 CV concerné : <strong style="color: #334155;">{cv_name}</strong>
             </p>"""
 
-    subject = f"{emoji} {title} — 3S TalentMatch"
+    subject = f"[3S TalentMatch] {title}"
     html = f"""
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
@@ -196,7 +192,7 @@ def _format_fr_datetime(dt) -> str:
 
 def send_password_reset_email(to_email: str, prenom: str, code: str) -> bool:
     """Envoie le code de reset de mot de passe."""
-    subject = f"🔑 Réinitialisation de votre mot de passe — {code}"
+    subject = f"[3S TalentMatch] Reinitialisation de mot de passe : {code}"
     html = f"""
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">

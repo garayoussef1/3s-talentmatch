@@ -1,177 +1,201 @@
 % ============================================================
 % Diagramme de Cas d'Utilisation — 3S TalentMatch
-% À compiler seul (standalone) ou à inclure dans le cahier
+% Version finale : organisation en colonnes, flèches propres
 % ============================================================
-\documentclass[border=10pt]{standalone}
+\documentclass[border=14pt]{standalone}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 \usepackage{tikz}
-\usetikzlibrary{shapes, arrows.meta, positioning, fit, calc, backgrounds}
+\usetikzlibrary{shapes,arrows.meta,positioning,fit,calc,backgrounds}
 
 % ── Styles ──────────────────────────────────────────────────
 \tikzset{
-    % Acteur (bonhomme bâton)
-    actor/.style={
-        inner sep=0pt,
-        minimum size=0pt,
-    },
-    % Cas d'utilisation (ellipse)
-    usecase/.style={
-        ellipse,
-        draw=black,
-        thick,
-        fill=blue!8,
-        text width=3.2cm,
-        align=center,
-        font=\small,
-        minimum height=1.2cm,
-    },
-    % Système (rectangle englobant)
-    system/.style={
-        rectangle,
-        draw=black!70,
-        thick,
-        rounded corners=5pt,
-        fill=gray!5,
-        inner sep=15pt,
-    },
-    % Flèche association
-    assoc/.style={
-        -,
-        thick,
-        draw=black!70,
-    },
-    % Flèche include
-    incl/.style={
-        ->,
-        dashed,
-        thick,
-        draw=black!60,
-        >={Stealth[length=6pt]},
-    },
-    % Flèche extend
-    ext/.style={
-        ->,
-        dashed,
-        thick,
-        draw=green!50!black,
-        >={Stealth[length=6pt]},
-    },
-    % Flèche héritage acteur
-    inherit/.style={
-        ->,
-        thick,
-        draw=black,
-        >={Triangle[open, length=8pt, width=8pt]},
-    },
+  uc/.style={ellipse, draw=black, thick, fill=white,
+             text width=3cm, align=center,
+             font=\small, minimum height=1.15cm},
+  ucA/.style={uc, fill=blue!9},       % Auth
+  ucC/.style={uc, fill=green!9},      % Candidat
+  ucR/.style={uc, fill=orange!11},    % Recruteur
+  ucD/.style={uc, fill=red!8},        % Admin
+  assoc/.style={-, thick, draw=black!65},
+  incl/.style={->, dashed, thick, draw=black!70,
+               >={Stealth[length=5pt]}, font=\scriptsize},
+  ext/.style={ ->, dashed, thick, draw=green!55!black,
+               >={Stealth[length=5pt]}, font=\scriptsize},
+  inh/.style={ ->, thick, draw=black,
+               >={Triangle[open,length=9pt,width=9pt]}},
 }
 
-% Macro pour dessiner un acteur (bonhomme bâton)
-\newcommand{\stickman}[3]{% #1=name, #2=position, #3=label
-    \node[actor] (#1) at #2 {};
-    % Tête
-    \draw[thick] ([yshift=12pt]#1.center) circle (5pt);
-    % Corps
-    \draw[thick] ([yshift=7pt]#1.center) -- ([yshift=-5pt]#1.center);
-    % Bras
-    \draw[thick] ([yshift=3pt, xshift=-7pt]#1.center) -- ([yshift=3pt, xshift=7pt]#1.center);
-    % Jambes
-    \draw[thick] ([yshift=-5pt]#1.center) -- ([yshift=-14pt, xshift=-6pt]#1.center);
-    \draw[thick] ([yshift=-5pt]#1.center) -- ([yshift=-14pt, xshift=6pt]#1.center);
-    % Label
-    \node[below=16pt, font=\small\bfseries] at (#1.center) {#3};
+% Bonhomme bâton ─────────────────────────────────────────────
+\newcommand{\bonhomme}[3]{%  #1=nom  #2=(x,y)  #3=étiquette
+  \node (#1) at #2 {};
+  \draw[thick] ([yshift=13pt]#1.center) circle (5.5pt);
+  \draw[thick] ([yshift=7pt]#1.center) -- ([yshift=-7pt]#1.center);
+  \draw[thick] ([yshift=3pt,xshift=-8pt]#1.center)
+            -- ([yshift=3pt,xshift= 8pt]#1.center);
+  \draw[thick] ([yshift=-7pt]#1.center)
+            -- ([yshift=-17pt,xshift=-7pt]#1.center);
+  \draw[thick] ([yshift=-7pt]#1.center)
+            -- ([yshift=-17pt,xshift= 7pt]#1.center);
+  \node[below=20pt, font=\small\bfseries] at (#1.center) {#3};
 }
 
+% ════════════════════════════════════════════════════════════
 \begin{document}
+\begin{tikzpicture}
+
+% ── Titre ────────────────────────────────────────────────────
+\node[font=\Large\bfseries] at (7.5, 18)
+  {Diagramme de Cas d'Utilisation \textemdash{} 3S TalentMatch};
 
 % ════════════════════════════════════════════════════════════
-% 1. DIAGRAMME DE CAS D'UTILISATION GÉNÉRAL
+%  COLONNE PRINCIPALE  x = 5.5
+%  COLONNE SOUS-UC     x = 11
+%  CHAINE NLP          x = 14.5
 % ════════════════════════════════════════════════════════════
 
-\begin{tikzpicture}[node distance=1.2cm and 2.5cm]
+% ── Zone Authentification ────────────────────────────────────
+\node[ucA] (inscrire)  at (5.5, 16.5) {S'inscrire};
+\node[ucA] (connecter) at (5.5, 15.0) {Se connecter};
 
-    % ── Titre ───────────────────────
-    \node[font=\Large\bfseries, anchor=south] at (7.5, 16.5)
-        {Diagramme de Cas d'Utilisation -- 3S TalentMatch};
+\node[ucA] (otp)   at (11, 16.5) {Vérifier e-mail\\(OTP)};
+\node[ucA] (oauth) at (11, 15.5) {S'authentifier\\via OAuth};
+\node[ucA] (reset) at (11, 14.2) {Réinitialiser\\mot de passe};
 
-    % ── Cas d'utilisation : Authentification ──────────────
-    \node[usecase] (uc_inscrire)       at (4, 15)    {S'inscrire};
-    \node[usecase] (uc_connecter)      at (4, 13.3)  {Se connecter};
-    \node[usecase] (uc_oauth)          at (8, 14.2)  {S'authentifier\\via OAuth};
-    \node[usecase] (uc_verif_email)    at (8, 12.5)  {Vérifier son\\email (OTP)};
-    \node[usecase] (uc_reset_pwd)      at (8, 15.5)  {Réinitialiser\\mot de passe};
-    \node[usecase] (uc_profil)         at (4, 11.6)  {Consulter\\son profil};
+% ── Zone Candidat ────────────────────────────────────────────
+\node[ucC] (profil)      at (5.5, 13.5) {Consulter\\son profil};
+\node[ucC] (upload)      at (5.5, 12.0) {Uploader\\un CV};
+\node[ucC] (mes_cands)   at (5.5, 10.5) {Consulter mes\\candidatures};
+\node[ucC] (passer_eval) at (5.5,  9.0) {Passer une\\évaluation};
 
-    % ── Cas d'utilisation : Candidat ──────────────────────
-    \node[usecase] (uc_upload_cv)      at (4, 9.8)   {Uploader\\un CV};
-    \node[usecase] (uc_mes_candidat)   at (4, 8.1)   {Consulter mes\\candidatures};
-    \node[usecase] (uc_extract)        at (8, 9.8)   {Extraire texte\\du CV};
-    \node[usecase] (uc_parse_nlp)      at (11.5, 9.8){Parser NLP\\(spaCy)};
+\node[ucC] (extract) at (11,  12.0) {Extraire texte\\du CV};
+\node[ucC] (parse)   at (14.5, 12.0) {Parser NLP\\(spaCy / ESCO)};
 
-    % ── Cas d'utilisation : Recruteur ─────────────────────
-    \node[usecase] (uc_creer_offre)    at (4, 6.2)   {Créer une\\offre d'emploi};
-    \node[usecase] (uc_lister_cand)    at (4, 4.5)   {Consulter la\\liste des candidats};
-    \node[usecase] (uc_detail_cand)    at (8, 4.5)   {Consulter le\\détail d'un candidat};
-    \node[usecase] (uc_statut_cand)    at (4, 2.8)   {Modifier le statut\\de candidature};
-    \node[usecase] (uc_suppr_cand)     at (8, 2.8)   {Supprimer\\un candidat};
-    \node[usecase] (uc_matching)       at (4, 1.1)   {Lancer le\\matching CV/Offre};
-    \node[usecase] (uc_calc_score)     at (8, 1.1)   {Calculer le\\score de matching};
+% ── Zone Recruteur ───────────────────────────────────────────
+\node[ucR] (offre)       at (5.5,  7.5) {Créer / gérer\\une offre};
+\node[ucR] (lister)      at (5.5,  6.0) {Consulter la\\liste des candidats};
+\node[ucR] (statut)      at (5.5,  4.5) {Modifier le statut\\de candidature};
+\node[ucR] (lancer_match)at (5.5,  3.0) {Lancer le\\matching IA};
+\node[ucR] (lancer_eval) at (5.5,  1.5) {Lancer une\\évaluation};
 
-    % ── Cas d'utilisation : Admin ─────────────────────────
-    \node[usecase] (uc_gerer_users)    at (4, -0.8)  {Gérer les\\utilisateurs};
-    \node[usecase] (uc_suppr_all)      at (8, -0.8)  {Supprimer tous\\les candidats};
+\node[ucR] (detail)      at (11,   6.0) {Consulter le détail\\d'un candidat};
+\node[ucR] (score)       at (11,   3.0) {Calculer le score\\de matching};
+\node[ucR] (resultats)   at (11,   1.5) {Consulter les\\résultats};
 
-    % ── Système englobant ─────────────────────────────────
-    \begin{scope}[on background layer]
-        \node[system, fit=(uc_inscrire)(uc_suppr_all)(uc_oauth)(uc_parse_nlp)(uc_reset_pwd),
-              label={[font=\large\bfseries]above:Système 3S TalentMatch}] (sys) {};
-    \end{scope}
+% ── Zone Admin ───────────────────────────────────────────────
+\node[ucD] (users)    at (5.5,  0.0) {Gérer les\\utilisateurs};
+\node[ucD] (journaux) at (5.5, -1.5) {Consulter les\\journaux d'accès};
 
-    % ── Acteurs ───────────────────────────────────────────
-    \stickman{candidat}{(-2.5, 11)}{Candidat}
-    \stickman{recruteur}{(-2.5, 4)}{Recruteur}
-    \stickman{admin}{(-2.5, -1)}{Admin}
-    \stickman{systeme}{(14, 6)}{Système}
+% ════════════════════════════════════════════════════════════
+%  ZONES COLORÉES + FRONTIÈRE DU SYSTÈME
+% ════════════════════════════════════════════════════════════
+\begin{scope}[on background layer]
 
-    % ── Héritage Admin → Recruteur ────────────────────────
-    \draw[inherit] (admin.north) ++(0, 0.8) -- (recruteur.south) ++(0, -0.8);
+  \node[draw=blue!55, fill=blue!4, rounded corners=6pt, thick,
+        fit=(inscrire)(connecter)(otp)(oauth)(reset),
+        inner sep=8pt,
+        label={[font=\footnotesize\bfseries\color{blue!65}]above left:Authentification}]
+        (zA) {};
 
-    % ── Associations Candidat ─────────────────────────────
-    \draw[assoc] (candidat.east) ++(0.3, 0.5) -- (uc_inscrire.west);
-    \draw[assoc] (candidat.east) ++(0.3, 0)   -- (uc_connecter.west);
-    \draw[assoc] (candidat.east) ++(0.3, -0.3) -- (uc_profil.west);
-    \draw[assoc] (candidat.east) ++(0.3, -0.5) -- (uc_upload_cv.west);
-    \draw[assoc] (candidat.east) ++(0.3, -0.8) -- (uc_mes_candidat.west);
+  \node[draw=green!55!black, fill=green!4, rounded corners=6pt, thick,
+        fit=(profil)(upload)(mes_cands)(passer_eval)(extract)(parse),
+        inner sep=8pt,
+        label={[font=\footnotesize\bfseries\color{green!55!black}]above left:Espace Candidat}]
+        (zC) {};
 
-    % ── Associations Recruteur ────────────────────────────
-    \draw[assoc] (recruteur.east) ++(0.3, 0.5) -- (uc_inscrire.west);
-    \draw[assoc] (recruteur.east) ++(0.3, 0.3) -- (uc_connecter.west);
-    \draw[assoc] (recruteur.east) ++(0.3, 0)   -- (uc_creer_offre.west);
-    \draw[assoc] (recruteur.east) ++(0.3, -0.2) -- (uc_lister_cand.west);
-    \draw[assoc] (recruteur.east) ++(0.3, -0.5) -- (uc_statut_cand.west);
-    \draw[assoc] (recruteur.east) ++(0.3, -0.7) -- (uc_suppr_cand.west);
-    \draw[assoc] (recruteur.east) ++(0.3, -1)   -- (uc_matching.west);
+  \node[draw=orange!65, fill=orange!5, rounded corners=6pt, thick,
+        fit=(offre)(lister)(statut)(lancer_match)(lancer_eval)(detail)(score)(resultats),
+        inner sep=8pt,
+        label={[font=\footnotesize\bfseries\color{orange!75!black}]above left:Espace Recruteur}]
+        (zR) {};
 
-    % ── Associations Admin ────────────────────────────────
-    \draw[assoc] (admin.east) ++(0.3, 0.2) -- (uc_gerer_users.west);
-    \draw[assoc] (admin.east) ++(0.3, -0.2) -- (uc_suppr_all.west);
+  \node[draw=red!50, fill=red!4, rounded corners=6pt, thick,
+        fit=(users)(journaux),
+        inner sep=8pt,
+        label={[font=\footnotesize\bfseries\color{red!65}]above left:Espace Administrateur}]
+        (zD) {};
 
-    % ── Associations Système ──────────────────────────────
-    \draw[assoc] (systeme.west) ++(-0.3, 0.5)  -- (uc_extract.east);
-    \draw[assoc] (systeme.west) ++(-0.3, 0)    -- (uc_calc_score.east);
+  \node[draw=black, very thick, rounded corners=10pt,
+        fit=(zA)(zC)(zR)(zD),
+        inner sep=14pt,
+        label={[font=\large\bfseries]above:Système 3S TalentMatch}] (sys) {};
 
-    % ── Relations <<include>> ─────────────────────────────
-    \draw[incl] (uc_inscrire.east)     -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_verif_email.west);
-    \draw[incl] (uc_upload_cv.east)    -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_extract.west);
-    \draw[incl] (uc_extract.east)      -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_parse_nlp.west);
-    \draw[incl] (uc_matching.east)     -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_calc_score.west);
-    \draw[incl] (uc_lister_cand.east)  -- node[above, font=\scriptsize, sloped] {$\ll$include$\gg$} (uc_detail_cand.west);
+\end{scope}
 
-    % ── Relations <<extend>> ──────────────────────────────
-    \draw[ext] (uc_oauth.west)      -- node[above, font=\scriptsize, sloped] {$\ll$extend$\gg$} (uc_connecter.east);
-    \draw[ext] (uc_reset_pwd.west)  -- node[above, font=\scriptsize, sloped] {$\ll$extend$\gg$} (uc_connecter.east);
+% ════════════════════════════════════════════════════════════
+%  ACTEURS  — positionnés à la hauteur moyenne de leurs UC
+% ════════════════════════════════════════════════════════════
+%  Candidat  : centre de (16.5 + 15 + 13.5 + 12 + 10.5 + 9) / 6 = 12.75 → y=12.5
+%  Recruteur : centre de (15 + 7.5 + 6 + 4.5 + 3 + 1.5) / 6 = 6.25    → y=6
+%  Admin     : centre de (15 + 7.5 + 6 + 4.5 + 3 + 1.5 + 0 -1.5)/8     → y=3
+% ════════════════════════════════════════════════════════════
+
+\bonhomme{candidat} {(-3, 12.5)} {Candidat}
+\bonhomme{recruteur}{(-3,  5.5)} {Recruteur}
+\bonhomme{admin}    {(-3,  0.5)} {Admin}
+
+% Héritage : Admin est un Recruteur avec plus de droits
+\draw[inh] (admin.north) -- node[right, font=\scriptsize]{hérite} (recruteur.south);
+
+% ════════════════════════════════════════════════════════════
+%  ASSOCIATIONS  acteur ↔ UC
+%  Toutes les flèches partent du côté DROIT de l'acteur (est)
+%  vers le côté GAUCHE (west) du UC — variation verticale minimale
+% ════════════════════════════════════════════════════════════
+
+% Candidat ──────────────────────────────────────────────────
+\draw[assoc] (candidat) to[out=20, in=180] (inscrire.west);
+\draw[assoc] (candidat) to[out=12, in=180] (connecter.west);
+\draw[assoc] (candidat) to[out=5,  in=180] (profil.west);
+\draw[assoc] (candidat)                 -- (upload.west);       % horizontal
+\draw[assoc] (candidat) to[out=-5, in=180] (mes_cands.west);
+\draw[assoc] (candidat) to[out=-15,in=180] (passer_eval.west);
+
+% Recruteur ─────────────────────────────────────────────────
+\draw[assoc] (recruteur) to[out=25, in=180] (connecter.west);
+\draw[assoc] (recruteur) to[out=10, in=180] (offre.west);
+\draw[assoc] (recruteur)                 -- (lister.west);      % horizontal
+\draw[assoc] (recruteur) to[out=-5, in=180] (statut.west);
+\draw[assoc] (recruteur) to[out=-15,in=180] (lancer_match.west);
+\draw[assoc] (recruteur) to[out=-25,in=180] (lancer_eval.west);
+
+% Admin — UC spécifiques (les UC de Recruteur sont hérités)
+\draw[assoc] (admin) to[out=35, in=180] (offre.west);          % Admin crée aussi les offres
+\draw[assoc] (admin) to[out=5,  in=180] (users.west);           % horizontal
+\draw[assoc] (admin) to[out=-5, in=180] (journaux.west);
+
+% ════════════════════════════════════════════════════════════
+%  RELATIONS UML
+%  <<include>> : base → inclus  (flèche pointe vers l'inclus)
+%  <<extend>>  : extension → base (flèche pointe vers la base)
+% ════════════════════════════════════════════════════════════
+
+% <<include>>
+\draw[incl] (inscrire)    -- node[above, font=\scriptsize]
+            {\guillemotleft include\guillemotright} (otp);
+
+\draw[incl] (upload)      -- node[above, font=\scriptsize]
+            {\guillemotleft include\guillemotright} (extract);
+
+\draw[incl] (extract)     -- node[above, font=\scriptsize]
+            {\guillemotleft include\guillemotright} (parse);
+
+\draw[incl] (lancer_match)-- node[above, sloped, font=\scriptsize]
+            {\guillemotleft include\guillemotright} (score);
+
+% <<extend>>
+\draw[ext] (oauth)    to[out=180,in=50]  node[above, sloped, font=\scriptsize]
+            {\guillemotleft extend\guillemotright} (connecter.north east);
+
+\draw[ext] (reset)    to[out=180,in=-30] node[below, sloped, font=\scriptsize]
+            {\guillemotleft extend\guillemotright} (connecter.south east);
+
+\draw[ext] (detail)   -- node[above, font=\scriptsize]
+            {\guillemotleft extend\guillemotright} (lister.east);
+
+\draw[ext] (resultats)-- node[above, font=\scriptsize]
+            {\guillemotleft extend\guillemotright} (lancer_eval.east);
 
 \end{tikzpicture}
-
 \end{document}

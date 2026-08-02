@@ -1,0 +1,70 @@
+@startuml sequence_evaluation
+' Diagramme de séquence — parcours d'évaluation technique
+' Style : StarUML (boîtes blanches, bordures noires, ombres, Arial)
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam sequence {
+  ArrowColor Black
+  ActorBorderColor Black
+  ActorBackgroundColor White
+  LifeLineBorderColor Black
+  LifeLineBackgroundColor White
+  ParticipantBorderColor Black
+  ParticipantBackgroundColor White
+  ParticipantFontColor Black
+  GroupBorderColor Black
+  GroupBackgroundColor White
+  DividerBorderColor Black
+  DividerBackgroundColor White
+}
+skinparam database {
+  BackgroundColor White
+  BorderColor Black
+}
+
+actor Recruteur as R
+actor Candidat as C
+participant "API FastAPI\n(routes/assessment)" as A
+participant "Générateur de\nquestionnaires\n(LLM Ollama local)" as G
+participant "Moteur CAT\n(IRT / catsim)" as CAT
+participant "Noteur sémantique\n(BGE-M3)" as S
+database "PostgreSQL" as DB
+
+== Lancement par le recruteur ==
+R -> A : Lancer l'évaluation\n(candidats, dates, questions perso)
+A -> DB : Créer AssessmentSession\n(token, PIN, fenêtre de passage)
+A -> G : Préparer le pool de questions\n(ARRIÈRE-PLAN, par offre)
+activate G
+A --> R : Lancement confirmé (instantané)
+G -> G : Génération QCM + questions ouvertes\n(noms de compétences uniquement)\nauto-vérification, paliers de difficulté
+G -> DB : Enregistrer le pool (cache par offre)
+G -> C : Invitation e-mail différée\n(lien personnel + PIN + dates)
+deactivate G
+
+== Passation par le candidat ==
+C -> A : Connexion au compte + saisie du PIN
+A -> DB : Vérifier propriété, PIN, fenêtre
+A --> C : Règles de passation → plein écran
+loop QCM adaptatif (~10 questions)
+  C -> A : Réponse à la question courante
+  A -> CAT : Mettre à jour theta (IRT)
+  CAT --> A : Question suivante\n(au plus près du niveau estimé)
+  A --> C : Question suivante + minuterie
+end
+loop Questions rédigées
+  C -> A : Réponse rédigée
+  A -> S : Encoder et comparer aux\n3 références (cosinus)
+  S --> A : Score 0-100 (non révélé)
+  A -> DB : Stocker réponse + score
+end
+C -> A : Événements d'intégrité\n(plein écran, onglets, frappes...)
+A -> DB : Tracer la télémétrie
+
+== Restitution au recruteur ==
+A -> DB : Calcul écart déclaré vs démontré\n+ score d'intégrité
+A -> G : Rapport d'analyse (LLM local)
+G --> A : Synthèse + recommandation
+R -> A : Consulter les résultats
+A --> R : Radar Déclaré/Démontré,\nrapport, réponses détaillées,\nintégrité
+@enduml

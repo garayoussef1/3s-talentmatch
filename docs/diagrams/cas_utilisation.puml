@@ -1,0 +1,118 @@
+@startuml cas_utilisation
+' ── Corrections UML appliquées ──────────────────────────────────────────────
+' 1. <<include>> : flèche du cas de base VERS le cas inclus (toujours exécuté)
+' 2. <<extend>>  : flèche du cas extension VERS le cas de base (optionnel)
+' 3. "Se connecter" : UC indépendant associé aux 3 acteurs authentifiés ;
+'    PAS inclus dans chaque UC protégé (causerait une surcharge illisible).
+'    Il apparaît une seule fois avec sa propre décomposition.
+' ────────────────────────────────────────────────────────────────────────────
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam usecase {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+  ActorBorderColor Black
+  ActorBackgroundColor White
+  ActorFontColor Black
+}
+skinparam packageStyle rectangle
+skinparam package {
+  BackgroundColor White
+  BorderColor #1B4F8A
+  FontColor #1B4F8A
+  FontStyle bold
+}
+
+' ── Acteurs ─────────────────────────────────────────────────────────────────
+actor Visiteur as V
+actor Candidat as C
+actor Recruteur as R
+actor Administrateur as A
+
+' héritage d'acteurs (le Candidat hérite du Visiteur côté authentification)
+V <|-- C
+V <|-- R
+V <|-- A
+
+' ── Frontière du système ─────────────────────────────────────────────────────
+rectangle "3S TalentMatch" {
+
+  ' ── Authentification (accessible à tous les acteurs) ─────────────────────
+  package "Authentification" {
+    usecase "S'inscrire"            as UC_Inscription
+    usecase "Vérifier e-mail (OTP)" as UC_OTP
+    usecase "Se connecter"          as UC_Connexion
+    usecase "OAuth 2.0\n(Google / LinkedIn)" as UC_OAuth
+    usecase "Réinitialiser\nle mot de passe" as UC_Reset
+  }
+
+  ' Inscription inclut toujours la vérification OTP
+  UC_Inscription ..> UC_OTP     : <<include>>
+  ' OAuth est une extension optionnelle de Se connecter
+  UC_OAuth       ..> UC_Connexion : <<extend>>
+  ' Réinitialisation est une extension optionnelle de Se connecter
+  UC_Reset       ..> UC_Connexion : <<extend>>
+
+  ' ── Espace candidat ───────────────────────────────────────────────────────
+  package "Espace Candidat" {
+    usecase "Consulter\nles offres"         as UC_ConsulterOffres
+    usecase "Postuler à\nune offre"         as UC_Postuler
+    usecase "Déposer un CV"                 as UC_DepotCV
+    usecase "Consulter son\nprofil extrait" as UC_Profil
+    usecase "Passer une\névaluation"        as UC_PasserEval
+    usecase "Consulter\nses résultats"      as UC_ResultatsC
+    usecase "Recevoir les\nnotifications"   as UC_Notifs
+  }
+
+  ' Postuler inclut le dépôt de CV (toujours exécuté lors d'une postulation)
+  UC_Postuler ..> UC_DepotCV : <<include>>
+
+  ' ── Espace recruteur ──────────────────────────────────────────────────────
+  package "Espace Recruteur" {
+    usecase "Créer / gérer\nune offre"         as UC_GererOffre
+    usecase "Consulter les\ncandidatures"      as UC_ConsulterCandidatures
+    usecase "Lancer une\névaluation"           as UC_LancerEval
+    usecase "Consulter\nles résultats"         as UC_ResultatsR
+    usecase "Accéder au\ndashboard RH"         as UC_Dashboard
+  }
+
+  ' ── Espace administrateur ─────────────────────────────────────────────────
+  package "Espace Administrateur" {
+    usecase "Gérer les\nutilisateurs"          as UC_GererUsers
+    usecase "Assigner les\nrecruteurs"         as UC_Assigner
+    usecase "Consulter les\njournaux d'accès"  as UC_Journaux
+  }
+
+  ' Assigner est inclus dans Gérer les utilisateurs (sous-tâche obligatoire)
+  UC_GererUsers ..> UC_Assigner : <<include>>
+
+}
+
+' ── Associations acteurs → cas d'utilisation ─────────────────────────────────
+' Visiteur (non authentifié)
+V --> UC_Inscription
+V --> UC_Connexion
+
+' Candidat (authentifié)
+C --> UC_ConsulterOffres
+C --> UC_Postuler
+C --> UC_Profil
+C --> UC_PasserEval
+C --> UC_ResultatsC
+C --> UC_Notifs
+
+' Recruteur (authentifié)
+R --> UC_GererOffre
+R --> UC_ConsulterCandidatures
+R --> UC_LancerEval
+R --> UC_ResultatsR
+R --> UC_Dashboard
+
+' Administrateur (authentifié)
+A --> UC_GererUsers
+A --> UC_GererOffre
+A --> UC_Journaux
+
+@enduml
