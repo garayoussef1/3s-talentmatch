@@ -1,77 +1,79 @@
 @startuml diagramme_sequence
-' Diagramme de séquence — flux principal :
-' téléversement CV → extraction → parsing NLP → matching → résultats
-' Style : StarUML (boîtes blanches, bordures noires, ombres, Arial)
 skinparam shadowing true
 skinparam defaultFontName Arial
-skinparam defaultFontSize 11
+skinparam defaultFontSize 12
 skinparam sequence {
-  ArrowColor Black
-  ActorBorderColor Black
+  ArrowColor #1b4f8a
+  ActorBorderColor #1b4f8a
   ActorBackgroundColor White
-  LifeLineBorderColor Black
-  LifeLineBackgroundColor White
-  ParticipantBorderColor Black
-  ParticipantBackgroundColor White
-  ParticipantFontColor Black
-  GroupBorderColor Black
-  GroupBackgroundColor White
-  DividerBorderColor Black
-  DividerBackgroundColor White
+  ActorFontColor #1b4f8a
+  LifeLineBorderColor #1b4f8a
+  LifeLineBackgroundColor #f0f4ff
+  ParticipantBorderColor #1b4f8a
+  ParticipantBackgroundColor #f0f4ff
+  ParticipantFontColor #1b4f8a
+  GroupBorderColor #888888
+  GroupBackgroundColor #f8f8f8
+  DividerBorderColor #1b4f8a
+  DividerBackgroundColor #d6e4f7
+  DividerFontColor #1b4f8a
 }
 skinparam database {
-  BackgroundColor White
-  BorderColor Black
+  BackgroundColor #f0f4ff
+  BorderColor #1b4f8a
 }
 
-actor Candidat  as C
-actor Recruteur as R
-participant "Frontend\n(React)" as F
-participant "API FastAPI\n(routes/cv, routes/matching)" as A
-participant "CVExtractor\n(pypdf / docx / EasyOCR)" as E
-participant "NLPParser\n(spaCy + extracteurs)" as N
-participant "MatchEngine\n(BGE-M3 + scorers)" as M
-database "PostgreSQL" as DB
+actor "Candidat" as C
+actor "Recruteur" as R
+participant "Interface Web\n(React)" as F
+participant "Serveur API\n(FastAPI)" as A
+participant "Module\nd'extraction" as E
+participant "Analyseur\nNLP (spaCy)" as N
+participant "Moteur de\nmatching" as M
+database "Base de\ndonnées" as DB
 
-== Téléversement et extraction du CV (Candidat) ==
-C -> F : Sélectionne un fichier CV (PDF/DOCX/image)
+== 1. Téléversement et extraction du CV ==
+
+C -> F : Sélectionne un fichier CV\n(PDF, DOCX ou image)
 activate F
-F -> A : POST /api/upload-cv (multipart)
+F -> A : Envoi du fichier CV
 activate A
-A -> E : extract(fichier)
+A -> E : Extraction du texte
 activate E
-E -> E : Détection du type\n→ pypdf | python-docx | OCR
-E --> A : texte brut + méthode d'extraction
+E -> E : Détection du format\net extraction du contenu
+E --> A : Texte extrait
 deactivate E
 
-A -> N : parse(texte)
+A -> N : Analyse du texte
 activate N
-N -> N : ContactExtractor → EntityExtractor\n→ SkillsExtractor → FormationExtractor\n→ ExperienceExtractor → langues
-N --> A : parsed_data (JSON structuré)
+N -> N : Extraction des informations :\ncontact, compétences,\nformation, expérience
+N --> A : Profil structuré (JSON)
 deactivate N
 
-A -> DB : INSERT Candidate + CVDocument
-DB --> A : candidate_id
-A --> F : 201 — profil extrait
+A -> DB : Enregistrement du profil candidat
+DB --> A : Confirmation
+A --> F : Profil extrait avec succès
 deactivate A
 F --> C : Affichage du profil extrait
 deactivate F
 
-== Matching CV ↔ offre (Recruteur) ==
-R -> F : Lance le matching sur une offre
+== 2. Lancement du matching (Recruteur) ==
+
+R -> F : Sélectionne une offre\net lance le matching
 activate F
-F -> A : POST /api/match/{job_offer_id}
+F -> A : Demande de matching
 activate A
-A -> DB : SELECT Candidate(s), JobOffer
-DB --> A : profils + offre
-A -> M : match(candidat, offre)
+A -> DB : Récupération des candidats\net de l'offre
+DB --> A : Données candidats + offre
+A -> M : Calcul des scores
 activate M
-M -> M : Score sémantique (BGE-M3)\n+ compétences + expérience\n+ formation → score fusionné
-M --> A : score + détails explicables
+M -> M : Score sémantique + compétences\n+ expérience + formation
+M --> A : Scores et explications
 deactivate M
-A -> DB : INSERT Match(score, details)
-A --> F : classement des candidats
+A -> DB : Sauvegarde des résultats
+A --> F : Classement des candidats
 deactivate A
-F --> R : Résultats triés + explication des scores
+F --> R : Résultats triés avec\nexplication des scores
 deactivate F
+
 @enduml

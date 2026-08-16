@@ -1,0 +1,451 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{mathptmx}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{pifont}
+\usepackage{float}
+
+% ── Couleurs ──────────────────────────────────────────────────────────────────
+\definecolor{bleu}{RGB}{27,79,138}
+\definecolor{bleulight}{RGB}{240,244,249}
+\definecolor{vert}{RGB}{0,120,60}
+\definecolor{orange}{RGB}{200,100,0}
+\definecolor{rouge}{RGB}{180,30,30}
+\definecolor{gris}{RGB}{245,245,245}
+
+% ── Titres ────────────────────────────────────────────────────────────────────
+\titleformat{\section}{\Large\bfseries\color{bleu}}{}{0em}{}[\color{bleu}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{bleu!80!black}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% ── En-tête / pied ────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{\color{bleu}3S TalentMatch — Guide soutenance}}
+\fancyhead[R]{\small\color{bleu}Préparation à l'oral}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Boîtes colorées ───────────────────────────────────────────────────────────
+\newenvironment{boite}{%
+  \def\FrameCommand{\fboxsep=8pt\colorbox{bleulight}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \vspace{-4pt}%
+}{\endMakeFramed}
+
+\newenvironment{jury}{%
+  \def\FrameCommand{\fboxsep=8pt\colorbox{orange!12}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \vspace{-4pt}%
+}{\endMakeFramed}
+
+\newenvironment{reponse}{%
+  \def\FrameCommand{\fboxsep=8pt\colorbox{green!10}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \vspace{-4pt}%
+}{\endMakeFramed}
+
+\newcommand{\concept}[1]{\textbf{\color{bleu}#1}}
+\newcommand{\important}[1]{\textbf{\color{rouge}#1}}
+\newcommand{\Q}[1]{\vspace{6pt}\noindent\textbf{\color{orange}Question :} \textit{#1}}
+\newcommand{\R}[1]{\noindent\textbf{\color{vert}Réponse :} #1\vspace{6pt}}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+{\LARGE\bfseries\color{bleu} Guide de soutenance — 3S TalentMatch}\\[6pt]
+{\large Questions probables du jury : méthodologie, besoins, architecture, valeur ajoutée}\\[4pt]
+{\normalsize Youssef GARA — PFE 2026}
+\end{center}
+\vspace{4pt}
+\hrule
+\vspace{12pt}
+
+\textbf{Comment utiliser ce guide :} chaque section couvre un thème que le jury peut aborder.
+Les encadrés \textbf{orange} sont des questions probables, les encadrés \textbf{verts} sont les réponses à mémoriser.
+Entraîne-toi à répondre à voix haute, sans lire.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Présentation générale du projet}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{jury}
+\Q{Présentez votre projet en 3 phrases.}
+\end{jury}
+
+\begin{reponse}
+\R{3S TalentMatch est une plateforme de recrutement intelligente développée pour 3S Group.
+Elle permet d'automatiser l'analyse des CV et de les mettre en correspondance avec les offres d'emploi grâce à l'intelligence artificielle.
+L'objectif est de réduire le temps de présélection des candidats et d'améliorer la qualité des recrutements.}
+\end{reponse}
+
+\begin{jury}
+\Q{Quel est le problème concret que vous résolvez ?}
+\end{jury}
+
+\begin{reponse}
+\R{Les recruteurs passent en moyenne plusieurs heures à lire des CV pour trouver les bons profils.
+Avec TalentMatch, le système analyse automatiquement chaque CV, extrait les compétences, l'expérience et la formation, puis calcule un score de compatibilité avec l'offre.
+Le recruteur voit directement un classement avec les explications — il gagne du temps et prend des décisions plus objectives.}
+\end{reponse}
+
+\begin{jury}
+\Q{Qu'est-ce qu'un ATS ? En quoi TalentMatch est différent ?}
+\end{jury}
+
+\begin{reponse}
+\R{Un ATS (Applicant Tracking System) est un logiciel de gestion des candidatures — il collecte les CV et organise le processus de recrutement.
+TalentMatch va plus loin : il comprend le contenu des CV grâce au traitement du langage naturel, calcule un score de matching intelligent, et intègre un module d'évaluation pour vérifier ce que le candidat déclare.
+C'est un ATS augmenté par l'IA.}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Besoins fonctionnels}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{boite}
+Les \concept{besoins fonctionnels} décrivent \textbf{ce que le système fait} — les fonctionnalités offertes aux utilisateurs.
+\end{boite}
+
+\vspace{8pt}
+
+\begin{jury}
+\Q{Quels sont les besoins fonctionnels principaux de votre application ?}
+\end{jury}
+
+\begin{reponse}
+\R{La plateforme couvre cinq besoins fonctionnels majeurs :
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{Gestion des utilisateurs} : inscription, connexion sécurisée (OTP), gestion des rôles (candidat, recruteur, administrateur).
+  \item \textbf{Extraction et analyse des CV} : téléversement d'un CV (PDF, DOCX ou image), extraction automatique des informations et structuration du profil.
+  \item \textbf{Gestion des offres d'emploi} : création, modification et publication des offres par les recruteurs.
+  \item \textbf{Matching CV–offre} : calcul d'un score de compatibilité et classement des candidats avec explication des résultats.
+  \item \textbf{Évaluation technique} : test adaptatif pour vérifier les compétences déclarées dans le CV.
+\end{enumerate}}
+\end{reponse}
+
+\begin{jury}
+\Q{Quels sont les acteurs du système et leurs rôles ?}
+\end{jury}
+
+\begin{reponse}
+\R{La plateforme distingue trois acteurs :
+\begin{itemize}[leftmargin=1.5cm]
+  \item \textbf{Le candidat} : crée son compte, téléverse son CV, consulte les offres et passe les évaluations.
+  \item \textbf{Le recruteur} : publie les offres, lance le matching, consulte les résultats et envoie les invitations d'évaluation.
+  \item \textbf{L'administrateur} : gère les utilisateurs, les rôles et surveille l'activité de la plateforme.
+\end{itemize}}
+\end{reponse}
+
+\begin{jury}
+\Q{Qu'est-ce que le module d'évaluation apporte de plus par rapport au matching ?}
+\end{jury}
+
+\begin{reponse}
+\R{Le matching compare ce que le candidat \textit{déclare} dans son CV avec l'offre.
+Le module d'évaluation va plus loin : il vérifie ce que le candidat \textit{démontre réellement} à travers un test technique.
+On appelle ça le \textbf{Reality Gap Score} — l'écart entre le niveau déclaré et le niveau démontré.
+Cela aide le recruteur à éviter les CV surestimés et à prendre des décisions plus fiables.}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Besoins non fonctionnels}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{boite}
+Les \concept{besoins non fonctionnels} décrivent \textbf{comment le système se comporte} — performance, sécurité, confidentialité, disponibilité.
+\end{boite}
+
+\vspace{8pt}
+
+\begin{jury}
+\Q{Quels sont les besoins non fonctionnels de votre application ?}
+\end{jury}
+
+\begin{reponse}
+\R{Nous avons identifié quatre catégories de besoins non fonctionnels :
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{Confidentialité} : tous les traitements IA sont réalisés en local, sans envoi de données à des services externes. Les CV contiennent des données personnelles sensibles.
+  \item \textbf{Sécurité} : authentification par JWT, vérification par code OTP, hachage des mots de passe, contrôle d'accès par rôle.
+  \item \textbf{Performance} : le modèle de matching est pré-chargé au démarrage pour éviter les latences. L'extraction d'un CV prend moins de 3 secondes.
+  \item \textbf{Maintenabilité} : architecture modulaire (un service par fonctionnalité), migrations de base de données gérées par Alembic, API documentée automatiquement par Swagger.
+\end{enumerate}}
+\end{reponse}
+
+\begin{jury}
+\Q{Comment gérez-vous la protection des données personnelles ?}
+\end{jury}
+
+\begin{reponse}
+\R{Les CV contiennent des données personnelles — nom, adresse, téléphone.
+Nous avons appliqué plusieurs mesures : traitement 100\% local (aucune donnée envoyée vers un service cloud ou une API externe), accès restreint par rôle (seul le recruteur voit les profils), et journalisation des accès pour traçabilité.
+La plateforme est conçue en conformité avec les principes de la loi tunisienne n°2004-63 relative à la protection des données personnelles.}
+\end{reponse}
+
+\begin{jury}
+\Q{Pourquoi avez-vous choisi un traitement 100\% local pour l'IA ?}
+\end{jury}
+
+\begin{reponse}
+\R{C'est une exigence de confidentialité imposée par le contexte professionnel.
+Les données de recrutement sont sensibles — un candidat ne souhaite pas que son CV soit traité par un serveur externe.
+En utilisant des modèles installés localement (spaCy, BGE-M3, Mistral via Ollama), nous garantissons que les données ne quittent jamais l'infrastructure de l'entreprise.}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Méthodologie — Scrum et sprints}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{boite}
+\concept{Scrum} est une méthode agile qui organise le travail en \textbf{sprints} (itérations courtes).
+À chaque sprint, on livre une version fonctionnelle du produit.
+\end{boite}
+
+\vspace{8pt}
+
+\begin{jury}
+\Q{Pourquoi avez-vous choisi la méthode Scrum ?}
+\end{jury}
+
+\begin{reponse}
+\R{Scrum est adapté aux projets dont les besoins évoluent en cours de développement.
+Dans un projet de PFE, on découvre de nouveaux besoins en avançant — par exemple, le besoin d'un module d'évaluation est apparu après avoir finalisé le matching.
+Scrum permet d'intégrer ces évolutions sans tout recommencer.
+De plus, les sprints permettent de livrer des résultats visibles rapidement, ce qui facilite les échanges avec l'encadrante.}
+\end{reponse}
+
+\begin{jury}
+\Q{Comment avez-vous organisé vos sprints ?}
+\end{jury}
+
+\begin{reponse}
+\R{Le projet a été découpé en quatre sprints :
+\begin{itemize}[leftmargin=1.5cm]
+  \item \textbf{Sprint 1} : mise en place de l'infrastructure (base de données, API, authentification, gestion des rôles).
+  \item \textbf{Sprint 2} : extraction et analyse des CV (pipeline NLP, extraction des compétences, formation, expérience).
+  \item \textbf{Sprint 3} : moteur de matching (calcul de score, classement, rapports explicables).
+  \item \textbf{Sprint 4} : module d'évaluation (test adaptatif, Reality Gap Score), sécurité avancée, déploiement.
+\end{itemize}
+Chaque sprint a duré environ trois semaines et s'est terminé par une révision des fonctionnalités livrées.}
+\end{reponse}
+
+\begin{jury}
+\Q{Qu'est-ce qu'un backlog ? Comment avez-vous priorisé les tâches ?}
+\end{jury}
+
+\begin{reponse}
+\R{Le backlog est la liste de toutes les fonctionnalités à développer, classées par priorité.
+J'ai priorisé selon deux critères : la valeur métier (ce qui est le plus utile pour le recruteur en premier) et les dépendances techniques (on ne peut pas faire le matching sans avoir d'abord extrait les CV).
+Les fonctionnalités secondaires comme les notifications ou le dashboard ont été placées en fin de backlog.}
+\end{reponse}
+
+\begin{jury}
+\Q{Quelles difficultés avez-vous rencontrées et comment les avez-vous surmontées ?}
+\end{jury}
+
+\begin{reponse}
+\R{Trois difficultés principales :
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{L'extraction NLP} : les CV ont des formats très variés. J'ai utilisé spaCy avec des règles de détection de sections pour s'adapter à cette variété.
+  \item \textbf{La qualité du matching} : un simple score de similarité ne suffit pas. J'ai combiné plusieurs critères (sémantique, compétences, expérience, formation) pour obtenir un score plus pertinent.
+  \item \textbf{Le module d'évaluation} : générer des questions personnalisées par compétence en local (sans API externe) était complexe. J'ai utilisé Mistral via Ollama avec un système de génération en arrière-plan.
+\end{enumerate}}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Architecture et choix technologiques}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{jury}
+\Q{Pourquoi avez-vous choisi FastAPI pour le backend ?}
+\end{jury}
+
+\begin{reponse}
+\R{FastAPI est un framework Python moderne, très rapide et adapté aux applications qui combinent traitement de données et API REST.
+Il génère automatiquement la documentation Swagger, ce qui facilite les tests et la maintenance.
+Python était aussi le meilleur choix pour intégrer les bibliothèques NLP (spaCy, sentence-transformers) sans conversion de données.}
+\end{reponse}
+
+\begin{jury}
+\Q{Pourquoi React pour le frontend ?}
+\end{jury}
+
+\begin{reponse}
+\R{React permet de construire des interfaces dynamiques avec une bonne expérience utilisateur.
+Son architecture par composants facilite la réutilisation du code — par exemple, le composant de carte candidat est réutilisé dans plusieurs pages.
+De plus, React est très utilisé en entreprise, ce qui rend la solution maintenable par d'autres développeurs.}
+\end{reponse}
+
+\begin{jury}
+\Q{Comment fonctionne le matching en résumé simple ?}
+\end{jury}
+
+\begin{reponse}
+\R{Le matching fonctionne comme une comparaison multicritères :
+\begin{itemize}[leftmargin=1.5cm]
+  \item On compare le texte du CV avec le texte de l'offre grâce à un modèle de similarité sémantique (BGE-M3) — deux textes qui parlent de la même chose obtiennent un score élevé même si les mots exacts diffèrent.
+  \item On vérifie les compétences correspondantes entre le CV et l'offre.
+  \item On tient compte de l'expérience et de la formation.
+  \item Un score final est calculé en pondérant ces critères, puis les candidats sont classés.
+\end{itemize}
+Le recruteur voit non seulement le classement, mais aussi \textit{pourquoi} chaque candidat a ce score.}
+\end{reponse}
+
+\begin{jury}
+\Q{Qu'est-ce que spaCy ? Pourquoi l'avoir utilisé ?}
+\end{jury}
+
+\begin{reponse}
+\R{spaCy est une bibliothèque de traitement du langage naturel (NLP) open-source.
+Elle permet d'analyser du texte : identifier les entités (noms, organisations, lieux), découper les phrases, reconnaître les structures grammaticales.
+Dans TalentMatch, spaCy analyse le texte brut du CV pour en extraire les informations structurées : compétences, formation, expérience, coordonnées.
+C'est la bibliothèque NLP de référence pour le français grâce au modèle \texttt{fr\_core\_news\_md}.}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Valeur ajoutée et aspect commercial}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{jury}
+\Q{Quelle est la valeur ajoutée concrète pour l'entreprise 3S Group ?}
+\end{jury}
+
+\begin{reponse}
+\R{Trois bénéfices concrets :
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{Gain de temps} : le tri des CV est automatisé — ce qui prenait des heures se fait en quelques secondes.
+  \item \textbf{Objectivité} : le score de matching est calculé selon des critères précis, sans biais subjectif.
+  \item \textbf{Fiabilité} : le Reality Gap Score détecte les CV surestimés avant l'entretien, évitant des recrutements inadaptés.
+\end{enumerate}}
+\end{reponse}
+
+\begin{jury}
+\Q{Existe-t-il des solutions concurrentes ? Qu'est-ce qui vous différencie ?}
+\end{jury}
+
+\begin{reponse}
+\R{Des solutions comme LinkedIn Talent, Workday ou des ATS classiques existent sur le marché.
+Leur limite : elles dépendent de serveurs cloud externes, ce qui pose des problèmes de confidentialité pour les données RH.
+TalentMatch se différencie par trois points : traitement 100\% local (confidentialité garantie), module d'évaluation intégré pour vérifier les compétences, et explications des scores (le recruteur comprend pourquoi un candidat est classé ainsi).}
+\end{reponse}
+
+\begin{jury}
+\Q{Votre solution est-elle scalable ? Peut-elle gérer des milliers de candidats ?}
+\end{jury}
+
+\begin{reponse}
+\R{L'architecture actuelle est conçue pour un usage interne à 3S Group.
+Pour une montée en charge, plusieurs évolutions sont possibles : déploiement sur serveur dédié via Docker (déjà préparé), optimisation du modèle de matching par batch, et mise en cache des embeddings calculés.
+La base de données PostgreSQL et l'API FastAPI sont des technologies éprouvées qui supportent bien la montée en charge.}
+\end{reponse}
+
+\begin{jury}
+\Q{Comment avez-vous validé que votre solution fonctionne correctement ?}
+\end{jury}
+
+\begin{reponse}
+\R{Nous avons utilisé plusieurs niveaux de validation :
+\begin{itemize}[leftmargin=1.5cm]
+  \item \textbf{Tests unitaires} avec pytest pour vérifier chaque composant individuellement.
+  \item \textbf{Métriques NLP} : précision, rappel et F1-score pour évaluer la qualité de l'extraction des CV.
+  \item \textbf{Métriques de matching} : MRR (Mean Reciprocal Rank) et corrélation de Spearman pour évaluer la pertinence du classement.
+  \item \textbf{Tests manuels} : tests réels avec des CV et des offres pour valider le comportement de bout en bout.
+\end{itemize}}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Questions pièges fréquentes}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{jury}
+\Q{Votre système est-il conforme au RGPD ?}
+\end{jury}
+
+\begin{reponse}
+\R{\important{Ne pas dire "conforme RGPD"} — le RGPD est le règlement européen, non applicable en Tunisie.
+Dire plutôt : \textit{"Nous avons appliqué des mesures de protection des données personnelles conformes à la loi tunisienne n°2004-63 relative à la protection des données personnelles et aux recommandations de l'INPDP."}}
+\end{reponse}
+
+\begin{jury}
+\Q{Pourquoi ne pas avoir utilisé ChatGPT ou une API IA existante ?}
+\end{jury}
+
+\begin{reponse}
+\R{Les données RH sont confidentielles — les CV contiennent des informations personnelles sensibles.
+Envoyer ces données à une API externe (ChatGPT, OpenAI) représente un risque de confidentialité inacceptable en contexte professionnel.
+Notre choix de modèles locaux (spaCy, BGE-M3, Mistral via Ollama) garantit que les données ne quittent jamais l'infrastructure de l'entreprise.}
+\end{reponse}
+
+\begin{jury}
+\Q{Qu'auriez-vous fait différemment si vous aviez eu plus de temps ?}
+\end{jury}
+
+\begin{reponse}
+\R{Trois améliorations prioritaires :
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{Enrichissement des données} : constituer un dataset annoté de CV-offres tunisiens pour affiner le modèle de matching.
+  \item \textbf{Feedback loop} : permettre aux recruteurs de noter la pertinence des résultats pour améliorer le modèle en continu.
+  \item \textbf{Application mobile} : rendre la plateforme accessible sur smartphone pour les candidats.
+\end{enumerate}}
+\end{reponse}
+
+\begin{jury}
+\Q{Avez-vous rencontré des problèmes éthiques dans votre projet ?}
+\end{jury}
+
+\begin{reponse}
+\R{Oui, deux points importants :
+\begin{enumerate}[leftmargin=1.5cm]
+  \item \textbf{Biais algorithmique} : un modèle de matching peut favoriser certains profils si les données d'entraînement sont biaisées. Nous avons utilisé une combinaison de critères objectifs (compétences, expérience) pour limiter ce risque.
+  \item \textbf{Transparence} : le recruteur voit toujours \textit{pourquoi} un candidat est classé ainsi — le système n'est pas une boîte noire. La décision finale reste humaine.
+\end{enumerate}}
+\end{reponse}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Résumé — phrases clés à retenir}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\vspace{4pt}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{bleu}}p{4cm} X}
+\toprule
+Thème & Phrase clé \\
+\midrule
+Le projet & Automatiser et fiabiliser la présélection des candidats par l'IA, en local. \\
+\addlinespace
+Besoins fonctionnels & Extraction CV, matching, évaluation, gestion des rôles, notifications. \\
+\addlinespace
+Besoins non fonctionnels & Confidentialité (local), sécurité (JWT+OTP), performance, maintenabilité. \\
+\addlinespace
+Méthodologie & Scrum, 4 sprints, livraison incrémentale, adaptation aux besoins évolutifs. \\
+\addlinespace
+Valeur ajoutée & Gain de temps, objectivité, détection des CV surestimés. \\
+\addlinespace
+Différenciation & 100\% local, évaluation intégrée, scores explicables. \\
+\addlinespace
+Données personnelles & Loi tunisienne n°2004-63, traitement local, accès restreint, traçabilité. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{16pt}
+\begin{center}
+\textit{\color{bleu}Bonne chance pour la soutenance, Youssef !}
+\end{center}
+
+\end{document}

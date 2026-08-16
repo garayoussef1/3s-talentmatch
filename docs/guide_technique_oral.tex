@@ -1,0 +1,558 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{mathptmx}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{pifont}
+\usepackage{float}
+
+% ── Couleurs ──────────────────────────────────────────────────────────────────
+\definecolor{bleu}{RGB}{27,79,138}
+\definecolor{bleulight}{RGB}{240,244,249}
+\definecolor{vert}{RGB}{0,120,60}
+\definecolor{orange}{RGB}{200,100,0}
+\definecolor{rouge}{RGB}{180,30,30}
+\definecolor{gris}{RGB}{245,245,245}
+
+% ── Titres ────────────────────────────────────────────────────────────────────
+\titleformat{\section}{\Large\bfseries\color{bleu}}{}{0em}{}[\color{bleu}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{bleu!80!black}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+% ── En-tête / pied ────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{\color{bleu}3S TalentMatch — Guide technique}}
+\fancyhead[R]{\small\color{bleu}Préparation à l'oral}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Boîtes colorées (via framed + colorbox) ───────────────────────────────────
+\newenvironment{boite}{%
+  \def\FrameCommand{\fboxsep=8pt\colorbox{bleulight}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \vspace{-4pt}%
+}{\endMakeFramed}
+
+\newenvironment{simplification}{%
+  \def\FrameCommand{\fboxsep=8pt\colorbox{green!10}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \vspace{-4pt}%
+}{\endMakeFramed}
+
+\newenvironment{jury}{%
+  \def\FrameCommand{\fboxsep=8pt\colorbox{orange!12}}%
+  \MakeFramed{\advance\hsize-\width \FrameRestore}%
+  \vspace{-4pt}%
+}{\endMakeFramed}
+
+\newcommand{\concept}[1]{\textbf{\color{bleu}#1}}
+\newcommand{\tech}[1]{\texttt{#1}}
+\newcommand{\important}[1]{\textbf{\color{rouge}#1}}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+{\LARGE\bfseries\color{bleu} Guide technique — 3S TalentMatch}\\[6pt]
+{\large Comprendre chaque composant pour la soutenance}\\[4pt]
+{\normalsize Youssef GARA — PFE 2026}
+\end{center}
+\vspace{4pt}
+\hrule
+\vspace{12pt}
+
+\textbf{Comment utiliser ce guide :} chaque section explique un composant en trois niveaux : (1)~l'analogie simple, (2)~l'explication technique, (3)~ce qu'il fait concrètement dans TalentMatch. Les encadrés orange contiennent des questions probables du jury avec une réponse directe à mémoriser.
+
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Pipeline global — comment tout s'articule}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Avant de détailler chaque brique, comprendre l'enchaînement global est essentiel.
+
+\begin{boite}
+\textbf{Le parcours complet en une phrase :}\\
+Un CV est déposé → le texte est extrait → le NLP le transforme en profil structuré → le moteur de matching compare ce profil à une offre et produit un score → si le candidat est sélectionné, une évaluation vérifie ce que le CV déclare.
+\end{boite}
+
+\medskip
+
+\textbf{Les 4 sprints et leurs composants clés :}
+
+\begin{tabularx}{\textwidth}{p{2.5cm} p{4cm} X}
+\rowcolor{bleu}
+\textcolor{white}{\textbf{Sprint}} & \textcolor{white}{\textbf{Composants}} & \textcolor{white}{\textbf{Ce que ça produit}} \\
+Sprint 1 & FastAPI, React, JWT, bcrypt, OAuth & Plateforme sécurisée avec 3 rôles \\
+\rowcolor{bleulight}
+Sprint 2 & PyMuPDF, EasyOCR, spaCy, ESCO & Profil structuré extrait du CV \\
+Sprint 3 & BGE-M3, Cross-encoder, MLP & Score de matching explicable \\
+\rowcolor{bleulight}
+Sprint 4 & Ollama, IRT/catsim, BGE-M3 & Évaluation technique + rapport IA \\
+\bottomrule
+\end{tabularx}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Extraction du texte — PyMuPDF, EasyOCR, python-docx}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Le problème à résoudre}
+
+Un CV peut arriver sous 4 formats différents : PDF avec texte (le cas le plus courant), PDF scanné (une image déguisée en PDF), image JPG/PNG, ou document Word. Chaque format nécessite une méthode d'extraction différente.
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Imagine que tu reçois des lettres. Certaines sont tapées à l'ordinateur (tu peux copier-coller le texte directement). D'autres sont des photocopies d'une lettre écrite à la main (il faut d'abord les lire et retranscrire). D'autres encore sont des fichiers Word. La plateforme détecte automatiquement le type et choisit la bonne méthode.
+\end{simplification}
+
+\subsection{Les 3 extracteurs}
+
+\begin{itemize}
+  \item \concept{PyMuPDF / pypdf} : lit un PDF textuel et extrait le texte directement. Rapide. Utilisé pour 77/90 CV dans les tests.
+  \item \concept{EasyOCR} : \textit{Optical Character Recognition}. Quand le PDF ne contient pas de texte (juste des images), EasyOCR « lit » l'image pixel par pixel et reconnaît les lettres. C'est le même principe que Google Lens qui lit un panneau en photo. Résultat : 9/90 CV traités par OCR, 100\% de succès.
+  \item \concept{python-docx} : lit les fichiers Word (.docx) en explorant la structure XML interne du document.
+\end{itemize}
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Comment la plateforme sait-elle qu'un PDF est scanné ?~»}\\[4pt]
+\textbf{Réponse :} On tente d'extraire le texte avec PyMuPDF. Si le résultat est vide ou contient moins de 50 caractères lisibles, on considère que le PDF est une image scannée et on bascule automatiquement sur EasyOCR.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{NLP et parsing — spaCy, ESCO}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Qu'est-ce que le NLP ?}
+
+\concept{NLP} = \textit{Natural Language Processing} = Traitement Automatique du Langage Naturel. C'est l'ensemble des techniques qui permettent à un ordinateur de comprendre du texte écrit par un humain.
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Quand tu lis un CV, ton cerveau identifie automatiquement : «~ce mot en majuscules en haut c'est le nom~», «~ce bloc avec des dates c'est une expérience~», «~Python est une compétence technique~». Le NLP fait exactement pareil, mais avec des règles mathématiques et des modèles entraînés.
+\end{simplification}
+
+\subsection{spaCy et le modèle fr\_core\_news\_md}
+
+\concept{spaCy} est une bibliothèque Python de NLP. On utilise le modèle \tech{fr\_core\_news\_md} (modèle français, taille moyenne) qui a été entraîné sur des millions de textes français.
+
+Ce modèle sait faire deux choses importantes :
+\begin{itemize}
+  \item \textbf{Tokenisation} : découper le texte en mots et en phrases
+  \item \textbf{NER} (\textit{Named Entity Recognition}) : reconnaître les entités nommées — il sait qu'«~Emmanuel Macron~» est une personne, que «~Paris~» est une ville, que «~Microsoft~» est une organisation
+\end{itemize}
+
+Dans TalentMatch, spaCy identifie le nom du candidat (entité de type PERSONNE) en croisant ce résultat avec la position dans le CV (les premières lignes).
+
+\subsection{Les 6 extracteurs NLP}
+
+Après spaCy, 6 extracteurs spécialisés travaillent en séquence sur le texte :
+
+\begin{tabularx}{\textwidth}{p{3.5cm} X}
+\rowcolor{bleu}
+\textcolor{white}{\textbf{Extracteur}} & \textcolor{white}{\textbf{Ce qu'il fait}} \\
+ContactExtractor & Nom, e-mail (regex), téléphone (regex), LinkedIn \\
+\rowcolor{bleulight}
+EntityExtractor & Entités nommées (personnes, organisations, lieux) via spaCy \\
+SkillsExtractor & Compétences techniques via correspondance avec ESCO \\
+\rowcolor{bleulight}
+FormationExtractor & Diplômes, établissements, niveaux d'études (Bac+2 à Bac+8) \\
+ExperienceExtractor & Postes, entreprises, durées, calcul de l'expérience totale \\
+\rowcolor{bleulight}
+\_extract\_langues & Langues parlées et niveaux (natif, courant, notions) \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Le référentiel ESCO}
+
+\concept{ESCO} = \textit{European Skills, Competences, Qualifications and Occupations}. C'est une base de données européenne qui liste des milliers de compétences avec leurs synonymes et variantes en plusieurs langues.
+
+\begin{simplification}
+\textbf{Pourquoi c'est utile ?} Sans ESCO, «~ReactJS~», «~React.js~» et «~React~» seraient trois compétences différentes. Avec ESCO, toutes les trois pointent vers la même compétence canonique \textit{React}. Cela permet ensuite au matching de comparer des concepts, pas juste des mots.
+\end{simplification}
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Quelles sont les limites de votre extraction NLP ?~»}\\[4pt]
+\textbf{Réponse :} Deux limites principales. D'abord, les CV avec des mises en page très graphiques (colonnes, icônes, tableaux) peuvent être mal lus par l'extraction de texte, car l'ordre de lecture n'est pas garanti. Ensuite, le niveau d'une compétence n'est presque jamais explicite dans un CV («~expert en Python~» est rare) — on estime ce niveau à partir du contexte et de la séniorité, ce qui reste une approximation.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Matching sémantique — BGE-M3 et les embeddings}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Le problème à résoudre}
+
+Comment savoir qu'un «~développeur front-end React~» correspond à une offre d'\break«~ingénieur JavaScript côté client~» alors qu'aucun mot n'est commun ?
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Imagine que tu traduis chaque CV et chaque offre dans un langage universel — non pas des mots, mais des coordonnées GPS dans un espace à très haute dimension. Deux textes qui parlent de la même chose atterrissent au même endroit dans cet espace, même s'ils utilisent des mots différents. C'est ce que font les \textit{embeddings}.
+\end{simplification}
+
+\subsection{Les embeddings — vecteurs de sens}
+
+Un \concept{embedding} est la transformation d'un texte en un vecteur numérique (une liste de nombres). Ce vecteur capture le \textbf{sens} du texte. Le modèle BGE-M3 produit des vecteurs de 1024 dimensions.
+
+\textbf{Comment mesurer si deux textes sont proches ?} On calcule la \concept{similarité cosinus} entre leurs vecteurs. Le cosinus est une mesure d'angle :
+\begin{itemize}
+  \item Cosinus = 1 → textes identiques en sens
+  \item Cosinus = 0 → textes sans rapport
+  \item Cosinus = -1 → textes opposés
+\end{itemize}
+
+\subsection{BGE-M3 — le bi-encodeur}
+
+\concept{BGE-M3} (développé par BAAI) est un modèle multilingue d'embeddings. On appelle ça un \concept{bi-encodeur} parce qu'il encode les deux textes \textbf{séparément} : le CV d'un côté, l'offre de l'autre, puis on compare les vecteurs.
+
+\textbf{Avantage} : on peut pré-calculer les vecteurs de tous les CV une seule fois et les stocker. Ensuite, pour une nouvelle offre, on calcule son vecteur et on compare rapidement avec toute la base — c'est très rapide.
+
+\subsection{Le fine-tuning — TalentMatch-BERT}
+
+Le modèle BGE-M3 de base a appris le sens général des mots. Mais il ne connaît pas les spécificités du recrutement. On l'a \concept{affiné} (\textit{fine-tuning}) sur notre corpus métier.
+
+\textbf{Comment ?} En lui présentant des \concept{triplets} : (Offre, CV pertinent, CV non pertinent). La fonction d'apprentissage lui dit : «~rapproche l'offre du bon CV et éloigne-la du mauvais dans l'espace vectoriel~». Après entraînement sur 1\,870 triplets, le modèle résultant --- nommé \textbf{TalentMatch-BERT} --- a appris quelles proximités comptent dans le recrutement.
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~100\% d'accuracy, n'est-ce pas du surapprentissage ?~»}\\[4pt]
+\textbf{Réponse :} Non, pour deux raisons. D'abord, on a utilisé une \textbf{validation croisée à 5 plis} : à chaque pli, le modèle est évalué sur des triplets qu'il n'a jamais vus pendant l'entraînement. L'écart-type est nul sur les 5 plis — le modèle est stable, pas chanceux. Ensuite, la tâche de séparation par paire (le bon CV doit scorer plus haut que le mauvais) est plus simple qu'un classement complet. La corrélation de Spearman de 0,90 à 1,00 avec un classement humain de référence confirme que la performance est réelle.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Cross-encoder — le re-classement fin}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Le bi-encodeur (BGE-M3) c'est comme lire rapidement 100 CV pour faire une première sélection. Le cross-encoder, c'est comme reprendre les 10 meilleurs et les lire très attentivement en comparant chaque phrase avec l'offre.
+\end{simplification}
+
+\subsection{Différence bi-encodeur vs cross-encoder}
+
+\begin{tabularx}{\textwidth}{p{3.5cm} X X}
+\rowcolor{bleu}
+\textcolor{white}{\textbf{}} & \textcolor{white}{\textbf{Bi-encodeur (BGE-M3)}} & \textcolor{white}{\textbf{Cross-encoder (BGE-reranker)}} \\
+Fonctionnement & Encode séparément, compare par cosinus & Lit la paire (offre + CV) ensemble \\
+\rowcolor{bleulight}
+Vitesse & Très rapide & Lent \\
+Précision & Bonne & Très précise \\
+\rowcolor{bleulight}
+Usage & Balayer toute la base & Re-classer les meilleurs candidats \\
+\bottomrule
+\end{tabularx}
+
+\medskip
+
+Dans TalentMatch, le bi-encodeur fait le premier tri (tous les candidats), et le cross-encoder affine la composante sémantique du score sur les candidats retenus. C'est l'architecture \concept{retrieve then re-rank}, standard dans la recherche d'information moderne.
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{MLP Fusion — le réseau de neurones de scoring}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Pourquoi ne pas faire une simple moyenne ?}
+
+Le score final combine 4 critères : compétences, sémantique, expérience, formation. Une moyenne pondérée serait simple, mais elle serait \textbf{linéaire} : elle ne capte pas les interactions. Par exemple, une excellente sémantique ne devrait pas compenser zéro compétence requise couverte.
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Pour recruter un développeur senior, l'expérience est très importante. Pour recruter un stagiaire, c'est la formation qui prime. Une moyenne fixe ne peut pas gérer ça. Le MLP apprend automatiquement ces nuances à partir des données.
+\end{simplification}
+
+\subsection{Le MLP — Perceptron Multicouche}
+
+Un \concept{MLP} (\textit{Multilayer Perceptron}) est un réseau de neurones artificiel. Il prend les 4 scores en entrée, les fait passer par des couches de neurones, et produit un score final entre 0 et 1. Les poids du réseau sont \textbf{appris} pendant l'entraînement.
+
+\textbf{Pondérations adaptatives :} en plus du MLP, des poids s'ajustent selon la séniorité de l'offre — pour un poste senior, l'expérience pèse plus ; pour un stage, la formation pèse plus.
+
+\textbf{Garde-fous métier :} si le domaine ISCO-08 est incompatible (ex : un profil juridique face à une offre informatique) ou si la formation est rédhibitoirement insuffisante, un plafond est appliqué au score final — le profil reste visible mais ne peut pas dépasser un certain rang.
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Que se passe-t-il si les poids du MLP sont indisponibles ?~»}\\[4pt]
+\textbf{Réponse :} On a une formule de secours calibrée : 40\% compétences + 25\% sémantique + 20\% expérience + 15\% formation. Robustesse par conception.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{ISCO-08 — détection de domaine métier}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\concept{ISCO-08} = \textit{International Standard Classification of Occupations}. C'est une classification internationale des métiers, organisée en groupes hiérarchiques (grand groupe → sous-groupe → métier précis).
+
+\begin{simplification}
+\textbf{Pourquoi c'est utile ?} Un CV de comptable peut avoir des mots communs avec une offre en informatique (Excel, chiffres, analyse). Sans garde-fou, le matching sémantique pourrait mal les classer. ISCO-08 permet de détecter que les deux appartiennent à des domaines différents et d'appliquer un plafond au score.
+\end{simplification}
+
+\textbf{Comment ça marche dans TalentMatch ?} Le titre du poste, les expériences récentes et les compétences du candidat sont projetés sur la classification ISCO-08 via le référentiel ESCO. Si les domaines détectés (candidat vs offre) sont incompatibles, un plafond de score est appliqué.
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Évaluation technique — IRT et test adaptatif}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Le problème à résoudre}
+
+Un test classique donne les mêmes 30 questions à tout le monde. Problème : un expert perd son temps sur des questions faciles, un débutant est découragé par des questions trop difficiles. Et 30 questions, c'est long.
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Imagine un examen oral avec un examinateur intelligent. Si tu réponds bien aux premières questions, il te pose des questions plus difficiles. Si tu réponds mal, il adapte. Au bout de 10 questions seulement, il a une idée précise de ton niveau. C'est ça, un test adaptatif.
+\end{simplification}
+
+\subsection{IRT — Théorie de Réponse à l'Item}
+
+L'\concept{IRT} (\textit{Item Response Theory}) est le cadre mathématique derrière les tests adaptatifs. Exemples réels : TOEFL, GMAT.
+
+Deux concepts clés :
+\begin{itemize}
+  \item \textbf{Paramètres de la question} : chaque question a une \textit{difficulté} (de -3 à +3) et un \textit{pouvoir discriminant} (les bonnes réponses distinguent bien les experts des débutants).
+  \item \textbf{Niveau du candidat $\theta$} (theta) : c'est une variable continue qui représente le niveau réel du candidat. Elle est \textbf{ré-estimée après chaque réponse}. Au départ on ne sait pas → après 10 questions, on a une estimation fiable.
+\end{itemize}
+
+\textbf{CAT} (\textit{Computerized Adaptive Testing}) : à chaque étape, on choisit la question dont la difficulté est la plus proche du $\theta$ estimé actuel. Cela maximise l'information gagnée à chaque question.
+
+\textbf{Bibliothèque utilisée :} \tech{catsim} (Python), conçue spécifiquement pour simuler et implémenter des tests adaptatifs.
+
+\textbf{Validation :} un candidat simulé de niveau 7/10 a été estimé à 6,7/10 après une dizaine de questions — convergence correcte.
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Pourquoi 10 questions suffisent au lieu de 30 ?~»}\\[4pt]
+\textbf{Réponse :} Parce que chaque question est choisie pour apporter un maximum d'information sur le niveau du candidat. Une question trop facile ou trop difficile par rapport au niveau estimé apporte peu d'information. En sélectionnant toujours la question la plus informative, on converge beaucoup plus vite. C'est prouvé mathématiquement par la théorie de Fisher sur l'information.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Notation sémantique des réponses rédigées}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Le problème à résoudre}
+
+Comment noter automatiquement une réponse rédigée (pas un QCM) sans qu'un humain la lise ?
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Imagine que tu as 3 copies modèles : une faible, une correcte, une experte. Tu mesures à quelle distance la copie du candidat est de chacune de ces références. Si elle est très proche de la copie experte, le score est élevé. C'est exactement ce que fait le noteur sémantique.
+\end{simplification}
+
+\subsection{Fonctionnement}
+
+Pour chaque question ouverte :
+\begin{enumerate}
+  \item Le LLM local génère \textbf{3 réponses de référence} de qualité croissante (faible, correcte, experte).
+  \item Ces 3 réponses sont encodées avec \textbf{BGE-M3} (le même modèle que le matching).
+  \item La réponse du candidat est encodée à son tour.
+  \item On calcule la \textbf{similarité cosinus} entre la réponse du candidat et chacune des 3 références.
+  \item Un score 0--100 est produit en fonction de la proximité.
+\end{enumerate}
+
+\textbf{Validation :} en soumettant 3 réponses de qualité connue à la même question :
+\begin{itemize}
+  \item Réponse experte → \textbf{80}/100
+  \item Réponse correcte → \textbf{41}/100
+  \item Réponse faible → \textbf{16}/100
+\end{itemize}
+L'ordre attendu est respecté avec une séparation nette.
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Le score est-il révélé au candidat pendant le test ?~»}\\[4pt]
+\textbf{Réponse :} Non, délibérément. Si le candidat voyait son score en temps réel, il pourrait adapter ses réponses suivantes de façon artificielle. Le score est calculé côté serveur et stocké, mais n'est visible que par le recruteur, après la fin du test.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Ollama — génération locale des questionnaires}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\concept{Ollama} est un outil qui permet d'exécuter des modèles de langage de grande taille (LLM) \textbf{en local}, sur la machine de l'entreprise, sans aucune connexion à un service externe.
+
+\begin{simplification}
+\textbf{Analogie simple :}
+ChatGPT est hébergé sur les serveurs d'OpenAI — toutes tes questions leur sont envoyées. Ollama, c'est comme avoir ChatGPT installé sur ton propre ordinateur : personne d'autre ne voit ce que tu lui demandes.
+\end{simplification}
+
+\subsection{Ce qu'il fait dans TalentMatch}
+
+Le LLM local reçoit uniquement des \textbf{noms de compétences} (ex : «~Python~», «~SQL~», «~Comptabilité générale~») et génère en retour :
+\begin{itemize}
+  \item Des QCM avec distracteurs plausibles et paliers de difficulté
+  \item Des questions ouvertes de raisonnement (pas de simples définitions)
+  \item Les 3 réponses de référence pour la notation sémantique
+\end{itemize}
+
+\textbf{Auto-vérification :} le modèle répond lui-même à chaque QCM généré sans voir la bonne réponse. En cas de désaccord avec la réponse attendue, la question est rejetée. Cela garantit la qualité.
+
+\textbf{Contrainte de confidentialité :} le LLM ne reçoit jamais le contenu d'un CV ni l'identité d'un candidat. Seulement des noms de compétences abstraits.
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Pourquoi ne pas utiliser ChatGPT directement ? Ce serait plus puissant.~»}\\[4pt]
+\textbf{Réponse :} Deux raisons. D'abord, la confidentialité : envoyer des données de candidats à un service externe (OpenAI) poserait un problème vis-à-vis des mesures de protection des données personnelles. Ensuite, la disponibilité : une API externe peut tomber en panne ou changer de tarification. Ollama en local garantit l'indépendance totale de la plateforme.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Validation croisée — k-fold, accuracy, MRR, Spearman}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Ces métriques sont celles que le jury questionnera le plus.
+
+\subsection{Validation croisée à 5 plis (k-fold)}
+
+\begin{simplification}
+\textbf{Analogie simple :}
+Imagine que tu divises tes données en 5 paquets. Tour à tour, tu prends 1 paquet pour tester et tu t'entraînes sur les 4 autres. Tu fais ça 5 fois. À la fin, chaque donnée a été testée exactement une fois. C'est bien plus fiable que de tester sur les mêmes données qui ont servi à l'entraînement.
+\end{simplification}
+
+Dans TalentMatch : 1\,870 triplets divisés en 5 plis de 374 triplets. À chaque pli, le modèle est évalué sur 374 triplets \textbf{jamais vus} pendant l'entraînement de ce pli.
+
+\subsection{Les métriques}
+
+\begin{tabularx}{\textwidth}{p{3cm} X p{3cm}}
+\rowcolor{bleu}
+\textcolor{white}{\textbf{Métrique}} & \textcolor{white}{\textbf{Ce qu'elle mesure}} & \textcolor{white}{\textbf{Notre résultat}} \\
+\textbf{Accuracy} & Sur un triplet (offre, bon CV, mauvais CV), est-ce que le bon CV obtient un meilleur score ? & \textbf{100\%} \\
+\rowcolor{bleulight}
+\textbf{MRR} & \textit{Mean Reciprocal Rank} : le bon CV est-il classé en 1\textsuperscript{ère} position en moyenne ? (1/rang moyen) & \textbf{1,000} \\
+\textbf{Marge} & Écart moyen de score entre le bon CV et le mauvais. Plus c'est élevé, plus le modèle est confiant. & \textbf{0,670} (vs 0,149 sans affinage) \\
+\rowcolor{bleulight}
+\textbf{Spearman} & Corrélation entre le classement du modèle et celui d'un humain (0=aucun lien, 1=identique) & \textbf{0,90 à 1,00} \\
+\bottomrule
+\end{tabularx}
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Quelle est la différence entre accuracy et MRR ?~»}\\[4pt]
+\textbf{Réponse :} L'accuracy sur triplets dit juste «~le bon CV est-il mieux classé que le mauvais~» — c'est binaire. Le MRR mesure le rang exact du meilleur CV dans une liste plus longue. Un MRR de 1,0 signifie que le bon CV est \textit{toujours} en première position, pas seulement devant le mauvais.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Sécurité — JWT, bcrypt, OAuth 2.0}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{JWT — JSON Web Token}
+
+Un \concept{JWT} est un jeton d'authentification signé numériquement. Après la connexion, le serveur produit un JWT contenant l'identité et le rôle de l'utilisateur, signé avec une clé secrète. Ce jeton est envoyé à chaque requête.
+
+\begin{simplification}
+\textbf{Analogie :} C'est comme un badge d'accès sécurisé. Le badge porte ton nom et ton niveau d'accès, et une signature infalsifiable. Le serveur vérifie la signature — sans avoir à consulter de base de données à chaque fois. Si quelqu'un modifie le badge, la signature ne correspond plus et l'accès est refusé.
+\end{simplification}
+
+\textbf{Durée limitée :} le JWT expire après un délai défini. Après expiration, l'utilisateur doit se reconnecter. Cela limite la durée d'un jeton volé.
+
+\subsection{bcrypt — hachage des mots de passe}
+
+Les mots de passe ne sont jamais stockés en clair. On stocke leur \concept{hash} produit par \concept{bcrypt} : une fonction de hachage volontairement lente et salée, résistante aux attaques par force brute.
+
+\begin{simplification}
+\textbf{Analogie :} bcrypt transforme ton mot de passe en une empreinte unique et non réversible. Même si la base de données est volée, l'attaquant ne peut pas retrouver les vrais mots de passe.
+\end{simplification}
+
+\subsection{OAuth 2.0 — connexion via Google/LinkedIn}
+
+OAuth permet à un utilisateur de se connecter avec un compte externe sans partager son mot de passe. Le flux : l'utilisateur clique «~Se connecter avec Google~» → Google vérifie l'identité → Google renvoie un jeton d'identité → notre serveur vérifie ce jeton auprès de Google → l'e-mail est extrait et un compte local est créé automatiquement.
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Protection des données — cadre légal}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{boite}
+\important{Règle absolue à retenir pour la soutenance :}\\
+Ne jamais dire «~conforme RGPD~». Dire toujours : «~mesures de protection des données personnelles~» ou «~principes inspirés du RGPD~». La Tunisie n'est pas soumise au RGPD européen — la loi applicable est la \textbf{loi organique n°2004-63} sous le contrôle de l'\textbf{INPDP}.
+\end{boite}
+
+\medskip
+
+Les mesures concrètes implémentées dans TalentMatch :
+
+\begin{enumerate}
+  \item \textbf{Traitement 100\% local} — aucune donnée ne sort de l'infrastructure de l'entreprise
+  \item \textbf{Minimisation} — le LLM ne reçoit que des noms de compétences, jamais l'identité d'un candidat
+  \item \textbf{Information} — le candidat est informé au moment du dépôt de son CV (mention horodatée)
+  \item \textbf{Traçabilité} — chaque accès aux données est enregistré dans \tech{access\_logs} (qui, quoi, quand, depuis où)
+  \item \textbf{Moindre privilège} — un recruteur ne voit que les offres qui lui sont assignées et leurs candidats
+  \item \textbf{Suppression} — profils et sessions peuvent être supprimés, sans données orphelines
+\end{enumerate}
+
+\begin{jury}
+\textbf{Question jury possible :} \textit{«~Votre système est-il conforme au RGPD ?~»}\\[4pt]
+\textbf{Réponse :} En Tunisie, le cadre légal applicable est la loi organique n°2004-63, gérée par l'INPDP. Nous avons intégré des \textbf{mesures de protection des données personnelles} inspirées des bonnes pratiques internationales : traitement 100\% local, minimisation des données transmises aux composants IA, information du candidat, traçabilité des accès, moindre privilège et possibilité de suppression. Nous ne prétendons pas à un audit de conformité juridique formel, mais ces mesures répondent à l'esprit de la réglementation.
+\end{jury}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Résumé — les chiffres à retenir absolument}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{boite}
+\textbf{Ces chiffres, tu dois les connaître par c\oe ur. Le jury les demandera.}
+
+\medskip
+\begin{tabularx}{\textwidth}{X r}
+\rowcolor{bleu}
+\textcolor{white}{\textbf{Indicateur}} & \textcolor{white}{\textbf{Valeur}} \\
+CV traités lors du batch de validation & \textbf{90 CV} \\
+\rowcolor{bleulight}
+Taux d'extraction réussie (tous formats) & \textbf{100\%} \\
+Détection du nom / e-mail / téléphone & \textbf{93,3\% / 94,4\% / 95,6\%} \\
+\rowcolor{bleulight}
+Compétences extraites en moyenne par CV & \textbf{29,8} \\
+Durée totale du batch (90 CV, OCR inclus) & \textbf{8,5 minutes} \\
+\rowcolor{bleulight}
+Triplets pour la validation du matching & \textbf{1 870 triplets, 5 plis} \\
+Accuracy TalentMatch-BERT & \textbf{100\% ± 0} \\
+\rowcolor{bleulight}
+MRR TalentMatch-BERT & \textbf{1,000} \\
+Marge TalentMatch-BERT & \textbf{0,670} (vs 0,149 sans affinage) \\
+\rowcolor{bleulight}
+Corrélation Spearman (classement humain) & \textbf{0,90 à 1,00} \\
+Notation sémantique : réponse experte & \textbf{80}/100 \\
+\rowcolor{bleulight}
+Notation sémantique : réponse correcte & \textbf{41}/100 \\
+Notation sémantique : réponse faible & \textbf{16}/100 \\
+\rowcolor{bleulight}
+Test adaptatif IRT : niveau simulé 7/10 estimé & \textbf{6,7}/10 \\
+\bottomrule
+\end{tabularx}
+\end{boite}
+
+\vspace{16pt}
+
+\begin{jury}
+\textbf{La phrase à retenir pour conclure chaque explication :}\\[6pt]
+\textit{«~L'IA instruit le dossier, l'humain décide.~»}\\[4pt]
+C'est la ligne directrice du projet. Chaque composant (matching, évaluation, rapport) produit une aide à la décision transparente et explicable — jamais un verdict automatique. Le recruteur garde toujours le dernier mot.
+\end{jury}
+
+\end{document}
